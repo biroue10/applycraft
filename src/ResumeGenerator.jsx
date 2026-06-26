@@ -1597,7 +1597,7 @@ Awards: ${form.awards}`;
                     fontSize: 18, fontWeight: 800, border: "none", cursor: "pointer", padding: 0,
                     fontFamily: "inherit", display: "block", marginBottom: 10 }}>ApplyCraft</button>
                 <p style={{ fontSize: 13, color: C.text3, lineHeight: 1.7, margin: 0 }}>
-                  Free resume and cover letter builder for the global job market. 50+ languages, 12 templates, no sign-up.
+                  Free resume and cover letter builder for the global job market. 50+ languages, 22 templates, no sign-up.
                 </p>
               </div>
               {/* Links */}
