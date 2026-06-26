@@ -111,6 +111,14 @@
         transform: translateY(-6px) scale(1.015) !important;
         box-shadow: 0 16px 48px rgba(0,0,0,0.55) !important;
       }
+      @keyframes acShake {
+        0%,100% { transform: translateX(0); }
+        18%     { transform: translateX(-7px); }
+        36%     { transform: translateX(7px); }
+        54%     { transform: translateX(-4px); }
+        72%     { transform: translateX(4px); }
+      }
+      .ac-shake { animation: acShake 0.42s ease; }
     </style>
   </head>
   <body style="margin:0">

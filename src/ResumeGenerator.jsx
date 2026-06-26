@@ -428,6 +428,7 @@ function buildLiveData(form, t) {
     contact: [form.email, form.phone, form.location, form.linkedin, form.website].filter(Boolean),
     summary: form.summary || "",
     sections,
+    photo: form.photo || null,
   };
 }
 
@@ -450,10 +451,31 @@ export default function ResumeGenerator() {
   const [copied, setCopied] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
+  const [nameError, setNameError] = useState("");
+  const [shakeField, setShakeField] = useState("");
   const [phoneCode, setPhoneCode] = useState(() => LANG_CODE[selectedLang?.code] || "+1");
   const [zoomed, setZoomed] = useState(false);
   const [aiPolished, setAiPolished] = useState(false);
   const [translating, setTranslating] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState(null);
+  const [authModal, setAuthModal] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState("login");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+
+  useEffect(() => {
+    const close = (e) => { if (userMenuRef.current && !userMenuRef.current.contains(e.target)) setUserMenuOpen(false); };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, []);
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setPhotoUrl(ev.target.result);
+    reader.readAsDataURL(file);
+  };
   const [appView, setAppView] = useState("landing");
   const [coverStep, setCoverStep] = useState("templates");
   const [coverTpl, setCoverTpl] = useState(null);
@@ -469,7 +491,7 @@ export default function ResumeGenerator() {
   const rtl = selectedLang.rtl || false;
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
   const fullPhone = form.phone.trim() ? `${phoneCode} ${form.phone.trim()}` : "";
-  const liveData = buildLiveData({ ...form, phone: fullPhone }, t);
+  const liveData = buildLiveData({ ...form, phone: fullPhone, photo: photoUrl }, t);
   const isMobile = useIsMobile();
   const rPage  = { ...page,  padding: isMobile ? "8px 4px" : "16px 8px", overflowX: "hidden" };
   const rShell = { ...shell, padding: isMobile ? "16px 12px" : "28px 32px" };
@@ -488,6 +510,10 @@ export default function ResumeGenerator() {
       return `${t.phoneError} — ${range} ${t.phoneDigits}`;
     }
     return "";
+  }
+  function onNameChange(e) {
+    setForm({ ...form, name: e.target.value });
+    if (nameError && e.target.value.trim()) setNameError("");
   }
   function onEmailChange(e) {
     setForm({ ...form, email: e.target.value });
@@ -526,11 +552,34 @@ export default function ResumeGenerator() {
     }
   }
 
+  function scrollToError(fieldId) {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => {
+      el.focus();
+      // apply shake to the nearest wrapper (the input itself or its parent)
+      const target = el.closest("[data-field-wrap]") || el;
+      target.classList.remove("ac-shake");
+      void target.offsetWidth; // reflow to restart animation
+      target.classList.add("ac-shake");
+      setTimeout(() => target.classList.remove("ac-shake"), 450);
+    }, 280);
+  }
+
   async function generate() {
+    const nErr = !form.name.trim() ? "Full name is required." : "";
     const eErr = validateEmail(form.email);
     const pErr = validatePhone(form.phone);
-    setEmailError(eErr); setPhoneError(pErr);
-    if (eErr || pErr) return;
+    setNameError(nErr);
+    setEmailError(eErr);
+    setPhoneError(pErr);
+    if (nErr || eErr || pErr) {
+      if (nErr)      scrollToError("field-name");
+      else if (eErr) scrollToError("field-email");
+      else           scrollToError("field-phone");
+      return;
+    }
     setLoading(true); setResult(null); setAiPolished(false);
     const langName = selectedLang.name;
     const prompt = `You are an expert resume writer. Using the candidate details below, write a polished, ATS-friendly resume entirely in ${langName} (every word, including section headings, in ${langName}). Improve weak phrasing and use strong action verbs.
@@ -575,7 +624,7 @@ Awards: ${form.awards}`;
       setResult(JSON.parse(clean));
       setAiPolished(true);
     } catch {
-      setResult(buildLiveData({ ...form, phone: fullPhone }, t));
+      setResult(buildLiveData({ ...form, phone: fullPhone, photo: photoUrl }, t));
     } finally {
       setLoading(false);
     }
@@ -766,8 +815,13 @@ Awards: ${form.awards}`;
 
   const mainContent = step === "templates" ? (
     <div style={{ ...rShell }}>
-      <h1 style={{ ...h1, fontSize: isMobile ? 22 : 30 }}>{t.heading}</h1>
-      <p style={{ ...subtitle, fontSize: isMobile ? 13.5 : 15 }}>{t.chooseTpl}</p>
+      <PageHeader
+        eyebrow="Resume Builder"
+        icon="📄"
+        title={t.heading}
+        sub={t.chooseTpl}
+        pill={`${TEMPLATES.length - 1} templates`}
+      />
       <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))" }}>
         {TEMPLATES.map((tp) => (
           <button key={tp.id} onClick={() => { setTpl(tp); setStep("form"); }}
@@ -794,144 +848,328 @@ Awards: ${form.awards}`;
       <input value={form[key]} onChange={set(key)} placeholder={ph || ""} style={inputStyle} />
     );
 
+  // Form completion tracker
+  const trackFields = ["name","title","email","phone","location","linkedin","website","summary","experience","education","skills","languages","certifications","projects","volunteer","awards"];
+  const filledCount = trackFields.filter(k => form[k]?.trim()).length + (photoUrl ? 1 : 0);
+  const totalCount  = trackFields.length + 1;
+  const completion  = Math.round(filledCount / totalCount * 100);
+
+  const PageHeader = ({ eyebrow, icon, title, sub, pill }) => (
+    <div style={{ marginBottom: 28 }}>
+      <div style={{ display: "inline-flex", alignItems: "center", gap: 7,
+        background: `${C.accent}12`, border: `1px solid ${C.accent}28`,
+        borderRadius: 999, padding: "4px 14px", marginBottom: 14 }}>
+        {icon && <span style={{ fontSize: 13, lineHeight: 1 }}>{icon}</span>}
+        <span style={{ fontSize: 10.5, fontWeight: 800, color: C.accent2,
+          textTransform: "uppercase", letterSpacing: "1.4px" }}>{eyebrow}</span>
+        {pill && (
+          <span style={{ fontSize: 10.5, fontWeight: 700, color: C.text3,
+            background: C.elevated, borderRadius: 999, padding: "1px 8px",
+            border: `1px solid ${C.border}`, marginLeft: 2 }}>{pill}</span>
+        )}
+      </div>
+      <h1 style={{ ...h1, fontSize: isMobile ? 22 : 32, margin: "0 0 10px",
+        lineHeight: 1.15 }}>{title}</h1>
+      {sub && (
+        <p style={{ ...subtitle, margin: 0, maxWidth: 520, fontSize: isMobile ? 13.5 : 15 }}>{sub}</p>
+      )}
+      <div style={{ marginTop: 18, height: 2, width: 48,
+        background: `linear-gradient(90deg, ${C.accent}, ${C.blue})`,
+        borderRadius: 999 }} />
+    </div>
+  );
+
+  const SectionHeader = ({ icon, title, filled }) => (
+    <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "28px 0 16px",
+      paddingBottom: 10, borderBottom: `1px solid ${C.border}` }}>
+      <span style={{ fontSize: 15 }}>{icon}</span>
+      <span style={{ fontSize: 11.5, fontWeight: 800, textTransform: "uppercase",
+        letterSpacing: "1px", color: C.text2, flex: 1 }}>{title}</span>
+      {filled && <span style={{ fontSize: 10, fontWeight: 700, color: "#4ade80",
+        background: "rgba(74,222,128,0.12)", padding: "2px 8px", borderRadius: 999 }}>✓ Filled</span>}
+    </div>
+  );
+
+  const Hint = ({ text }) => (
+    <div style={{ fontSize: 11.5, color: C.text3, marginTop: 6, lineHeight: 1.6, fontStyle: "italic" }}>{text}</div>
+  );
+
+  const IconInput = ({ icon, children }) => (
+    <div style={{ position: "relative" }}>
+      <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
+        fontSize: 14, opacity: 0.45, pointerEvents: "none", lineHeight: 1 }}>{icon}</span>
+      {React.cloneElement(children, {
+        style: { ...children.props.style, paddingLeft: 34 }
+      })}
+    </div>
+  );
+
   const formContent = tpl ? (
     <div style={rShell}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-        marginBottom: 20, gap: 12, flexWrap: "wrap" }}>
+
+      {/* ── Form header ── */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
         <button onClick={() => setStep("templates")} style={backBtn}>← {t.back}</button>
-        <div style={{ fontSize: 13.5, color: C.text2 }}>
-          {t.chooseTpl}: <strong style={{ color: tpl.accent }}>{tpl.name}</strong>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}>
+          <div style={{ width: 12, height: 12, borderRadius: "50%", background: tpl.accent, flexShrink: 0 }} />
+          <span style={{ fontSize: 13, color: C.text2 }}>
+            Template: <strong style={{ color: C.text1 }}>{tpl.name}</strong>
+          </span>
+          <button onClick={() => setStep("templates")} style={{ marginLeft: 4, fontSize: 11.5,
+            color: C.accent2, background: "none", border: "none", cursor: "pointer",
+            padding: 0, fontFamily: "inherit", textDecoration: "underline" }}>
+            Change
+          </button>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 160 }}>
+          <div style={{ flex: 1, height: 6, borderRadius: 999, background: C.elevated,
+            border: `1px solid ${C.border}`, overflow: "hidden" }}>
+            <div style={{ height: "100%", width: `${completion}%`,
+              background: completion >= 80 ? "#4ade80" : completion >= 40 ? C.grad : `${tpl.accent}`,
+              borderRadius: 999, transition: "width 0.4s ease" }} />
+          </div>
+          <span style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, whiteSpace: "nowrap",
+            minWidth: 36 }}>{completion}%</span>
         </div>
       </div>
 
       <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr" }}>
-          <div>
-            <label style={lbl}>{t.name}</label>{field("name", false, t.placeholderName)}
-            <label style={lbl}>{t.title}</label>{field("title", false, t.placeholderTitle)}
-            <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
-              <div style={{ flex: 1 }}>
-                <label style={lbl}>{t.email}</label>
-                <input value={form.email} onChange={onEmailChange}
-                  onBlur={() => setEmailError(validateEmail(form.email))}
-                  placeholder={t.placeholderEmail}
-                  style={{ ...inputStyle, ...(emailError ? { borderColor: "#f87171" } : {}) }} />
-                {emailError && <p style={fieldErr}>{emailError}</p>}
+        <div>
+
+          {/* ── SECTION: Personal Info ── */}
+          <SectionHeader icon="👤" title="Personal Info" filled={!!(form.name && form.email)} />
+
+          {/* Photo upload */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 18,
+            padding: "14px 16px", background: C.elevated, border: `1px solid ${C.border}`,
+            borderRadius: 10 }}>
+            <div style={{ width: 64, height: 64, borderRadius: "50%", flexShrink: 0,
+              overflow: "hidden", background: C.surface, border: `2px dashed ${photoUrl ? tpl.accent : C.border}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "border-color 0.2s" }}>
+              {photoUrl
+                ? <img src={photoUrl} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : <span style={{ fontSize: 22, opacity: 0.3 }}>👤</span>
+              }
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12.5, fontWeight: 600, color: C.text1, marginBottom: 4 }}>
+                Profile Photo <span style={{ color: C.text3, fontWeight: 400 }}>(optional)</span>
               </div>
-              <div style={{ flex: 1 }}>
-                <label style={lbl}>{t.phone}</label>
-                <div style={{ display: "flex", gap: 6 }}>
-                  <select value={phoneCode} onChange={(e) => {
-                    const newCode = e.target.value;
-                    setPhoneCode(newCode);
-                    if (form.phone.trim()) setPhoneError(validatePhone(form.phone, newCode));
-                  }} style={codeSelect}>
-                    {COUNTRIES.map((c) => (
-                      <option key={c.name} value={c.code}>{c.flag} {c.code}</option>
-                    ))}
-                  </select>
-                  <input value={form.phone} onChange={onPhoneChange}
-                    onBlur={() => setPhoneError(validatePhone(form.phone))}
-                    placeholder={t.placeholderPhone}
-                    style={{ ...inputStyle, flex: 1, ...(phoneError ? { borderColor: "#f87171" } : {}) }} />
-                </div>
-                {phoneError && <p style={fieldErr}>{phoneError}</p>}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <label htmlFor="photo-upload"
+                  style={{ cursor: "pointer", fontSize: 12, fontWeight: 700, color: C.accent2,
+                    padding: "5px 12px", borderRadius: 4, border: `1px solid ${C.accent}44`,
+                    background: `${C.accent}10`, display: "inline-block" }}>
+                  {photoUrl ? "Change" : "Upload"}
+                </label>
+                <input id="photo-upload" type="file" accept="image/jpeg,image/png,image/webp"
+                  onChange={handlePhotoUpload} style={{ display: "none" }} />
+                {photoUrl && (
+                  <button onClick={() => setPhotoUrl(null)}
+                    style={{ fontSize: 12, color: "#f87171", background: "none", border: "none",
+                      cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
+                    Remove
+                  </button>
+                )}
+              </div>
+              <div style={{ fontSize: 11, color: C.text3, marginTop: 5 }}>
+                Appears in sidebar templates
               </div>
             </div>
-            <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
-              <div style={{ flex: 1 }}>
-                <label style={lbl}>{t.linkedin}</label>
-                {field("linkedin", false, t.placeholderLinkedin)}
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={lbl}>{t.website}</label>
-                {field("website", false, t.placeholderWebsite)}
-              </div>
-            </div>
-            <label style={lbl}>{t.location}</label>{field("location", false, t.placeholderLocation)}
-            <label style={lbl}>{t.summary}</label>{field("summary", true, t.placeholderSummary)}
-            <label style={lbl}>{t.experience}</label>{field("experience", true, t.placeholderEx)}
-            <label style={lbl}>{t.education}</label>{field("education", true, t.placeholderEducation)}
-            <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
-              <div style={{ flex: 1 }}>
-                <label style={lbl}>{t.skills}</label>
-                {field("skills", false, t.placeholderSkills)}
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={lbl}>{t.languages}</label>
-                {field("languages", false, t.placeholderLanguages)}
-              </div>
-            </div>
-            <label style={lbl}>{t.certifications}</label>{field("certifications", true, t.placeholderCerts)}
-            <label style={lbl}>{t.projects}</label>{field("projects", true, t.placeholderProjects)}
-            <label style={lbl}>{t.volunteer}</label>{field("volunteer", true, t.placeholderVolunteer)}
-            <label style={lbl}>{t.awards}</label>{field("awards", true, t.placeholderAwards)}
-            {selectedLang?.code && selectedLang.code !== "en" && (
-              <button onClick={translateCV} disabled={translating || !form.name}
-                style={{ ...cta, background: "transparent", border: `1.5px solid ${C.borderHi}`,
-                  color: C.text1, marginBottom: 10, opacity: (translating || !form.name) ? 0.5 : 1 }}>
-                {translating ? "⏳ Translating…" : `🌍 Translate content to ${selectedLang.name}`}
-              </button>
-            )}
-            <button onClick={generate} disabled={loading || !form.name} style={{ ...cta, background: C.grad, opacity: (loading || !form.name) ? 0.6 : 1 }}>
-              {loading ? t.generating : t.generate}
-            </button>
           </div>
 
-          <div style={{ minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10,
-              marginTop: isMobile ? 24 : 0, flexWrap: "wrap" }}>
-              <span style={{ ...badge, ...(aiPolished ? badgePolished : badgeLive),
-                background: aiPolished ? `${tpl.accent}22` : C.elevated,
-                color: aiPolished ? tpl.accent : C.text2 }}>
-                {aiPolished ? "✦ AI-polished" : "● Live preview"}
-              </span>
-              {result && (
-                <>
-                  <button onClick={downloadPDF} style={{ ...dlBtn, borderColor: tpl.accent, color: tpl.accent }}>
-                    ↓ {t.dlPdf}
-                  </button>
-                  <button onClick={downloadDOCX} style={{ ...dlBtn, borderColor: tpl.accent, color: tpl.accent }}>
-                    ↓ {t.dlDocx}
-                  </button>
-                </>
-              )}
+          <div data-field-wrap="">
+            <label style={lbl}>{t.name} <span style={{ color: "#f87171" }}>*</span></label>
+            <IconInput icon="✏️">
+              <input id="field-name" value={form.name} onChange={onNameChange}
+                placeholder={t.placeholderName}
+                style={{ ...inputStyle, ...(nameError ? { borderColor: "#f87171", boxShadow: "0 0 0 3px rgba(248,113,113,0.15)" } : {}) }} />
+            </IconInput>
+            {nameError && <p style={fieldErr}>{nameError}</p>}
+          </div>
+          <label style={lbl}>{t.title}</label>
+          <IconInput icon="💼">{field("title", false, t.placeholderTitle)}</IconInput>
+
+          <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
+            <div style={{ flex: 1 }} data-field-wrap="">
+              <label style={lbl}>{t.email}</label>
+              <IconInput icon="✉️">
+                <input id="field-email" value={form.email} onChange={onEmailChange}
+                  onBlur={() => setEmailError(validateEmail(form.email))}
+                  placeholder={t.placeholderEmail}
+                  style={{ ...inputStyle, ...(emailError ? { borderColor: "#f87171", boxShadow: "0 0 0 3px rgba(248,113,113,0.15)" } : {}) }} />
+              </IconInput>
+              {emailError && <p style={fieldErr}>{emailError}</p>}
             </div>
-            <div
-              onClick={() => setZoomed(z => !z)}
-              title={zoomed ? undefined : "Click to enlarge"}
-              style={{
-                cursor: zoomed ? "zoom-out" : "zoom-in",
-                ...(zoomed ? {
-                  position: "fixed", inset: 0, zIndex: 9000,
-                  background: "rgba(0,0,0,0.88)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  padding: "20px", overflowY: "auto",
-                } : { position: "relative", overflowX: "auto" }),
-              }}
-            >
-              {!zoomed && result && (
-                <button onClick={(e) => { e.stopPropagation(); copyOut(); }} style={copyBtn}>
-                  {copied ? t.copied : t.copy}
-                </button>
-              )}
-              <div style={zoomed ? { width: "min(780px, 94vw)", maxHeight: "94vh", overflowY: "auto", borderRadius: 8 } : {}}>
-                <ResumePaper tpl={tpl} result={result || liveData} rtl={rtl} placeholder={false} />
+            <div style={{ flex: 1 }} data-field-wrap="">
+              <label style={lbl}>{t.phone}</label>
+              <div style={{ display: "flex", gap: 6 }}>
+                <select value={phoneCode} onChange={(e) => {
+                  const newCode = e.target.value;
+                  setPhoneCode(newCode);
+                  if (form.phone.trim()) setPhoneError(validatePhone(form.phone, newCode));
+                }} style={codeSelect}>
+                  {COUNTRIES.map((c) => (
+                    <option key={c.name} value={c.code}>{c.flag} {c.code}</option>
+                  ))}
+                </select>
+                <input id="field-phone" value={form.phone} onChange={onPhoneChange}
+                  onBlur={() => setPhoneError(validatePhone(form.phone))}
+                  placeholder={t.placeholderPhone}
+                  style={{ ...inputStyle, flex: 1, ...(phoneError ? { borderColor: "#f87171", boxShadow: "0 0 0 3px rgba(248,113,113,0.15)" } : {}) }} />
               </div>
-              {zoomed && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); setZoomed(false); }}
-                  style={{ position: "fixed", top: 14, right: 14, zIndex: 9001,
-                    width: 34, height: 34, borderRadius: "50%", border: `1px solid ${C.border}`,
-                    background: C.surface, color: C.text2, fontSize: 16,
-                    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                    fontFamily: "inherit" }}>
-                  ✕
-                </button>
-              )}
+              {phoneError && <p style={fieldErr}>{phoneError}</p>}
             </div>
+          </div>
+
+          <label style={lbl}>{t.location}</label>
+          <IconInput icon="📍">{field("location", false, t.placeholderLocation)}</IconInput>
+
+          <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row", marginTop: 0 }}>
+            <div style={{ flex: 1 }}>
+              <label style={lbl}>{t.linkedin}</label>
+              <IconInput icon="🔗">{field("linkedin", false, t.placeholderLinkedin)}</IconInput>
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={lbl}>{t.website}</label>
+              <IconInput icon="🌐">{field("website", false, t.placeholderWebsite)}</IconInput>
+            </div>
+          </div>
+
+          {/* ── SECTION: Professional ── */}
+          <SectionHeader icon="📝" title="Professional" filled={!!(form.summary && form.experience)} />
+
+          <label style={lbl}>{t.summary}</label>
+          {field("summary", true, t.placeholderSummary)}
+          <Hint text="2–4 sentences. Who you are, your years of experience, and your biggest strength." />
+
+          <label style={lbl}>{t.experience}</label>
+          {field("experience", true, t.placeholderEx)}
+          <Hint text="One role per line. Format: Job Title — Company | Start – End" />
+
+          <label style={lbl}>{t.education}</label>
+          {field("education", true, t.placeholderEducation)}
+          <Hint text="One entry per line. Format: Degree — Institution | Year" />
+
+          {/* ── SECTION: Skills ── */}
+          <SectionHeader icon="⚡" title="Skills & Languages" filled={!!form.skills} />
+
+          <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
+            <div style={{ flex: 1 }}>
+              <label style={lbl}>{t.skills}</label>
+              {field("skills", false, t.placeholderSkills)}
+              <Hint text="Comma-separated: React, Node.js, SQL…" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={lbl}>{t.languages}</label>
+              {field("languages", false, t.placeholderLanguages)}
+              <Hint text="English (Fluent), French (B2)…" />
+            </div>
+          </div>
+
+          {/* ── SECTION: Additional ── */}
+          <SectionHeader icon="➕" title="Additional (optional)" filled={!!(form.certifications || form.projects || form.volunteer || form.awards)} />
+
+          <label style={lbl}>{t.certifications}</label>{field("certifications", true, t.placeholderCerts)}
+          <label style={lbl}>{t.projects}</label>{field("projects", true, t.placeholderProjects)}
+          <label style={lbl}>{t.volunteer}</label>{field("volunteer", true, t.placeholderVolunteer)}
+          <label style={lbl}>{t.awards}</label>{field("awards", true, t.placeholderAwards)}
+
+          {/* ── Actions ── */}
+          <div style={{ marginTop: 28, padding: "18px 20px", background: C.elevated,
+            border: `1px solid ${C.border}`, borderRadius: 12,
+            boxShadow: `0 -4px 24px rgba(0,0,0,0.22)` }}>
+            {selectedLang?.code && selectedLang.code !== "en" && (
+              <button onClick={translateCV} disabled={translating || !form.name}
+                style={{ ...cta, marginTop: 0, marginBottom: 10, background: "transparent",
+                  border: `1.5px solid ${C.borderHi}`, color: C.text1,
+                  opacity: (translating || !form.name) ? 0.5 : 1 }}>
+                {translating ? "⏳ Translating…" : `🌍 Translate to ${selectedLang.name}`}
+              </button>
+            )}
+            <button onClick={generate} disabled={loading}
+              style={{ ...cta, marginTop: 0, background: C.grad,
+                opacity: loading ? 0.6 : 1,
+                boxShadow: `0 6px 28px rgba(99,102,241,0.45)` }}>
+              {loading ? t.generating : "✨ " + t.generate}
+            </button>
+            {result && (
+              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                <button onClick={downloadPDF}
+                  style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
+                    alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13,
+                    borderColor: tpl.accent, color: tpl.accent }}>
+                  ↓ PDF
+                </button>
+                <button onClick={downloadDOCX}
+                  style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
+                    alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13,
+                    borderColor: tpl.accent, color: tpl.accent }}>
+                  ↓ DOCX
+                </button>
+              </div>
+            )}
+          </div>
+
+        </div>
+
+        {/* ── Preview column ── */}
+        <div style={{ minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10,
+            marginTop: isMobile ? 24 : 0, flexWrap: "wrap" }}>
+            <span style={{ ...badge, ...(aiPolished ? badgePolished : badgeLive),
+              background: aiPolished ? `${tpl.accent}22` : C.elevated,
+              color: aiPolished ? tpl.accent : C.text2 }}>
+              {aiPolished ? "✦ AI-polished" : "● Live preview"}
+            </span>
+            {result && (
+              <>
+                <button onClick={downloadPDF} style={{ ...dlBtn, borderColor: tpl.accent, color: tpl.accent }}>
+                  ↓ {t.dlPdf}
+                </button>
+                <button onClick={downloadDOCX} style={{ ...dlBtn, borderColor: tpl.accent, color: tpl.accent }}>
+                  ↓ {t.dlDocx}
+                </button>
+              </>
+            )}
+          </div>
+          <div
+            onClick={() => setZoomed(z => !z)}
+            title={zoomed ? undefined : "Click to enlarge"}
+            style={{
+              cursor: zoomed ? "zoom-out" : "zoom-in",
+              ...(zoomed ? {
+                position: "fixed", inset: 0, zIndex: 9000,
+                background: "rgba(0,0,0,0.88)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                padding: "20px", overflowY: "auto",
+              } : { position: "relative", overflowX: "auto" }),
+            }}
+          >
+            {!zoomed && result && (
+              <button onClick={(e) => { e.stopPropagation(); copyOut(); }} style={copyBtn}>
+                {copied ? t.copied : t.copy}
+              </button>
+            )}
+            <div style={zoomed ? { width: "min(780px, 94vw)", maxHeight: "94vh", overflowY: "auto", borderRadius: 8 } : {}}>
+              <ResumePaper tpl={tpl} result={result || liveData} rtl={rtl} placeholder={false} />
+            </div>
+            {zoomed && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setZoomed(false); }}
+                style={{ position: "fixed", top: 14, right: 14, zIndex: 9001,
+                  width: 34, height: 34, borderRadius: "50%", border: `1px solid ${C.border}`,
+                  background: C.surface, color: C.text2, fontSize: 16,
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontFamily: "inherit" }}>
+                ✕
+              </button>
+            )}
           </div>
         </div>
       </div>
+    </div>
   ) : null;
 
   // ── Cover letter helpers ──────────────────────────────────────────
@@ -989,8 +1227,13 @@ Awards: ${form.awards}`;
 
   const coverTemplatesContent = (
     <div style={rShell}>
-      <h1 style={{ ...h1, fontSize: isMobile ? 22 : 30 }}>Cover Letter Templates</h1>
-      <p style={{ ...subtitle, fontSize: isMobile ? 13.5 : 15 }}>Choose a template to start writing your cover letter</p>
+      <PageHeader
+        eyebrow="Cover Letter"
+        icon="✉️"
+        title="Cover Letter Templates"
+        sub="Choose a template to start writing your cover letter."
+        pill={`${COVER_TEMPLATES.length - 1} templates`}
+      />
       <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))" }}>
         {COVER_TEMPLATES.map((tp) => (
           <button key={tp.id} onClick={() => { setCoverTpl(tp); setCoverStep("form"); }}
@@ -1098,20 +1341,19 @@ Awards: ${form.awards}`;
   ];
 
   const ComingSoon = ({ label }) => (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
-      justifyContent: "center", minHeight: 320, gap: 16, color: C.text3, padding: 40 }}>
-      <span style={{ fontSize: 48 }}>🚧</span>
-      <div style={{ fontSize: 22, fontWeight: 700, color: C.text2 }}>{label}</div>
-      <div style={{ fontSize: 14, textAlign: "center", maxWidth: 320, lineHeight: 1.6 }}>
-        This feature is coming soon. Stay tuned for updates!
-      </div>
+    <div style={{ padding: isMobile ? 20 : 40 }}>
+      <PageHeader eyebrow="Coming Soon" icon="🚧" title={label} sub="This feature is on its way. Stay tuned for updates!" />
     </div>
   );
 
   const PricingPage = () => (
     <div style={{ padding: isMobile ? 16 : 32 }}>
-      <h2 style={{ ...h1, fontSize: 26, marginBottom: 4 }}>Plans & Pricing</h2>
-      <p style={{ ...subtitle, marginBottom: 32 }}>Choose the plan that fits your needs.</p>
+      <PageHeader
+        eyebrow="Pricing"
+        icon="💎"
+        title="Plans & Pricing"
+        sub="Start free, upgrade when you're ready. No hidden fees."
+      />
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
         {[
           { name: "Free", price: "$0", period: "forever", color: "#4b5563", features: [
@@ -1170,20 +1412,12 @@ Awards: ${form.awards}`;
 
   const AboutPage = () => (
     <div style={{ padding: isMobile ? 20 : 40, maxWidth: 720 }}>
-      {/* Hero */}
-      <div style={{ marginBottom: 40 }}>
-        <button onClick={() => setAppView("landing")}
-          style={{ background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-            fontSize: isMobile ? 28 : 36, fontWeight: 800, letterSpacing: "-1px",
-            border: "none", cursor: "pointer", padding: 0, display: "block",
-            marginBottom: 12, fontFamily: "inherit" }}>
-          ApplyCraft
-        </button>
-        <p style={{ fontSize: 16, color: C.text2, lineHeight: 1.75, margin: 0, maxWidth: 560 }}>
-          A free, privacy-first tool for building professional resumes and cover letters —
-          no account required, no data stored, no paywalls.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="About"
+        icon="✦"
+        title="About ApplyCraft"
+        sub="A free, privacy-first tool for building professional resumes and cover letters — no account required, no data stored, no paywalls."
+      />
 
       {/* Divider */}
       <div style={{ height: 1, background: C.border, marginBottom: 36 }} />
@@ -1333,13 +1567,56 @@ Awards: ${form.awards}`;
             </div>
           </div>
 
-          <button onClick={() => enter("resume")}
-            style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
-              padding: "10px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
-            Get Started — Free
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+            {currentUser ? (
+              <div ref={userMenuRef} style={{ position: "relative" }}>
+                <button onClick={() => setUserMenuOpen(o => !o)}
+                  style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 12px",
+                    background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8,
+                    cursor: "pointer", fontFamily: "inherit", color: C.text1 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: "50%", background: C.grad,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 12, fontWeight: 800, color: "#fff", flexShrink: 0 }}>
+                    {currentUser.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span style={{ fontSize: 13.5, fontWeight: 600 }}>{currentUser.name}</span>
+                  <span style={{ fontSize: 10, color: C.text3 }}>▾</span>
+                </button>
+                {userMenuOpen && (
+                  <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, minWidth: 180,
+                    background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10,
+                    boxShadow: "0 12px 40px rgba(0,0,0,0.5)", overflow: "hidden", zIndex: 9999 }}>
+                    <div style={{ padding: "12px 16px", borderBottom: `1px solid ${C.border}` }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: C.text1 }}>{currentUser.name}</div>
+                      <div style={{ fontSize: 12, color: C.text3, marginTop: 2 }}>{currentUser.email}</div>
+                    </div>
+                    <button onClick={() => { setCurrentUser(null); setUserMenuOpen(false); }}
+                      style={{ display: "block", width: "100%", padding: "11px 16px", textAlign: "left",
+                        background: "none", border: "none", color: "#f87171", fontSize: 13.5,
+                        fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button onClick={() => { setAuthModalTab("login"); setAuthModal(true); }}
+                style={{ padding: "9px 20px", background: "transparent", border: `1px solid ${C.border}`,
+                  borderRadius: 3, color: C.text1, fontSize: 14, fontWeight: 600,
+                  cursor: "pointer", fontFamily: "inherit", transition: "border-color 0.15s" }}>
+                Sign In
+              </button>
+            )}
+            <button onClick={() => enter("resume")}
+              style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
+                padding: "10px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+              Get Started — Free
+            </button>
+          </div>
           </div>
         </nav>
+        <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)}
+          onLogin={user => { setCurrentUser(user); setAuthModal(false); }} />
 
         {/* Hero */}
         <div style={{ background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${C.glow} 0%, transparent 70%)` }}>
@@ -1824,9 +2101,10 @@ Awards: ${form.awards}`;
       )}
 
       {/* ── Main content ── */}
-      <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: isMobile ? "8px 4px" : "16px 12px" }}>
+      <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: isMobile ? "8px 4px" : "16px 24px" }}>
+        <div style={{ maxWidth: 1320, margin: "0 auto" }}>
 
-        {/* Persistent top bar: language picker */}
+        {/* Persistent top bar: language picker + auth */}
         <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center",
           marginBottom: 10, gap: 8, flexWrap: "wrap" }}>
           <LanguageDropdown
@@ -1836,7 +2114,50 @@ Awards: ${form.awards}`;
               setPhoneCode(LANG_CODE[l.code] || "+1");
             }}
           />
+          {currentUser ? (
+            <div ref={userMenuRef} style={{ position: "relative" }}>
+              <button onClick={() => setUserMenuOpen(o => !o)}
+                style={{ display: "flex", alignItems: "center", gap: 7, padding: "6px 11px",
+                  background: C.surface, border: `1px solid ${C.border}`, borderRadius: 9,
+                  cursor: "pointer", fontFamily: "inherit", color: C.text1 }}>
+                <div style={{ width: 24, height: 24, borderRadius: "50%", background: C.grad,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 11, fontWeight: 800, color: "#fff", flexShrink: 0 }}>
+                  {currentUser.name.charAt(0).toUpperCase()}
+                </div>
+                <span style={{ fontSize: 13, fontWeight: 600, maxWidth: 80, overflow: "hidden",
+                  textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{currentUser.name}</span>
+                <span style={{ fontSize: 9, color: C.text3 }}>▾</span>
+              </button>
+              {userMenuOpen && (
+                <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, minWidth: 180,
+                  background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10,
+                  boxShadow: "0 12px 40px rgba(0,0,0,0.5)", overflow: "hidden", zIndex: 9999 }}>
+                  <div style={{ padding: "11px 14px", borderBottom: `1px solid ${C.border}` }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: C.text1 }}>{currentUser.name}</div>
+                    <div style={{ fontSize: 11.5, color: C.text3, marginTop: 2 }}>{currentUser.email}</div>
+                  </div>
+                  <button onClick={() => { setCurrentUser(null); setUserMenuOpen(false); }}
+                    style={{ display: "block", width: "100%", padding: "10px 14px", textAlign: "left",
+                      background: "none", border: "none", color: "#f87171", fontSize: 13,
+                      fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button onClick={() => { setAuthModalTab("login"); setAuthModal(true); }}
+              style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 13px",
+                background: C.surface, border: `1px solid ${C.border}`, borderRadius: 9,
+                color: C.text1, fontSize: 13.5, fontWeight: 600, cursor: "pointer",
+                fontFamily: "inherit", transition: "border-color 0.15s" }}>
+              Sign In
+            </button>
+          )}
         </div>
+        <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)}
+          onLogin={user => { setCurrentUser(user); setAuthModal(false); }} />
 
         {/* Mobile top bar */}
         {isMobile && (
@@ -1922,6 +2243,375 @@ Awards: ${form.awards}`;
         )}
 
         {pageBody}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── AuthModal ─────────────────────────────────────────────────────
+function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
+  const [tab, setTab] = useState(initialTab);
+  const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
+  const [errors, setErrors] = useState({});
+  const [showPw, setShowPw] = useState(false);
+  const [showCf, setShowCf] = useState(false);
+  const [captchaQ, setCaptchaQ] = useState({ a: 3, b: 7 });
+  const [captchaInput, setCaptchaInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [signupDone, setSignupDone] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setTab(initialTab);
+      setForm({ name: "", email: "", password: "", confirm: "" });
+      setErrors({});
+      setCaptchaInput("");
+      setSignupDone(false);
+      setShowPw(false);
+      setShowCf(false);
+      setCaptchaQ({ a: Math.ceil(Math.random() * 9), b: Math.ceil(Math.random() * 9) });
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (tab === "signup") {
+      setCaptchaQ({ a: Math.ceil(Math.random() * 9), b: Math.ceil(Math.random() * 9) });
+      setCaptchaInput("");
+      setErrors(e => ({ ...e, captcha: "" }));
+    }
+  }, [tab]);
+
+  if (!open) return null;
+
+  const setF = (k) => (e) => {
+    const v = e.target.value;
+    setForm(f => ({ ...f, [k]: v }));
+    if (errors[k]) setErrors(er => ({ ...er, [k]: "" }));
+  };
+
+  function pwStrength(pw) {
+    let s = 0;
+    if (pw.length >= 8) s++;
+    if (/[A-Z]/.test(pw)) s++;
+    if (/[0-9]/.test(pw)) s++;
+    if (/[^a-zA-Z0-9]/.test(pw)) s++;
+    return s;
+  }
+  const strength = pwStrength(form.password);
+  const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][strength];
+  const strengthColor = ["", "#f87171", "#fbbf24", "#34d399", "#4ade80"][strength];
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    const er = {};
+    if (!form.email.trim()) er.email = "Email is required.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) er.email = "Enter a valid email address.";
+    if (!form.password) er.password = "Password is required.";
+    if (Object.keys(er).length) { setErrors(er); return; }
+    setLoading(true);
+    await new Promise(r => setTimeout(r, 900));
+    setLoading(false);
+    onLogin({ email: form.email, name: form.email.split("@")[0] });
+  }
+
+  async function handleSignup(e) {
+    e.preventDefault();
+    const er = {};
+    if (!form.name.trim()) er.name = "Full name is required.";
+    if (!form.email.trim()) er.email = "Email is required.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) er.email = "Enter a valid email address.";
+    if (!form.password) er.password = "Password is required.";
+    else if (form.password.length < 8) er.password = "Must be at least 8 characters.";
+    if (form.confirm !== form.password) er.confirm = "Passwords don't match.";
+    if (!captchaInput.trim()) er.captcha = "Please complete the security check.";
+    else if (parseInt(captchaInput, 10) !== captchaQ.a + captchaQ.b) {
+      er.captcha = "Incorrect answer — try again.";
+      setCaptchaQ({ a: Math.ceil(Math.random() * 9), b: Math.ceil(Math.random() * 9) });
+      setCaptchaInput("");
+    }
+    if (Object.keys(er).length) { setErrors(er); return; }
+    setLoading(true);
+    await new Promise(r => setTimeout(r, 1000));
+    setLoading(false);
+    setSignupDone(true);
+    setTimeout(() => {
+      setSignupDone(false);
+      setTab("login");
+      setForm(f => ({ ...f, password: "", confirm: "" }));
+    }, 2000);
+  }
+
+  const minp = (extra = {}) => ({
+    width: "100%", boxSizing: "border-box", padding: "11px 14px",
+    background: C.elevated, border: `1px solid ${C.border}`,
+    borderRadius: 8, color: C.text1, fontSize: 14, outline: "none",
+    fontFamily: "inherit", transition: "border-color .15s, box-shadow .15s",
+    ...extra,
+  });
+  const mlbl = {
+    display: "block", fontSize: 11.5, fontWeight: 700, color: C.accent2,
+    margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.7px",
+  };
+  const merr = { color: "#f87171", fontSize: 11.5, margin: "5px 0 0", lineHeight: 1.4 };
+
+  const SocialBtn = ({ icon, label }) => (
+    <button type="button" title="Coming soon — social login will be available soon"
+      style={{ display: "flex", alignItems: "center", gap: 10, width: "100%",
+        padding: "10px 14px", background: C.elevated, border: `1px solid ${C.border}`,
+        borderRadius: 8, color: C.text2, fontSize: 13.5, fontWeight: 500, cursor: "not-allowed",
+        fontFamily: "inherit", opacity: 0.6 }}>
+      <span style={{ width: 22, height: 22, borderRadius: 4, background: C.surface,
+        border: `1px solid ${C.border}`, display: "inline-flex", alignItems: "center",
+        justifyContent: "center", fontSize: 13, fontWeight: 800, flexShrink: 0 }}>{icon}</span>
+      {label}
+      <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 700, color: C.text3,
+        background: C.surface, padding: "2px 7px", borderRadius: 999,
+        border: `1px solid ${C.border}`, letterSpacing: "0.3px" }}>Soon</span>
+    </button>
+  );
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 10000, display: "flex",
+      alignItems: "center", justifyContent: "center",
+      background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)", padding: 16 }}
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+
+      <div style={{ width: "100%", maxWidth: 430, background: C.surface,
+        border: `1px solid ${C.border}`, borderRadius: 16,
+        boxShadow: "0 32px 80px rgba(0,0,0,0.7)",
+        animation: "acFadeUp 0.3s cubic-bezier(0.22,1,0.36,1)" }}>
+
+        {/* ── Header ── */}
+        <div style={{ padding: "24px 28px 20px", borderBottom: `1px solid ${C.border}`,
+          display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.5px",
+            background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            ApplyCraft
+          </div>
+          <button onClick={onClose}
+            style={{ width: 30, height: 30, borderRadius: "50%", border: `1px solid ${C.border}`,
+              background: C.elevated, color: C.text2, cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 13, fontFamily: "inherit" }}>✕</button>
+        </div>
+
+        {/* ── Tabs ── */}
+        <div style={{ padding: "16px 28px 0" }}>
+          <div style={{ display: "flex", background: C.elevated, borderRadius: 8,
+            padding: 3, border: `1px solid ${C.border}` }}>
+            {[["login", "Log In"], ["signup", "Create Account"]].map(([id, label]) => (
+              <button key={id} type="button" onClick={() => { setTab(id); setErrors({}); }}
+                style={{ flex: 1, padding: "9px 12px", borderRadius: 6, border: "none",
+                  fontSize: 13.5, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+                  transition: "all 0.18s",
+                  background: tab === id ? C.surface : "transparent",
+                  color: tab === id ? C.text1 : C.text3,
+                  boxShadow: tab === id ? "0 2px 8px rgba(0,0,0,0.35)" : "none" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Body ── */}
+        <div style={{ padding: "20px 28px 28px", overflowY: "auto", maxHeight: "70vh" }}>
+
+          {/* Success state */}
+          {signupDone && (
+            <div style={{ textAlign: "center", padding: "36px 0" }}>
+              <div style={{ fontSize: 44, marginBottom: 14 }}>🎉</div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: "#4ade80", marginBottom: 8 }}>
+                Account created!
+              </div>
+              <div style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.6 }}>
+                Welcome to ApplyCraft. Redirecting you to log in…
+              </div>
+            </div>
+          )}
+
+          {!signupDone && (<>
+
+            {/* Social buttons */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
+              <SocialBtn icon="G" label="Continue with Google" />
+              <SocialBtn icon="f" label="Continue with Facebook" />
+              <SocialBtn icon="in" label="Continue with LinkedIn" />
+            </div>
+
+            {/* Divider */}
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+              <div style={{ flex: 1, height: 1, background: C.border }} />
+              <span style={{ fontSize: 11.5, color: C.text3, fontWeight: 600, letterSpacing: "0.5px" }}>OR</span>
+              <div style={{ flex: 1, height: 1, background: C.border }} />
+            </div>
+
+            {/* ── Login form ── */}
+            {tab === "login" && (
+              <form onSubmit={handleLogin} noValidate>
+                <div style={{ marginBottom: 14 }}>
+                  <label style={mlbl}>Email address</label>
+                  <input type="email" autoComplete="email" value={form.email} onChange={setF("email")}
+                    placeholder="you@example.com"
+                    style={{ ...minp(), ...(errors.email ? { borderColor: "#f87171" } : {}) }}
+                    onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
+                    onBlur={e => { e.target.style.borderColor = errors.email ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
+                  {errors.email && <p style={merr}>{errors.email}</p>}
+                </div>
+                <div style={{ marginBottom: 22 }}>
+                  <label style={mlbl}>Password</label>
+                  <div style={{ position: "relative" }}>
+                    <input type={showPw ? "text" : "password"} autoComplete="current-password"
+                      value={form.password} onChange={setF("password")} placeholder="••••••••"
+                      style={{ ...minp({ paddingRight: 42 }), ...(errors.password ? { borderColor: "#f87171" } : {}) }}
+                      onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
+                      onBlur={e => { e.target.style.borderColor = errors.password ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
+                    <button type="button" onClick={() => setShowPw(v => !v)}
+                      style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
+                        background: "none", border: "none", cursor: "pointer", color: C.text3,
+                        fontSize: 16, padding: 0, lineHeight: 1 }}>{showPw ? "🙈" : "👁"}</button>
+                  </div>
+                  {errors.password && <p style={merr}>{errors.password}</p>}
+                </div>
+                <button type="submit" disabled={loading}
+                  style={{ width: "100%", padding: "13px", background: C.grad, border: "none",
+                    borderRadius: 9, color: "#fff", fontSize: 15, fontWeight: 700,
+                    cursor: loading ? "wait" : "pointer", fontFamily: "inherit",
+                    opacity: loading ? 0.7 : 1,
+                    boxShadow: loading ? "none" : "0 4px 20px rgba(99,102,241,0.45)",
+                    transition: "opacity 0.15s" }}>
+                  {loading ? "Signing in…" : "Log In"}
+                </button>
+                <p style={{ textAlign: "center", fontSize: 13, color: C.text3, margin: "16px 0 0" }}>
+                  No account yet?{" "}
+                  <button type="button" onClick={() => { setTab("signup"); setErrors({}); }}
+                    style={{ color: C.accent2, background: "none", border: "none",
+                      cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700 }}>
+                    Create one free →
+                  </button>
+                </p>
+              </form>
+            )}
+
+            {/* ── Sign up form ── */}
+            {tab === "signup" && (
+              <form onSubmit={handleSignup} noValidate>
+                <div style={{ marginBottom: 14 }}>
+                  <label style={mlbl}>Full Name</label>
+                  <input autoComplete="name" value={form.name} onChange={setF("name")}
+                    placeholder="Jane Doe"
+                    style={{ ...minp(), ...(errors.name ? { borderColor: "#f87171" } : {}) }}
+                    onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
+                    onBlur={e => { e.target.style.borderColor = errors.name ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
+                  {errors.name && <p style={merr}>{errors.name}</p>}
+                </div>
+                <div style={{ marginBottom: 14 }}>
+                  <label style={mlbl}>Email address</label>
+                  <input type="email" autoComplete="email" value={form.email} onChange={setF("email")}
+                    placeholder="you@example.com"
+                    style={{ ...minp(), ...(errors.email ? { borderColor: "#f87171" } : {}) }}
+                    onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
+                    onBlur={e => { e.target.style.borderColor = errors.email ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
+                  {errors.email && <p style={merr}>{errors.email}</p>}
+                </div>
+                <div style={{ marginBottom: 14 }}>
+                  <label style={mlbl}>Password</label>
+                  <div style={{ position: "relative" }}>
+                    <input type={showPw ? "text" : "password"} autoComplete="new-password"
+                      value={form.password} onChange={setF("password")} placeholder="Min. 8 characters"
+                      style={{ ...minp({ paddingRight: 42 }), ...(errors.password ? { borderColor: "#f87171" } : {}) }}
+                      onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
+                      onBlur={e => { e.target.style.borderColor = errors.password ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
+                    <button type="button" onClick={() => setShowPw(v => !v)}
+                      style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
+                        background: "none", border: "none", cursor: "pointer",
+                        color: C.text3, fontSize: 16, padding: 0, lineHeight: 1 }}>{showPw ? "🙈" : "👁"}</button>
+                  </div>
+                  {form.password.length > 0 && (
+                    <div style={{ display: "flex", gap: 4, alignItems: "center", marginTop: 7 }}>
+                      {[1,2,3,4].map(i => (
+                        <div key={i} style={{ flex: 1, height: 4, borderRadius: 999,
+                          background: i <= strength ? strengthColor : C.elevated,
+                          transition: "background 0.22s" }} />
+                      ))}
+                      <span style={{ fontSize: 11, fontWeight: 700, color: strengthColor,
+                        marginLeft: 6, flexShrink: 0, minWidth: 36 }}>{strengthLabel}</span>
+                    </div>
+                  )}
+                  {errors.password && <p style={merr}>{errors.password}</p>}
+                </div>
+                <div style={{ marginBottom: 18 }}>
+                  <label style={mlbl}>Confirm Password</label>
+                  <div style={{ position: "relative" }}>
+                    <input type={showCf ? "text" : "password"} autoComplete="new-password"
+                      value={form.confirm} onChange={setF("confirm")} placeholder="Repeat your password"
+                      style={{ ...minp({ paddingRight: 42 }), ...(errors.confirm ? { borderColor: "#f87171" } : {}) }}
+                      onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
+                      onBlur={e => { e.target.style.borderColor = errors.confirm ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
+                    <button type="button" onClick={() => setShowCf(v => !v)}
+                      style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
+                        background: "none", border: "none", cursor: "pointer",
+                        color: C.text3, fontSize: 16, padding: 0, lineHeight: 1 }}>{showCf ? "🙈" : "👁"}</button>
+                  </div>
+                  {errors.confirm && <p style={merr}>{errors.confirm}</p>}
+                </div>
+
+                {/* CAPTCHA */}
+                <div style={{ marginBottom: 22, padding: "14px 16px",
+                  background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 10 }}>
+                  <div style={{ fontSize: 11, fontWeight: 800, color: C.accent2,
+                    textTransform: "uppercase", letterSpacing: "1px", marginBottom: 10,
+                    display: "flex", alignItems: "center", gap: 6 }}>
+                    <span>🔒</span> Security Check
+                  </div>
+                  <div style={{ fontSize: 12.5, color: C.text2, marginBottom: 10 }}>
+                    Solve this to verify you're human:
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ fontFamily: "monospace", fontSize: 18, fontWeight: 700,
+                      color: C.text1, background: C.surface, padding: "8px 18px",
+                      borderRadius: 8, border: `1px solid ${C.border}`,
+                      letterSpacing: "2px", flexShrink: 0 }}>
+                      {captchaQ.a} + {captchaQ.b} = ?
+                    </div>
+                    <input type="number" inputMode="numeric" value={captchaInput}
+                      onChange={e => { setCaptchaInput(e.target.value); if (errors.captcha) setErrors(er => ({ ...er, captcha: "" })); }}
+                      placeholder="Answer"
+                      style={{ ...minp({ width: 100, flexShrink: 0 }), ...(errors.captcha ? { borderColor: "#f87171" } : {}) }}
+                      onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
+                      onBlur={e => { e.target.style.borderColor = errors.captcha ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
+                  </div>
+                  {errors.captcha && <p style={{ ...merr, marginTop: 8 }}>{errors.captcha}</p>}
+                </div>
+
+                <button type="submit" disabled={loading}
+                  style={{ width: "100%", padding: "13px", background: C.grad, border: "none",
+                    borderRadius: 9, color: "#fff", fontSize: 15, fontWeight: 700,
+                    cursor: loading ? "wait" : "pointer", fontFamily: "inherit",
+                    opacity: loading ? 0.7 : 1,
+                    boxShadow: loading ? "none" : "0 4px 20px rgba(99,102,241,0.45)",
+                    transition: "opacity 0.15s" }}>
+                  {loading ? "Creating account…" : "Create Account — Free"}
+                </button>
+                <p style={{ textAlign: "center", fontSize: 12.5, color: C.text3, margin: "14px 0 0", lineHeight: 1.5 }}>
+                  By creating an account you agree to our{" "}
+                  <span style={{ color: C.text2, textDecoration: "underline", cursor: "pointer" }}>Terms</span>
+                  {" "}and{" "}
+                  <span style={{ color: C.text2, textDecoration: "underline", cursor: "pointer" }}>Privacy Policy</span>.
+                </p>
+                <p style={{ textAlign: "center", fontSize: 13, color: C.text3, margin: "10px 0 0" }}>
+                  Already have an account?{" "}
+                  <button type="button" onClick={() => { setTab("login"); setErrors({}); }}
+                    style={{ color: C.accent2, background: "none", border: "none",
+                      cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700 }}>
+                    Log in →
+                  </button>
+                </p>
+              </form>
+            )}
+
+          </>)}
+        </div>
       </div>
     </div>
   );
@@ -2221,6 +2911,12 @@ function ResumePaper({ tpl, result, rtl, placeholder = true, preview = false }) 
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "32%", background: tpl.accent, color: "#fff", padding: "28px 16px",
             flexShrink: 0 }}>
+            {data.photo && (
+              <div style={{ width: 72, height: 72, borderRadius: "50%", overflow: "hidden",
+                margin: "0 auto 14px", border: "2px solid rgba(255,255,255,0.4)", flexShrink: 0 }}>
+                <img src={data.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
+            )}
             <div style={{ fontSize: 19, fontWeight: 800, lineHeight: 1.2, marginBottom: 4 }}>{data.name}</div>
             <div style={{ fontSize: 11, opacity: 0.72, marginBottom: 18, fontStyle: "italic" }}>{data.title}</div>
             <div style={{ height: 1, background: "rgba(255,255,255,0.22)", marginBottom: 14 }} />
@@ -2360,6 +3056,12 @@ function ResumePaper({ tpl, result, rtl, placeholder = true, preview = false }) 
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "29%", background: tpl.accent + "0F", padding: "28px 16px",
             borderRight: `1px solid ${tpl.accent}22`, flexShrink: 0 }}>
+            {data.photo && (
+              <div style={{ width: 68, height: 68, borderRadius: "50%", overflow: "hidden",
+                margin: "0 auto 14px", border: `2px solid ${tpl.accent}55` }}>
+                <img src={data.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
+            )}
             <div style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a", lineHeight: 1.2, marginBottom: 4 }}>{data.name}</div>
             <div style={{ fontSize: 11.5, color: tpl.accent, marginBottom: 16, fontStyle: "italic" }}>{data.title}</div>
             <div style={{ height: 1, background: tpl.accent + "55", marginBottom: 16 }} />
@@ -2464,10 +3166,14 @@ function ResumePaper({ tpl, result, rtl, placeholder = true, preview = false }) 
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "34%", background: tpl.accent, color: "#fff", padding: "28px 16px",
             flexShrink: 0, display: "flex", flexDirection: "column" }}>
-            <div style={{ width: 54, height: 54, borderRadius: "50%", background: "rgba(255,255,255,0.2)",
+            <div style={{ width: 54, height: 54, borderRadius: "50%", overflow: "hidden",
+              background: "rgba(255,255,255,0.2)", border: "2px solid rgba(255,255,255,0.4)",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 22, fontWeight: 700, marginBottom: 14, flexShrink: 0 }}>
-              {data.name.charAt(0)}
+              {data.photo
+                ? <img src={data.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : data.name.charAt(0)
+              }
             </div>
             <div style={{ fontSize: 17, fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>{data.name}</div>
             <div style={{ fontSize: 10.5, opacity: 0.72, marginBottom: 18, fontStyle: "italic" }}>{data.title}</div>
@@ -2603,6 +3309,12 @@ function ResumePaper({ tpl, result, rtl, placeholder = true, preview = false }) 
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "30%", background: "#0f172a", color: "#fff", padding: "28px 16px",
             flexShrink: 0 }}>
+            {data.photo && (
+              <div style={{ width: 68, height: 68, borderRadius: "50%", overflow: "hidden",
+                margin: "0 auto 14px", border: `2px solid ${tpl.accent}88` }}>
+                <img src={data.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
+            )}
             <div style={{ fontSize: 19, fontWeight: 800, lineHeight: 1.2, marginBottom: 4 }}>{data.name}</div>
             {data.title && <div style={{ fontSize: 11, color: tpl.accent, marginBottom: 18,
               fontWeight: 600, letterSpacing: "0.3px" }}>{data.title}</div>}
@@ -2911,11 +3623,19 @@ function ResumePaper({ tpl, result, rtl, placeholder = true, preview = false }) 
       <div style={paper}>
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ flex: 1, padding: "28px 20px 28px 28px" }}>
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 26, fontWeight: 800, color: "#111", letterSpacing: "-0.3px",
-                lineHeight: 1.1 }}>{data.name}</div>
-              {data.title && <div style={{ fontSize: 12, color: tpl.accent, marginTop: 5,
-                fontWeight: 600 }}>{data.title}</div>}
+            <div style={{ marginBottom: 20, display: "flex", alignItems: "center", gap: 14 }}>
+              {data.photo && (
+                <div style={{ width: 60, height: 60, borderRadius: "50%", overflow: "hidden",
+                  border: `2px solid ${tpl.accent}55`, flexShrink: 0 }}>
+                  <img src={data.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+              )}
+              <div>
+                <div style={{ fontSize: 26, fontWeight: 800, color: "#111", letterSpacing: "-0.3px",
+                  lineHeight: 1.1 }}>{data.name}</div>
+                {data.title && <div style={{ fontSize: 12, color: tpl.accent, marginTop: 5,
+                  fontWeight: 600 }}>{data.title}</div>}
+              </div>
             </div>
             {data.summary && (
               <p style={{ fontSize: 12, lineHeight: 1.7, color: "#555", margin: "0 0 18px",
@@ -3143,11 +3863,14 @@ function ResumePaper({ tpl, result, rtl, placeholder = true, preview = false }) 
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "31%", background: "#1e1e1e", color: "#e4e4e4",
             padding: "28px 16px", flexShrink: 0, display: "flex", flexDirection: "column" }}>
-            <div style={{ width: 44, height: 44, background: tpl.accent + "44",
-              border: `2px solid ${tpl.accent}`, borderRadius: 4,
+            <div style={{ width: 54, height: 54, background: tpl.accent + "44",
+              border: `2px solid ${tpl.accent}`, borderRadius: 4, overflow: "hidden",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 18, fontWeight: 800, color: "#fff", marginBottom: 14, letterSpacing: "-1px" }}>
-              {data.name.split(" ").map(w => w[0]).slice(0, 2).join("")}
+              {data.photo
+                ? <img src={data.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                : data.name.split(" ").map(w => w[0]).slice(0, 2).join("")
+              }
             </div>
             <div style={{ fontSize: 17, fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>{data.name}</div>
             {data.title && <div style={{ fontSize: 10.5, color: tpl.accent, marginBottom: 18 }}>{data.title}</div>}
