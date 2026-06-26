@@ -1051,7 +1051,7 @@ Awards: ${form.awards}`;
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
         {[
           { name: "Free", price: "$0", period: "forever", color: "#4b5563", features: [
-            "1 Resume (live preview)", "5 templates", "PDF & DOCX download", "All languages",
+            "1 Resume (live preview)", "5 templates", "PDF & DOCX download", "50+ languages",
           ], cta: "Get started", active: true },
           { name: "Pro", price: "$9", period: "/ month", color: "#2563eb", features: [
             "Unlimited resumes", "All 8 templates", "Cover letter builder", "Email signature", "AI polish (GPT-4)", "Priority support",
@@ -1116,7 +1116,7 @@ Awards: ${form.awards}`;
     const features = [
       { icon: "📄", title: "9 Resume Templates", desc: "From classic serif to dark terminal — every style covered with FlowCV-quality designs." },
       { icon: "✉️", title: "6 Cover Letter Styles", desc: "Matching letter templates so your application looks cohesive from start to finish." },
-      { icon: "🌍", title: "95+ Languages", desc: "Full RTL support for Arabic, Hebrew, and more. Write your resume in any world language." },
+      { icon: "🌍", title: "50+ Languages", desc: "Full RTL support for Arabic, Hebrew, and more. Create your CV in more than 50 languages." },
       { icon: "⚡", title: "Live Preview", desc: "Every keystroke updates the preview instantly. Download as PDF or DOCX when ready." },
     ];
     return (
@@ -1150,7 +1150,7 @@ Awards: ${form.awards}`;
               letterSpacing: "-2px", margin: "0 0 24px",
               background: "linear-gradient(135deg, #EEF2FF 0%, #94A3B8 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              Create a professional,<br />ATS-friendly CV in any language.
+              Create a professional,<br />ATS-friendly CV in 50+ languages.
             </h1>
             <p style={{ fontSize: "clamp(16px, 2vw, 20px)", color: C.text2, maxWidth: 520,
               margin: "0 auto 44px", lineHeight: 1.65 }}>
