@@ -312,8 +312,8 @@ const SAMPLE_COVER = {
   company: "Stripe", companyAddress: "354 Oyster Point Blvd, South San Francisco, CA",
   subject: "Senior Product Designer Position",
   opening: "Mr. Chen",
-  body: "I am writing to express my strong interest in the Senior Product Designer position at Stripe. With over eight years of experience crafting intuitive digital experiences for high-growth companies, I am confident in my ability to contribute meaningfully to your team.\n\nDuring my tenure at Figma, I led the redesign of the core editor interface, collaborating closely with engineering to ship 12 major features that improved user satisfaction by 40%.",
-  closing: "I am excited about the opportunity to bring my passion for design systems and user-centred thinking to Stripe. Thank you for your time — I look forward to speaking with you.",
+  body: "I am writing to express my strong interest in the Senior Product Designer position at Stripe. With over eight years of experience crafting intuitive digital experiences for high-growth SaaS companies, I am confident in my ability to contribute meaningfully to your world-class design team.\n\nDuring my tenure at Figma, I led the end-to-end redesign of the core editor interface, collaborating closely with engineering and product to ship 12 major features that improved user satisfaction by 40% and reduced onboarding time by nearly a third. I also established a company-wide design system that was adopted by more than 200 engineers across 40 product squads — a project that became a reference implementation for other teams at the company.\n\nPrior to Figma, I spent two years at Airbnb redesigning the host dashboard. By combining in-depth user interviews with rigorous A/B testing, my team reduced host-related support tickets by 41% and lifted listing completion rates from 58% to 83%. These outcomes taught me that great design is not just about aesthetics — it is about deeply understanding the problem and iterating relentlessly until the solution is invisible to the user.\n\nStripe's commitment to developer experience and financial infrastructure resonates strongly with my own design philosophy. I am particularly drawn to the challenge of making complex financial flows feel simple and trustworthy for millions of merchants worldwide.",
+  closing: "I would welcome the opportunity to discuss how my experience in design systems, cross-functional leadership, and data-informed product thinking can help Stripe continue to raise the bar for financial software design. Thank you sincerely for your time and consideration.",
   signoff: "Sincerely",
 };
 
@@ -2408,6 +2408,8 @@ function CoverLetterPaper({ tpl, data: d, preview = false }) {
   const paper = {
     background: "#fff", color: "#1a1a1a",
     borderRadius: preview ? 0 : 8, minHeight: preview ? 0 : 500,
+    maxHeight: preview ? 906 : undefined,
+    padding: preview ? 12 : 0,
     fontFamily: tpl.font, overflow: "hidden",
     boxShadow: preview ? "none" : "0 8px 30px rgba(0,0,0,0.35)",
     width: "100%", boxSizing: "border-box",
