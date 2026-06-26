@@ -441,6 +441,7 @@ export default function ResumeGenerator() {
   const [phoneCode, setPhoneCode] = useState(() => LANG_CODE[selectedLang?.code] || "+1");
   const [zoomed, setZoomed] = useState(false);
   const [aiPolished, setAiPolished] = useState(false);
+  const [translating, setTranslating] = useState(false);
   const [appView, setAppView] = useState("landing");
   const [coverStep, setCoverStep] = useState("templates");
   const [coverTpl, setCoverTpl] = useState(null);
@@ -483,6 +484,34 @@ export default function ResumeGenerator() {
   function onPhoneChange(e) {
     setForm({ ...form, phone: e.target.value });
     if (phoneError) setPhoneError(validatePhone(e.target.value));
+  }
+
+  async function translateCV() {
+    if (!form.name || translating) return;
+    const langCode = selectedLang?.code || "en";
+    if (langCode === "en") return;
+    setTranslating(true);
+    try {
+      const tx = async (text) => {
+        if (!text?.trim()) return text;
+        const r = await fetch(
+          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.slice(0, 500))}&langpair=en|${langCode}`
+        );
+        const d = await r.json();
+        return d.responseData?.translatedText || text;
+      };
+      const fields = ["jobTitle", "summary", "experience", "education", "skills",
+        "certifications", "projects", "volunteer", "awards"];
+      const translated = { ...form };
+      for (const key of fields) {
+        if (form[key]?.trim()) translated[key] = await tx(form[key]);
+      }
+      setForm(translated);
+    } catch {
+      // silently fail — user keeps original
+    } finally {
+      setTranslating(false);
+    }
   }
 
   async function generate() {
@@ -824,6 +853,13 @@ Awards: ${form.awards}`;
             <label style={lbl}>{t.projects}</label>{field("projects", true, t.placeholderProjects)}
             <label style={lbl}>{t.volunteer}</label>{field("volunteer", true, t.placeholderVolunteer)}
             <label style={lbl}>{t.awards}</label>{field("awards", true, t.placeholderAwards)}
+            {selectedLang?.code && selectedLang.code !== "en" && (
+              <button onClick={translateCV} disabled={translating || !form.name}
+                style={{ ...cta, background: "transparent", border: `1.5px solid ${C.borderHi}`,
+                  color: C.text1, marginBottom: 10, opacity: (translating || !form.name) ? 0.5 : 1 }}>
+                {translating ? "⏳ Translating…" : `🌍 Translate content to ${selectedLang.name}`}
+              </button>
+            )}
             <button onClick={generate} disabled={loading || !form.name} style={{ ...cta, background: C.grad, opacity: (loading || !form.name) ? 0.6 : 1 }}>
               {loading ? t.generating : t.generate}
             </button>
@@ -1331,19 +1367,44 @@ Awards: ${form.awards}`;
           </div>
         </div>
 
-        {/* Features */}
+        {/* Multilingual superpowers */}
         <div style={{ borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`,
-          background: C.surface, padding: "60px 24px 80px" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-            <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-              letterSpacing: "2px", color: C.text3, marginBottom: 48 }}>Everything you need</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 24, justifyContent: "center" }}>
-              {features.map((f, i) => (
-                <div key={i} style={{ background: C.elevated, border: `1px solid ${C.border}`,
-                  borderRadius: 12, padding: "24px 22px", flex: "1 1 220px", maxWidth: 280 }}>
-                  <div style={{ fontSize: 28, marginBottom: 14 }}>{f.icon}</div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: C.text1, marginBottom: 8 }}>{f.title}</div>
-                  <div style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.65 }}>{f.desc}</div>
+          background: C.surface, padding: "72px 24px 80px" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <div style={{ textAlign: "center", marginBottom: 56 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
+                letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>Multilingual superpowers</p>
+              <h2 style={{ fontSize: "clamp(24px, 3.5vw, 40px)", fontWeight: 800, letterSpacing: "-1px",
+                color: C.text1, margin: "0 0 16px" }}>Built for the global job market</h2>
+              <p style={{ fontSize: 15.5, color: C.text2, maxWidth: 520, margin: "0 auto", lineHeight: 1.7 }}>
+                The only resume builder designed from the ground up for multilingual job seekers and international careers.
+              </p>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
+              {[
+                { icon: "🌍", title: "Create a CV in 50+ languages", desc: "Switch the full interface and document language with one click. Every label, date format, and section adapts automatically.", live: true },
+                { icon: "🔄", title: "Translate an existing CV", desc: "Paste your CV and translate all content to a new language instantly — no rebuilding from scratch.", live: true },
+                { icon: "🖋️", title: "Preserve formatting during translation", desc: "Your layout, template, and design stay pixel-perfect after translation. Only the words change.", live: true },
+                { icon: "🗺️", title: "Adapt terminology to the target country", desc: "Job titles, section headings, and professional terms are localised to match expectations in the destination country.", soon: true },
+                { icon: "✨", title: "Localised titles & summaries", desc: "AI generates job-market-appropriate titles and professional summaries in the target language.", soon: true },
+                { icon: "↔️", title: "Full right-to-left support", desc: "Arabic, Hebrew, Farsi and other RTL languages render with correct alignment, mirroring, and typography.", live: true },
+                { icon: "✅", title: "Grammar & spelling check", desc: "Automatic grammar and spelling verification in the selected language before you download.", soon: true },
+                { icon: "📦", title: "Export in multiple languages", desc: "Download the same CV as separate PDFs in English, French, Spanish — one click per language.", soon: true },
+                { icon: "📝", title: "Multilingual cover letters", desc: "Generate a matching cover letter in any language with the same formatting as your resume.", live: true },
+                { icon: "🎯", title: "Tailor to a job description", desc: "Paste a job posting and the AI rewrites your CV to match keywords and requirements in any language.", soon: true },
+              ].map((f) => (
+                <div key={f.title} style={{ background: C.elevated, border: `1px solid ${C.border}`,
+                  borderRadius: 14, padding: "22px 20px", position: "relative",
+                  opacity: f.soon ? 0.75 : 1 }}>
+                  {f.soon && (
+                    <span style={{ position: "absolute", top: 14, right: 14, fontSize: 9.5, fontWeight: 700,
+                      textTransform: "uppercase", letterSpacing: "1px", color: C.accent2,
+                      background: `${C.accent}22`, border: `1px solid ${C.accent}44`,
+                      borderRadius: 999, padding: "2px 8px" }}>Soon</span>
+                  )}
+                  <div style={{ fontSize: 26, marginBottom: 10 }}>{f.icon}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: C.text1, marginBottom: 6 }}>{f.title}</div>
+                  <div style={{ fontSize: 13, color: C.text2, lineHeight: 1.65 }}>{f.desc}</div>
                 </div>
               ))}
             </div>
