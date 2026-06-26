@@ -813,47 +813,6 @@ Awards: ${form.awards}`;
     URL.revokeObjectURL(url);
   }
 
-  const mainContent = step === "templates" ? (
-    <div style={{ ...rShell }}>
-      <PageHeader
-        eyebrow="Resume Builder"
-        icon="📄"
-        title={t.heading}
-        sub={t.chooseTpl}
-        pill={`${TEMPLATES.length - 1} templates`}
-      />
-      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))" }}>
-        {TEMPLATES.map((tp) => (
-          <button key={tp.id} onClick={() => { setTpl(tp); setStep("form"); }}
-            style={tplCard}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
-            <ThumbPreview tp={tp} isMobile={isMobile} />
-            <div style={{ padding: isMobile ? "8px 10px" : "10px 4px", textAlign: rtl ? "right" : "left",
-              visibility: tp.blank ? "hidden" : "visible" }}>
-              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 14, color: C.text1 }}>{tp.name}</div>
-              <div style={{ fontSize: isMobile ? 11 : 12, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
-            </div>
-          </button>
-        ))}
-      </div>
-    </div>
-  ) : null;
-
-  const field = (key, multiline, ph) =>
-    multiline ? (
-      <textarea value={form[key]} onChange={set(key)} placeholder={ph || ""} rows={5}
-        style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit" }} />
-    ) : (
-      <input value={form[key]} onChange={set(key)} placeholder={ph || ""} style={inputStyle} />
-    );
-
-  // Form completion tracker
-  const trackFields = ["name","title","email","phone","location","linkedin","website","summary","experience","education","skills","languages","certifications","projects","volunteer","awards"];
-  const filledCount = trackFields.filter(k => form[k]?.trim()).length + (photoUrl ? 1 : 0);
-  const totalCount  = trackFields.length + 1;
-  const completion  = Math.round(filledCount / totalCount * 100);
-
   const PageHeader = ({ eyebrow, icon, title, sub, pill }) => (
     <div style={{ marginBottom: 28 }}>
       <div style={{ display: "inline-flex", alignItems: "center", gap: 7,
@@ -903,6 +862,47 @@ Awards: ${form.awards}`;
       })}
     </div>
   );
+
+  const mainContent = step === "templates" ? (
+    <div style={{ ...rShell }}>
+      <PageHeader
+        eyebrow="Resume Builder"
+        icon="📄"
+        title={t.heading}
+        sub={t.chooseTpl}
+        pill={`${TEMPLATES.length - 1} templates`}
+      />
+      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))" }}>
+        {TEMPLATES.map((tp) => (
+          <button key={tp.id} onClick={() => { setTpl(tp); setStep("form"); }}
+            style={tplCard}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
+            <ThumbPreview tp={tp} isMobile={isMobile} />
+            <div style={{ padding: isMobile ? "8px 10px" : "10px 4px", textAlign: rtl ? "right" : "left",
+              visibility: tp.blank ? "hidden" : "visible" }}>
+              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 14, color: C.text1 }}>{tp.name}</div>
+              <div style={{ fontSize: isMobile ? 11 : 12, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  ) : null;
+
+  const field = (key, multiline, ph) =>
+    multiline ? (
+      <textarea value={form[key]} onChange={set(key)} placeholder={ph || ""} rows={5}
+        style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit" }} />
+    ) : (
+      <input value={form[key]} onChange={set(key)} placeholder={ph || ""} style={inputStyle} />
+    );
+
+  // Form completion tracker
+  const trackFields = ["name","title","email","phone","location","linkedin","website","summary","experience","education","skills","languages","certifications","projects","volunteer","awards"];
+  const filledCount = trackFields.filter(k => form[k]?.trim()).length + (photoUrl ? 1 : 0);
+  const totalCount  = trackFields.length + 1;
+  const completion  = Math.round(filledCount / totalCount * 100);
 
   const formContent = tpl ? (
     <div style={{ ...rShell, display: "flex", flexDirection: "column", height: "100%",
