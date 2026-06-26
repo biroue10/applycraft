@@ -421,6 +421,7 @@ export default function ResumeGenerator() {
   const [phoneCode, setPhoneCode] = useState(() => LANG_CODE[selectedLang?.code] || "+1");
   const [zoomed, setZoomed] = useState(false);
   const [aiPolished, setAiPolished] = useState(false);
+  const [appView, setAppView] = useState("landing");
   const [coverStep, setCoverStep] = useState("templates");
   const [coverTpl, setCoverTpl] = useState(null);
   const [coverForm, setCoverForm] = useState({
@@ -1104,6 +1105,131 @@ Awards: ${form.awards}`;
   else if (navPage === "cover") pageBody = coverStep === "form" ? (coverFormContent || coverTemplatesContent) : coverTemplatesContent;
   else if (navPage === "pricing") pageBody = <PricingPage />;
   else pageBody = <ComingSoon label={NAV.find(n => n.id === navPage)?.label || ""} />;
+
+  // ── Landing page ──────────────────────────────────────────────────
+  if (appView === "landing") {
+    const enter = (page) => { setNavPage(page); setAppView("app"); };
+    const features = [
+      { icon: "📄", title: "9 Resume Templates", desc: "From classic serif to dark terminal — every style covered with FlowCV-quality designs." },
+      { icon: "✉️", title: "6 Cover Letter Styles", desc: "Matching letter templates so your application looks cohesive from start to finish." },
+      { icon: "🌍", title: "95+ Languages", desc: "Full RTL support for Arabic, Hebrew, and more. Write your resume in any world language." },
+      { icon: "⚡", title: "Live Preview", desc: "Every keystroke updates the preview instantly. Download as PDF or DOCX when ready." },
+    ];
+    return (
+      <div style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", overflowX: "hidden" }}>
+        {/* Nav */}
+        <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "0 clamp(20px, 5vw, 80px)", height: 64, borderBottom: `1px solid ${C.border}`,
+          position: "sticky", top: 0, zIndex: 100, background: C.bg + "ee", backdropFilter: "blur(12px)" }}>
+          <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.5px",
+            background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            ApplyCraft
+          </div>
+          <button onClick={() => enter("resume")}
+            style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
+              padding: "8px 20px", fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>
+            Get Started — Free
+          </button>
+        </nav>
+
+        {/* Hero */}
+        <div style={{ textAlign: "center", padding: "90px clamp(20px, 6vw, 120px) 80px",
+          background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${C.glow} 0%, transparent 70%)` }}>
+          <div style={{ display: "inline-block", fontSize: 12, fontWeight: 600, letterSpacing: "2px",
+            textTransform: "uppercase", color: C.accent2, background: `${C.accent}18`,
+            border: `1px solid ${C.accent}44`, borderRadius: 999, padding: "4px 14px", marginBottom: 28 }}>
+            Free · No sign-up required
+          </div>
+          <h1 style={{ fontSize: "clamp(36px, 6vw, 72px)", fontWeight: 800, lineHeight: 1.1,
+            letterSpacing: "-2px", margin: "0 0 24px",
+            background: "linear-gradient(135deg, #EEF2FF 0%, #94A3B8 100%)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            Resumes that get<br />you the interview
+          </h1>
+          <p style={{ fontSize: "clamp(16px, 2vw, 20px)", color: C.text2, maxWidth: 540,
+            margin: "0 auto 44px", lineHeight: 1.65 }}>
+            Build a professional resume and matching cover letter in minutes.
+            9 templates, live preview, PDF & DOCX download.
+          </p>
+          <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+            <button onClick={() => enter("resume")}
+              style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
+                padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer",
+                boxShadow: "0 4px 24px rgba(99,102,241,0.4)" }}>
+              Build My Resume →
+            </button>
+            <button onClick={() => enter("cover")}
+              style={{ background: "transparent", color: C.text1, border: `1.5px solid ${C.borderHi}`,
+                borderRadius: 10, padding: "14px 32px", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+              Write Cover Letter
+            </button>
+          </div>
+        </div>
+
+        {/* Template strip */}
+        <div style={{ padding: "0 clamp(20px, 5vw, 80px) 80px" }}>
+          <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase",
+            letterSpacing: "2px", color: C.text3, marginBottom: 28 }}>9 professional templates</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
+            {TEMPLATES.filter(t => !t.blank).slice(0, 8).map((tp) => (
+              <button key={tp.id} onClick={() => enter("resume")}
+                style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8,
+                  overflow: "hidden", cursor: "pointer", padding: 0, transition: "border-color .2s, transform .15s",
+                  fontFamily: "inherit" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = tp.accent; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.transform = "none"; }}>
+                <ThumbPreview tp={tp} isMobile={true} />
+                <div style={{ padding: "8px 10px", textAlign: "left" }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: C.text1 }}>{tp.name}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Features */}
+        <div style={{ padding: "60px clamp(20px, 5vw, 80px) 80px",
+          borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`,
+          background: C.surface }}>
+          <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase",
+            letterSpacing: "2px", color: C.text3, marginBottom: 48 }}>Everything you need</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 24 }}>
+            {features.map((f, i) => (
+              <div key={i} style={{ background: C.elevated, border: `1px solid ${C.border}`,
+                borderRadius: 12, padding: "24px 22px" }}>
+                <div style={{ fontSize: 28, marginBottom: 14 }}>{f.icon}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: C.text1, marginBottom: 8 }}>{f.title}</div>
+                <div style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.65 }}>{f.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Final CTA */}
+        <div style={{ textAlign: "center", padding: "80px clamp(20px, 5vw, 80px)" }}>
+          <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: "-1px",
+            margin: "0 0 16px", color: C.text1 }}>Start building for free</h2>
+          <p style={{ fontSize: 16, color: C.text2, margin: "0 0 36px" }}>
+            No account needed. Download your resume in seconds.
+          </p>
+          <button onClick={() => enter("resume")}
+            style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
+              padding: "16px 40px", fontSize: 16, fontWeight: 700, cursor: "pointer",
+              boxShadow: "0 4px 24px rgba(99,102,241,0.35)" }}>
+            Build My Resume — It's Free
+          </button>
+        </div>
+
+        {/* Footer */}
+        <div style={{ borderTop: `1px solid ${C.border}`, padding: "24px clamp(20px, 5vw, 80px)",
+          display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, background: C.grad,
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ApplyCraft</div>
+          <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft · applycraft.io</div>
+        </div>
+      </div>
+    );
+  }
 
   const sbW = sidebarOpen ? 224 : 56;
 
