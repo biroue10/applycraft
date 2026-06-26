@@ -579,7 +579,7 @@ Awards: ${form.awards}`;
       <input value={form[key]} onChange={set(key)} placeholder={ph || ""} style={inputStyle} />
     );
 
-  const formContent = (
+  const formContent = tpl ? (
     <div style={rShell}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
         marginBottom: 20, gap: 12, flexWrap: "wrap" }}>
@@ -710,7 +710,7 @@ Awards: ${form.awards}`;
         </div>
         <PageFooter t={t} />
       </div>
-  );
+  ) : null;
 
   // ── Sidebar nav items ──────────────────────────────────────────────
   const NAV = [
@@ -786,7 +786,7 @@ Awards: ${form.awards}`;
   );
 
   let pageBody;
-  if (navPage === "resume") pageBody = mainContent || formContent;
+  if (navPage === "resume") pageBody = step === "form" ? (formContent || mainContent) : mainContent;
   else if (navPage === "pricing") pageBody = <PricingPage />;
   else pageBody = <ComingSoon label={NAV.find(n => n.id === navPage)?.label || ""} />;
 
