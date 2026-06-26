@@ -16,6 +16,9 @@ const UI = {
     heading: "Resume generator", sub: "Choose a language and template, add your details, get a polished resume.",
     copy: "Copy", copied: "Copied", chooseTpl: "Choose a template", back: "Back",
     dlPdf: "Download PDF", dlDocx: "Download DOCX",
+    linkedin: "LinkedIn", website: "Website / Portfolio",
+    certifications: "Certifications", languages: "Languages (comma separated)",
+    projects: "Projects", volunteer: "Volunteer Work", awards: "Awards & Achievements",
     placeholderEx: "Role, company, dates, what you did — one per line", madeBy: "Built by",
     placeholderName: "e.g. Jane Doe", placeholderTitle: "e.g. Software Engineer",
     placeholderEmail: "you@example.com", placeholderPhone: "e.g. 712 345 678",
@@ -23,6 +26,13 @@ const UI = {
     placeholderSummary: "A short paragraph about your background and goals…",
     placeholderEducation: "Degree, institution, year — one per line",
     placeholderSkills: "JavaScript, React, Node.js, …",
+    placeholderLinkedin: "https://linkedin.com/in/yourname",
+    placeholderWebsite: "https://yourportfolio.com",
+    placeholderCerts: "AWS Certified Developer, 2024 — one per line",
+    placeholderLanguages: "English (Fluent), French (Intermediate)",
+    placeholderProjects: "Project name — tech used — what it achieved, one per line",
+    placeholderVolunteer: "Role, organisation, dates — one per line",
+    placeholderAwards: "Award name, issuer, year — one per line",
     emailError: "Please enter a valid email address",
     phoneError: "Invalid number", phoneDigits: "digits required" },
   fr: { name: "Nom complet", title: "Titre professionnel", email: "E-mail", phone: "Téléphone",
@@ -31,6 +41,9 @@ const UI = {
     heading: "Générateur de CV", sub: "Choisissez une langue et un modèle, ajoutez vos infos, obtenez un CV soigné.",
     copy: "Copier", copied: "Copié", chooseTpl: "Choisissez un modèle", back: "Retour",
     dlPdf: "Télécharger PDF", dlDocx: "Télécharger DOCX",
+    linkedin: "LinkedIn", website: "Site web / Portfolio",
+    certifications: "Certifications", languages: "Langues (séparées par des virgules)",
+    projects: "Projets", volunteer: "Bénévolat", awards: "Récompenses & Réalisations",
     placeholderEx: "Poste, entreprise, dates, missions — une par ligne", madeBy: "Créé par",
     placeholderName: "ex. Jean Dupont", placeholderTitle: "ex. Ingénieur logiciel",
     placeholderEmail: "vous@exemple.com", placeholderPhone: "ex. 06 12 34 56 78",
@@ -38,6 +51,13 @@ const UI = {
     placeholderSummary: "Un court paragraphe sur votre parcours et vos objectifs…",
     placeholderEducation: "Diplôme, établissement, année — un par ligne",
     placeholderSkills: "JavaScript, React, Node.js, …",
+    placeholderLinkedin: "https://linkedin.com/in/votrenom",
+    placeholderWebsite: "https://votresite.com",
+    placeholderCerts: "Certification AWS, 2024 — une par ligne",
+    placeholderLanguages: "Français (Natif), Anglais (Courant)",
+    placeholderProjects: "Nom du projet — technologies — résultat, une par ligne",
+    placeholderVolunteer: "Rôle, organisation, dates — une par ligne",
+    placeholderAwards: "Nom du prix, organisme, année — une par ligne",
     emailError: "Veuillez saisir une adresse e-mail valide",
     phoneError: "Numéro invalide", phoneDigits: "chiffres requis" },
   es: { name: "Nombre completo", title: "Título profesional", email: "Correo", phone: "Teléfono",
@@ -46,6 +66,9 @@ const UI = {
     heading: "Generador de currículums", sub: "Elige idioma y plantilla, añade tus datos y obtén un currículum pulido.",
     copy: "Copiar", copied: "Copiado", chooseTpl: "Elige una plantilla", back: "Volver",
     dlPdf: "Descargar PDF", dlDocx: "Descargar DOCX",
+    linkedin: "LinkedIn", website: "Sitio web / Portafolio",
+    certifications: "Certificaciones", languages: "Idiomas (separados por comas)",
+    projects: "Proyectos", volunteer: "Voluntariado", awards: "Premios & Logros",
     placeholderEx: "Puesto, empresa, fechas, qué hiciste — uno por línea", madeBy: "Creado por",
     placeholderName: "ej. Juan García", placeholderTitle: "ej. Ingeniero de software",
     placeholderEmail: "tu@ejemplo.com", placeholderPhone: "ej. 612 345 678",
@@ -53,6 +76,13 @@ const UI = {
     placeholderSummary: "Un breve párrafo sobre tu trayectoria y objetivos…",
     placeholderEducation: "Título, institución, año — uno por línea",
     placeholderSkills: "JavaScript, React, Node.js, …",
+    placeholderLinkedin: "https://linkedin.com/in/tunombre",
+    placeholderWebsite: "https://tuportafolio.com",
+    placeholderCerts: "AWS Certified Developer, 2024 — uno por línea",
+    placeholderLanguages: "Español (Nativo), Inglés (Avanzado)",
+    placeholderProjects: "Nombre del proyecto — tecnologías — logro, uno por línea",
+    placeholderVolunteer: "Rol, organización, fechas — uno por línea",
+    placeholderAwards: "Premio, organización, año — uno por línea",
     emailError: "Introduce un correo electrónico válido",
     phoneError: "Número inválido", phoneDigits: "dígitos requeridos" },
   ar: { name: "الاسم الكامل", title: "المسمى الوظيفي", email: "البريد", phone: "الهاتف",
@@ -61,6 +91,9 @@ const UI = {
     heading: "منشئ السيرة الذاتية", sub: "اختر لغة وقالباً، أضف بياناتك، واحصل على سيرة ذاتية متقنة.",
     copy: "نسخ", copied: "تم النسخ", chooseTpl: "اختر قالباً", back: "رجوع",
     dlPdf: "تحميل PDF", dlDocx: "تحميل DOCX",
+    linkedin: "لينكدإن", website: "الموقع / المحفظة",
+    certifications: "الشهادات", languages: "اللغات (مفصولة بفواصل)",
+    projects: "المشاريع", volunteer: "العمل التطوعي", awards: "الجوائز والإنجازات",
     placeholderEx: "المنصب، الشركة، التواريخ، مهامك — واحدة في كل سطر", madeBy: "من إبداع",
     placeholderName: "مثال: أحمد محمد", placeholderTitle: "مثال: مهندس برمجيات",
     placeholderEmail: "you@example.com", placeholderPhone: "مثال: 06 12 34 56 78",
@@ -68,6 +101,13 @@ const UI = {
     placeholderSummary: "فقرة قصيرة عن خلفيتك وأهدافك المهنية…",
     placeholderEducation: "الدرجة العلمية، المؤسسة، السنة — سطر لكل إدخال",
     placeholderSkills: "جافاسكريبت، رياكت، نود.جي إس، …",
+    placeholderLinkedin: "https://linkedin.com/in/اسمك",
+    placeholderWebsite: "https://موقعك.com",
+    placeholderCerts: "شهادة AWS، 2024 — سطر لكل شهادة",
+    placeholderLanguages: "العربية (الأم)، الإنجليزية (متقدم)",
+    placeholderProjects: "اسم المشروع — التقنيات — النتيجة، سطر لكل مشروع",
+    placeholderVolunteer: "الدور، المنظمة، التواريخ — سطر لكل إدخال",
+    placeholderAwards: "اسم الجائزة، المانح، السنة — سطر لكل إدخال",
     emailError: "يرجى إدخال عنوان بريد إلكتروني صحيح",
     phoneError: "رقم غير صحيح", phoneDigits: "أرقام مطلوبة" },
   de: { name: "Vollständiger Name", title: "Berufsbezeichnung", email: "E-Mail", phone: "Telefon",
@@ -76,6 +116,9 @@ const UI = {
     heading: "Lebenslauf-Generator", sub: "Sprache und Vorlage wählen, Daten eingeben, gepflegten Lebenslauf erhalten.",
     copy: "Kopieren", copied: "Kopiert", chooseTpl: "Vorlage wählen", back: "Zurück",
     dlPdf: "PDF herunterladen", dlDocx: "DOCX herunterladen",
+    linkedin: "LinkedIn", website: "Website / Portfolio",
+    certifications: "Zertifizierungen", languages: "Sprachen (durch Kommas getrennt)",
+    projects: "Projekte", volunteer: "Ehrenamtliche Arbeit", awards: "Auszeichnungen & Leistungen",
     placeholderEx: "Position, Firma, Zeitraum, Aufgaben — eine pro Zeile", madeBy: "Erstellt von",
     placeholderName: "z.B. Hans Müller", placeholderTitle: "z.B. Softwareentwickler",
     placeholderEmail: "du@beispiel.de", placeholderPhone: "z.B. 170 1234567",
@@ -83,6 +126,13 @@ const UI = {
     placeholderSummary: "Ein kurzer Absatz über deinen Werdegang und deine Ziele…",
     placeholderEducation: "Abschluss, Einrichtung, Jahr — eine pro Zeile",
     placeholderSkills: "JavaScript, React, Node.js, …",
+    placeholderLinkedin: "https://linkedin.com/in/deinname",
+    placeholderWebsite: "https://deinewebsite.de",
+    placeholderCerts: "AWS Certified Developer, 2024 — eine pro Zeile",
+    placeholderLanguages: "Deutsch (Muttersprache), Englisch (Fließend)",
+    placeholderProjects: "Projektname — Technologien — Ergebnis, eine pro Zeile",
+    placeholderVolunteer: "Rolle, Organisation, Zeitraum — eine pro Zeile",
+    placeholderAwards: "Auszeichnung, Aussteller, Jahr — eine pro Zeile",
     emailError: "Bitte eine gültige E-Mail-Adresse eingeben",
     phoneError: "Ungültige Nummer", phoneDigits: "Ziffern erforderlich" },
 };
@@ -183,15 +233,21 @@ function useIsMobile(bp = 768) {
 // Build resume data straight from the form so the preview updates as the user types.
 function buildLiveData(form, t) {
   const lines = (s) => s.split("\n").map((x) => x.trim()).filter(Boolean);
-  const csv = (s) => s.split(",").map((x) => x.trim()).filter(Boolean);
+  const csv   = (s) => s.split(",").map((x) => x.trim()).filter(Boolean);
+  const label = (key) => t[key].replace(/\s*\(.*\)/, "");
   const sections = [];
-  if (form.experience.trim()) sections.push({ heading: t.experience, items: lines(form.experience) });
-  if (form.education.trim())  sections.push({ heading: t.education,  items: lines(form.education) });
-  if (form.skills.trim())     sections.push({ heading: t.skills.replace(/\s*\(.*\)/, ""), items: csv(form.skills) });
+  if (form.experience.trim())    sections.push({ heading: t.experience,           items: lines(form.experience) });
+  if (form.education.trim())     sections.push({ heading: t.education,            items: lines(form.education) });
+  if (form.skills.trim())        sections.push({ heading: label("skills"),        items: csv(form.skills) });
+  if (form.certifications.trim())sections.push({ heading: t.certifications,       items: lines(form.certifications) });
+  if (form.projects.trim())      sections.push({ heading: t.projects,             items: lines(form.projects) });
+  if (form.languages.trim())     sections.push({ heading: label("languages"),     items: csv(form.languages) });
+  if (form.volunteer.trim())     sections.push({ heading: t.volunteer,            items: lines(form.volunteer) });
+  if (form.awards.trim())        sections.push({ heading: t.awards,               items: lines(form.awards) });
   return {
     name: form.name || "—",
     title: form.title || "",
-    contact: [form.email, form.phone, form.location].filter(Boolean),
+    contact: [form.email, form.phone, form.location, form.linkedin, form.website].filter(Boolean),
     summary: form.summary || "",
     sections,
   };
@@ -203,7 +259,9 @@ export default function ResumeGenerator() {
   const [tpl, setTpl] = useState(null);
   const [form, setForm] = useState({
     name: "", title: "", email: "", phone: "", location: "",
+    linkedin: "", website: "",
     summary: "", experience: "", education: "", skills: "",
+    certifications: "", languages: "", projects: "", volunteer: "", awards: "",
   });
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -267,10 +325,17 @@ Title: ${form.title}
 Email: ${form.email}
 Phone: ${fullPhone}
 Location: ${form.location}
+LinkedIn: ${form.linkedin}
+Website: ${form.website}
 About: ${form.summary}
 Experience: ${form.experience}
 Education: ${form.education}
-Skills: ${form.skills}`;
+Skills: ${form.skills}
+Certifications: ${form.certifications}
+Projects: ${form.projects}
+Languages: ${form.languages}
+Volunteer: ${form.volunteer}
+Awards: ${form.awards}`;
 
     try {
       const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -552,11 +617,34 @@ Skills: ${form.skills}`;
                 {phoneError && <p style={fieldErr}>{phoneError}</p>}
               </div>
             </div>
+            <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
+              <div style={{ flex: 1 }}>
+                <label style={lbl}>{t.linkedin}</label>
+                {field("linkedin", false, t.placeholderLinkedin)}
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={lbl}>{t.website}</label>
+                {field("website", false, t.placeholderWebsite)}
+              </div>
+            </div>
             <label style={lbl}>{t.location}</label>{field("location", false, t.placeholderLocation)}
             <label style={lbl}>{t.summary}</label>{field("summary", true, t.placeholderSummary)}
             <label style={lbl}>{t.experience}</label>{field("experience", true, t.placeholderEx)}
             <label style={lbl}>{t.education}</label>{field("education", true, t.placeholderEducation)}
-            <label style={lbl}>{t.skills}</label>{field("skills", false, t.placeholderSkills)}
+            <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
+              <div style={{ flex: 1 }}>
+                <label style={lbl}>{t.skills}</label>
+                {field("skills", false, t.placeholderSkills)}
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={lbl}>{t.languages}</label>
+                {field("languages", false, t.placeholderLanguages)}
+              </div>
+            </div>
+            <label style={lbl}>{t.certifications}</label>{field("certifications", true, t.placeholderCerts)}
+            <label style={lbl}>{t.projects}</label>{field("projects", true, t.placeholderProjects)}
+            <label style={lbl}>{t.volunteer}</label>{field("volunteer", true, t.placeholderVolunteer)}
+            <label style={lbl}>{t.awards}</label>{field("awards", true, t.placeholderAwards)}
             <button onClick={generate} disabled={loading || !form.name} style={{ ...cta, background: tpl.accent }}>
               {loading ? t.generating : t.generate}
             </button>
