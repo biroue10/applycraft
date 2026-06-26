@@ -1282,12 +1282,6 @@ Awards: ${form.awards}`;
   // ── Landing page ──────────────────────────────────────────────────
   if (appView === "landing") {
     const enter = (page) => { setNavPage(page); setAppView("app"); };
-    const features = [
-      { icon: "📄", title: "9 Resume Templates", desc: "From classic serif to dark terminal — every style covered with FlowCV-quality designs." },
-      { icon: "✉️", title: "6 Cover Letter Styles", desc: "Matching letter templates so your application looks cohesive from start to finish." },
-      { icon: "🌍", title: "50+ Languages", desc: "Full RTL support for Arabic, Hebrew, and more. Create your CV in more than 50 languages." },
-      { icon: "⚡", title: "Live Preview", desc: "Every keystroke updates the preview instantly. Download as PDF or DOCX when ready." },
-    ];
     return (
       <div style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", overflowX: "hidden" }}>
         {/* Nav */}
@@ -1296,9 +1290,9 @@ Awards: ${form.awards}`;
           <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 64,
             display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <button onClick={() => setAppView("landing")}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 0,
-              fontSize: 20, fontWeight: 800, letterSpacing: "-0.5px",
-              background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            style={{ background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+              border: "none", cursor: "pointer", padding: 0,
+              fontSize: 20, fontWeight: 800, letterSpacing: "-0.5px", fontFamily: "inherit" }}>
             ApplyCraft
           </button>
           <button onClick={() => enter("resume")}
@@ -1341,6 +1335,52 @@ Awards: ${form.awards}`;
                 Write Cover Letter
               </button>
             </div>
+            {/* Trust row */}
+            <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap", marginTop: 28 }}>
+              {["🔒 Nothing stored", "⚡ No sign-up", "💳 No credit card", "📄 PDF & DOCX"].map(t => (
+                <span key={t} style={{ fontSize: 12.5, color: C.text3, display: "flex", alignItems: "center", gap: 5 }}>{t}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* How it works */}
+        <div style={{ padding: "72px 24px 80px", borderTop: `1px solid ${C.border}` }}>
+          <div style={{ maxWidth: 900, margin: "0 auto" }}>
+            <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase",
+              letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>How it works</p>
+            <h2 style={{ textAlign: "center", fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 800,
+              letterSpacing: "-0.8px", color: C.text1, margin: "0 0 52px" }}>
+              A polished CV in three steps
+            </h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 0, position: "relative" }}>
+              {[
+                { n: "1", title: "Pick a template", desc: "Choose from 13 professional designs — from minimal to bold. Every template is ATS-safe." },
+                { n: "2", title: "Fill in your details", desc: "Type directly into the live form. The preview updates in real time as you write." },
+                { n: "3", title: "Download & apply", desc: "Export as PDF or DOCX in your chosen language. Ready to send in under 5 minutes." },
+              ].map((s, i) => (
+                <div key={s.n} style={{ textAlign: "center", padding: "0 28px", position: "relative" }}>
+                  {i < 2 && (
+                    <div style={{ position: "absolute", top: 22, right: 0, width: "50%", height: 1,
+                      background: `linear-gradient(90deg, ${C.accent}44, transparent)`,
+                      display: "none" /* hidden on mobile, shown on wider */ }} />
+                  )}
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: C.grad,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 18, fontWeight: 800, color: "#fff", margin: "0 auto 18px" }}>{s.n}</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: C.text1, marginBottom: 8 }}>{s.title}</div>
+                  <div style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.7 }}>{s.desc}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ textAlign: "center", marginTop: 44 }}>
+              <button onClick={() => enter("resume")}
+                style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
+                  padding: "13px 30px", fontSize: 14.5, fontWeight: 700, cursor: "pointer",
+                  boxShadow: "0 4px 20px rgba(99,102,241,0.35)" }}>
+                Start now — it's free
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1348,7 +1388,7 @@ Awards: ${form.awards}`;
         <div style={{ padding: "0 24px 100px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-              letterSpacing: "2px", color: C.text3, marginBottom: 40 }}>13 professional templates</p>
+              letterSpacing: "2px", color: C.text3, marginBottom: 40 }}>12 professional templates</p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 32 }}>
               {TEMPLATES.filter(t => !t.blank).slice(0, 12).map((tp) => (
                 <button key={tp.id} onClick={() => enter("resume")}
@@ -1433,14 +1473,51 @@ Awards: ${form.awards}`;
         </div>
 
         {/* Footer */}
-        <div style={{ borderTop: `1px solid ${C.border}`, padding: "24px" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex",
-            justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-            <button onClick={() => setAppView("landing")}
-              style={{ background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                fontSize: 14, fontWeight: 700, border: "none", cursor: "pointer", padding: 0,
-                fontFamily: "inherit" }}>ApplyCraft</button>
-            <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft · applycraft.io</div>
+        <div style={{ borderTop: `1px solid ${C.border}`, padding: "40px 24px 32px" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 32, marginBottom: 36 }}>
+              {/* Brand */}
+              <div style={{ maxWidth: 260 }}>
+                <button onClick={() => setAppView("landing")}
+                  style={{ background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                    fontSize: 18, fontWeight: 800, border: "none", cursor: "pointer", padding: 0,
+                    fontFamily: "inherit", display: "block", marginBottom: 10 }}>ApplyCraft</button>
+                <p style={{ fontSize: 13, color: C.text3, lineHeight: 1.7, margin: 0 }}>
+                  Free resume and cover letter builder for the global job market. 50+ languages, 12 templates, no sign-up.
+                </p>
+              </div>
+              {/* Links */}
+              <div style={{ display: "flex", gap: 48, flexWrap: "wrap" }}>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
+                    letterSpacing: "1.5px", color: C.text3, marginBottom: 14 }}>Product</div>
+                  {[["Resume Builder", "resume"], ["Cover Letter", "cover"], ["Pricing", "pricing"]].map(([label, page]) => (
+                    <button key={page} onClick={() => enter(page)}
+                      style={{ display: "block", fontSize: 13.5, color: C.text2, background: "none",
+                        border: "none", cursor: "pointer", padding: "4px 0", fontFamily: "inherit",
+                        textAlign: "left" }}>{label}</button>
+                  ))}
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
+                    letterSpacing: "1.5px", color: C.text3, marginBottom: 14 }}>Company</div>
+                  <button onClick={() => { setNavPage("about"); setAppView("app"); }}
+                    style={{ display: "block", fontSize: 13.5, color: C.text2, background: "none",
+                      border: "none", cursor: "pointer", padding: "4px 0", fontFamily: "inherit" }}>About</button>
+                  {AUTHOR.github && (
+                    <a href={`${AUTHOR.github}/applycraft`} target="_blank" rel="noopener noreferrer"
+                      style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>
+                      GitHub
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 20,
+              display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+              <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft · applycraft.io</div>
+              <div style={{ fontSize: 12, color: C.text3 }}>🔒 No data stored · Built with React &amp; Vite</div>
+            </div>
           </div>
         </div>
       </div>
