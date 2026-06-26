@@ -1118,9 +1118,10 @@ Awards: ${form.awards}`;
     return (
       <div style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", overflowX: "hidden" }}>
         {/* Nav */}
-        <nav style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "0 clamp(20px, 5vw, 80px)", height: 64, borderBottom: `1px solid ${C.border}`,
-          position: "sticky", top: 0, zIndex: 100, background: C.bg + "ee", backdropFilter: "blur(12px)" }}>
+        <nav style={{ borderBottom: `1px solid ${C.border}`, position: "sticky", top: 0,
+          zIndex: 100, background: C.bg + "ee", backdropFilter: "blur(12px)" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 64,
+            display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.5px",
             background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             ApplyCraft
@@ -1130,102 +1131,111 @@ Awards: ${form.awards}`;
               padding: "8px 20px", fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>
             Get Started — Free
           </button>
+          </div>
         </nav>
 
         {/* Hero */}
-        <div style={{ textAlign: "center", padding: "90px clamp(20px, 6vw, 120px) 80px",
-          background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${C.glow} 0%, transparent 70%)` }}>
-          <div style={{ display: "inline-block", fontSize: 12, fontWeight: 600, letterSpacing: "2px",
-            textTransform: "uppercase", color: C.accent2, background: `${C.accent}18`,
-            border: `1px solid ${C.accent}44`, borderRadius: 999, padding: "4px 14px", marginBottom: 28 }}>
-            Free · No sign-up required
-          </div>
-          <h1 style={{ fontSize: "clamp(36px, 6vw, 72px)", fontWeight: 800, lineHeight: 1.1,
-            letterSpacing: "-2px", margin: "0 0 24px",
-            background: "linear-gradient(135deg, #EEF2FF 0%, #94A3B8 100%)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            Resumes that get<br />you the interview
-          </h1>
-          <p style={{ fontSize: "clamp(16px, 2vw, 20px)", color: C.text2, maxWidth: 540,
-            margin: "0 auto 44px", lineHeight: 1.65 }}>
-            Build a professional resume and matching cover letter in minutes.
-            9 templates, live preview, PDF & DOCX download.
-          </p>
-          <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-            <button onClick={() => enter("resume")}
-              style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
-                padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer",
-                boxShadow: "0 4px 24px rgba(99,102,241,0.4)" }}>
-              Build My Resume →
-            </button>
-            <button onClick={() => enter("cover")}
-              style={{ background: "transparent", color: C.text1, border: `1.5px solid ${C.borderHi}`,
-                borderRadius: 10, padding: "14px 32px", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-              Write Cover Letter
-            </button>
+        <div style={{ background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${C.glow} 0%, transparent 70%)` }}>
+          <div style={{ maxWidth: 860, margin: "0 auto", textAlign: "center", padding: "90px 24px 80px" }}>
+            <div style={{ display: "inline-block", fontSize: 12, fontWeight: 600, letterSpacing: "2px",
+              textTransform: "uppercase", color: C.accent2, background: `${C.accent}18`,
+              border: `1px solid ${C.accent}44`, borderRadius: 999, padding: "4px 14px", marginBottom: 28 }}>
+              Free · No sign-up required
+            </div>
+            <h1 style={{ fontSize: "clamp(36px, 6vw, 72px)", fontWeight: 800, lineHeight: 1.1,
+              letterSpacing: "-2px", margin: "0 0 24px",
+              background: "linear-gradient(135deg, #EEF2FF 0%, #94A3B8 100%)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              Resumes that get<br />you the interview
+            </h1>
+            <p style={{ fontSize: "clamp(16px, 2vw, 20px)", color: C.text2, maxWidth: 520,
+              margin: "0 auto 44px", lineHeight: 1.65 }}>
+              Build a professional resume and matching cover letter in minutes.
+              9 templates, live preview, PDF & DOCX download.
+            </p>
+            <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+              <button onClick={() => enter("resume")}
+                style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
+                  padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer",
+                  boxShadow: "0 4px 24px rgba(99,102,241,0.4)" }}>
+                Build My Resume →
+              </button>
+              <button onClick={() => enter("cover")}
+                style={{ background: "transparent", color: C.text1, border: `1.5px solid ${C.borderHi}`,
+                  borderRadius: 10, padding: "14px 32px", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                Write Cover Letter
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Template strip */}
-        <div style={{ padding: "0 clamp(20px, 5vw, 80px) 80px" }}>
-          <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-            letterSpacing: "2px", color: C.text3, marginBottom: 28 }}>9 professional templates</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
-            {TEMPLATES.filter(t => !t.blank).slice(0, 8).map((tp) => (
-              <button key={tp.id} onClick={() => enter("resume")}
-                style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8,
-                  overflow: "hidden", cursor: "pointer", padding: 0, transition: "border-color .2s, transform .15s",
-                  fontFamily: "inherit" }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = tp.accent; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.transform = "none"; }}>
-                <ThumbPreview tp={tp} isMobile={true} />
-                <div style={{ padding: "8px 10px", textAlign: "left" }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: C.text1 }}>{tp.name}</div>
-                </div>
-              </button>
-            ))}
+        <div style={{ padding: "0 24px 80px" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+            <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase",
+              letterSpacing: "2px", color: C.text3, marginBottom: 28 }}>9 professional templates</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
+              {TEMPLATES.filter(t => !t.blank).slice(0, 8).map((tp) => (
+                <button key={tp.id} onClick={() => enter("resume")}
+                  style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8,
+                    overflow: "hidden", cursor: "pointer", padding: 0, transition: "border-color .2s, transform .15s",
+                    fontFamily: "inherit" }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = tp.accent; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.transform = "none"; }}>
+                  <ThumbPreview tp={tp} isMobile={true} />
+                  <div style={{ padding: "8px 10px", textAlign: "left" }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: C.text1 }}>{tp.name}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Features */}
-        <div style={{ padding: "60px clamp(20px, 5vw, 80px) 80px",
-          borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`,
-          background: C.surface }}>
-          <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-            letterSpacing: "2px", color: C.text3, marginBottom: 48 }}>Everything you need</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 24 }}>
-            {features.map((f, i) => (
-              <div key={i} style={{ background: C.elevated, border: `1px solid ${C.border}`,
-                borderRadius: 12, padding: "24px 22px" }}>
-                <div style={{ fontSize: 28, marginBottom: 14 }}>{f.icon}</div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: C.text1, marginBottom: 8 }}>{f.title}</div>
-                <div style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.65 }}>{f.desc}</div>
-              </div>
-            ))}
+        <div style={{ borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`,
+          background: C.surface, padding: "60px 24px 80px" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+            <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase",
+              letterSpacing: "2px", color: C.text3, marginBottom: 48 }}>Everything you need</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 24 }}>
+              {features.map((f, i) => (
+                <div key={i} style={{ background: C.elevated, border: `1px solid ${C.border}`,
+                  borderRadius: 12, padding: "24px 22px" }}>
+                  <div style={{ fontSize: 28, marginBottom: 14 }}>{f.icon}</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: C.text1, marginBottom: 8 }}>{f.title}</div>
+                  <div style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.65 }}>{f.desc}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Final CTA */}
-        <div style={{ textAlign: "center", padding: "80px clamp(20px, 5vw, 80px)" }}>
-          <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: "-1px",
-            margin: "0 0 16px", color: C.text1 }}>Start building for free</h2>
-          <p style={{ fontSize: 16, color: C.text2, margin: "0 0 36px" }}>
-            No account needed. Download your resume in seconds.
-          </p>
-          <button onClick={() => enter("resume")}
-            style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
-              padding: "16px 40px", fontSize: 16, fontWeight: 700, cursor: "pointer",
-              boxShadow: "0 4px 24px rgba(99,102,241,0.35)" }}>
-            Build My Resume — It's Free
-          </button>
+        <div style={{ padding: "80px 24px", textAlign: "center" }}>
+          <div style={{ maxWidth: 600, margin: "0 auto" }}>
+            <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: "-1px",
+              margin: "0 0 16px", color: C.text1 }}>Start building for free</h2>
+            <p style={{ fontSize: 16, color: C.text2, margin: "0 0 36px" }}>
+              No account needed. Download your resume in seconds.
+            </p>
+            <button onClick={() => enter("resume")}
+              style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
+                padding: "16px 40px", fontSize: 16, fontWeight: 700, cursor: "pointer",
+                boxShadow: "0 4px 24px rgba(99,102,241,0.35)" }}>
+              Build My Resume — It's Free
+            </button>
+          </div>
         </div>
 
         {/* Footer */}
-        <div style={{ borderTop: `1px solid ${C.border}`, padding: "24px clamp(20px, 5vw, 80px)",
-          display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, background: C.grad,
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ApplyCraft</div>
-          <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft · applycraft.io</div>
+        <div style={{ borderTop: `1px solid ${C.border}`, padding: "24px" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex",
+            justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, background: C.grad,
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ApplyCraft</div>
+            <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft · applycraft.io</div>
+          </div>
         </div>
       </div>
     );
@@ -1250,13 +1260,15 @@ Awards: ${form.awards}`;
             padding: sidebarOpen ? "20px 14px 20px 20px" : "20px 0",
             borderBottom: `1px solid ${C.border}`, minHeight: 64, transition: "padding .22s" }}>
             {sidebarOpen && (
-              <div style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+              <button onClick={() => setAppView("landing")}
+                style={{ overflow: "hidden", whiteSpace: "nowrap", background: "none",
+                  border: "none", cursor: "pointer", padding: 0, textAlign: "left" }}>
                 <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.5px",
                   background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                   ApplyCraft
                 </div>
                 <div style={{ fontSize: 10.5, color: C.text3, marginTop: 1 }}>Career toolkit</div>
-              </div>
+              </button>
             )}
             <button onClick={() => setSidebarOpen(o => !o)}
               title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
@@ -1382,13 +1394,14 @@ Awards: ${form.awards}`;
               display: "flex", flexDirection: "column", padding: "0 0 12px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
                 padding: "20px 16px", borderBottom: `1px solid ${C.border}` }}>
-                <div>
+                <button onClick={() => { setAppView("landing"); setSidebarOpen(false); }}
+                  style={{ background: "none", border: "none", cursor: "pointer", padding: 0, textAlign: "left" }}>
                   <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.5px",
                     background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                     ApplyCraft
                   </div>
                   <div style={{ fontSize: 10.5, color: C.text3, marginTop: 1 }}>Career toolkit</div>
-                </div>
+                </button>
                 <button onClick={() => setSidebarOpen(false)}
                   style={{ width: 30, height: 30, borderRadius: 8, background: C.surface,
                     border: `1px solid ${C.border}`, color: C.text2, cursor: "pointer",
