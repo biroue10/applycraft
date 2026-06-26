@@ -1306,37 +1306,46 @@ Awards: ${form.awards}`;
         {/* Hero */}
         <div style={{ background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${C.glow} 0%, transparent 70%)` }}>
           <div style={{ maxWidth: 860, margin: "0 auto", textAlign: "center", padding: "154px 24px 80px" }}>
-            <div style={{ display: "inline-block", fontSize: 12, fontWeight: 600, letterSpacing: "2px",
+            <div style={{ animation: "acFadeUp 0.6s ease 0.05s both", display: "inline-block",
+              fontSize: 12, fontWeight: 600, letterSpacing: "2px",
               textTransform: "uppercase", color: C.accent2, background: `${C.accent}18`,
               border: `1px solid ${C.accent}44`, borderRadius: 999, padding: "4px 14px", marginBottom: 28 }}>
               Free · No sign-up required
             </div>
-            <h1 style={{ fontSize: "clamp(36px, 6vw, 72px)", fontWeight: 800, lineHeight: 1.1,
+            <h1 style={{ animation: "acFadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.18s both",
+              fontSize: "clamp(36px, 6vw, 72px)", fontWeight: 800, lineHeight: 1.1,
               letterSpacing: "-2px", margin: "0 0 24px",
               background: "linear-gradient(135deg, #EEF2FF 0%, #94A3B8 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               Create a professional,<br />ATS-friendly CV in 50+ languages.
             </h1>
-            <p style={{ fontSize: "clamp(16px, 2vw, 20px)", color: C.text2, maxWidth: 520,
+            <p style={{ animation: "acFadeUp 0.65s ease 0.34s both",
+              fontSize: "clamp(16px, 2vw, 20px)", color: C.text2, maxWidth: 520,
               margin: "0 auto 44px", lineHeight: 1.65 }}>
               Build, translate, and tailor your CV for jobs worldwide using
               professional templates and AI-powered suggestions.
             </p>
-            <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+            <div style={{ animation: "acFadeUp 0.65s ease 0.5s both",
+              display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
               <button onClick={() => enter("resume")}
                 style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
                   padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer",
-                  boxShadow: "0 4px 24px rgba(99,102,241,0.4)" }}>
+                  animation: "acPulse 2.8s ease-in-out 1.4s infinite",
+                  transition: "opacity 0.2s" }}>
                 Build My Resume →
               </button>
               <button onClick={() => enter("cover")}
                 style={{ background: "transparent", color: C.text1, border: `1.5px solid ${C.borderHi}`,
-                  borderRadius: 10, padding: "14px 32px", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
+                  borderRadius: 10, padding: "14px 32px", fontSize: 15, fontWeight: 600, cursor: "pointer",
+                  transition: "border-color 0.2s, background 0.2s" }}
+                onMouseEnter={e => { e.currentTarget.style.background = `${C.borderHi}18`; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}>
                 Write Cover Letter
               </button>
             </div>
             {/* Trust row */}
-            <div style={{ display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap", marginTop: 28 }}>
+            <div style={{ animation: "acFadeUp 0.5s ease 0.65s both",
+              display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap", marginTop: 28 }}>
               {["🔒 Nothing stored", "⚡ No sign-up", "💳 No credit card", "📄 PDF & DOCX"].map(t => (
                 <span key={t} style={{ fontSize: 12.5, color: C.text3, display: "flex", alignItems: "center", gap: 5 }}>{t}</span>
               ))}
@@ -1347,65 +1356,71 @@ Awards: ${form.awards}`;
         {/* How it works */}
         <div style={{ padding: "72px 24px 80px", borderTop: `1px solid ${C.border}` }}>
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
-            <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-              letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>How it works</p>
-            <h2 style={{ textAlign: "center", fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 800,
-              letterSpacing: "-0.8px", color: C.text1, margin: "0 0 52px" }}>
-              A polished CV in three steps
-            </h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 0, position: "relative" }}>
+            <FadeIn style={{ textAlign: "center" }}>
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
+                letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>How it works</p>
+              <h2 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 800,
+                letterSpacing: "-0.8px", color: C.text1, margin: "0 0 52px" }}>
+                A polished CV in three steps
+              </h2>
+            </FadeIn>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 0 }}>
               {[
-                { n: "1", title: "Pick a template", desc: "Choose from 13 professional designs — from minimal to bold. Every template is ATS-safe." },
+                { n: "1", title: "Pick a template", desc: "Choose from 12 professional designs — from minimal to bold. Every template is ATS-safe." },
                 { n: "2", title: "Fill in your details", desc: "Type directly into the live form. The preview updates in real time as you write." },
                 { n: "3", title: "Download & apply", desc: "Export as PDF or DOCX in your chosen language. Ready to send in under 5 minutes." },
               ].map((s, i) => (
-                <div key={s.n} style={{ textAlign: "center", padding: "0 28px", position: "relative" }}>
-                  {i < 2 && (
-                    <div style={{ position: "absolute", top: 22, right: 0, width: "50%", height: 1,
-                      background: `linear-gradient(90deg, ${C.accent}44, transparent)`,
-                      display: "none" /* hidden on mobile, shown on wider */ }} />
-                  )}
+                <FadeIn key={s.n} delay={i * 120} style={{ textAlign: "center", padding: "0 28px" }}>
                   <div style={{ width: 48, height: 48, borderRadius: "50%", background: C.grad,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 18, fontWeight: 800, color: "#fff", margin: "0 auto 18px" }}>{s.n}</div>
                   <div style={{ fontSize: 15, fontWeight: 700, color: C.text1, marginBottom: 8 }}>{s.title}</div>
                   <div style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.7 }}>{s.desc}</div>
-                </div>
+                </FadeIn>
               ))}
             </div>
-            <div style={{ textAlign: "center", marginTop: 44 }}>
+            <FadeIn delay={400} style={{ textAlign: "center", marginTop: 44 }}>
               <button onClick={() => enter("resume")}
                 style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
                   padding: "13px 30px", fontSize: 14.5, fontWeight: 700, cursor: "pointer",
-                  boxShadow: "0 4px 20px rgba(99,102,241,0.35)" }}>
+                  boxShadow: "0 4px 20px rgba(99,102,241,0.35)",
+                  transition: "opacity 0.2s, transform 0.2s" }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "none"; }}>
                 Start now — it's free
               </button>
-            </div>
+            </FadeIn>
           </div>
         </div>
 
         {/* Template strip */}
         <div style={{ padding: "0 24px 100px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-            <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-              letterSpacing: "2px", color: C.text3, marginBottom: 40 }}>12 professional templates</p>
+            <FadeIn style={{ textAlign: "center" }}>
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
+                letterSpacing: "2px", color: C.text3, marginBottom: 40 }}>12 professional templates</p>
+            </FadeIn>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 32 }}>
-              {TEMPLATES.filter(t => !t.blank).slice(0, 12).map((tp) => (
-                <button key={tp.id} onClick={() => enter("resume")}
-                  style={{ background: "transparent", border: "none", borderRadius: 10,
-                    overflow: "visible", cursor: "pointer", padding: 0,
-                    transition: "transform .18s", fontFamily: "inherit", textAlign: "left" }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-5px)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
-                  <div style={{ borderRadius: 8, overflow: "hidden",
-                    boxShadow: "0 4px 20px rgba(0,0,0,0.35)" }}>
-                    <ThumbPreview tp={tp} isMobile={false} />
-                  </div>
-                  <div style={{ padding: "10px 4px 0" }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>{tp.name}</div>
-                    <div style={{ fontSize: 11.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
-                  </div>
-                </button>
+              {TEMPLATES.filter(t => !t.blank).slice(0, 12).map((tp, i) => (
+                <FadeIn key={tp.id} delay={i * 60}>
+                  <button onClick={() => enter("resume")}
+                    style={{ background: "transparent", border: "none", borderRadius: 10,
+                      overflow: "visible", cursor: "pointer", padding: 0, width: "100%",
+                      transition: "transform 0.22s cubic-bezier(0.22,1,0.36,1)",
+                      fontFamily: "inherit", textAlign: "left" }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-7px) scale(1.015)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
+                    <div style={{ borderRadius: 8, overflow: "hidden",
+                      boxShadow: "0 4px 22px rgba(0,0,0,0.38)",
+                      transition: "box-shadow 0.22s ease" }}>
+                      <ThumbPreview tp={tp} isMobile={false} />
+                    </div>
+                    <div style={{ padding: "10px 4px 0" }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>{tp.name}</div>
+                      <div style={{ fontSize: 11.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
+                    </div>
+                  </button>
+                </FadeIn>
               ))}
             </div>
           </div>
@@ -1436,20 +1451,25 @@ Awards: ${form.awards}`;
                 { icon: "📦", title: "Export in multiple languages", desc: "Download the same CV as separate PDFs in English, French, Spanish — one click per language.", soon: true },
                 { icon: "📝", title: "Multilingual cover letters", desc: "Generate a matching cover letter in any language with the same formatting as your resume.", live: true },
                 { icon: "🎯", title: "Tailor to a job description", desc: "Paste a job posting and the AI rewrites your CV to match keywords and requirements in any language.", soon: true },
-              ].map((f) => (
-                <div key={f.title} style={{ background: C.elevated, border: `1px solid ${C.border}`,
-                  borderRadius: 14, padding: "22px 20px", position: "relative",
-                  opacity: f.soon ? 0.75 : 1 }}>
-                  {f.soon && (
-                    <span style={{ position: "absolute", top: 14, right: 14, fontSize: 9.5, fontWeight: 700,
-                      textTransform: "uppercase", letterSpacing: "1px", color: C.accent2,
-                      background: `${C.accent}22`, border: `1px solid ${C.accent}44`,
-                      borderRadius: 999, padding: "2px 8px" }}>Soon</span>
-                  )}
-                  <div style={{ fontSize: 26, marginBottom: 10 }}>{f.icon}</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: C.text1, marginBottom: 6 }}>{f.title}</div>
-                  <div style={{ fontSize: 13, color: C.text2, lineHeight: 1.65 }}>{f.desc}</div>
-                </div>
+              ].map((f, i) => (
+                <FadeIn key={f.title} delay={i * 55}>
+                  <div style={{ background: C.elevated, border: `1px solid ${C.border}`,
+                    borderRadius: 14, padding: "22px 20px", position: "relative",
+                    opacity: f.soon ? 0.75 : 1,
+                    transition: "border-color 0.2s, transform 0.2s" }}
+                    onMouseEnter={e => { if (!f.soon) { e.currentTarget.style.borderColor = `${C.accent}66`; e.currentTarget.style.transform = "translateY(-2px)"; } }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.transform = "none"; }}>
+                    {f.soon && (
+                      <span style={{ position: "absolute", top: 14, right: 14, fontSize: 9.5, fontWeight: 700,
+                        textTransform: "uppercase", letterSpacing: "1px", color: C.accent2,
+                        background: `${C.accent}22`, border: `1px solid ${C.accent}44`,
+                        borderRadius: 999, padding: "2px 8px" }}>Soon</span>
+                    )}
+                    <div style={{ fontSize: 26, marginBottom: 10 }}>{f.icon}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: C.text1, marginBottom: 6 }}>{f.title}</div>
+                    <div style={{ fontSize: 13, color: C.text2, lineHeight: 1.65 }}>{f.desc}</div>
+                  </div>
+                </FadeIn>
               ))}
             </div>
           </div>
@@ -1458,17 +1478,24 @@ Awards: ${form.awards}`;
         {/* Final CTA */}
         <div style={{ padding: "80px 24px", textAlign: "center" }}>
           <div style={{ maxWidth: 600, margin: "0 auto" }}>
-            <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: "-1px",
-              margin: "0 0 16px", color: C.text1 }}>Start building for free</h2>
-            <p style={{ fontSize: 16, color: C.text2, margin: "0 0 36px" }}>
-              No account needed. Download your resume in seconds.
-            </p>
-            <button onClick={() => enter("resume")}
-              style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
-                padding: "16px 40px", fontSize: 16, fontWeight: 700, cursor: "pointer",
-                boxShadow: "0 4px 24px rgba(99,102,241,0.35)" }}>
-              Build My Resume — It's Free
-            </button>
+            <FadeIn>
+              <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: "-1px",
+                margin: "0 0 16px", color: C.text1 }}>Start building for free</h2>
+              <p style={{ fontSize: 16, color: C.text2, margin: "0 0 36px" }}>
+                No account needed. Download your resume in seconds.
+              </p>
+            </FadeIn>
+            <FadeIn delay={120}>
+              <button onClick={() => enter("resume")}
+                style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
+                  padding: "16px 40px", fontSize: 16, fontWeight: 700, cursor: "pointer",
+                  boxShadow: "0 4px 24px rgba(99,102,241,0.35)",
+                  transition: "opacity 0.2s, transform 0.2s" }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "none"; }}>
+                Build My Resume — It's Free
+              </button>
+            </FadeIn>
           </div>
         </div>
 
@@ -1811,6 +1838,29 @@ function LanguageDropdown({ selected, onSelect }) {
         </div>
       )}
     </div>
+  );
+}
+
+function FadeIn({ children, delay = 0, style = {}, as: Tag = "div" }) {
+  const ref = useRef(null);
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setVis(true); io.disconnect(); }
+    }, { threshold: 0.1 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <Tag ref={ref} style={{
+      opacity: vis ? 1 : 0,
+      transform: vis ? "none" : "translateY(22px)",
+      transition: `opacity 0.6s ease ${delay}ms, transform 0.6s cubic-bezier(0.22,1,0.36,1) ${delay}ms`,
+      willChange: "opacity, transform",
+      ...style
+    }}>{children}</Tag>
   );
 }
 
