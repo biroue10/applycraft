@@ -730,17 +730,14 @@ Awards: ${form.awards}`;
       <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))" }}>
         {TEMPLATES.map((tp) => (
           <button key={tp.id} onClick={() => { setTpl(tp); setStep("form"); }}
-            style={tp.blank ? {
-              ...tplCard,
-              border: `1.5px dashed ${C.borderHi}`,
-              background: "transparent",
-              boxShadow: "none",
-            } : tplCard}>
+            style={tplCard}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
             <ThumbPreview tp={tp} isMobile={isMobile} />
-            <div style={{ padding: isMobile ? "8px 10px" : "12px 14px", textAlign: rtl ? "right" : "left",
+            <div style={{ padding: isMobile ? "8px 10px" : "10px 4px", textAlign: rtl ? "right" : "left",
               visibility: tp.blank ? "hidden" : "visible" }}>
-              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: C.text1 }}>{tp.name}</div>
-              <div style={{ fontSize: isMobile ? 11 : 12.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
+              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 14, color: C.text1 }}>{tp.name}</div>
+              <div style={{ fontSize: isMobile ? 11 : 12, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
             </div>
           </button>
         ))}
@@ -949,11 +946,13 @@ Awards: ${form.awards}`;
       <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))" }}>
         {COVER_TEMPLATES.map((tp) => (
           <button key={tp.id} onClick={() => { setCoverTpl(tp); setCoverStep("form"); }}
-            style={tp.blank ? { ...tplCard, border: `1.5px dashed ${C.borderHi}`, background: "transparent", boxShadow: "none" } : tplCard}>
+            style={tplCard}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
             <CoverThumbPreview tp={tp} isMobile={isMobile} />
-            <div style={{ padding: isMobile ? "8px 10px" : "12px 14px", visibility: tp.blank ? "hidden" : "visible" }}>
-              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: C.text1 }}>{tp.name}</div>
-              <div style={{ fontSize: isMobile ? 11 : 12.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
+            <div style={{ padding: isMobile ? "8px 10px" : "10px 4px", visibility: tp.blank ? "hidden" : "visible" }}>
+              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 14, color: C.text1 }}>{tp.name}</div>
+              <div style={{ fontSize: isMobile ? 11 : 12, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
             </div>
           </button>
         ))}
@@ -1568,7 +1567,7 @@ function ThumbPreview({ tp, isMobile }) {
   }, [OUTER]);
 
   const H = Math.round(scale * 906);
-  const frameBg = tp.id === "tech" ? "#0a0d14" : "#c8ced8";
+  const frameBg = tp.id === "tech" ? "#0a0d14" : "#e8eaed";
 
   if (tp.blank) {
     return (
@@ -1601,6 +1600,7 @@ function ResumePaper({ tpl, result, rtl, placeholder = true, preview = false }) 
   const paper = { background: "#fff", color: "#1a1a1a",
     borderRadius: preview ? 0 : 8, minHeight: preview ? 0 : 420,
     maxHeight: preview ? 906 : undefined,
+    padding: preview ? 12 : 0,
     fontFamily: tpl.font, overflow: "hidden",
     boxShadow: preview ? "none" : "0 8px 30px rgba(0,0,0,0.35)",
     width: "100%", boxSizing: "border-box" };
@@ -2345,11 +2345,11 @@ const subtitle = {
 };
 const tplGrid = { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 14 };
 const tplCard = {
-  background: `linear-gradient(160deg, rgba(255,255,255,0.03) 0%, transparent 50%), ${C.elevated}`,
-  border: `1px solid ${C.border}`,
-  borderRadius: 4, overflow: "hidden", cursor: "pointer", padding: 0, textAlign: "left",
-  transition: "border-color .2s, transform .15s, box-shadow .2s",
-  boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+  background: "transparent",
+  border: "none",
+  borderRadius: 4, overflow: "visible", cursor: "pointer", padding: 0, textAlign: "left",
+  transition: "transform .15s",
+  boxShadow: "none",
 };
 const splitGrid = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 };
 const lbl = {
