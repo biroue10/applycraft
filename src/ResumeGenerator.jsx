@@ -236,6 +236,7 @@ const UI = {
 
 // ── Templates ─────────────────────────────────────────────────────
 const TEMPLATES = [
+  { id: "blank",     name: "Blank",     tag: "No styling — plain text output",        accent: "#374151", font: "'Inter', system-ui, sans-serif", blank: true },
   { id: "classic",   name: "Classic",   tag: "Timeless, serif, single column",       accent: "#1f2937", font: "'Georgia', 'Times New Roman', serif" },
   { id: "modern",    name: "Modern",    tag: "Clean sans-serif with sidebar",         accent: "#2563eb", font: "'Inter', system-ui, sans-serif" },
   { id: "minimal",   name: "Minimal",   tag: "Lots of whitespace, understated",       accent: "#0f766e", font: "'Inter', system-ui, sans-serif" },
@@ -649,10 +650,18 @@ Awards: ${form.awards}`;
       <p style={{ ...subtitle, fontSize: isMobile ? 13.5 : 15 }}>{t.chooseTpl}</p>
       <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(auto-fill, minmax(140px, 1fr))" : "repeat(auto-fill, minmax(200px, 1fr))" }}>
         {TEMPLATES.map((tp) => (
-          <button key={tp.id} onClick={() => { setTpl(tp); setStep("form"); }} style={tplCard}>
+          <button key={tp.id} onClick={() => { setTpl(tp); setStep("form"); }}
+            style={tp.blank ? {
+              ...tplCard,
+              border: `1.5px dashed ${C.borderHi}`,
+              background: "transparent",
+              boxShadow: "none",
+            } : tplCard}>
             <ThumbPreview tp={tp} />
             <div style={{ padding: isMobile ? "8px 10px" : "12px 14px", textAlign: rtl ? "right" : "left" }}>
-              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: C.text1 }}>{tp.name}</div>
+              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: tp.blank ? C.text2 : C.text1 }}>
+                {tp.blank ? "✕  " : ""}{tp.name}
+              </div>
               <div style={{ fontSize: isMobile ? 11 : 12.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
             </div>
           </button>
@@ -1178,6 +1187,23 @@ function LanguageDropdown({ selected, onSelect }) {
 
 function ThumbPreview({ tp }) {
   const bar = (w, c = "#cbd5e1") => ({ height: 4, borderRadius: 2, background: c, width: w });
+
+  if (tp.id === "blank") {
+    const line = (w) => ({ height: 3, borderRadius: 2, background: "#d1d5db", width: w, marginBottom: 5 });
+    return (
+      <div style={{ height: 120, background: "#f9fafb", display: "flex", alignItems: "center",
+        justifyContent: "center", flexDirection: "column", gap: 0, padding: "16px 20px",
+        borderBottom: `1px dashed #d1d5db` }}>
+        <div style={{ fontSize: 11, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.5px",
+          marginBottom: 10, textTransform: "uppercase" }}>No Template</div>
+        <div style={line("80%")} />
+        <div style={line("60%")} />
+        <div style={line("70%")} />
+        <div style={line("50%")} />
+      </div>
+    );
+  }
+
   if (tp.id === "modern" || tp.id === "elegant") {
     return (
       <div style={{ height: 120, background: "#fff", display: "flex", padding: 10, gap: 8 }}>
@@ -1284,8 +1310,41 @@ function ResumePaper({ tpl, result, rtl, placeholder = true }) {
   if (empty) {
     return <div style={{ ...paper, display: "flex", alignItems: "center", justifyContent: "center",
       color: "#9ca3af", fontFamily: "'Inter', sans-serif", fontSize: 14, padding: 30, textAlign: "center" }}>
-      Your resume will appear here in the <strong style={{ color: tpl.accent, margin: "0 4px" }}>{tpl.name}</strong> style.
+      {tpl.id === "blank"
+        ? "Fill in the form — your plain-text resume will appear here."
+        : <>Your resume will appear here in the <strong style={{ color: tpl.accent, margin: "0 4px" }}>{tpl.name}</strong> style.</>}
     </div>;
+  }
+
+  if (tpl.id === "blank") {
+    return (
+      <div style={{ ...paper, fontFamily: "'Inter', system-ui, sans-serif" }}>
+        <div style={{ padding: "28px 32px" }}>
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ fontWeight: 700, fontSize: 22, color: "#111", letterSpacing: "-0.3px" }}>{data.name}</div>
+            {data.title && <div style={{ fontSize: 13.5, color: "#444", marginTop: 3 }}>{data.title}</div>}
+            {data.contact.length > 0 && (
+              <div style={{ fontSize: 12, color: "#555", marginTop: 6, lineHeight: 1.6 }}>
+                {data.contact.join("   |   ")}
+              </div>
+            )}
+          </div>
+          <div style={{ height: 1, background: "#d1d5db", margin: "14px 0" }} />
+          {data.summary && (
+            <p style={{ fontSize: 13, lineHeight: 1.65, color: "#333", margin: "0 0 14px" }}>{data.summary}</p>
+          )}
+          {data.sections.map((s, i) => (
+            <div key={i} style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px",
+                color: "#111", marginBottom: 5 }}>{s.heading}</div>
+              {s.items.map((it, j) => (
+                <div key={j} style={{ fontSize: 13, lineHeight: 1.55, color: "#333", marginBottom: 3 }}>{it}</div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   const Section = ({ s }) => (
