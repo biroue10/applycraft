@@ -1294,7 +1294,7 @@ Awards: ${form.awards}`;
                   padding: sidebarOpen ? "9px 12px" : "9px 0",
                   justifyContent: sidebarOpen ? "flex-start" : "center",
                   borderRadius: 9, border: "none", cursor: "pointer", width: "100%", fontFamily: "inherit",
-                  fontSize: 13.5, fontWeight: navPage === item.id ? 700 : 500,
+                  fontSize: 15, fontWeight: navPage === item.id ? 700 : 500,
                   background: navPage === item.id ? `${C.accent}18` : "transparent",
                   color: navPage === item.id ? C.accent2 : C.text2,
                   transition: "background .15s, color .15s, padding .22s", whiteSpace: "nowrap",
@@ -1551,7 +1551,7 @@ function ThumbPreview({ tp, isMobile }) {
     return () => ro.disconnect();
   }, [PAD]);
 
-  const H = Math.round(scale * 490);
+  const H = Math.round(scale * 960);
   const frameBg = tp.id === "tech" ? "#0a0d14" : "#dde1e7";
 
   if (tp.blank) {
@@ -2643,7 +2643,7 @@ function CoverThumbPreview({ tp, isMobile }) {
     return () => ro.disconnect();
   }, [PAD]);
 
-  const H = Math.round(scale * 490);
+  const H = Math.round(scale * 960);
   const frameBg = "#dde1e7";
 
   if (tp.blank) {
