@@ -711,7 +711,7 @@ Awards: ${form.awards}`;
     <div style={{ ...rShell }}>
       <h1 style={{ ...h1, fontSize: isMobile ? 22 : 30 }}>{t.heading}</h1>
       <p style={{ ...subtitle, fontSize: isMobile ? 13.5 : 15 }}>{t.chooseTpl}</p>
-      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, minmax(0, 1fr))" }}>
+      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))" }}>
         {TEMPLATES.map((tp) => (
           <button key={tp.id} onClick={() => { setTpl(tp); setStep("form"); }}
             style={tp.blank ? {
@@ -930,7 +930,7 @@ Awards: ${form.awards}`;
     <div style={rShell}>
       <h1 style={{ ...h1, fontSize: isMobile ? 22 : 30 }}>Cover Letter Templates</h1>
       <p style={{ ...subtitle, fontSize: isMobile ? 13.5 : 15 }}>Choose a template to start writing your cover letter</p>
-      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, minmax(0, 1fr))" }}>
+      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))" }}>
         {COVER_TEMPLATES.map((tp) => (
           <button key={tp.id} onClick={() => { setCoverTpl(tp); setCoverStep("form"); }}
             style={tp.blank ? { ...tplCard, border: `1.5px dashed ${C.borderHi}`, background: "transparent", boxShadow: "none" } : tplCard}>
@@ -1536,40 +1536,39 @@ function LanguageDropdown({ selected, onSelect }) {
 }
 
 function ThumbPreview({ tp, isMobile }) {
-  // Inner preview height (inside the padding frame)
-  const H   = isMobile ? 200 : 360;
-  // Padding between card border and preview — creates the visible inner gap
   const PAD = isMobile ? 6 : 10;
-  // Frame background that shows as the gap colour
+  const INNER_W = 700;
+  const frameRef = useRef(null);
+  const [scale, setScale] = useState(isMobile ? 0.33 : 0.46);
+
+  useEffect(() => {
+    if (!frameRef.current) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const w = entry.contentRect.width;
+      if (w > 0) setScale((w - 2 * PAD) / INNER_W);
+    });
+    ro.observe(frameRef.current);
+    return () => ro.disconnect();
+  }, [PAD]);
+
+  const H = Math.round(scale * 490);
   const frameBg = tp.id === "tech" ? "#0a0d14" : "#dde1e7";
 
   if (tp.blank) {
-    // No frame — fill the same total height as framed thumbnails (H + top PAD + bottom PAD)
-    // so the card stays the same height as labeled templates.
     return (
-      <div style={{ height: H + 2 * PAD, background: "#f3f4f6", display: "flex",
-        alignItems: "center", justifyContent: "center" }}>
-        <div style={{ fontSize: 80, color: "#9ca3af", fontWeight: 300, lineHeight: 1 }}>+</div>
+      <div ref={frameRef} style={{ height: H + 2 * PAD, background: "#f3f4f6",
+        display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ fontSize: 72, color: "#9ca3af", fontWeight: 300, lineHeight: 1 }}>+</div>
       </div>
     );
   }
 
-  // Render real scaled-down ResumePaper
-  // INNER_W is the paper's natural render width; SCALE shrinks it to fit the padded area.
-  // transformOrigin "top left" keeps left-aligned sidebars flush to the left edge.
-  const INNER_W = 700;
-  const SCALE   = isMobile ? 0.34 : 0.56;
-
   return (
-    // Outer frame — PAD of coloured gap between card border and the paper
-    <div style={{ padding: PAD, background: frameBg }}>
-      {/* Clipping box — hides whatever falls below the H-line */}
+    <div ref={frameRef} style={{ padding: PAD, background: frameBg, overflow: "hidden" }}>
       <div style={{ height: H, overflow: "hidden", position: "relative",
         background: tp.id === "tech" ? "#0d1117" : "#fff" }}>
-        <div style={{ width: INNER_W, transform: `scale(${SCALE})`,
-          transformOrigin: "top left",
-          position: "absolute", top: 0, left: 0,
-          pointerEvents: "none", userSelect: "none" }}>
+        <div style={{ width: INNER_W, transform: `scale(${scale})`, transformOrigin: "top left",
+          position: "absolute", top: 0, left: 0, pointerEvents: "none", userSelect: "none" }}>
           <ResumePaper tpl={tp} result={SAMPLE_RESUME} rtl={false} placeholder={false} preview />
         </div>
       </div>
@@ -2629,26 +2628,37 @@ function CoverLetterPaper({ tpl, data: d, preview = false }) {
 
 // ── CoverThumbPreview ─────────────────────────────────────────────
 function CoverThumbPreview({ tp, isMobile }) {
-  const H   = isMobile ? 200 : 360;
   const PAD = isMobile ? 6 : 10;
+  const INNER_W = 700;
+  const frameRef = useRef(null);
+  const [scale, setScale] = useState(isMobile ? 0.33 : 0.46);
+
+  useEffect(() => {
+    if (!frameRef.current) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const w = entry.contentRect.width;
+      if (w > 0) setScale((w - 2 * PAD) / INNER_W);
+    });
+    ro.observe(frameRef.current);
+    return () => ro.disconnect();
+  }, [PAD]);
+
+  const H = Math.round(scale * 490);
   const frameBg = "#dde1e7";
 
   if (tp.blank) {
     return (
-      <div style={{ height: H + 2 * PAD, background: "#f3f4f6", display: "flex",
-        alignItems: "center", justifyContent: "center" }}>
-        <div style={{ fontSize: 80, color: "#9ca3af", fontWeight: 300, lineHeight: 1 }}>+</div>
+      <div ref={frameRef} style={{ height: H + 2 * PAD, background: "#f3f4f6",
+        display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ fontSize: 72, color: "#9ca3af", fontWeight: 300, lineHeight: 1 }}>+</div>
       </div>
     );
   }
 
-  const INNER_W = 700;
-  const SCALE   = isMobile ? 0.34 : 0.56;
-
   return (
-    <div style={{ padding: PAD, background: frameBg }}>
+    <div ref={frameRef} style={{ padding: PAD, background: frameBg, overflow: "hidden" }}>
       <div style={{ height: H, overflow: "hidden", position: "relative", background: "#fff" }}>
-        <div style={{ width: INNER_W, transform: `scale(${SCALE})`, transformOrigin: "top left",
+        <div style={{ width: INNER_W, transform: `scale(${scale})`, transformOrigin: "top left",
           position: "absolute", top: 0, left: 0, pointerEvents: "none", userSelect: "none" }}>
           <CoverLetterPaper tpl={tp} data={SAMPLE_COVER} preview />
         </div>
