@@ -1567,7 +1567,7 @@ function ThumbPreview({ tp, isMobile }) {
     return () => ro.disconnect();
   }, [PAD]);
 
-  const H = Math.round(scale * 960);
+  const H = Math.round(scale * 906);
   const frameBg = tp.id === "tech" ? "#0a0d14" : "#dde1e7";
 
   if (tp.blank) {
@@ -1598,6 +1598,7 @@ function ResumePaper({ tpl, result, rtl, placeholder = true, preview = false }) 
   const data = result || { name: "—", title: "", contact: [], summary: "", sections: [] };
   const paper = { background: "#fff", color: "#1a1a1a",
     borderRadius: preview ? 0 : 8, minHeight: preview ? 0 : 420,
+    maxHeight: preview ? 906 : undefined,
     fontFamily: tpl.font, overflow: "hidden",
     boxShadow: preview ? "none" : "0 8px 30px rgba(0,0,0,0.35)",
     width: "100%", boxSizing: "border-box" };
@@ -2659,7 +2660,7 @@ function CoverThumbPreview({ tp, isMobile }) {
     return () => ro.disconnect();
   }, [PAD]);
 
-  const H = Math.round(scale * 960);
+  const H = Math.round(scale * 906);
   const frameBg = "#dde1e7";
 
   if (tp.blank) {
