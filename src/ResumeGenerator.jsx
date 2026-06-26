@@ -255,6 +255,7 @@ function buildLiveData(form, t) {
 
 export default function ResumeGenerator() {
   const [navPage, setNavPage] = useState("resume");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [step, setStep] = useState("templates");
   const [lang, setLang] = useState("en");
   const [tpl, setTpl] = useState(null);
@@ -790,68 +791,102 @@ Awards: ${form.awards}`;
   else if (navPage === "pricing") pageBody = <PricingPage />;
   else pageBody = <ComingSoon label={NAV.find(n => n.id === navPage)?.label || ""} />;
 
+  const sbW = sidebarOpen ? 224 : 56;
+
   return (
     <div dir={rtl ? "rtl" : "ltr"} style={{ ...rPage, display: "flex", padding: 0, minHeight: "100vh" }}>
-      {/* ── Sidebar ── */}
+
+      {/* ── Sidebar (desktop) ── */}
       {!isMobile && (
-        <aside style={{ width: 220, flexShrink: 0, background: "#0d1117",
+        <aside style={{ width: sbW, flexShrink: 0, background: "#0d1117",
           borderRight: "1px solid #1e2733", display: "flex", flexDirection: "column",
-          padding: "24px 0", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
-          {/* Logo */}
-          <div style={{ padding: "0 20px 28px", borderBottom: "1px solid #1e2733" }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: "#f5f8fc", letterSpacing: "-0.5px" }}>
-              Resumely
-            </div>
-            <div style={{ fontSize: 11, color: "#5a6880", marginTop: 2 }}>Career toolkit</div>
+          position: "sticky", top: 0, height: "100vh", overflowY: "auto", overflowX: "hidden",
+          transition: "width .22s cubic-bezier(.4,0,.2,1)" }}>
+
+          {/* Logo + toggle */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: sidebarOpen ? "20px 14px 20px 20px" : "20px 0", borderBottom: "1px solid #1e2733",
+            minHeight: 64, transition: "padding .22s" }}>
+            {sidebarOpen && (
+              <div style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+                <div style={{ fontSize: 19, fontWeight: 800, color: "#f5f8fc", letterSpacing: "-0.5px" }}>Resumely</div>
+                <div style={{ fontSize: 10.5, color: "#5a6880", marginTop: 1 }}>Career toolkit</div>
+              </div>
+            )}
+            <button onClick={() => setSidebarOpen(o => !o)}
+              title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+              style={{ flexShrink: 0, width: 30, height: 30, borderRadius: 7,
+                background: "#161c24", border: "1px solid #1e2733", color: "#6b7fa3",
+                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 14, margin: sidebarOpen ? 0 : "0 auto", transition: "margin .22s" }}>
+              {sidebarOpen ? "◀" : "▶"}
+            </button>
           </div>
 
           {/* Main nav */}
-          <nav style={{ padding: "16px 10px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          <nav style={{ padding: "12px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
             {NAV.map((item) => (
-              <button key={item.id} onClick={() => { setNavPage(item.id); if (item.id === "resume") {} }}
-                style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px",
-                  borderRadius: 9, border: "none", cursor: "pointer", textAlign: "left", width: "100%",
+              <button key={item.id} onClick={() => setNavPage(item.id)}
+                title={!sidebarOpen ? item.label : undefined}
+                style={{ display: "flex", alignItems: "center", gap: 10,
+                  padding: sidebarOpen ? "9px 12px" : "9px 0",
+                  justifyContent: sidebarOpen ? "flex-start" : "center",
+                  borderRadius: 9, border: "none", cursor: "pointer", width: "100%",
                   fontSize: 13.5, fontWeight: navPage === item.id ? 700 : 500,
                   background: navPage === item.id ? "#1e2d3d" : "transparent",
                   color: navPage === item.id ? "#e7ecf2" : "#6b7fa3",
-                  transition: "background .15s, color .15s" }}>
-                <span style={{ fontSize: 16 }}>{item.icon}</span>
-                {item.label}
+                  transition: "background .15s, color .15s, padding .22s", whiteSpace: "nowrap",
+                  overflow: "hidden" }}>
+                <span style={{ fontSize: 17, flexShrink: 0 }}>{item.icon}</span>
+                {sidebarOpen && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
               </button>
             ))}
           </nav>
 
-          {/* Pricing link */}
-          <div style={{ padding: "12px 10px", borderTop: "1px solid #1e2733" }}>
+          {/* Pricing + upsell */}
+          <div style={{ padding: "12px 8px", borderTop: "1px solid #1e2733" }}>
             <button onClick={() => setNavPage("pricing")}
-              style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px",
-                borderRadius: 9, border: "none", cursor: "pointer", textAlign: "left", width: "100%",
+              title={!sidebarOpen ? "Plans & Pricing" : undefined}
+              style={{ display: "flex", alignItems: "center", gap: 10,
+                padding: sidebarOpen ? "9px 12px" : "9px 0",
+                justifyContent: sidebarOpen ? "flex-start" : "center",
+                borderRadius: 9, border: "none", cursor: "pointer", width: "100%",
                 fontSize: 13.5, fontWeight: navPage === "pricing" ? 700 : 500,
                 background: navPage === "pricing" ? "#2563eb22" : "transparent",
                 color: navPage === "pricing" ? "#60a5fa" : "#6b7fa3",
-                transition: "background .15s, color .15s" }}>
-              <span style={{ fontSize: 16 }}>💎</span>
-              Plans & Pricing
+                transition: "background .15s, color .15s, padding .22s", whiteSpace: "nowrap", overflow: "hidden" }}>
+              <span style={{ fontSize: 17, flexShrink: 0 }}>💎</span>
+              {sidebarOpen && "Plans & Pricing"}
             </button>
-            <div style={{ margin: "10px 12px 0", padding: "10px 12px", background: "#2563eb18",
-              border: "1px solid #2563eb44", borderRadius: 9 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#60a5fa", marginBottom: 4 }}>FREE PLAN</div>
-              <div style={{ fontSize: 11, color: "#5a6880", lineHeight: 1.5 }}>Upgrade to Pro for AI polish, cover letters & more.</div>
-              <button onClick={() => setNavPage("pricing")} style={{ marginTop: 8, fontSize: 11, fontWeight: 700,
-                color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                View plans →
-              </button>
-            </div>
+            {sidebarOpen && (
+              <div style={{ margin: "10px 4px 0", padding: "10px 12px", background: "#2563eb18",
+                border: "1px solid #2563eb44", borderRadius: 9 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#60a5fa", marginBottom: 4 }}>FREE PLAN</div>
+                <div style={{ fontSize: 11, color: "#5a6880", lineHeight: 1.5 }}>Upgrade to Pro for AI polish, cover letters & more.</div>
+                <button onClick={() => setNavPage("pricing")} style={{ marginTop: 8, fontSize: 11, fontWeight: 700,
+                  color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                  View plans →
+                </button>
+              </div>
+            )}
           </div>
         </aside>
       )}
 
       {/* ── Main content ── */}
       <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: isMobile ? "8px 4px" : "16px 12px" }}>
+
         {/* Mobile top bar */}
         {isMobile && (
-          <div style={{ display: "flex", gap: 6, overflowX: "auto", padding: "4px 0 12px",
-            borderBottom: "1px solid #1e2733", marginBottom: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, overflowX: "auto",
+            padding: "4px 0 12px", borderBottom: "1px solid #1e2733", marginBottom: 12 }}>
+            {/* Hamburger */}
+            <button onClick={() => setSidebarOpen(o => !o)}
+              style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 8, background: "#161c24",
+                border: "1px solid #2a3441", color: "#9fb0c2", cursor: "pointer",
+                fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              ☰
+            </button>
             {NAV.map((item) => (
               <button key={item.id} onClick={() => setNavPage(item.id)}
                 style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 5, padding: "6px 11px",
@@ -870,6 +905,52 @@ Awards: ${form.awards}`;
             </button>
           </div>
         )}
+
+        {/* Mobile sidebar drawer */}
+        {isMobile && sidebarOpen && (
+          <>
+            <div onClick={() => setSidebarOpen(false)}
+              style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 200 }} />
+            <aside style={{ position: "fixed", top: 0, left: 0, bottom: 0, width: 224, zIndex: 201,
+              background: "#0d1117", borderRight: "1px solid #1e2733",
+              display: "flex", flexDirection: "column", padding: "0 0 12px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "20px 16px", borderBottom: "1px solid #1e2733" }}>
+                <div>
+                  <div style={{ fontSize: 19, fontWeight: 800, color: "#f5f8fc" }}>Resumely</div>
+                  <div style={{ fontSize: 10.5, color: "#5a6880", marginTop: 1 }}>Career toolkit</div>
+                </div>
+                <button onClick={() => setSidebarOpen(false)}
+                  style={{ width: 30, height: 30, borderRadius: 7, background: "#161c24",
+                    border: "1px solid #1e2733", color: "#6b7fa3", cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>✕</button>
+              </div>
+              <nav style={{ padding: "12px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+                {NAV.map((item) => (
+                  <button key={item.id} onClick={() => { setNavPage(item.id); setSidebarOpen(false); }}
+                    style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                      borderRadius: 9, border: "none", cursor: "pointer", width: "100%", textAlign: "left",
+                      fontSize: 14, fontWeight: navPage === item.id ? 700 : 500,
+                      background: navPage === item.id ? "#1e2d3d" : "transparent",
+                      color: navPage === item.id ? "#e7ecf2" : "#6b7fa3" }}>
+                    <span style={{ fontSize: 17 }}>{item.icon}</span>{item.label}
+                  </button>
+                ))}
+              </nav>
+              <div style={{ padding: "12px 8px", borderTop: "1px solid #1e2733" }}>
+                <button onClick={() => { setNavPage("pricing"); setSidebarOpen(false); }}
+                  style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+                    borderRadius: 9, border: "none", cursor: "pointer", width: "100%", textAlign: "left",
+                    fontSize: 14, fontWeight: navPage === "pricing" ? 700 : 500,
+                    background: navPage === "pricing" ? "#2563eb22" : "transparent",
+                    color: navPage === "pricing" ? "#60a5fa" : "#6b7fa3" }}>
+                  <span style={{ fontSize: 17 }}>💎</span>Plans & Pricing
+                </button>
+              </div>
+            </aside>
+          </>
+        )}
+
         {pageBody}
       </div>
     </div>
