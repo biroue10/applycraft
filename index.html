@@ -9,13 +9,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
     <style>
       *, *::before, *::after { box-sizing: border-box; }
-      body { margin: 0; }
-      ::-webkit-scrollbar { width: 6px; height: 6px; }
-      ::-webkit-scrollbar-track { background: #0d1117; }
-      ::-webkit-scrollbar-thumb { background: #2a3441; border-radius: 3px; }
-      ::-webkit-scrollbar-thumb:hover { background: #3a4a5a; }
-      input::placeholder, textarea::placeholder { color: #3d4f63; }
+      body { margin: 0; background: #06080F; }
+      ::-webkit-scrollbar { width: 5px; height: 5px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #1A2740; border-radius: 99px; }
+      ::-webkit-scrollbar-thumb:hover { background: #253A58; }
+      input::placeholder, textarea::placeholder { color: #2D4060; }
       button { font-family: inherit; }
+      input:focus, textarea:focus, select:focus {
+        border-color: #6366F1 !important;
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.15) !important;
+      }
     </style>
   </head>
   <body style="margin:0">

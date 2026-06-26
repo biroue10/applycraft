@@ -652,8 +652,8 @@ Awards: ${form.awards}`;
           <button key={tp.id} onClick={() => { setTpl(tp); setStep("form"); }} style={tplCard}>
             <ThumbPreview tp={tp} />
             <div style={{ padding: isMobile ? "8px 10px" : "12px 14px", textAlign: rtl ? "right" : "left" }}>
-              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: "#f5f8fc" }}>{tp.name}</div>
-              <div style={{ fontSize: isMobile ? 11 : 12.5, color: "#8a98a8", marginTop: 2 }}>{tp.tag}</div>
+              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: C.text1 }}>{tp.name}</div>
+              <div style={{ fontSize: isMobile ? 11 : 12.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
             </div>
           </button>
         ))}
@@ -675,7 +675,7 @@ Awards: ${form.awards}`;
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
         marginBottom: 20, gap: 12, flexWrap: "wrap" }}>
         <button onClick={() => setStep("templates")} style={backBtn}>← {t.back}</button>
-        <div style={{ fontSize: 13.5, color: "#8a98a8" }}>
+        <div style={{ fontSize: 13.5, color: C.text2 }}>
           {t.chooseTpl}: <strong style={{ color: tpl.accent }}>{tpl.name}</strong>
         </div>
       </div>
@@ -741,7 +741,7 @@ Awards: ${form.awards}`;
             <label style={lbl}>{t.projects}</label>{field("projects", true, t.placeholderProjects)}
             <label style={lbl}>{t.volunteer}</label>{field("volunteer", true, t.placeholderVolunteer)}
             <label style={lbl}>{t.awards}</label>{field("awards", true, t.placeholderAwards)}
-            <button onClick={generate} disabled={loading || !form.name} style={{ ...cta, background: tpl.accent }}>
+            <button onClick={generate} disabled={loading || !form.name} style={{ ...cta, background: C.grad, opacity: (loading || !form.name) ? 0.6 : 1 }}>
               {loading ? t.generating : t.generate}
             </button>
           </div>
@@ -750,8 +750,8 @@ Awards: ${form.awards}`;
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10,
               marginTop: isMobile ? 24 : 0, flexWrap: "wrap" }}>
               <span style={{ ...badge, ...(aiPolished ? badgePolished : badgeLive),
-                background: aiPolished ? `${tpl.accent}22` : "#1f2937",
-                color: aiPolished ? tpl.accent : "#9fb0c2" }}>
+                background: aiPolished ? `${tpl.accent}22` : C.elevated,
+                color: aiPolished ? tpl.accent : C.text2 }}>
                 {aiPolished ? "✦ AI-polished" : "● Live preview"}
               </span>
               {result && (
@@ -790,9 +790,10 @@ Awards: ${form.awards}`;
                 <button
                   onClick={(e) => { e.stopPropagation(); setZoomed(false); }}
                   style={{ position: "fixed", top: 14, right: 14, zIndex: 9001,
-                    width: 34, height: 34, borderRadius: "50%", border: "1px solid #555",
-                    background: "#1a1a1a", color: "#ccc", fontSize: 16,
-                    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    width: 34, height: 34, borderRadius: "50%", border: `1px solid ${C.border}`,
+                    background: C.surface, color: C.text2, fontSize: 16,
+                    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                    fontFamily: "inherit" }}>
                   ✕
                 </button>
               )}
@@ -814,9 +815,9 @@ Awards: ${form.awards}`;
 
   const ComingSoon = ({ label }) => (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
-      justifyContent: "center", minHeight: 320, gap: 16, color: "#5a6880", padding: 40 }}>
+      justifyContent: "center", minHeight: 320, gap: 16, color: C.text3, padding: 40 }}>
       <span style={{ fontSize: 48 }}>🚧</span>
-      <div style={{ fontSize: 22, fontWeight: 700, color: "#9fb0c2" }}>{label}</div>
+      <div style={{ fontSize: 22, fontWeight: 700, color: C.text2 }}>{label}</div>
       <div style={{ fontSize: 14, textAlign: "center", maxWidth: 320, lineHeight: 1.6 }}>
         This feature is coming soon. Stay tuned for updates!
       </div>
@@ -839,35 +840,42 @@ Awards: ${form.awards}`;
             "Everything in Pro", "5 team seats", "Job tracker board", "Personal website builder", "Custom domain", "Dedicated support",
           ], cta: "Contact us" },
         ].map((plan) => (
-          <div key={plan.name} style={{ background: plan.badge ? `${plan.color}11` : "#161c24",
-            border: `1.5px solid ${plan.badge ? plan.color : "#232c38"}`,
-            borderRadius: 16, padding: "28px 24px", position: "relative",
-            display: "flex", flexDirection: "column", gap: 0 }}>
+          <div key={plan.name} style={{
+            background: plan.badge
+              ? `linear-gradient(160deg, ${plan.color}14 0%, ${C.surface} 50%)`
+              : `linear-gradient(160deg, rgba(255,255,255,0.02) 0%, ${C.surface} 60%)`,
+            border: `1.5px solid ${plan.badge ? plan.color + "88" : C.border}`,
+            borderRadius: 18, padding: "28px 24px", position: "relative",
+            display: "flex", flexDirection: "column", gap: 0,
+            boxShadow: plan.badge ? `0 8px 32px ${plan.color}22` : "0 4px 16px rgba(0,0,0,0.3)" }}>
             {plan.badge && (
               <div style={{ position: "absolute", top: -13, left: "50%", transform: "translateX(-50%)",
                 background: plan.color, color: "#fff", fontSize: 11, fontWeight: 700,
-                padding: "3px 14px", borderRadius: 999, whiteSpace: "nowrap" }}>
+                padding: "3px 14px", borderRadius: 999, whiteSpace: "nowrap",
+                boxShadow: `0 4px 12px ${plan.color}55` }}>
                 {plan.badge}
               </div>
             )}
-            <div style={{ fontSize: 13, fontWeight: 700, color: plan.color,
-              textTransform: "uppercase", letterSpacing: "1px", marginBottom: 8 }}>{plan.name}</div>
-            <div style={{ fontSize: 38, fontWeight: 800, color: "#f5f8fc", lineHeight: 1 }}>
-              {plan.price}<span style={{ fontSize: 15, fontWeight: 500, color: "#8a98a8" }}>{plan.period}</span>
+            <div style={{ fontSize: 11.5, fontWeight: 700, color: plan.color,
+              textTransform: "uppercase", letterSpacing: "1.2px", marginBottom: 8 }}>{plan.name}</div>
+            <div style={{ fontSize: 42, fontWeight: 800, color: C.text1, lineHeight: 1,
+              fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif" }}>
+              {plan.price}<span style={{ fontSize: 14, fontWeight: 500, color: C.text2 }}>{plan.period}</span>
             </div>
-            <div style={{ height: 1, background: "#232c38", margin: "20px 0" }} />
+            <div style={{ height: 1, background: C.border, margin: "20px 0" }} />
             <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "flex", flexDirection: "column", gap: 10 }}>
               {plan.features.map((f) => (
-                <li key={f} style={{ fontSize: 13.5, color: "#cdd8e4", display: "flex", gap: 8 }}>
+                <li key={f} style={{ fontSize: 13.5, color: C.text1, display: "flex", gap: 8 }}>
                   <span style={{ color: plan.color, fontWeight: 700, flexShrink: 0 }}>✓</span>{f}
                 </li>
               ))}
             </ul>
-            <button style={{ marginTop: "auto", padding: "11px 0", width: "100%",
+            <button style={{ marginTop: "auto", padding: "12px 0", width: "100%",
               background: plan.active ? "transparent" : plan.color,
-              border: `1.5px solid ${plan.color}`, borderRadius: 9,
+              border: `1.5px solid ${plan.color}`, borderRadius: 10,
               color: plan.active ? plan.color : "#fff",
-              fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+              fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
+              boxShadow: plan.active ? "none" : `0 4px 16px ${plan.color}44` }}>
               {plan.cta}
             </button>
           </div>
@@ -888,45 +896,52 @@ Awards: ${form.awards}`;
 
       {/* ── Sidebar (desktop) ── */}
       {!isMobile && (
-        <aside style={{ width: sbW, flexShrink: 0, background: "#0d1117",
-          borderRight: "1px solid #1e2733", display: "flex", flexDirection: "column",
+        <aside style={{ width: sbW, flexShrink: 0,
+          background: `linear-gradient(180deg, ${C.sidebar} 0%, rgba(6,8,15,0.96) 100%)`,
+          borderRight: `1px solid ${C.border}`,
+          display: "flex", flexDirection: "column",
           position: "sticky", top: 0, height: "100vh", overflowY: "auto", overflowX: "hidden",
           transition: "width .22s cubic-bezier(.4,0,.2,1)" }}>
 
           {/* Logo + toggle */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: sidebarOpen ? "20px 14px 20px 20px" : "20px 0", borderBottom: "1px solid #1e2733",
-            minHeight: 64, transition: "padding .22s" }}>
+            padding: sidebarOpen ? "20px 14px 20px 20px" : "20px 0",
+            borderBottom: `1px solid ${C.border}`, minHeight: 64, transition: "padding .22s" }}>
             {sidebarOpen && (
               <div style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
-                <div style={{ fontSize: 19, fontWeight: 800, color: "#f5f8fc", letterSpacing: "-0.5px" }}>Resumely</div>
-                <div style={{ fontSize: 10.5, color: "#5a6880", marginTop: 1 }}>Career toolkit</div>
+                <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.5px",
+                  background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                  Resumely
+                </div>
+                <div style={{ fontSize: 10.5, color: C.text3, marginTop: 1 }}>Career toolkit</div>
               </div>
             )}
             <button onClick={() => setSidebarOpen(o => !o)}
               title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-              style={{ flexShrink: 0, width: 30, height: 30, borderRadius: 7,
-                background: "#161c24", border: "1px solid #1e2733", color: "#6b7fa3",
+              style={{ flexShrink: 0, width: 30, height: 30, borderRadius: 8,
+                background: C.surface, border: `1px solid ${C.border}`, color: C.text2,
                 cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 14, margin: sidebarOpen ? 0 : "0 auto", transition: "margin .22s" }}>
+                fontSize: 12, margin: sidebarOpen ? 0 : "0 auto", transition: "margin .22s",
+                fontFamily: "inherit" }}>
               {sidebarOpen ? "◀" : "▶"}
             </button>
           </div>
 
           {/* Main nav */}
-          <nav style={{ padding: "12px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          <nav style={{ padding: "10px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
             {NAV.map((item) => (
               <button key={item.id} onClick={() => setNavPage(item.id)}
                 title={!sidebarOpen ? item.label : undefined}
                 style={{ display: "flex", alignItems: "center", gap: 10,
                   padding: sidebarOpen ? "9px 12px" : "9px 0",
                   justifyContent: sidebarOpen ? "flex-start" : "center",
-                  borderRadius: 9, border: "none", cursor: "pointer", width: "100%",
+                  borderRadius: 9, border: "none", cursor: "pointer", width: "100%", fontFamily: "inherit",
                   fontSize: 13.5, fontWeight: navPage === item.id ? 700 : 500,
-                  background: navPage === item.id ? "#1e2d3d" : "transparent",
-                  color: navPage === item.id ? "#e7ecf2" : "#6b7fa3",
+                  background: navPage === item.id ? `${C.accent}18` : "transparent",
+                  color: navPage === item.id ? C.accent2 : C.text2,
                   transition: "background .15s, color .15s, padding .22s", whiteSpace: "nowrap",
-                  overflow: "hidden" }}>
+                  overflow: "hidden",
+                  boxShadow: navPage === item.id ? `inset 2px 0 0 ${C.accent}` : "none" }}>
                 <span style={{ fontSize: 17, flexShrink: 0 }}>{item.icon}</span>
                 {sidebarOpen && <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</span>}
               </button>
@@ -934,27 +949,32 @@ Awards: ${form.awards}`;
           </nav>
 
           {/* Pricing + upsell */}
-          <div style={{ padding: "12px 8px", borderTop: "1px solid #1e2733" }}>
+          <div style={{ padding: "10px 8px", borderTop: `1px solid ${C.border}` }}>
             <button onClick={() => setNavPage("pricing")}
               title={!sidebarOpen ? "Plans & Pricing" : undefined}
               style={{ display: "flex", alignItems: "center", gap: 10,
                 padding: sidebarOpen ? "9px 12px" : "9px 0",
                 justifyContent: sidebarOpen ? "flex-start" : "center",
-                borderRadius: 9, border: "none", cursor: "pointer", width: "100%",
+                borderRadius: 9, border: "none", cursor: "pointer", width: "100%", fontFamily: "inherit",
                 fontSize: 13.5, fontWeight: navPage === "pricing" ? 700 : 500,
-                background: navPage === "pricing" ? "#2563eb22" : "transparent",
-                color: navPage === "pricing" ? "#60a5fa" : "#6b7fa3",
+                background: navPage === "pricing" ? `${C.blue}18` : "transparent",
+                color: navPage === "pricing" ? "#93C5FD" : C.text2,
                 transition: "background .15s, color .15s, padding .22s", whiteSpace: "nowrap", overflow: "hidden" }}>
               <span style={{ fontSize: 17, flexShrink: 0 }}>💎</span>
               {sidebarOpen && "Plans & Pricing"}
             </button>
             {sidebarOpen && (
-              <div style={{ margin: "10px 4px 0", padding: "10px 12px", background: "#2563eb18",
-                border: "1px solid #2563eb44", borderRadius: 9 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#60a5fa", marginBottom: 4 }}>FREE PLAN</div>
-                <div style={{ fontSize: 11, color: "#5a6880", lineHeight: 1.5 }}>Upgrade to Pro for AI polish, cover letters & more.</div>
-                <button onClick={() => setNavPage("pricing")} style={{ marginTop: 8, fontSize: 11, fontWeight: 700,
-                  color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+              <div style={{ margin: "8px 4px 0", padding: "10px 12px",
+                background: `${C.accent}0E`, border: `1px solid ${C.accent}30`,
+                borderRadius: 10 }}>
+                <div style={{ fontSize: 10.5, fontWeight: 700, color: C.accent2, marginBottom: 4,
+                  letterSpacing: "0.6px", textTransform: "uppercase" }}>Free Plan</div>
+                <div style={{ fontSize: 11, color: C.text3, lineHeight: 1.5 }}>
+                  Upgrade to Pro for AI polish, cover letters & more.
+                </div>
+                <button onClick={() => setNavPage("pricing")} style={{ marginTop: 8, fontSize: 11.5, fontWeight: 700,
+                  color: C.accent2, background: "none", border: "none", cursor: "pointer", padding: 0,
+                  fontFamily: "inherit" }}>
                   View plans →
                 </button>
               </div>
@@ -981,28 +1001,29 @@ Awards: ${form.awards}`;
         {/* Mobile top bar */}
         {isMobile && (
           <div style={{ display: "flex", alignItems: "center", gap: 6, overflowX: "auto",
-            padding: "4px 0 12px", borderBottom: "1px solid #1e2733", marginBottom: 12 }}>
+            padding: "4px 0 12px", borderBottom: `1px solid ${C.border}`, marginBottom: 12 }}>
             {/* Hamburger */}
             <button onClick={() => setSidebarOpen(o => !o)}
-              style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 8, background: "#161c24",
-                border: "1px solid #2a3441", color: "#9fb0c2", cursor: "pointer",
-                fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 8, background: C.surface,
+                border: `1px solid ${C.border}`, color: C.text2, cursor: "pointer",
+                fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center",
+                fontFamily: "inherit" }}>
               ☰
             </button>
             {NAV.map((item) => (
               <button key={item.id} onClick={() => setNavPage(item.id)}
                 style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 5, padding: "6px 11px",
-                  borderRadius: 8, border: "1px solid #2a3441", cursor: "pointer", fontSize: 12,
-                  background: navPage === item.id ? "#1e2d3d" : "transparent",
-                  color: navPage === item.id ? "#e7ecf2" : "#6b7fa3" }}>
+                  borderRadius: 8, border: `1px solid ${C.border}`, cursor: "pointer", fontSize: 12,
+                  background: navPage === item.id ? `${C.accent}18` : "transparent",
+                  color: navPage === item.id ? C.accent2 : C.text2, fontFamily: "inherit" }}>
                 {item.icon} {item.label}
               </button>
             ))}
             <button onClick={() => setNavPage("pricing")}
               style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 5, padding: "6px 11px",
-                borderRadius: 8, border: "1px solid #2563eb44", cursor: "pointer", fontSize: 12,
-                background: navPage === "pricing" ? "#2563eb22" : "transparent",
-                color: navPage === "pricing" ? "#60a5fa" : "#6b7fa3" }}>
+                borderRadius: 8, border: `1px solid ${C.accent}30`, cursor: "pointer", fontSize: 12,
+                background: navPage === "pricing" ? `${C.blue}18` : "transparent",
+                color: navPage === "pricing" ? "#93C5FD" : C.text2, fontFamily: "inherit" }}>
               💎 Pricing
             </button>
           </div>
@@ -1013,39 +1034,45 @@ Awards: ${form.awards}`;
           <>
             <div onClick={() => setSidebarOpen(false)}
               style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 200 }} />
-            <aside style={{ position: "fixed", top: 0, left: 0, bottom: 0, width: 224, zIndex: 201,
-              background: "#0d1117", borderRight: "1px solid #1e2733",
+            <aside style={{ position: "fixed", top: 0, left: 0, bottom: 0, width: 240, zIndex: 201,
+              background: `linear-gradient(180deg, ${C.sidebar} 0%, rgba(6,8,15,0.98) 100%)`,
+              borderRight: `1px solid ${C.border}`,
               display: "flex", flexDirection: "column", padding: "0 0 12px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-                padding: "20px 16px", borderBottom: "1px solid #1e2733" }}>
+                padding: "20px 16px", borderBottom: `1px solid ${C.border}` }}>
                 <div>
-                  <div style={{ fontSize: 19, fontWeight: 800, color: "#f5f8fc" }}>Resumely</div>
-                  <div style={{ fontSize: 10.5, color: "#5a6880", marginTop: 1 }}>Career toolkit</div>
+                  <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.5px",
+                    background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                    Resumely
+                  </div>
+                  <div style={{ fontSize: 10.5, color: C.text3, marginTop: 1 }}>Career toolkit</div>
                 </div>
                 <button onClick={() => setSidebarOpen(false)}
-                  style={{ width: 30, height: 30, borderRadius: 7, background: "#161c24",
-                    border: "1px solid #1e2733", color: "#6b7fa3", cursor: "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>✕</button>
+                  style={{ width: 30, height: 30, borderRadius: 8, background: C.surface,
+                    border: `1px solid ${C.border}`, color: C.text2, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 14, fontFamily: "inherit" }}>✕</button>
               </div>
-              <nav style={{ padding: "12px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+              <nav style={{ padding: "10px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
                 {NAV.map((item) => (
                   <button key={item.id} onClick={() => { setNavPage(item.id); setSidebarOpen(false); }}
                     style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
                       borderRadius: 9, border: "none", cursor: "pointer", width: "100%", textAlign: "left",
-                      fontSize: 14, fontWeight: navPage === item.id ? 700 : 500,
-                      background: navPage === item.id ? "#1e2d3d" : "transparent",
-                      color: navPage === item.id ? "#e7ecf2" : "#6b7fa3" }}>
+                      fontSize: 14, fontWeight: navPage === item.id ? 700 : 500, fontFamily: "inherit",
+                      background: navPage === item.id ? `${C.accent}18` : "transparent",
+                      color: navPage === item.id ? C.accent2 : C.text2,
+                      boxShadow: navPage === item.id ? `inset 2px 0 0 ${C.accent}` : "none" }}>
                     <span style={{ fontSize: 17 }}>{item.icon}</span>{item.label}
                   </button>
                 ))}
               </nav>
-              <div style={{ padding: "12px 8px", borderTop: "1px solid #1e2733" }}>
+              <div style={{ padding: "10px 8px", borderTop: `1px solid ${C.border}` }}>
                 <button onClick={() => { setNavPage("pricing"); setSidebarOpen(false); }}
                   style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
                     borderRadius: 9, border: "none", cursor: "pointer", width: "100%", textAlign: "left",
-                    fontSize: 14, fontWeight: navPage === "pricing" ? 700 : 500,
-                    background: navPage === "pricing" ? "#2563eb22" : "transparent",
-                    color: navPage === "pricing" ? "#60a5fa" : "#6b7fa3" }}>
+                    fontSize: 14, fontWeight: navPage === "pricing" ? 700 : 500, fontFamily: "inherit",
+                    background: navPage === "pricing" ? `${C.blue}18` : "transparent",
+                    color: navPage === "pricing" ? "#93C5FD" : C.text2 }}>
                   <span style={{ fontSize: 17 }}>💎</span>Plans & Pricing
                 </button>
               </div>
@@ -1080,24 +1107,24 @@ function LanguageDropdown({ selected, onSelect }) {
     <div ref={ref} style={{ position: "relative", zIndex: 500 }}>
       <button onClick={() => setOpen(o => !o)} style={{
         display: "flex", alignItems: "center", gap: 7, padding: "7px 12px",
-        background: "#161c24", border: "1px solid #2a3441", borderRadius: 9,
-        color: "#e7ecf2", fontSize: 13.5, fontWeight: 600, cursor: "pointer",
+        background: C.surface, border: `1px solid ${C.border}`, borderRadius: 9,
+        color: C.text1, fontSize: 13.5, fontWeight: 600, cursor: "pointer",
         fontFamily: "inherit", transition: "border-color .15s",
       }}>
         <span style={{ fontSize: 17 }}>{selected.flag}</span>
         <span>{selected.name}</span>
-        <span style={{ fontSize: 10, color: "#6b7fa3", marginLeft: 2 }}>{open ? "▲" : "▼"}</span>
+        <span style={{ fontSize: 10, color: C.text3, marginLeft: 2 }}>{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
         <div style={{
           position: "absolute", right: 0, top: "calc(100% + 6px)",
-          width: 280, background: "#161c24", border: "1px solid #2a3441",
-          borderRadius: 12, boxShadow: "0 16px 48px rgba(0,0,0,0.55)",
+          width: 290, background: C.surface, border: `1px solid ${C.border}`,
+          borderRadius: 14, boxShadow: `0 20px 60px rgba(0,0,0,0.65), 0 0 0 1px ${C.accent}10`,
           display: "flex", flexDirection: "column", overflow: "hidden",
         }}>
           {/* Search box */}
-          <div style={{ padding: "10px 10px 6px", borderBottom: "1px solid #1e2733" }}>
+          <div style={{ padding: "10px 10px 8px", borderBottom: `1px solid ${C.border}` }}>
             <input
               autoFocus
               value={search}
@@ -1105,9 +1132,9 @@ function LanguageDropdown({ selected, onSelect }) {
               placeholder="Search language…"
               style={{
                 width: "100%", boxSizing: "border-box",
-                padding: "8px 10px", background: "#0f1419",
-                border: "1px solid #2a3441", borderRadius: 8,
-                color: "#e7ecf2", fontSize: 13, outline: "none",
+                padding: "8px 10px", background: C.elevated,
+                border: `1px solid ${C.border}`, borderRadius: 8,
+                color: C.text1, fontSize: 13, outline: "none",
                 fontFamily: "inherit",
               }}
             />
@@ -1116,7 +1143,7 @@ function LanguageDropdown({ selected, onSelect }) {
           {/* Language list */}
           <div style={{ maxHeight: 280, overflowY: "auto" }}>
             {filtered.length === 0 && (
-              <div style={{ padding: "20px 14px", color: "#5a6880", fontSize: 13, textAlign: "center" }}>
+              <div style={{ padding: "20px 14px", color: C.text3, fontSize: 13, textAlign: "center" }}>
                 No language found
               </div>
             )}
@@ -1124,19 +1151,19 @@ function LanguageDropdown({ selected, onSelect }) {
               <button key={l.code} onClick={() => { onSelect(l); setOpen(false); setSearch(""); }}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, width: "100%",
-                  padding: "9px 14px", border: "none", background: l.code === selected.code ? "#1e2d3d" : "transparent",
+                  padding: "9px 14px", border: "none", background: l.code === selected.code ? `${C.accent}14` : "transparent",
                   cursor: "pointer", textAlign: "left", fontFamily: "inherit",
-                  borderLeft: l.code === selected.code ? "2px solid #2563eb" : "2px solid transparent",
+                  borderLeft: l.code === selected.code ? `2px solid ${C.accent}` : "2px solid transparent",
                   transition: "background .1s",
                 }}>
                 <span style={{ fontSize: 18, flexShrink: 0 }}>{l.flag}</span>
                 <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ fontSize: 13.5, fontWeight: 600, color: "#e7ecf2", display: "block" }}>{l.name}</span>
-                  <span style={{ fontSize: 11.5, color: "#5a6880" }}>{l.native}</span>
+                  <span style={{ fontSize: 13.5, fontWeight: 600, color: C.text1, display: "block" }}>{l.name}</span>
+                  <span style={{ fontSize: 11.5, color: C.text3 }}>{l.native}</span>
                 </span>
                 {UI_LANGS.has(l.code) && (
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#2563eb",
-                    background: "#2563eb18", padding: "2px 6px", borderRadius: 4, flexShrink: 0 }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: C.accent2,
+                    background: `${C.accent}18`, padding: "2px 6px", borderRadius: 4, flexShrink: 0 }}>
                     UI
                   </span>
                 )}
@@ -1224,7 +1251,7 @@ function ThumbPreview({ tp }) {
   }
   if (tp.id === "tech") {
     return (
-      <div style={{ height: 120, background: "#0d1117", padding: 12 }}>
+      <div style={{ height: 120, background: "#0B1120", padding: 12 }}>
         <div style={{ ...bar("65%", tp.accent), height: 5, marginBottom: 4 }} />
         <div style={{ ...bar("42%", "#8b949e"), height: 3, marginBottom: 10 }} />
         <div style={{ ...bar("100%", "#30363d"), marginBottom: 4 }} />
@@ -1441,7 +1468,7 @@ function PageFooter({ t }) {
   const dot = <span style={footerDot}>·</span>;
   return (
     <footer style={footerWrap}>
-      <span>{t.madeBy} <strong style={{ color: "#e7ecf2" }}>{AUTHOR.name}</strong></span>
+      <span>{t.madeBy} <strong style={{ color: C.text1 }}>{AUTHOR.name}</strong></span>
       {dot}
       <span>© {year}</span>
       {dot}
@@ -1453,41 +1480,115 @@ function PageFooter({ t }) {
   );
 }
 
-const page = { minHeight: "100vh", background: "#0f1419", padding: "16px 8px",
-  fontFamily: "'Inter', system-ui, -apple-system, sans-serif", color: "#e7ecf2" };
-const shell = { margin: "0 auto", background: "#161c24", borderRadius: 14, padding: "28px 32px", border: "1px solid #232c38" };
-const h1 = { fontSize: 30, fontWeight: 800, margin: "0 0 6px", color: "#f5f8fc", letterSpacing: "-0.5px",
-  fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif" };
-const subtitle = { color: "#8a98a8", fontSize: 15, margin: "0 0 22px", lineHeight: 1.6,
-  fontFamily: "'Inter', sans-serif", fontWeight: 400 };
-const tplGrid = { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16 };
-const tplCard = { background: "#0f1419", border: "1px solid #2a3441", borderRadius: 12, overflow: "hidden",
-  cursor: "pointer", padding: 0, textAlign: "left" };
+// ── Design tokens ─────────────────────────────────────────────────
+// Midnight navy base (Linear/Vercel style) + indigo-blue gradient accent
+const C = {
+  bg:       "#06080F",   // deepest background
+  sidebar:  "#080D18",   // sidebar background
+  surface:  "#0D1424",   // shell / cards
+  elevated: "#111D30",   // inputs, selects
+  border:   "#1A2740",   // default border
+  borderHi: "#253A58",   // stronger border
+  text1:    "#EEF2FF",   // headings
+  text2:    "#94A3B8",   // body / labels
+  text3:    "#3D5170",   // muted / placeholder
+  accent:   "#6366F1",   // indigo primary
+  accent2:  "#818CF8",   // lighter indigo
+  blue:     "#3B82F6",   // blue secondary
+  grad:     "linear-gradient(135deg,#6366F1 0%,#3B82F6 100%)", // CTA gradient
+  gradHov:  "linear-gradient(135deg,#5254CC 0%,#2563EB 100%)",
+  glow:     "rgba(99,102,241,0.14)",  // indigo glow
+  glowBlue: "rgba(59,130,246,0.10)", // blue glow
+};
+
+const page = {
+  minHeight: "100vh",
+  background: `radial-gradient(ellipse 70% 55% at 15% 0%, ${C.glow} 0%, transparent 65%),
+               radial-gradient(ellipse 55% 45% at 85% 100%, ${C.glowBlue} 0%, transparent 60%),
+               ${C.bg}`,
+  padding: "16px 8px",
+  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+  color: C.text1,
+};
+const shell = {
+  margin: "0 auto",
+  background: `linear-gradient(160deg, rgba(99,102,241,0.04) 0%, transparent 40%), ${C.surface}`,
+  borderRadius: 16,
+  padding: "28px 32px",
+  border: `1px solid ${C.border}`,
+  boxShadow: `0 0 0 1px rgba(99,102,241,0.06), 0 24px 64px rgba(0,0,0,0.45)`,
+};
+const h1 = {
+  fontSize: 30, fontWeight: 800, margin: "0 0 6px",
+  color: C.text1, letterSpacing: "-0.6px",
+  fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
+  background: `linear-gradient(135deg, ${C.text1} 40%, ${C.accent2} 100%)`,
+  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+};
+const subtitle = {
+  color: C.text2, fontSize: 15, margin: "0 0 24px", lineHeight: 1.65,
+  fontFamily: "'Inter', sans-serif", fontWeight: 400,
+};
+const tplGrid = { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 14 };
+const tplCard = {
+  background: `linear-gradient(160deg, rgba(255,255,255,0.03) 0%, transparent 50%), ${C.elevated}`,
+  border: `1px solid ${C.border}`,
+  borderRadius: 14, overflow: "hidden", cursor: "pointer", padding: 0, textAlign: "left",
+  transition: "border-color .2s, transform .15s, box-shadow .2s",
+  boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+};
 const splitGrid = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40 };
-const lbl = { display: "block", fontSize: 13, fontWeight: 600, color: "#9fb0c2",
-  margin: "16px 0 7px", textTransform: "uppercase", letterSpacing: "0.4px" };
-const inputStyle = { width: "100%", boxSizing: "border-box", padding: "11px 14px", background: "#0f1419",
-  border: "1px solid #2a3441", borderRadius: 10, color: "#e7ecf2", fontSize: 15, outline: "none" };
-const chip = { display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 13px", background: "#0f1419",
-  border: "1px solid #2a3441", borderRadius: 999, color: "#9fb0c2", fontSize: 13.5, cursor: "pointer", fontWeight: 500 };
-const chipActive = { background: "#2563eb", borderColor: "#2563eb", color: "#fff" };
-const cta = { marginTop: 26, width: "100%", padding: "15px", color: "#fff", border: "none",
-  borderRadius: 11, fontSize: 16, fontWeight: 700, cursor: "pointer" };
-const backBtn = { padding: "7px 14px", background: "#0f1419", border: "1px solid #2a3441", borderRadius: 8,
-  color: "#cdd8e4", fontSize: 13.5, cursor: "pointer" };
-const copyBtn = { position: "absolute", top: 12, insetInlineEnd: 12, zIndex: 2, padding: "6px 12px",
-  background: "#232c38", border: "1px solid #2a3441", borderRadius: 7, color: "#cdd8e4", fontSize: 12.5, cursor: "pointer" };
-const badge = { fontSize: 12, fontWeight: 600, padding: "4px 10px", borderRadius: 999, letterSpacing: "0.3px" };
-const badgeLive = { border: "1px solid #2a3441" };
-const badgePolished = { border: "1px solid transparent" };
-const dlBtn = { padding: "4px 12px", background: "transparent", border: "1px solid", borderRadius: 7,
-  fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "opacity .15s", opacity: 0.85 };
+const lbl = {
+  display: "block", fontSize: 11.5, fontWeight: 700, color: C.accent2,
+  margin: "16px 0 7px", textTransform: "uppercase", letterSpacing: "0.7px",
+};
+const inputStyle = {
+  width: "100%", boxSizing: "border-box", padding: "11px 14px",
+  background: C.elevated, border: `1px solid ${C.border}`,
+  borderRadius: 10, color: C.text1, fontSize: 14.5, outline: "none",
+  transition: "border-color .15s, box-shadow .15s",
+};
+const chip = {
+  display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 14px",
+  background: C.elevated, border: `1px solid ${C.border}`,
+  borderRadius: 999, color: C.text2, fontSize: 13.5, cursor: "pointer", fontWeight: 500,
+};
+const chipActive = { background: `${C.accent}22`, borderColor: C.accent, color: C.accent2 };
+const cta = {
+  marginTop: 26, width: "100%", padding: "15px", color: "#fff", border: "none",
+  borderRadius: 11, fontSize: 16, fontWeight: 700, cursor: "pointer",
+  background: C.grad, boxShadow: `0 4px 24px rgba(99,102,241,0.35)`,
+  transition: "box-shadow .2s, opacity .15s",
+};
+const backBtn = {
+  padding: "7px 14px", background: C.elevated, border: `1px solid ${C.border}`,
+  borderRadius: 9, color: C.text2, fontSize: 13.5, cursor: "pointer",
+  fontFamily: "inherit",
+};
+const copyBtn = {
+  position: "absolute", top: 12, insetInlineEnd: 12, zIndex: 2, padding: "6px 12px",
+  background: `${C.surface}cc`, backdropFilter: "blur(8px)",
+  border: `1px solid ${C.border}`, borderRadius: 7, color: C.text2, fontSize: 12.5, cursor: "pointer",
+  fontFamily: "inherit",
+};
+const badge = { fontSize: 11.5, fontWeight: 700, padding: "4px 10px", borderRadius: 999, letterSpacing: "0.4px" };
+const badgeLive  = { border: `1px solid ${C.border}`, color: C.text2, background: `${C.elevated}` };
+const badgePolished = { border: `1px solid ${C.accent}44`, background: `${C.accent}14` };
+const dlBtn = {
+  padding: "5px 13px", background: `${C.accent}14`, border: `1px solid ${C.accent}44`,
+  borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: "pointer",
+  color: C.accent2, transition: "background .15s", fontFamily: "inherit",
+};
 const fieldErr  = { color: "#f87171", fontSize: 11.5, margin: "4px 0 0", lineHeight: 1.4 };
-const codeSelect = { boxSizing: "border-box", padding: "10px 8px", background: "#0f1419",
-  border: "1px solid #2a3441", borderRadius: 9, color: "#e7ecf2", fontSize: 14, outline: "none",
-  cursor: "pointer", minWidth: 82, flexShrink: 0 };
-const footerWrap = { marginTop: 36, paddingTop: 20, borderTop: "1px solid #232c38",
+const codeSelect = {
+  boxSizing: "border-box", padding: "10px 8px", background: C.elevated,
+  border: `1px solid ${C.border}`, borderRadius: 9, color: C.text1, fontSize: 14,
+  outline: "none", cursor: "pointer", minWidth: 82, flexShrink: 0, fontFamily: "inherit",
+};
+const footerWrap = {
+  marginTop: 40, paddingTop: 22, borderTop: `1px solid ${C.border}`,
   display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center",
-  gap: "6px 4px", fontSize: 13, color: "#5a6880" };
-const footerDot = { color: "#2a3441", margin: "0 2px" };
-const footerLink = { color: "#6b7fa3", textDecoration: "none" };
+  gap: "6px 4px", fontSize: 13, color: C.text3,
+};
+const footerDot  = { color: C.border, margin: "0 2px" };
+const footerLink = { color: C.text2, textDecoration: "none", transition: "color .15s" };
