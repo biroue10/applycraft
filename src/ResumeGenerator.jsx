@@ -675,7 +675,7 @@ Awards: ${form.awards}`;
     <div style={{ ...rShell }}>
       <h1 style={{ ...h1, fontSize: isMobile ? 22 : 30 }}>{t.heading}</h1>
       <p style={{ ...subtitle, fontSize: isMobile ? 13.5 : 15 }}>{t.chooseTpl}</p>
-      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(auto-fill, minmax(160px, 1fr))" : "repeat(auto-fill, minmax(240px, 1fr))" }}>
+      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, minmax(0, 1fr))" }}>
         {TEMPLATES.map((tp) => (
           <button key={tp.id} onClick={() => { setTpl(tp); setStep("form"); }}
             style={tp.blank ? {
@@ -1213,32 +1213,45 @@ function LanguageDropdown({ selected, onSelect }) {
 }
 
 function ThumbPreview({ tp, isMobile }) {
-  const H = isMobile ? 140 : 200;
+  // Inner preview height (inside the padding frame)
+  const H   = isMobile ? 200 : 360;
+  // Padding between card border and preview — creates the visible inner gap
+  const PAD = isMobile ? 6 : 10;
+  // Frame background that shows as the gap colour
+  const frameBg = tp.id === "tech" ? "#0a0d14" : "#dde1e7";
 
   if (tp.blank) {
     return (
-      <div style={{ height: H, background: "#f3f4f6", display: "flex",
-        alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 8,
-        borderBottom: "1px dashed #d1d5db" }}>
-        <div style={{ fontSize: 26, opacity: 0.18, lineHeight: 1 }}>∅</div>
-        <div style={{ fontSize: 10.5, color: "#9ca3af", fontWeight: 600,
-          textTransform: "uppercase", letterSpacing: "0.6px" }}>No template</div>
+      <div style={{ padding: PAD, background: frameBg }}>
+        <div style={{ height: H, background: "#f3f4f6", display: "flex",
+          alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 8,
+          border: "1px dashed #d1d5db" }}>
+          <div style={{ fontSize: 28, opacity: 0.15, lineHeight: 1 }}>∅</div>
+          <div style={{ fontSize: 10.5, color: "#9ca3af", fontWeight: 600,
+            textTransform: "uppercase", letterSpacing: "0.6px" }}>No template</div>
+        </div>
       </div>
     );
   }
 
-  // Scale so the header is readable; center horizontally so centered layouts stay visible
+  // Render real scaled-down ResumePaper
+  // INNER_W is the paper's natural render width; SCALE shrinks it to fit the padded area.
+  // transformOrigin "top left" keeps left-aligned sidebars flush to the left edge.
   const INNER_W = 700;
-  const SCALE   = isMobile ? 0.36 : 0.6;
+  const SCALE   = isMobile ? 0.34 : 0.56;
 
   return (
-    <div style={{ height: H, overflow: "hidden", position: "relative",
-      background: tp.id === "tech" ? "#0B1120" : "#fff" }}>
-      <div style={{ width: INNER_W, transform: `scale(${SCALE})`,
-        transformOrigin: "top center",
-        position: "absolute", top: 0, left: "50%", marginLeft: `-${INNER_W / 2}px`,
-        pointerEvents: "none", userSelect: "none" }}>
-        <ResumePaper tpl={tp} result={SAMPLE_RESUME} rtl={false} placeholder={false} preview />
+    // Outer frame — PAD of coloured gap between card border and the paper
+    <div style={{ padding: PAD, background: frameBg }}>
+      {/* Clipping box — hides whatever falls below the H-line */}
+      <div style={{ height: H, overflow: "hidden", position: "relative",
+        background: tp.id === "tech" ? "#0d1117" : "#fff" }}>
+        <div style={{ width: INNER_W, transform: `scale(${SCALE})`,
+          transformOrigin: "top left",
+          position: "absolute", top: 0, left: 0,
+          pointerEvents: "none", userSelect: "none" }}>
+          <ResumePaper tpl={tp} result={SAMPLE_RESUME} rtl={false} placeholder={false} preview />
+        </div>
       </div>
     </div>
   );
@@ -1777,7 +1790,7 @@ const tplGrid = { display: "grid", gridTemplateColumns: "repeat(auto-fill, minma
 const tplCard = {
   background: `linear-gradient(160deg, rgba(255,255,255,0.03) 0%, transparent 50%), ${C.elevated}`,
   border: `1px solid ${C.border}`,
-  borderRadius: 14, overflow: "hidden", cursor: "pointer", padding: 0, textAlign: "left",
+  borderRadius: 4, overflow: "hidden", cursor: "pointer", padding: 0, textAlign: "left",
   transition: "border-color .2s, transform .15s, box-shadow .2s",
   boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
 };
