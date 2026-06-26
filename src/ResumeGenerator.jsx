@@ -901,7 +901,7 @@ Awards: ${form.awards}`;
   const sbW = sidebarOpen ? 224 : 56;
 
   return (
-    <div dir={rtl ? "rtl" : "ltr"} style={{ ...rPage, display: "flex", padding: 0, minHeight: "100vh" }}>
+    <div dir={rtl ? "rtl" : "ltr"} style={{ ...rPage, display: "flex", padding: 0, height: "100vh", overflow: "hidden" }}>
 
       {/* ── Sidebar (desktop) ── */}
       {!isMobile && (
