@@ -1693,7 +1693,7 @@ function ThumbPreview({ tp, isMobile }) {
     return (
       <div ref={frameRef} style={{ height: H, background: "#f3f4f6",
         display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ fontSize: 72, color: "#9ca3af", fontWeight: 300, lineHeight: 1 }}>+</div>
+        <div style={{ fontSize: Math.round(H * 0.65), color: "#c0c4cc", fontWeight: 100, lineHeight: 1, letterSpacing: "-4px" }}>+</div>
       </div>
     );
   }
@@ -2787,7 +2787,7 @@ function CoverThumbPreview({ tp, isMobile }) {
     return (
       <div ref={frameRef} style={{ height: H, background: "#f3f4f6",
         display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ fontSize: 72, color: "#9ca3af", fontWeight: 300, lineHeight: 1 }}>+</div>
+        <div style={{ fontSize: Math.round(H * 0.65), color: "#c0c4cc", fontWeight: 100, lineHeight: 1, letterSpacing: "-4px" }}>+</div>
       </div>
     );
   }
