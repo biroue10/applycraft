@@ -1150,12 +1150,12 @@ Awards: ${form.awards}`;
               letterSpacing: "-2px", margin: "0 0 24px",
               background: "linear-gradient(135deg, #EEF2FF 0%, #94A3B8 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              Resumes that get<br />you the interview
+              Create a professional,<br />ATS-friendly CV in any language.
             </h1>
             <p style={{ fontSize: "clamp(16px, 2vw, 20px)", color: C.text2, maxWidth: 520,
               margin: "0 auto 44px", lineHeight: 1.65 }}>
-              Build a professional resume and matching cover letter in minutes.
-              9 templates, live preview, PDF & DOCX download.
+              Build, translate, and tailor your CV for jobs worldwide using
+              professional templates and AI-powered suggestions.
             </p>
             <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
               <button onClick={() => enter("resume")}
