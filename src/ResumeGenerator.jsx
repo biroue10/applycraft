@@ -1551,7 +1551,6 @@ function LanguageDropdown({ selected, onSelect }) {
 }
 
 function ThumbPreview({ tp, isMobile }) {
-  const OUTER = isMobile ? 10 : 20; // gap between card edge and paper
   const INNER_W = 700;
   const frameRef = useRef(null);
   const [scale, setScale] = useState(isMobile ? 0.30 : 0.42);
@@ -1560,18 +1559,17 @@ function ThumbPreview({ tp, isMobile }) {
     if (!frameRef.current) return;
     const ro = new ResizeObserver(([entry]) => {
       const w = entry.contentRect.width;
-      if (w > 0) setScale((w - 2 * OUTER) / INNER_W);
+      if (w > 0) setScale(w / INNER_W);
     });
     ro.observe(frameRef.current);
     return () => ro.disconnect();
-  }, [OUTER]);
+  }, []);
 
   const H = Math.round(scale * 906);
-  const frameBg = tp.id === "tech" ? "#0a0d14" : "#e8eaed";
 
   if (tp.blank) {
     return (
-      <div ref={frameRef} style={{ height: H + 2 * OUTER, background: "#f3f4f6",
+      <div ref={frameRef} style={{ height: H, background: "#f3f4f6",
         display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ fontSize: 72, color: "#9ca3af", fontWeight: 300, lineHeight: 1 }}>+</div>
       </div>
@@ -1579,10 +1577,8 @@ function ThumbPreview({ tp, isMobile }) {
   }
 
   return (
-    <div ref={frameRef} style={{ padding: OUTER, background: frameBg, overflow: "hidden" }}>
-      {/* Paper with shadow — floats inside the frame, never touches the edges */}
+    <div ref={frameRef} style={{ overflow: "hidden" }}>
       <div style={{ height: H, overflow: "hidden", position: "relative",
-        boxShadow: "0 3px 14px rgba(0,0,0,0.22)",
         background: tp.id === "tech" ? "#0d1117" : "#fff" }}>
         <div style={{ width: INNER_W, transform: `scale(${scale})`, transformOrigin: "top left",
           position: "absolute", top: 0, left: 0, pointerEvents: "none", userSelect: "none" }}>
@@ -2647,7 +2643,6 @@ function CoverLetterPaper({ tpl, data: d, preview = false }) {
 
 // ── CoverThumbPreview ─────────────────────────────────────────────
 function CoverThumbPreview({ tp, isMobile }) {
-  const OUTER = isMobile ? 10 : 20;
   const INNER_W = 700;
   const frameRef = useRef(null);
   const [scale, setScale] = useState(isMobile ? 0.30 : 0.42);
@@ -2656,18 +2651,17 @@ function CoverThumbPreview({ tp, isMobile }) {
     if (!frameRef.current) return;
     const ro = new ResizeObserver(([entry]) => {
       const w = entry.contentRect.width;
-      if (w > 0) setScale((w - 2 * OUTER) / INNER_W);
+      if (w > 0) setScale(w / INNER_W);
     });
     ro.observe(frameRef.current);
     return () => ro.disconnect();
-  }, [OUTER]);
+  }, []);
 
   const H = Math.round(scale * 906);
-  const frameBg = "#c8ced8";
 
   if (tp.blank) {
     return (
-      <div ref={frameRef} style={{ height: H + 2 * OUTER, background: "#f3f4f6",
+      <div ref={frameRef} style={{ height: H, background: "#f3f4f6",
         display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ fontSize: 72, color: "#9ca3af", fontWeight: 300, lineHeight: 1 }}>+</div>
       </div>
@@ -2675,9 +2669,8 @@ function CoverThumbPreview({ tp, isMobile }) {
   }
 
   return (
-    <div ref={frameRef} style={{ padding: OUTER, background: frameBg, overflow: "hidden" }}>
-      <div style={{ height: H, overflow: "hidden", position: "relative", background: "#fff",
-        boxShadow: "0 3px 14px rgba(0,0,0,0.22)" }}>
+    <div ref={frameRef} style={{ overflow: "hidden" }}>
+      <div style={{ height: H, overflow: "hidden", position: "relative", background: "#fff" }}>
         <div style={{ width: INNER_W, transform: `scale(${scale})`, transformOrigin: "top left",
           position: "absolute", top: 0, left: 0, pointerEvents: "none", userSelect: "none" }}>
           <CoverLetterPaper tpl={tp} data={SAMPLE_COVER} preview />
