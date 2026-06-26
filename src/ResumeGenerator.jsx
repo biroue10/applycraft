@@ -249,6 +249,16 @@ const TEMPLATES = [
   { id: "slate",    name: "Slate",    tag: "Dark navy sidebar, warm gold accent",  accent: "#d97706", font: "'Plus Jakarta Sans', 'Inter', sans-serif" },
   { id: "prism",    name: "Prism",    tag: "Diagonal gradient header, vibrant",    accent: "#7c3aed", font: "'Inter', system-ui, sans-serif" },
   { id: "compact",  name: "Compact",  tag: "Two-column body, high density layout", accent: "#0369a1", font: "'Inter', system-ui, sans-serif" },
+  { id: "horizon",  name: "Horizon",  tag: "Centered banner header, strong impact",  accent: "#e14d43", font: "'Plus Jakarta Sans', 'Inter', sans-serif" },
+  { id: "nordic",   name: "Nordic",   tag: "Scandinavian minimal, wide margins",     accent: "#2d5a27", font: "'Georgia', 'Times New Roman', serif" },
+  { id: "dusk",     name: "Dusk",     tag: "Dark charcoal paper, amber accents",     accent: "#f59e0b", font: "'Inter', system-ui, sans-serif" },
+  { id: "vertex",   name: "Vertex",   tag: "Reversed layout, right sidebar, cyan",   accent: "#06b6d4", font: "'Inter', system-ui, sans-serif" },
+  { id: "academy",  name: "Academy",  tag: "Academic CV, double rule, serif",        accent: "#1e40af", font: "'Georgia', 'Times New Roman', serif" },
+  { id: "spark",    name: "Spark",    tag: "Vibrant section bands, energetic",       accent: "#f97316", font: "'Plus Jakarta Sans', 'Inter', sans-serif" },
+  { id: "stone",    name: "Stone",    tag: "Warm gray header, understated serif",    accent: "#78716c", font: "'Georgia', 'Times New Roman', serif" },
+  { id: "ivy",      name: "Ivy",      tag: "British CV style, double-rule header",   accent: "#166534", font: "'Georgia', 'Times New Roman', serif" },
+  { id: "carbon",   name: "Carbon",   tag: "Charcoal sidebar, square monogram",      accent: "#6b7280", font: "'Inter', system-ui, sans-serif" },
+  { id: "pulse",    name: "Pulse",    tag: "Gradient left bar, modern startup",      accent: "#8b5cf6", font: "'Inter', system-ui, sans-serif" },
 ];
 
 // ── Sample data used in template thumbnail previews ───────────────
@@ -1360,7 +1370,7 @@ Awards: ${form.awards}`;
             display: "flex", justifyContent: "space-around", alignItems: "center",
             flexWrap: "wrap", gap: "16px 32px" }}>
             {[
-              { n: "12", label: "Templates" },
+              { n: "22", label: "Templates" },
               { n: "6", label: "Cover letter styles" },
               { n: "50+", label: "Languages" },
               { n: "0", label: "Watermarks" },
@@ -1421,10 +1431,10 @@ Awards: ${form.awards}`;
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center" }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-                letterSpacing: "2px", color: C.text3, marginBottom: 40 }}>12 professional templates</p>
+                letterSpacing: "2px", color: C.text3, marginBottom: 40 }}>22 professional templates</p>
             </FadeIn>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 32 }}>
-              {TEMPLATES.filter(t => !t.blank).slice(0, 12).map((tp, i) => (
+              {TEMPLATES.filter(t => !t.blank).slice(0, 22).map((tp, i) => (
                 <FadeIn key={tp.id} delay={i * 60}>
                   <button onClick={() => enter("resume")}
                     style={{ background: "transparent", border: "none", borderRadius: 10,
@@ -2001,7 +2011,7 @@ function ThumbPreview({ tp, isMobile }) {
   return (
     <div ref={frameRef} style={{ overflow: "hidden" }}>
       <div style={{ height: H, overflow: "hidden", position: "relative",
-        background: tp.id === "tech" ? "#0d1117" : "#fff" }}>
+        background: tp.id === "tech" ? "#0d1117" : tp.id === "dusk" ? "#1a1a1a" : "#fff" }}>
         <div style={{ width: INNER_W, transform: `scale(${scale})`, transformOrigin: "top left",
           position: "absolute", top: 0, left: 0, pointerEvents: "none", userSelect: "none" }}>
           <ResumePaper tpl={tp} result={SAMPLE_RESUME} rtl={false} placeholder={false} preview />
@@ -2667,6 +2677,481 @@ function ResumePaper({ tpl, result, rtl, placeholder = true, preview = false }) 
               </div>
             ))}
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── HORIZON (centered banner header) ─────────────────────────────
+  if (tpl.id === "horizon") {
+    return (
+      <div style={paper}>
+        <div style={{ background: tpl.accent, padding: "30px 32px 22px", textAlign: "center" }}>
+          <div style={{ fontSize: 28, fontWeight: 800, color: "#fff", letterSpacing: "1px",
+            textTransform: "uppercase", lineHeight: 1.1 }}>{data.name}</div>
+          {data.title && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.78)", marginTop: 6,
+            letterSpacing: "2px", textTransform: "uppercase", fontWeight: 500 }}>{data.title}</div>}
+        </div>
+        <div style={{ background: "#fafafa", borderBottom: "1px solid #eee", padding: "9px 32px",
+          display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "4px 18px" }}>
+          {data.contact.map((c, i) => (
+            <span key={i} style={{ fontSize: 10.5, color: "#555" }}>{c}</span>
+          ))}
+        </div>
+        <div style={{ padding: "20px 32px" }}>
+          {data.summary && (
+            <p style={{ fontSize: 12.5, lineHeight: 1.7, color: "#444", margin: "0 0 18px",
+              textAlign: "center", borderBottom: `1px solid ${tpl.accent}33`, paddingBottom: 16 }}>{data.summary}</p>
+          )}
+          {data.sections.map((s, i) => (
+            <div key={i} style={{ marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px",
+                  color: tpl.accent, whiteSpace: "nowrap" }}>{s.heading}</div>
+                <div style={{ flex: 1, height: 1, background: tpl.accent + "44" }} />
+              </div>
+              {isSidebar(s) ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                  {s.items.map((it, j) => (
+                    <span key={j} style={{ fontSize: 10.5, padding: "2px 10px", borderRadius: 2,
+                      border: `1px solid ${tpl.accent}66`, color: tpl.accent, fontWeight: 500 }}>{it}</span>
+                  ))}
+                </div>
+              ) : s.items.map((it, j) => (
+                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333", marginBottom: 5,
+                  paddingLeft: 12 }}>
+                  <span style={{ color: tpl.accent, marginRight: 5 }}>▸</span>{it}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── NORDIC (Scandinavian minimal) ────────────────────────────────
+  if (tpl.id === "nordic") {
+    return (
+      <div style={paper}>
+        <div style={{ padding: "36px 44px" }}>
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ fontSize: 32, fontWeight: 300, color: "#111", letterSpacing: "-0.5px",
+              lineHeight: 1.1 }}>{data.name}</div>
+            {data.title && <div style={{ fontSize: 13, color: "#666", marginTop: 6,
+              fontStyle: "italic", fontWeight: 400 }}>{data.title}</div>}
+            <div style={{ height: 1, background: tpl.accent, width: "100%", marginTop: 18 }} />
+            <div style={{ fontSize: 10.5, color: "#888", marginTop: 10, lineHeight: 2 }}>
+              {data.contact.join("   ·   ")}
+            </div>
+          </div>
+          {data.summary && (
+            <p style={{ fontSize: 12.5, lineHeight: 1.85, color: "#444", margin: "0 0 26px",
+              borderLeft: `3px solid ${tpl.accent}`, paddingLeft: 14 }}>{data.summary}</p>
+          )}
+          {data.sections.map((s, i) => (
+            <div key={i} style={{ marginBottom: 22 }}>
+              <div style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase",
+                letterSpacing: "3px", color: tpl.accent, marginBottom: 10 }}>{s.heading}</div>
+              {isSidebar(s) ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "3px 16px" }}>
+                  {s.items.map((it, j) => (
+                    <span key={j} style={{ fontSize: 12, color: "#555" }}>— {it}</span>
+                  ))}
+                </div>
+              ) : s.items.map((it, j) => (
+                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.75, color: "#333", marginBottom: 5 }}>{it}</div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── DUSK (dark warm charcoal, amber) ─────────────────────────────
+  if (tpl.id === "dusk") {
+    return (
+      <div style={{ ...paper, background: "#1a1a1a", color: "#f0ece3" }}>
+        <div style={{ padding: "28px 30px" }}>
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 26, fontWeight: 800, color: "#f0ece3", letterSpacing: "-0.3px",
+              lineHeight: 1.1 }}>{data.name}</div>
+            {data.title && <div style={{ fontSize: 12, color: tpl.accent, marginTop: 5,
+              fontWeight: 600, letterSpacing: "0.5px" }}>{data.title}</div>}
+            <div style={{ fontSize: 10.5, color: "#7a6e5f", marginTop: 8, lineHeight: 1.9 }}>
+              {data.contact.join("   ·   ")}
+            </div>
+            <div style={{ height: 1, background: tpl.accent + "55", marginTop: 16 }} />
+          </div>
+          {data.summary && (
+            <p style={{ fontSize: 12, lineHeight: 1.7, color: "#c4b89a", margin: "0 0 18px" }}>{data.summary}</p>
+          )}
+          {data.sections.map((s, i) => (
+            <div key={i} style={{ marginBottom: 17 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase",
+                  letterSpacing: "2px", color: tpl.accent, whiteSpace: "nowrap" }}>{s.heading}</div>
+                <div style={{ flex: 1, height: 1, background: tpl.accent + "33" }} />
+              </div>
+              {isSidebar(s) ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                  {s.items.map((it, j) => (
+                    <span key={j} style={{ fontSize: 10.5, padding: "2px 9px", borderRadius: 3,
+                      border: `1px solid ${tpl.accent}66`, color: tpl.accent + "cc" }}>{it}</span>
+                  ))}
+                </div>
+              ) : s.items.map((it, j) => (
+                <div key={j} style={{ fontSize: 12, lineHeight: 1.6, color: "#d4c9b5", marginBottom: 5,
+                  paddingLeft: 12 }}>
+                  <span style={{ color: tpl.accent }}>▸ </span>{it}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── VERTEX (right sidebar, reversed) ─────────────────────────────
+  if (tpl.id === "vertex") {
+    const sideS = data.sections.filter(isSidebar);
+    const mainS = data.sections.filter(s => !isSidebar(s));
+    return (
+      <div style={paper}>
+        <div style={{ display: "flex", minHeight: "100%" }}>
+          <div style={{ flex: 1, padding: "28px 20px 28px 28px" }}>
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 26, fontWeight: 800, color: "#111", letterSpacing: "-0.3px",
+                lineHeight: 1.1 }}>{data.name}</div>
+              {data.title && <div style={{ fontSize: 12, color: tpl.accent, marginTop: 5,
+                fontWeight: 600 }}>{data.title}</div>}
+            </div>
+            {data.summary && (
+              <p style={{ fontSize: 12, lineHeight: 1.7, color: "#555", margin: "0 0 18px",
+                paddingBottom: 14, borderBottom: `1px solid ${tpl.accent}22` }}>{data.summary}</p>
+            )}
+            {mainS.map((s, i) => (
+              <div key={i} style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase",
+                  letterSpacing: "2px", color: tpl.accent, marginBottom: 8,
+                  display: "flex", alignItems: "center", gap: 8 }}>
+                  {s.heading}
+                  <div style={{ flex: 1, height: 1, background: tpl.accent + "33" }} />
+                </div>
+                {s.items.map((it, j) => (
+                  <div key={j} style={{ fontSize: 12, lineHeight: 1.6, color: "#333", marginBottom: 4,
+                    paddingLeft: 10, borderLeft: `2px solid ${tpl.accent}44` }}>{it}</div>
+                ))}
+              </div>
+            ))}
+          </div>
+          <div style={{ width: "30%", background: tpl.accent + "0f",
+            borderLeft: `1px solid ${tpl.accent}22`, padding: "28px 14px", flexShrink: 0 }}>
+            {data.contact.map((c, i) => (
+              <div key={i} style={{ fontSize: 10, color: "#555", marginBottom: 8,
+                lineHeight: 1.5, wordBreak: "break-all" }}>{c}</div>
+            ))}
+            <div style={{ height: 1, background: tpl.accent + "44", margin: "14px 0" }} />
+            {sideS.map((s, i) => (
+              <div key={i} style={{ marginBottom: 18 }}>
+                <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase",
+                  letterSpacing: "1.5px", color: tpl.accent, marginBottom: 8 }}>{s.heading}</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                  {s.items.map((it, j) => (
+                    <span key={j} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 3,
+                      background: tpl.accent + "18", color: tpl.accent }}>{it}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── ACADEMY (academic/scholarly) ─────────────────────────────────
+  if (tpl.id === "academy") {
+    return (
+      <div style={paper}>
+        <div style={{ padding: "32px 36px" }}>
+          <div style={{ textAlign: "center", marginBottom: 20 }}>
+            <div style={{ fontSize: 26, fontWeight: 700, color: "#111", letterSpacing: "0.3px",
+              lineHeight: 1.1 }}>{data.name}</div>
+            {data.title && <div style={{ fontSize: 12.5, color: "#444", marginTop: 5 }}>{data.title}</div>}
+            <div style={{ height: 2, background: tpl.accent, margin: "12px auto 3px", width: "60%" }} />
+            <div style={{ height: 1, background: tpl.accent + "55", margin: "0 auto 12px", width: "60%" }} />
+            <div style={{ fontSize: 10.5, color: "#666", lineHeight: 1.9 }}>{data.contact.join("   ·   ")}</div>
+          </div>
+          {data.summary && (
+            <p style={{ fontSize: 12, lineHeight: 1.8, color: "#444", margin: "0 0 20px",
+              fontStyle: "italic", textAlign: "center" }}>{data.summary}</p>
+          )}
+          {data.sections.map((s, i) => (
+            <div key={i} style={{ marginBottom: 18 }}>
+              <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase",
+                letterSpacing: "2px", color: tpl.accent, marginBottom: 8,
+                borderBottom: `1px solid ${tpl.accent}44`, paddingBottom: 5 }}>{s.heading}</div>
+              {isSidebar(s) ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                  {s.items.map((it, j) => (
+                    <span key={j} style={{ fontSize: 11, padding: "2px 10px", borderRadius: 2,
+                      border: `1px solid ${tpl.accent}66`, color: "#333" }}>{it}</span>
+                  ))}
+                </div>
+              ) : s.items.map((it, j) => (
+                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.65, color: "#333", marginBottom: 5,
+                  paddingLeft: 18, position: "relative" }}>
+                  <span style={{ position: "absolute", left: 5, color: tpl.accent }}>·</span>{it}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── SPARK (vibrant section header bands) ─────────────────────────
+  if (tpl.id === "spark") {
+    return (
+      <div style={paper}>
+        <div style={{ padding: "26px 28px 20px" }}>
+          <div style={{ fontSize: 28, fontWeight: 800, color: "#111", letterSpacing: "-0.3px",
+            lineHeight: 1.1 }}>{data.name}</div>
+          {data.title && <div style={{ fontSize: 12.5, color: tpl.accent, marginTop: 5, fontWeight: 600 }}>{data.title}</div>}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "3px 12px", marginTop: 8 }}>
+            {data.contact.map((c, i) => (
+              <span key={i} style={{ fontSize: 10.5, color: "#666" }}>{c}</span>
+            ))}
+          </div>
+        </div>
+        {data.summary && (
+          <div style={{ margin: "0 28px 18px", fontSize: 12.5, lineHeight: 1.65, color: "#444",
+            background: tpl.accent + "0c", borderRadius: 6, padding: "10px 14px",
+            borderLeft: `3px solid ${tpl.accent}` }}>{data.summary}</div>
+        )}
+        {data.sections.map((s, i) => (
+          <div key={i} style={{ marginBottom: 0 }}>
+            <div style={{ background: tpl.accent + "16", padding: "6px 28px",
+              fontSize: 10, fontWeight: 700, textTransform: "uppercase",
+              letterSpacing: "1.5px", color: tpl.accent,
+              borderLeft: `3px solid ${tpl.accent}` }}>{s.heading}</div>
+            <div style={{ padding: "10px 28px 14px" }}>
+              {isSidebar(s) ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                  {s.items.map((it, j) => (
+                    <span key={j} style={{ fontSize: 11, padding: "3px 12px", borderRadius: 999,
+                      background: tpl.accent + "15", color: tpl.accent, fontWeight: 600 }}>{it}</span>
+                  ))}
+                </div>
+              ) : s.items.map((it, j) => (
+                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333", marginBottom: 4 }}>
+                  <span style={{ color: tpl.accent, marginRight: 6, fontWeight: 700 }}>›</span>{it}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // ── STONE (warm gray header, understated serif) ───────────────────
+  if (tpl.id === "stone") {
+    return (
+      <div style={paper}>
+        <div style={{ background: "#f6f4ef", borderBottom: "1px solid #e8e3da", padding: "28px 32px" }}>
+          <div style={{ fontSize: 27, fontWeight: 700, color: "#2c2520", letterSpacing: "0.2px",
+            lineHeight: 1.1 }}>{data.name}</div>
+          {data.title && <div style={{ fontSize: 12.5, color: tpl.accent, marginTop: 5,
+            fontStyle: "italic" }}>{data.title}</div>}
+          <div style={{ fontSize: 10.5, color: "#7a6e65", marginTop: 10, lineHeight: 1.9 }}>
+            {data.contact.join("   ·   ")}
+          </div>
+        </div>
+        <div style={{ padding: "22px 32px" }}>
+          {data.summary && (
+            <p style={{ fontSize: 12.5, lineHeight: 1.75, color: "#4a4039", margin: "0 0 20px",
+              fontStyle: "italic" }}>{data.summary}</p>
+          )}
+          {data.sections.map((s, i) => (
+            <div key={i} style={{ marginBottom: 18 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 9 }}>
+                <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase",
+                  letterSpacing: "2.5px", color: tpl.accent, whiteSpace: "nowrap" }}>{s.heading}</div>
+                <div style={{ flex: 1, height: 1, background: "#d4cfc7" }} />
+              </div>
+              {isSidebar(s) ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                  {s.items.map((it, j) => (
+                    <span key={j} style={{ fontSize: 11, padding: "2px 9px", borderRadius: 3,
+                      background: "#f6f4ef", border: "1px solid #d4cfc7", color: "#4a4039" }}>{it}</span>
+                  ))}
+                </div>
+              ) : s.items.map((it, j) => (
+                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.7, color: "#3d3530", marginBottom: 5 }}>{it}</div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── IVY (British CV style, double rule) ──────────────────────────
+  if (tpl.id === "ivy") {
+    return (
+      <div style={paper}>
+        <div style={{ padding: "30px 38px" }}>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: "#111", lineHeight: 1.1 }}>{data.name}</div>
+            {data.title && <div style={{ fontSize: 13, color: "#444", marginTop: 4,
+              fontStyle: "italic" }}>{data.title}</div>}
+            <div style={{ fontSize: 10.5, color: "#666", marginTop: 8, lineHeight: 1.9 }}>
+              {data.contact.join("   ·   ")}
+            </div>
+          </div>
+          <div style={{ height: 2, background: tpl.accent, marginBottom: 2 }} />
+          <div style={{ height: 1, background: tpl.accent + "66", marginBottom: 18 }} />
+          {data.summary && (
+            <p style={{ fontSize: 12.5, lineHeight: 1.75, color: "#444", margin: "0 0 18px" }}>{data.summary}</p>
+          )}
+          {data.sections.map((s, i) => (
+            <div key={i} style={{ marginBottom: 18 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: tpl.accent,
+                borderBottom: `1px solid ${tpl.accent}44`, paddingBottom: 5, marginBottom: 10 }}>{s.heading}</div>
+              {isSidebar(s) ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                  {s.items.map((it, j) => (
+                    <span key={j} style={{ fontSize: 11.5, padding: "2px 10px", borderRadius: 2,
+                      border: `1px solid ${tpl.accent}55`, color: "#333" }}>{it}</span>
+                  ))}
+                </div>
+              ) : s.items.map((it, j) => (
+                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.65, color: "#333", marginBottom: 5,
+                  paddingLeft: 16, position: "relative" }}>
+                  <span style={{ position: "absolute", left: 2, top: 6, width: 5, height: 5,
+                    background: tpl.accent, borderRadius: "50%",
+                    display: "inline-block" }} />{it}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── CARBON (charcoal sidebar, square monogram) ────────────────────
+  if (tpl.id === "carbon") {
+    const sideS = data.sections.filter(isSidebar);
+    const mainS = data.sections.filter(s => !isSidebar(s));
+    return (
+      <div style={paper}>
+        <div style={{ display: "flex", minHeight: "100%" }}>
+          <div style={{ width: "31%", background: "#1e1e1e", color: "#e4e4e4",
+            padding: "28px 16px", flexShrink: 0, display: "flex", flexDirection: "column" }}>
+            <div style={{ width: 44, height: 44, background: tpl.accent + "44",
+              border: `2px solid ${tpl.accent}`, borderRadius: 4,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 18, fontWeight: 800, color: "#fff", marginBottom: 14, letterSpacing: "-1px" }}>
+              {data.name.split(" ").map(w => w[0]).slice(0, 2).join("")}
+            </div>
+            <div style={{ fontSize: 17, fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>{data.name}</div>
+            {data.title && <div style={{ fontSize: 10.5, color: tpl.accent, marginBottom: 18 }}>{data.title}</div>}
+            <div style={{ height: 1, background: "rgba(255,255,255,0.1)", marginBottom: 14 }} />
+            {data.contact.map((c, i) => (
+              <div key={i} style={{ fontSize: 10, color: "#9ca3af", marginBottom: 8,
+                wordBreak: "break-all", lineHeight: 1.5 }}>{c}</div>
+            ))}
+            {sideS.map((s, i) => (
+              <div key={i} style={{ marginTop: 20 }}>
+                <div style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase",
+                  letterSpacing: "1.5px", color: tpl.accent, marginBottom: 9 }}>{s.heading}</div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                  {s.items.map((it, j) => (
+                    <span key={j} style={{ fontSize: 10, padding: "2px 7px", borderRadius: 2,
+                      background: "rgba(255,255,255,0.08)", color: "#d1d5db" }}>{it}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ flex: 1, padding: "28px 22px" }}>
+            {data.summary && (
+              <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#444", margin: "0 0 18px",
+                paddingBottom: 16, borderBottom: "1px solid #e5e7eb" }}>{data.summary}</p>
+            )}
+            {mainS.map((s, i) => (
+              <div key={i} style={{ marginBottom: 18 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 9 }}>
+                  <div style={{ width: 8, height: 8, background: tpl.accent, flexShrink: 0 }} />
+                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase",
+                    letterSpacing: "2px", color: "#1e1e1e" }}>{s.heading}</div>
+                  <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
+                </div>
+                {s.items.map((it, j) => (
+                  <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333",
+                    marginBottom: 5, paddingLeft: 16 }}>· {it}</div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── PULSE (gradient left bar, square bullets) ─────────────────────
+  if (tpl.id === "pulse") {
+    return (
+      <div style={{ ...paper, display: "flex" }}>
+        <div style={{ width: 5, background: `linear-gradient(180deg, ${tpl.accent} 0%, #3b82f6 100%)`,
+          flexShrink: 0 }} />
+        <div style={{ flex: 1, padding: "28px 26px" }}>
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ fontSize: 27, fontWeight: 800, color: "#111", letterSpacing: "-0.3px",
+              lineHeight: 1.1 }}>{data.name}</div>
+            {data.title && <div style={{ fontSize: 12, color: tpl.accent, marginTop: 5, fontWeight: 600 }}>{data.title}</div>}
+            <div style={{ fontSize: 10.5, color: "#777", marginTop: 8, lineHeight: 1.9 }}>
+              {data.contact.join("   ·   ")}
+            </div>
+          </div>
+          {data.summary && (
+            <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#444", margin: "0 0 18px",
+              borderLeft: `3px solid ${tpl.accent}55`, paddingLeft: 12 }}>{data.summary}</p>
+          )}
+          {data.sections.map((s, i) => (
+            <div key={i} style={{ marginBottom: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 9 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase",
+                  letterSpacing: "1.5px",
+                  background: `linear-gradient(90deg, ${tpl.accent}, #3b82f6)`,
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                  whiteSpace: "nowrap" }}>{s.heading}</div>
+                <div style={{ flex: 1, height: 1,
+                  background: `linear-gradient(90deg, ${tpl.accent}44, transparent)` }} />
+              </div>
+              {isSidebar(s) ? (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                  {s.items.map((it, j) => (
+                    <span key={j} style={{ fontSize: 11, padding: "2px 10px", borderRadius: 999,
+                      background: tpl.accent + "15", color: tpl.accent, fontWeight: 500 }}>{it}</span>
+                  ))}
+                </div>
+              ) : s.items.map((it, j) => (
+                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333", marginBottom: 5,
+                  display: "flex", alignItems: "flex-start", gap: 8 }}>
+                  <span style={{ width: 6, height: 6, background: tpl.accent, flexShrink: 0,
+                    marginTop: 5, borderRadius: 1 }} />
+                  <span>{it}</span>
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
     );
