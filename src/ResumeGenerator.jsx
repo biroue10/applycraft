@@ -685,12 +685,11 @@ Awards: ${form.awards}`;
               boxShadow: "none",
             } : tplCard}>
             <ThumbPreview tp={tp} isMobile={isMobile} />
-            {!tp.blank && (
-              <div style={{ padding: isMobile ? "8px 10px" : "12px 14px", textAlign: rtl ? "right" : "left" }}>
-                <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: C.text1 }}>{tp.name}</div>
-                <div style={{ fontSize: isMobile ? 11 : 12.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
-              </div>
-            )}
+            <div style={{ padding: isMobile ? "8px 10px" : "12px 14px", textAlign: rtl ? "right" : "left",
+              visibility: tp.blank ? "hidden" : "visible" }}>
+              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: C.text1 }}>{tp.name}</div>
+              <div style={{ fontSize: isMobile ? 11 : 12.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
+            </div>
           </button>
         ))}
       </div>
@@ -1219,13 +1218,12 @@ function ThumbPreview({ tp, isMobile }) {
   const frameBg = tp.id === "tech" ? "#0a0d14" : "#dde1e7";
 
   if (tp.blank) {
+    // No frame — fill the same total height as framed thumbnails (H + top PAD + bottom PAD)
+    // so the card stays the same height as labeled templates.
     return (
-      <div style={{ padding: PAD, background: frameBg }}>
-        <div style={{ height: H, background: "#f3f4f6", display: "flex",
-          alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 8,
-          border: "1px dashed #d1d5db" }}>
-          <div style={{ fontSize: 72, color: "#9ca3af", fontWeight: 300, lineHeight: 1 }}>+</div>
-        </div>
+      <div style={{ height: H + 2 * PAD, background: "#f3f4f6", display: "flex",
+        alignItems: "center", justifyContent: "center" }}>
+        <div style={{ fontSize: 80, color: "#9ca3af", fontWeight: 300, lineHeight: 1 }}>+</div>
       </div>
     );
   }
