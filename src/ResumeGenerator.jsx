@@ -1,12 +1,109 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-// ── Language config ──────────────────────────────────────────────
-const LANGUAGES = [
-  { code: "en", label: "English", flag: "🇬🇧" },
-  { code: "fr", label: "Français", flag: "🇫🇷" },
-  { code: "es", label: "Español", flag: "🇪🇸" },
-  { code: "ar", label: "العربية", flag: "🇲🇦", rtl: true },
-  { code: "de", label: "Deutsch", flag: "🇩🇪" },
+// ── UI translation codes (languages with full UI translation) ──────
+const UI_LANGS = new Set(["en", "fr", "es", "ar", "de"]);
+
+// ── All world languages for the picker ────────────────────────────
+const WORLD_LANGUAGES = [
+  { code: "af", name: "Afrikaans",         flag: "🇿🇦", native: "Afrikaans" },
+  { code: "sq", name: "Albanian",          flag: "🇦🇱", native: "Shqip" },
+  { code: "am", name: "Amharic",           flag: "🇪🇹", native: "አማርኛ" },
+  { code: "ar", name: "Arabic",            flag: "🇸🇦", native: "العربية", rtl: true },
+  { code: "hy", name: "Armenian",          flag: "🇦🇲", native: "Հայերեն" },
+  { code: "az", name: "Azerbaijani",       flag: "🇦🇿", native: "Azərbaycanca" },
+  { code: "eu", name: "Basque",            flag: "🇪🇸", native: "Euskara" },
+  { code: "be", name: "Belarusian",        flag: "🇧🇾", native: "Беларуская" },
+  { code: "bn", name: "Bengali",           flag: "🇧🇩", native: "বাংলা" },
+  { code: "bs", name: "Bosnian",           flag: "🇧🇦", native: "Bosanski" },
+  { code: "bg", name: "Bulgarian",         flag: "🇧🇬", native: "Български" },
+  { code: "ca", name: "Catalan",           flag: "🇪🇸", native: "Català" },
+  { code: "zh", name: "Chinese",           flag: "🇨🇳", native: "中文" },
+  { code: "hr", name: "Croatian",          flag: "🇭🇷", native: "Hrvatski" },
+  { code: "cs", name: "Czech",             flag: "🇨🇿", native: "Čeština" },
+  { code: "da", name: "Danish",            flag: "🇩🇰", native: "Dansk" },
+  { code: "nl", name: "Dutch",             flag: "🇳🇱", native: "Nederlands" },
+  { code: "en", name: "English",           flag: "🇬🇧", native: "English" },
+  { code: "et", name: "Estonian",          flag: "🇪🇪", native: "Eesti" },
+  { code: "tl", name: "Filipino",          flag: "🇵🇭", native: "Filipino" },
+  { code: "fi", name: "Finnish",           flag: "🇫🇮", native: "Suomi" },
+  { code: "fr", name: "French",            flag: "🇫🇷", native: "Français" },
+  { code: "gl", name: "Galician",          flag: "🇪🇸", native: "Galego" },
+  { code: "ka", name: "Georgian",          flag: "🇬🇪", native: "ქართული" },
+  { code: "de", name: "German",            flag: "🇩🇪", native: "Deutsch" },
+  { code: "el", name: "Greek",             flag: "🇬🇷", native: "Ελληνικά" },
+  { code: "gu", name: "Gujarati",          flag: "🇮🇳", native: "ગુજરાતી" },
+  { code: "ht", name: "Haitian Creole",    flag: "🇭🇹", native: "Kreyòl ayisyen" },
+  { code: "ha", name: "Hausa",             flag: "🇳🇬", native: "Hausa" },
+  { code: "he", name: "Hebrew",            flag: "🇮🇱", native: "עברית", rtl: true },
+  { code: "hi", name: "Hindi",             flag: "🇮🇳", native: "हिंदी" },
+  { code: "hu", name: "Hungarian",         flag: "🇭🇺", native: "Magyar" },
+  { code: "is", name: "Icelandic",         flag: "🇮🇸", native: "Íslenska" },
+  { code: "ig", name: "Igbo",              flag: "🇳🇬", native: "Igbo" },
+  { code: "id", name: "Indonesian",        flag: "🇮🇩", native: "Bahasa Indonesia" },
+  { code: "ga", name: "Irish",             flag: "🇮🇪", native: "Gaeilge" },
+  { code: "it", name: "Italian",           flag: "🇮🇹", native: "Italiano" },
+  { code: "ja", name: "Japanese",          flag: "🇯🇵", native: "日本語" },
+  { code: "jv", name: "Javanese",          flag: "🇮🇩", native: "Basa Jawa" },
+  { code: "kn", name: "Kannada",           flag: "🇮🇳", native: "ಕನ್ನಡ" },
+  { code: "kk", name: "Kazakh",            flag: "🇰🇿", native: "Қазақша" },
+  { code: "km", name: "Khmer",             flag: "🇰🇭", native: "ខ្មែរ" },
+  { code: "rw", name: "Kinyarwanda",       flag: "🇷🇼", native: "Ikinyarwanda" },
+  { code: "ko", name: "Korean",            flag: "🇰🇷", native: "한국어" },
+  { code: "ku", name: "Kurdish",           flag: "🇮🇶", native: "Kurdî" },
+  { code: "ky", name: "Kyrgyz",            flag: "🇰🇬", native: "Кыргызча" },
+  { code: "lo", name: "Lao",               flag: "🇱🇦", native: "ລາວ" },
+  { code: "lv", name: "Latvian",           flag: "🇱🇻", native: "Latviešu" },
+  { code: "lt", name: "Lithuanian",        flag: "🇱🇹", native: "Lietuvių" },
+  { code: "lb", name: "Luxembourgish",     flag: "🇱🇺", native: "Lëtzebuergesch" },
+  { code: "mk", name: "Macedonian",        flag: "🇲🇰", native: "Македонски" },
+  { code: "mg", name: "Malagasy",          flag: "🇲🇬", native: "Malagasy" },
+  { code: "ms", name: "Malay",             flag: "🇲🇾", native: "Bahasa Melayu" },
+  { code: "ml", name: "Malayalam",         flag: "🇮🇳", native: "മലയാളം" },
+  { code: "mt", name: "Maltese",           flag: "🇲🇹", native: "Malti" },
+  { code: "mi", name: "Maori",             flag: "🇳🇿", native: "Māori" },
+  { code: "mr", name: "Marathi",           flag: "🇮🇳", native: "मराठी" },
+  { code: "mn", name: "Mongolian",         flag: "🇲🇳", native: "Монгол" },
+  { code: "my", name: "Myanmar (Burmese)", flag: "🇲🇲", native: "မြန်မာဘာသာ" },
+  { code: "ne", name: "Nepali",            flag: "🇳🇵", native: "नेपाली" },
+  { code: "no", name: "Norwegian",         flag: "🇳🇴", native: "Norsk" },
+  { code: "ny", name: "Nyanja (Chichewa)", flag: "🇲🇼", native: "Nyanja" },
+  { code: "or", name: "Odia",              flag: "🇮🇳", native: "ଓଡ଼ିଆ" },
+  { code: "ps", name: "Pashto",            flag: "🇦🇫", native: "پښتو", rtl: true },
+  { code: "fa", name: "Persian",           flag: "🇮🇷", native: "فارسی", rtl: true },
+  { code: "pl", name: "Polish",            flag: "🇵🇱", native: "Polski" },
+  { code: "pt", name: "Portuguese",        flag: "🇵🇹", native: "Português" },
+  { code: "pa", name: "Punjabi",           flag: "🇮🇳", native: "ਪੰਜਾਬੀ" },
+  { code: "ro", name: "Romanian",          flag: "🇷🇴", native: "Română" },
+  { code: "ru", name: "Russian",           flag: "🇷🇺", native: "Русский" },
+  { code: "sm", name: "Samoan",            flag: "🇼🇸", native: "Samoa" },
+  { code: "sr", name: "Serbian",           flag: "🇷🇸", native: "Српски" },
+  { code: "sn", name: "Shona",             flag: "🇿🇼", native: "chiShona" },
+  { code: "sd", name: "Sindhi",            flag: "🇵🇰", native: "سنڌي", rtl: true },
+  { code: "si", name: "Sinhala",           flag: "🇱🇰", native: "සිංහල" },
+  { code: "sk", name: "Slovak",            flag: "🇸🇰", native: "Slovenčina" },
+  { code: "sl", name: "Slovenian",         flag: "🇸🇮", native: "Slovenščina" },
+  { code: "so", name: "Somali",            flag: "🇸🇴", native: "Soomaali" },
+  { code: "st", name: "Sotho",             flag: "🇿🇦", native: "Sesotho" },
+  { code: "es", name: "Spanish",           flag: "🇪🇸", native: "Español" },
+  { code: "su", name: "Sundanese",         flag: "🇮🇩", native: "Basa Sunda" },
+  { code: "sw", name: "Swahili",           flag: "🇰🇪", native: "Kiswahili" },
+  { code: "sv", name: "Swedish",           flag: "🇸🇪", native: "Svenska" },
+  { code: "tg", name: "Tajik",             flag: "🇹🇯", native: "Тоҷикӣ" },
+  { code: "ta", name: "Tamil",             flag: "🇮🇳", native: "தமிழ்" },
+  { code: "tt", name: "Tatar",             flag: "🇷🇺", native: "Татарча" },
+  { code: "te", name: "Telugu",            flag: "🇮🇳", native: "తెలుగు" },
+  { code: "th", name: "Thai",              flag: "🇹🇭", native: "ภาษาไทย" },
+  { code: "tr", name: "Turkish",           flag: "🇹🇷", native: "Türkçe" },
+  { code: "tk", name: "Turkmen",           flag: "🇹🇲", native: "Türkmençe" },
+  { code: "uk", name: "Ukrainian",         flag: "🇺🇦", native: "Українська" },
+  { code: "ur", name: "Urdu",              flag: "🇵🇰", native: "اردو", rtl: true },
+  { code: "uz", name: "Uzbek",             flag: "🇺🇿", native: "O'zbek" },
+  { code: "vi", name: "Vietnamese",        flag: "🇻🇳", native: "Tiếng Việt" },
+  { code: "cy", name: "Welsh",             flag: "🏴󠁧󠁢󠁷󠁬󠁳󠁿", native: "Cymraeg" },
+  { code: "xh", name: "Xhosa",             flag: "🇿🇦", native: "isiXhosa" },
+  { code: "yi", name: "Yiddish",           flag: "🇮🇱", native: "ייִדיש", rtl: true },
+  { code: "yo", name: "Yoruba",            flag: "🇳🇬", native: "Yorùbá" },
+  { code: "zu", name: "Zulu",              flag: "🇿🇦", native: "isiZulu" },
 ];
 
 const UI = {
@@ -257,7 +354,7 @@ export default function ResumeGenerator() {
   const [navPage, setNavPage] = useState("resume");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [step, setStep] = useState("templates");
-  const [lang, setLang] = useState("en");
+  const [selectedLang, setSelectedLang] = useState(() => WORLD_LANGUAGES.find(l => l.code === "en"));
   const [tpl, setTpl] = useState(null);
   const [form, setForm] = useState({
     name: "", title: "", email: "", phone: "", location: "",
@@ -270,12 +367,13 @@ export default function ResumeGenerator() {
   const [copied, setCopied] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const [phoneCode, setPhoneCode] = useState(() => LANG_CODE[lang] || "+1");
+  const [phoneCode, setPhoneCode] = useState(() => LANG_CODE[selectedLang?.code] || "+1");
   const [zoomed, setZoomed] = useState(false);
   const [aiPolished, setAiPolished] = useState(false);
 
+  const lang = UI_LANGS.has(selectedLang.code) ? selectedLang.code : "en";
   const t = UI[lang];
-  const rtl = LANGUAGES.find((l) => l.code === lang)?.rtl;
+  const rtl = selectedLang.rtl || false;
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
   const fullPhone = form.phone.trim() ? `${phoneCode} ${form.phone.trim()}` : "";
   const liveData = buildLiveData({ ...form, phone: fullPhone }, t);
@@ -313,7 +411,7 @@ export default function ResumeGenerator() {
     setEmailError(eErr); setPhoneError(pErr);
     if (eErr || pErr) return;
     setLoading(true); setResult(null); setAiPolished(false);
-    const langName = LANGUAGES.find((l) => l.code === lang)?.label;
+    const langName = selectedLang.name;
     const prompt = `You are an expert resume writer. Using the candidate details below, write a polished, ATS-friendly resume entirely in ${langName} (every word, including section headings, in ${langName}). Improve weak phrasing and use strong action verbs.
 
 Return ONLY valid JSON, no markdown, in this exact shape:
@@ -547,14 +645,6 @@ Awards: ${form.awards}`;
 
   const mainContent = step === "templates" ? (
     <div style={{ ...rShell }}>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 22 }}>
-        {LANGUAGES.map((l) => (
-          <button key={l.code} onClick={() => setLang(l.code)}
-            style={{ ...chip, ...(lang === l.code ? chipActive : {}) }}>
-            <span style={{ fontSize: 15 }}>{l.flag}</span> {l.label}
-          </button>
-        ))}
-      </div>
       <h1 style={{ ...h1, fontSize: isMobile ? 22 : 30 }}>{t.heading}</h1>
       <p style={{ ...subtitle, fontSize: isMobile ? 13.5 : 15 }}>{t.chooseTpl}</p>
       <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(auto-fill, minmax(140px, 1fr))" : "repeat(auto-fill, minmax(200px, 1fr))" }}>
@@ -876,6 +966,18 @@ Awards: ${form.awards}`;
       {/* ── Main content ── */}
       <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: isMobile ? "8px 4px" : "16px 12px" }}>
 
+        {/* Persistent top bar: language picker */}
+        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center",
+          marginBottom: 10, gap: 8, flexWrap: "wrap" }}>
+          <LanguageDropdown
+            selected={selectedLang}
+            onSelect={(l) => {
+              setSelectedLang(l);
+              setPhoneCode(LANG_CODE[l.code] || "+1");
+            }}
+          />
+        </div>
+
         {/* Mobile top bar */}
         {isMobile && (
           <div style={{ display: "flex", alignItems: "center", gap: 6, overflowX: "auto",
@@ -953,6 +1055,96 @@ Awards: ${form.awards}`;
 
         {pageBody}
       </div>
+    </div>
+  );
+}
+
+function LanguageDropdown({ selected, onSelect }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const close = (e) => { if (ref.current && !ref.current.contains(e.target)) { setOpen(false); setSearch(""); } };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, []);
+
+  const filtered = WORLD_LANGUAGES.filter(l =>
+    l.name.toLowerCase().includes(search.toLowerCase()) ||
+    l.native.toLowerCase().includes(search.toLowerCase()) ||
+    l.code.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div ref={ref} style={{ position: "relative", zIndex: 500 }}>
+      <button onClick={() => setOpen(o => !o)} style={{
+        display: "flex", alignItems: "center", gap: 7, padding: "7px 12px",
+        background: "#161c24", border: "1px solid #2a3441", borderRadius: 9,
+        color: "#e7ecf2", fontSize: 13.5, fontWeight: 600, cursor: "pointer",
+        fontFamily: "inherit", transition: "border-color .15s",
+      }}>
+        <span style={{ fontSize: 17 }}>{selected.flag}</span>
+        <span>{selected.name}</span>
+        <span style={{ fontSize: 10, color: "#6b7fa3", marginLeft: 2 }}>{open ? "▲" : "▼"}</span>
+      </button>
+
+      {open && (
+        <div style={{
+          position: "absolute", right: 0, top: "calc(100% + 6px)",
+          width: 280, background: "#161c24", border: "1px solid #2a3441",
+          borderRadius: 12, boxShadow: "0 16px 48px rgba(0,0,0,0.55)",
+          display: "flex", flexDirection: "column", overflow: "hidden",
+        }}>
+          {/* Search box */}
+          <div style={{ padding: "10px 10px 6px", borderBottom: "1px solid #1e2733" }}>
+            <input
+              autoFocus
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search language…"
+              style={{
+                width: "100%", boxSizing: "border-box",
+                padding: "8px 10px", background: "#0f1419",
+                border: "1px solid #2a3441", borderRadius: 8,
+                color: "#e7ecf2", fontSize: 13, outline: "none",
+                fontFamily: "inherit",
+              }}
+            />
+          </div>
+
+          {/* Language list */}
+          <div style={{ maxHeight: 280, overflowY: "auto" }}>
+            {filtered.length === 0 && (
+              <div style={{ padding: "20px 14px", color: "#5a6880", fontSize: 13, textAlign: "center" }}>
+                No language found
+              </div>
+            )}
+            {filtered.map(l => (
+              <button key={l.code} onClick={() => { onSelect(l); setOpen(false); setSearch(""); }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10, width: "100%",
+                  padding: "9px 14px", border: "none", background: l.code === selected.code ? "#1e2d3d" : "transparent",
+                  cursor: "pointer", textAlign: "left", fontFamily: "inherit",
+                  borderLeft: l.code === selected.code ? "2px solid #2563eb" : "2px solid transparent",
+                  transition: "background .1s",
+                }}>
+                <span style={{ fontSize: 18, flexShrink: 0 }}>{l.flag}</span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ fontSize: 13.5, fontWeight: 600, color: "#e7ecf2", display: "block" }}>{l.name}</span>
+                  <span style={{ fontSize: 11.5, color: "#5a6880" }}>{l.native}</span>
+                </span>
+                {UI_LANGS.has(l.code) && (
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#2563eb",
+                    background: "#2563eb18", padding: "2px 6px", borderRadius: 4, flexShrink: 0 }}>
+                    UI
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
