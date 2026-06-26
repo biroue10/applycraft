@@ -274,6 +274,29 @@ const SAMPLE_RESUME = {
   ],
 };
 
+// ── Cover letter templates ────────────────────────────────────────
+const COVER_TEMPLATES = [
+  { id: "blank",   name: "Blank",   tag: "Plain text, no styling",            accent: "#374151", font: "'Inter', system-ui, sans-serif", blank: true },
+  { id: "classic", name: "Classic", tag: "Traditional block letter, serif",   accent: "#1f2937", font: "'Georgia', 'Times New Roman', serif" },
+  { id: "modern",  name: "Modern",  tag: "Left sidebar with your details",    accent: "#2563eb", font: "'Inter', system-ui, sans-serif" },
+  { id: "minimal", name: "Minimal", tag: "Clean, precise, lots of whitespace",accent: "#0f766e", font: "'Inter', system-ui, sans-serif" },
+  { id: "bold",    name: "Bold",    tag: "Full-bleed accent header",           accent: "#b91c1c", font: "'Plus Jakarta Sans', 'Inter', sans-serif" },
+  { id: "elegant", name: "Elegant", tag: "Soft sidebar, refined serif type",  accent: "#7c3aed", font: "'Georgia', 'Palatino Linotype', serif" },
+];
+
+const SAMPLE_COVER = {
+  name: "Alexandra Johnson", jobTitle: "Senior Product Designer",
+  email: "alex.johnson@email.com", phone: "+1 415 555 0192", location: "San Francisco, CA",
+  date: "June 26, 2026",
+  recipientName: "Mr. David Chen", recipientTitle: "Head of Design",
+  company: "Stripe", companyAddress: "354 Oyster Point Blvd, South San Francisco, CA",
+  subject: "Senior Product Designer Position",
+  opening: "Mr. Chen",
+  body: "I am writing to express my strong interest in the Senior Product Designer position at Stripe. With over eight years of experience crafting intuitive digital experiences for high-growth companies, I am confident in my ability to contribute meaningfully to your team.\n\nDuring my tenure at Figma, I led the redesign of the core editor interface, collaborating closely with engineering to ship 12 major features that improved user satisfaction by 40%.",
+  closing: "I am excited about the opportunity to bring my passion for design systems and user-centred thinking to Stripe. Thank you for your time — I look forward to speaking with you.",
+  signoff: "Sincerely",
+};
+
 // ── Author info (edit here to update the footer) ─────────────────
 const AUTHOR = {
   name: "Isaac Biroue",
@@ -398,6 +421,14 @@ export default function ResumeGenerator() {
   const [phoneCode, setPhoneCode] = useState(() => LANG_CODE[selectedLang?.code] || "+1");
   const [zoomed, setZoomed] = useState(false);
   const [aiPolished, setAiPolished] = useState(false);
+  const [coverStep, setCoverStep] = useState("templates");
+  const [coverTpl, setCoverTpl] = useState(null);
+  const [coverForm, setCoverForm] = useState({
+    name: "", jobTitle: "", email: "", phone: "", location: "",
+    date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
+    recipientName: "", recipientTitle: "", company: "", companyAddress: "",
+    subject: "", opening: "", body: "", closing: "", signoff: "Sincerely",
+  });
 
   const lang = UI_LANGS.has(selectedLang.code) ? selectedLang.code : "en";
   const t = UI[lang];
@@ -837,6 +868,157 @@ Awards: ${form.awards}`;
       </div>
   ) : null;
 
+  // ── Cover letter helpers ──────────────────────────────────────────
+  const coverField = (key, multiline, ph) =>
+    multiline ? (
+      <textarea value={coverForm[key]} onChange={e => setCoverForm(f => ({ ...f, [key]: e.target.value }))}
+        placeholder={ph} rows={4} style={{ ...inputStyle, resize: "vertical", minHeight: 90 }} />
+    ) : (
+      <input value={coverForm[key]} onChange={e => setCoverForm(f => ({ ...f, [key]: e.target.value }))}
+        placeholder={ph} style={inputStyle} />
+    );
+
+  async function downloadCoverPDF() {
+    if (!coverTpl) return;
+    const { default: jsPDF } = await import("jspdf");
+    const d = coverForm;
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageW = 210; const margin = 20; const colW = pageW - 2 * margin;
+    let y = margin;
+    const safe = s => (s || "").replace(/[^\x00-\x7F]/g, c => c);
+    const checkY = (h = 10) => { if (y + h > 277) { doc.addPage(); y = margin; } };
+    const [ar, ag, ab] = [
+      parseInt(coverTpl.accent.slice(1,3),16),
+      parseInt(coverTpl.accent.slice(3,5),16),
+      parseInt(coverTpl.accent.slice(5,7),16),
+    ];
+    doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.setTextColor(17,17,17);
+    doc.text(safe(d.name), margin, y); y += 7;
+    if (d.jobTitle) { doc.setFont("helvetica","italic"); doc.setFontSize(11); doc.setTextColor(ar,ag,ab); doc.text(safe(d.jobTitle), margin, y); y += 5; }
+    const contact = [d.email, d.phone, d.location].filter(Boolean).join("   ·   ");
+    if (contact) { doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(120,120,120); doc.text(safe(contact), margin, y); y += 5; }
+    doc.setDrawColor(ar,ag,ab); doc.setLineWidth(0.4); doc.line(margin, y, pageW-margin, y); y += 7;
+    if (d.date) { doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(100,100,100); doc.text(safe(d.date), margin, y); y += 6; }
+    if (d.recipientName) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(30,30,30); doc.text(safe(d.recipientName), margin, y); y += 5; }
+    if (d.recipientTitle) { doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.text(safe(d.recipientTitle), margin, y); y += 5; }
+    if (d.company) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(ar,ag,ab); doc.text(safe(d.company), margin, y); y += 5; }
+    if (d.companyAddress) { doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(120,120,120); doc.text(safe(d.companyAddress), margin, y); y += 6; }
+    y += 2;
+    if (d.subject) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(30,30,30); doc.text(`Re: ${safe(d.subject)}`, margin, y); y += 6; }
+    if (d.opening) { doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(50,50,50); doc.text(`Dear ${safe(d.opening)},`, margin, y); y += 8; }
+    for (const para of [d.body, d.closing].filter(Boolean)) {
+      for (const block of para.split("\n\n").filter(Boolean)) {
+        checkY(10); doc.setFont("helvetica","normal"); doc.setFontSize(10.5); doc.setTextColor(55,55,55);
+        const lines = doc.splitTextToSize(safe(block), colW);
+        checkY(lines.length * 5 + 4); doc.text(lines, margin, y); y += lines.length * 5 + 5;
+      }
+    }
+    y += 4;
+    doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(50,50,50);
+    doc.text(`${safe(d.signoff || "Sincerely")},`, margin, y); y += 14;
+    doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(17,17,17);
+    doc.text(safe(d.name), margin, y);
+    doc.save(`${safe(d.name || "cover-letter").replace(/\s+/g,"_").toLowerCase()}-cover-letter.pdf`);
+  }
+
+  const coverTemplatesContent = (
+    <div style={rShell}>
+      <h1 style={{ ...h1, fontSize: isMobile ? 22 : 30 }}>Cover Letter Templates</h1>
+      <p style={{ ...subtitle, fontSize: isMobile ? 13.5 : 15 }}>Choose a template to start writing your cover letter</p>
+      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, minmax(0, 1fr))" }}>
+        {COVER_TEMPLATES.map((tp) => (
+          <button key={tp.id} onClick={() => { setCoverTpl(tp); setCoverStep("form"); }}
+            style={tp.blank ? { ...tplCard, border: `1.5px dashed ${C.borderHi}`, background: "transparent", boxShadow: "none" } : tplCard}>
+            <CoverThumbPreview tp={tp} isMobile={isMobile} />
+            <div style={{ padding: isMobile ? "8px 10px" : "12px 14px", visibility: tp.blank ? "hidden" : "visible" }}>
+              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: C.text1 }}>{tp.name}</div>
+              <div style={{ fontSize: isMobile ? 11 : 12.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const coverFormContent = coverTpl ? (
+    <div style={rShell}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+        marginBottom: 20, gap: 12, flexWrap: "wrap" }}>
+        <button onClick={() => setCoverStep("templates")} style={backBtn}>← Back</button>
+        <div style={{ fontSize: 13.5, color: C.text2 }}>
+          Template: <strong style={{ color: coverTpl.accent }}>{coverTpl.name}</strong>
+        </div>
+      </div>
+      <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr" }}>
+        {/* Left: form */}
+        <div>
+          {/* Section heading helper */}
+          {(() => {
+            const sh = (label) => (
+              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px",
+                color: C.text2, marginTop: 22, marginBottom: 10, paddingBottom: 6,
+                borderBottom: `1px solid ${C.border}` }}>{label}</div>
+            );
+            return (
+              <>
+                {sh("Your Details")}
+                <label style={lbl}>Full Name *</label>{coverField("name", false, "Alexandra Johnson")}
+                <label style={lbl}>Job Title</label>{coverField("jobTitle", false, "Senior Product Designer")}
+                <label style={lbl}>Email</label>{coverField("email", false, "you@email.com")}
+                <label style={lbl}>Phone</label>{coverField("phone", false, "+1 415 555 0000")}
+                <label style={lbl}>Location</label>{coverField("location", false, "City, Country")}
+
+                {sh("Recipient & Company")}
+                <label style={lbl}>Date</label>{coverField("date", false, "June 26, 2026")}
+                <label style={lbl}>Recipient Name</label>{coverField("recipientName", false, "Mr. David Chen")}
+                <label style={lbl}>Recipient Title</label>{coverField("recipientTitle", false, "Head of Design")}
+                <label style={lbl}>Company</label>{coverField("company", false, "Stripe")}
+                <label style={lbl}>Company Address</label>{coverField("companyAddress", false, "123 Main St, City")}
+
+                {sh("Letter Content")}
+                <label style={lbl}>Subject / Re:</label>{coverField("subject", false, "Senior Product Designer Position")}
+                <label style={lbl}>Salutation</label>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <span style={{ fontSize: 13.5, color: C.text2, whiteSpace: "nowrap" }}>Dear</span>
+                  <input value={coverForm.opening} onChange={e => setCoverForm(f => ({ ...f, opening: e.target.value }))}
+                    placeholder="Mr. Chen / Hiring Manager" style={{ ...inputStyle, flex: 1 }} />
+                  <span style={{ fontSize: 13.5, color: C.text2 }}>,</span>
+                </div>
+                <label style={lbl}>Opening &amp; Body Paragraphs</label>
+                <textarea value={coverForm.body} onChange={e => setCoverForm(f => ({ ...f, body: e.target.value }))}
+                  placeholder={"Write your paragraphs here.\n\nSeparate paragraphs with a blank line."}
+                  rows={8} style={{ ...inputStyle, resize: "vertical", minHeight: 160 }} />
+                <label style={lbl}>Closing Paragraph</label>
+                <textarea value={coverForm.closing} onChange={e => setCoverForm(f => ({ ...f, closing: e.target.value }))}
+                  placeholder="Thank you for your time and consideration. I look forward to speaking with you."
+                  rows={3} style={{ ...inputStyle, resize: "vertical", minHeight: 80 }} />
+                <label style={lbl}>Sign-off</label>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+                  <input value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
+                    placeholder="Sincerely" style={{ ...inputStyle, flex: 1 }} />
+                  <span style={{ fontSize: 13.5, color: C.text2 }}>,</span>
+                </div>
+                <button onClick={downloadCoverPDF} disabled={!coverForm.name}
+                  style={{ ...cta, background: C.grad, opacity: !coverForm.name ? 0.5 : 1 }}>
+                  ↓ Download PDF
+                </button>
+              </>
+            );
+          })()}
+        </div>
+        {/* Right: live preview */}
+        <div style={{ minWidth: 0, marginTop: isMobile ? 24 : 0 }}>
+          <div style={{ fontSize: 12, color: C.text2, marginBottom: 10, display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ ...badge, ...badgeLive, background: C.elevated, color: C.text2 }}>● Live preview</span>
+          </div>
+          <div style={{ overflowX: "auto" }}>
+            <CoverLetterPaper tpl={coverTpl} data={coverForm} />
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
   // ── Sidebar nav items ──────────────────────────────────────────────
   const NAV = [
     { id: "resume",    icon: "📄", label: "Resume" },
@@ -919,6 +1101,7 @@ Awards: ${form.awards}`;
 
   let pageBody;
   if (navPage === "resume") pageBody = step === "form" ? (formContent || mainContent) : mainContent;
+  else if (navPage === "cover") pageBody = coverStep === "form" ? (coverFormContent || coverTemplatesContent) : coverTemplatesContent;
   else if (navPage === "pricing") pageBody = <PricingPage />;
   else pageBody = <ComingSoon label={NAV.find(n => n.id === navPage)?.label || ""} />;
 
@@ -1843,3 +2026,271 @@ const footerWrap = {
 };
 const footerDot  = { color: C.border, margin: "0 2px" };
 const footerLink = { color: C.text2, textDecoration: "none", transition: "color .15s" };
+
+// ── CoverLetterPaper ──────────────────────────────────────────────
+function CoverLetterPaper({ tpl, data: d, preview = false }) {
+  const paper = {
+    background: "#fff", color: "#1a1a1a",
+    borderRadius: preview ? 0 : 8, minHeight: preview ? 0 : 500,
+    fontFamily: tpl.font, overflow: "hidden",
+    boxShadow: preview ? "none" : "0 8px 30px rgba(0,0,0,0.35)",
+    width: "100%", boxSizing: "border-box",
+  };
+
+  const Paras = ({ text, style = {} }) =>
+    text ? text.split("\n\n").filter(Boolean).map((p, i) => (
+      <p key={i} style={{ fontSize: 13, lineHeight: 1.78, color: "#333", margin: "0 0 14px", ...style }}>{p}</p>
+    )) : null;
+
+  if (tpl.blank) {
+    return (
+      <div style={paper}>
+        <div style={{ padding: "40px 48px", fontSize: 13, lineHeight: 1.85, color: "#333" }}>
+          <div style={{ marginBottom: 20 }}>
+            {d.name && <div style={{ fontWeight: 600 }}>{d.name}</div>}
+            {d.jobTitle && <div>{d.jobTitle}</div>}
+            {[d.email, d.phone, d.location].filter(Boolean).map((c, i) => <div key={i}>{c}</div>)}
+          </div>
+          {d.date && <div style={{ marginBottom: 20 }}>{d.date}</div>}
+          {(d.recipientName || d.company) && (
+            <div style={{ marginBottom: 20 }}>
+              {d.recipientName && <div style={{ fontWeight: 600 }}>{d.recipientName}</div>}
+              {d.recipientTitle && <div>{d.recipientTitle}</div>}
+              {d.company && <div>{d.company}</div>}
+              {d.companyAddress && <div>{d.companyAddress}</div>}
+            </div>
+          )}
+          {d.subject && <div style={{ fontWeight: 600, marginBottom: 16 }}>Re: {d.subject}</div>}
+          {d.opening && <div style={{ marginBottom: 16 }}>Dear {d.opening},</div>}
+          <Paras text={d.body} />
+          <Paras text={d.closing} />
+          <div style={{ marginTop: 32 }}>{d.signoff || "Sincerely"},</div>
+          {!preview && <div style={{ marginTop: 40 }}>{d.name}</div>}
+        </div>
+      </div>
+    );
+  }
+
+  if (tpl.id === "classic") {
+    return (
+      <div style={paper}>
+        <div style={{ padding: "36px 40px" }}>
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#111" }}>{d.name}</div>
+            {d.jobTitle && <div style={{ fontSize: 12, color: tpl.accent, marginTop: 3, fontStyle: "italic" }}>{d.jobTitle}</div>}
+            <div style={{ fontSize: 11, color: "#888", marginTop: 6 }}>
+              {[d.email, d.phone, d.location].filter(Boolean).join("  ·  ")}
+            </div>
+            <div style={{ height: 1, background: tpl.accent + "55", marginTop: 12 }} />
+          </div>
+          {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 18 }}>{d.date}</div>}
+          {(d.recipientName || d.company) && (
+            <div style={{ marginBottom: 20, fontSize: 12.5, lineHeight: 1.7, color: "#333" }}>
+              {d.recipientName && <div style={{ fontWeight: 600 }}>{d.recipientName}</div>}
+              {d.recipientTitle && <div>{d.recipientTitle}</div>}
+              {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}>{d.company}</div>}
+              {d.companyAddress && <div style={{ color: "#999", fontSize: 12 }}>{d.companyAddress}</div>}
+            </div>
+          )}
+          {d.subject && <div style={{ fontSize: 12.5, fontWeight: 600, color: "#111", marginBottom: 16 }}>Re: {d.subject}</div>}
+          {d.opening && <div style={{ fontSize: 13, marginBottom: 16, color: "#333" }}>Dear {d.opening},</div>}
+          <Paras text={d.body} />
+          <Paras text={d.closing} />
+          <div style={{ marginTop: 28 }}>
+            <div style={{ fontSize: 13 }}>{d.signoff || "Sincerely"},</div>
+            {!preview && <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginTop: 36 }}>{d.name}</div>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (tpl.id === "modern") {
+    return (
+      <div style={paper}>
+        <div style={{ display: "flex", minHeight: "100%" }}>
+          <div style={{ width: "32%", background: tpl.accent, color: "#fff", padding: "28px 16px", flexShrink: 0 }}>
+            <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.2, marginBottom: 4 }}>{d.name}</div>
+            {d.jobTitle && <div style={{ fontSize: 11, opacity: 0.72, marginBottom: 18, fontStyle: "italic" }}>{d.jobTitle}</div>}
+            <div style={{ height: 1, background: "rgba(255,255,255,0.22)", marginBottom: 14 }} />
+            {[d.email, d.phone, d.location].filter(Boolean).map((c, i) => (
+              <div key={i} style={{ fontSize: 10.5, opacity: 0.82, marginBottom: 7, wordBreak: "break-all", lineHeight: 1.4 }}>{c}</div>
+            ))}
+          </div>
+          <div style={{ flex: 1, padding: "28px 22px" }}>
+            {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 18 }}>{d.date}</div>}
+            {(d.recipientName || d.company) && (
+              <div style={{ marginBottom: 20, fontSize: 12, lineHeight: 1.7,
+                paddingBottom: 16, borderBottom: "1px solid #e5e7eb" }}>
+                {d.recipientName && <div style={{ fontWeight: 600, color: "#111" }}>{d.recipientName}</div>}
+                {d.recipientTitle && <div style={{ color: "#555" }}>{d.recipientTitle}</div>}
+                {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}>{d.company}</div>}
+                {d.companyAddress && <div style={{ color: "#999", fontSize: 11.5 }}>{d.companyAddress}</div>}
+              </div>
+            )}
+            {d.subject && <div style={{ fontSize: 12.5, fontWeight: 700, color: tpl.accent, marginBottom: 14 }}>Re: {d.subject}</div>}
+            {d.opening && <div style={{ fontSize: 13, marginBottom: 14 }}>Dear {d.opening},</div>}
+            <Paras text={d.body} style={{ fontSize: 12.5 }} />
+            <Paras text={d.closing} style={{ fontSize: 12.5 }} />
+            <div style={{ marginTop: 24 }}>
+              <div style={{ fontSize: 13 }}>{d.signoff || "Sincerely"},</div>
+              {!preview && <div style={{ fontSize: 13, fontWeight: 600, marginTop: 28, color: "#111" }}>{d.name}</div>}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (tpl.id === "minimal") {
+    return (
+      <div style={paper}>
+        <div style={{ padding: "36px 42px" }}>
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ fontSize: 28, fontWeight: 800, color: "#111", letterSpacing: "-0.5px" }}>{d.name}</div>
+            {d.jobTitle && <div style={{ fontSize: 12.5, color: "#666", marginTop: 4 }}>{d.jobTitle}</div>}
+            <div style={{ fontSize: 11, color: "#999", marginTop: 8 }}>
+              {[d.email, d.phone, d.location].filter(Boolean).join("   ·   ")}
+            </div>
+            <div style={{ height: 2, background: tpl.accent, width: 36, marginTop: 14 }} />
+          </div>
+          {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 20 }}>{d.date}</div>}
+          {(d.recipientName || d.company) && (
+            <div style={{ marginBottom: 22, fontSize: 12, lineHeight: 1.7, color: "#555" }}>
+              {d.recipientName && <div style={{ fontWeight: 600, color: "#222" }}>{d.recipientName}</div>}
+              {d.recipientTitle && <div>{d.recipientTitle}</div>}
+              {d.company && <div style={{ fontWeight: 500 }}>{d.company}</div>}
+              {d.companyAddress && <div style={{ color: "#999" }}>{d.companyAddress}</div>}
+            </div>
+          )}
+          {d.subject && <div style={{ fontSize: 11, fontWeight: 700, color: "#555", marginBottom: 18,
+            textTransform: "uppercase", letterSpacing: "1.5px" }}>{d.subject}</div>}
+          {d.opening && <div style={{ fontSize: 13, marginBottom: 16, color: "#444" }}>Dear {d.opening},</div>}
+          <Paras text={d.body} style={{ color: "#444" }} />
+          <Paras text={d.closing} style={{ color: "#444" }} />
+          <div style={{ marginTop: 28 }}>
+            <div style={{ fontSize: 13, color: "#555" }}>{d.signoff || "Sincerely"},</div>
+            {!preview && <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginTop: 36 }}>{d.name}</div>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (tpl.id === "bold") {
+    return (
+      <div style={paper}>
+        <div style={{ background: tpl.accent, padding: "24px 28px 20px" }}>
+          <div style={{ fontSize: 24, fontWeight: 800, color: "#fff" }}>{d.name}</div>
+          {d.jobTitle && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 4 }}>{d.jobTitle}</div>}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "3px 14px", marginTop: 9 }}>
+            {[d.email, d.phone, d.location].filter(Boolean).map((c, i) => (
+              <span key={i} style={{ fontSize: 10.5, color: "rgba(255,255,255,0.68)" }}>{c}</span>
+            ))}
+          </div>
+        </div>
+        <div style={{ padding: "24px 28px" }}>
+          {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 18 }}>{d.date}</div>}
+          {(d.recipientName || d.company) && (
+            <div style={{ marginBottom: 20, fontSize: 12, lineHeight: 1.7,
+              paddingBottom: 16, borderBottom: `2px solid ${tpl.accent}33` }}>
+              {d.recipientName && <div style={{ fontWeight: 600 }}>{d.recipientName}</div>}
+              {d.recipientTitle && <div style={{ color: "#555" }}>{d.recipientTitle}</div>}
+              {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}>{d.company}</div>}
+              {d.companyAddress && <div style={{ color: "#999", fontSize: 11.5 }}>{d.companyAddress}</div>}
+            </div>
+          )}
+          {d.subject && (
+            <div style={{ display: "inline-block", fontSize: 10, fontWeight: 700, textTransform: "uppercase",
+              letterSpacing: "1.5px", color: "#fff", background: tpl.accent,
+              padding: "2px 10px", borderRadius: 3, marginBottom: 16 }}>{d.subject}</div>
+          )}
+          {d.opening && <div style={{ fontSize: 13, marginBottom: 14, display: "block" }}>Dear {d.opening},</div>}
+          <Paras text={d.body} />
+          <Paras text={d.closing} />
+          <div style={{ marginTop: 28 }}>
+            <div style={{ fontSize: 13 }}>{d.signoff || "Sincerely"},</div>
+            {!preview && <div style={{ fontSize: 14, fontWeight: 600, marginTop: 28 }}>{d.name}</div>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (tpl.id === "elegant") {
+    return (
+      <div style={paper}>
+        <div style={{ display: "flex", minHeight: "100%" }}>
+          <div style={{ width: "29%", background: tpl.accent + "0F", padding: "28px 16px",
+            borderRight: `1px solid ${tpl.accent}22`, flexShrink: 0 }}>
+            <div style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", lineHeight: 1.2, marginBottom: 4 }}>{d.name}</div>
+            {d.jobTitle && <div style={{ fontSize: 11, color: tpl.accent, marginBottom: 16, fontStyle: "italic" }}>{d.jobTitle}</div>}
+            <div style={{ height: 1, background: tpl.accent + "55", marginBottom: 14 }} />
+            {[d.email, d.phone, d.location].filter(Boolean).map((c, i) => (
+              <div key={i} style={{ fontSize: 10.5, color: "#555", marginBottom: 8, wordBreak: "break-all" }}>{c}</div>
+            ))}
+            {d.date && (
+              <div style={{ marginTop: 18 }}>
+                <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase",
+                  letterSpacing: "1.5px", color: tpl.accent, marginBottom: 5 }}>Date</div>
+                <div style={{ fontSize: 11, color: "#555" }}>{d.date}</div>
+              </div>
+            )}
+          </div>
+          <div style={{ flex: 1, padding: "28px 22px" }}>
+            {(d.recipientName || d.company) && (
+              <div style={{ marginBottom: 22, fontSize: 12, lineHeight: 1.7,
+                paddingBottom: 16, borderBottom: `1px solid ${tpl.accent}33` }}>
+                {d.recipientName && <div style={{ fontWeight: 600, color: "#111" }}>{d.recipientName}</div>}
+                {d.recipientTitle && <div style={{ color: "#555" }}>{d.recipientTitle}</div>}
+                {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}>{d.company}</div>}
+                {d.companyAddress && <div style={{ color: "#999", fontSize: 11.5 }}>{d.companyAddress}</div>}
+              </div>
+            )}
+            {d.subject && <div style={{ fontSize: 12.5, fontWeight: 600, color: tpl.accent,
+              fontStyle: "italic", marginBottom: 16 }}>Re: {d.subject}</div>}
+            {d.opening && <div style={{ fontSize: 13, marginBottom: 16 }}>Dear {d.opening},</div>}
+            <Paras text={d.body} />
+            <Paras text={d.closing} />
+            <div style={{ marginTop: 28 }}>
+              <div style={{ fontSize: 13 }}>{d.signoff || "Sincerely"},</div>
+              {!preview && <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginTop: 36 }}>{d.name}</div>}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return <CoverLetterPaper tpl={{ ...tpl, id: "classic" }} data={d} preview={preview} />;
+}
+
+// ── CoverThumbPreview ─────────────────────────────────────────────
+function CoverThumbPreview({ tp, isMobile }) {
+  const H   = isMobile ? 200 : 360;
+  const PAD = isMobile ? 6 : 10;
+  const frameBg = "#dde1e7";
+
+  if (tp.blank) {
+    return (
+      <div style={{ height: H + 2 * PAD, background: "#f3f4f6", display: "flex",
+        alignItems: "center", justifyContent: "center" }}>
+        <div style={{ fontSize: 80, color: "#9ca3af", fontWeight: 300, lineHeight: 1 }}>+</div>
+      </div>
+    );
+  }
+
+  const INNER_W = 700;
+  const SCALE   = isMobile ? 0.34 : 0.56;
+
+  return (
+    <div style={{ padding: PAD, background: frameBg }}>
+      <div style={{ height: H, overflow: "hidden", position: "relative", background: "#fff" }}>
+        <div style={{ width: INNER_W, transform: `scale(${SCALE})`, transformOrigin: "top left",
+          position: "absolute", top: 0, left: 0, pointerEvents: "none", userSelect: "none" }}>
+          <CoverLetterPaper tpl={tp} data={SAMPLE_COVER} preview />
+        </div>
+      </div>
+    </div>
+  );
+}
