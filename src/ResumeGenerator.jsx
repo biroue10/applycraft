@@ -254,6 +254,7 @@ function buildLiveData(form, t) {
 }
 
 export default function ResumeGenerator() {
+  const [navPage, setNavPage] = useState("resume");
   const [step, setStep] = useState("templates");
   const [lang, setLang] = useState("en");
   const [tpl, setTpl] = useState(null);
@@ -375,6 +376,14 @@ Awards: ${form.awards}`;
     const src = result || liveData;
     if (!src) return;
     const { jsPDF } = await import("jspdf");
+    // jsPDF built-in fonts only cover Latin-1; normalise text to avoid garbled output
+    const safe = (str = "") =>
+      (str || "")
+        .normalize("NFD")                        // decompose accents
+        .replace(/[̀-ͯ]/g, "")         // strip combining marks
+        .replace(/[^\x00-\xFF]/g, "")            // drop non-latin-1 glyphs
+        .trim();
+
     const doc = new jsPDF({ unit: "mm", format: "a4" });
     const pageW = 210;
     const margin = 18;
@@ -395,7 +404,7 @@ Awards: ${form.awards}`;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(24);
     doc.setTextColor(20, 20, 20);
-    doc.text(src.name || "", margin, y);
+    doc.text(safe(src.name) || "Resume", margin, y);
     y += 9;
 
     // Title
@@ -403,18 +412,20 @@ Awards: ${form.awards}`;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(13);
       doc.setTextColor(ar, ag, ab);
-      doc.text(src.title, margin, y);
-      y += 6;
+      doc.text(safe(src.title), margin, y);
+      y += 7;
     }
 
-    // Contact line
-    const contact = (src.contact || []).filter(Boolean).join("   •   ");
-    if (contact) {
+    // Contact line — split long contact into two rows if needed
+    const contactItems = (src.contact || []).filter(Boolean).map(safe).filter(Boolean);
+    if (contactItems.length) {
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
+      doc.setFontSize(9.5);
       doc.setTextColor(90, 90, 90);
-      doc.text(contact, margin, y);
-      y += 5;
+      const contactLine = contactItems.join("  |  ");
+      const contactWrapped = doc.splitTextToSize(contactLine, colW);
+      doc.text(contactWrapped, margin, y);
+      y += contactWrapped.length * 4.5 + 2;
     }
 
     // Accent rule
@@ -428,7 +439,7 @@ Awards: ${form.awards}`;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10.5);
       doc.setTextColor(55, 55, 55);
-      const lines = doc.splitTextToSize(src.summary, colW);
+      const lines = doc.splitTextToSize(safe(src.summary), colW);
       checkY(lines.length * 5 + 4);
       doc.text(lines, margin, y);
       y += lines.length * 5 + 5;
@@ -440,7 +451,7 @@ Awards: ${form.awards}`;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
       doc.setTextColor(ar, ag, ab);
-      doc.text(section.heading.toUpperCase(), margin, y);
+      doc.text(safe(section.heading).toUpperCase(), margin, y);
       y += 2;
       doc.setDrawColor(ar, ag, ab);
       doc.setLineWidth(0.3);
@@ -451,15 +462,15 @@ Awards: ${form.awards}`;
       doc.setFontSize(10);
       doc.setTextColor(55, 55, 55);
       for (const item of section.items) {
-        const lines = doc.splitTextToSize(`• ${item}`, colW - 3);
+        const lines = doc.splitTextToSize(`- ${safe(item)}`, colW - 3);
         checkY(lines.length * 5 + 2);
         doc.text(lines, margin, y);
-        y += lines.length * 5 + 1.5;
+        y += lines.length * 5 + 2;
       }
       y += 4;
     }
 
-    const fname = (src.name || "resume").replace(/\s+/g, "_").toLowerCase();
+    const fname = safe(src.name || "resume").replace(/\s+/g, "_").toLowerCase() || "resume";
     doc.save(`${fname}.pdf`);
   }
 
@@ -533,37 +544,32 @@ Awards: ${form.awards}`;
     URL.revokeObjectURL(url);
   }
 
-  if (step === "templates") {
-    return (
-      <div dir={rtl ? "rtl" : "ltr"} style={rPage}>
-        <div style={{ ...rShell, maxWidth: 1400 }}>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 22 }}>
-            {LANGUAGES.map((l) => (
-              <button key={l.code} onClick={() => setLang(l.code)}
-                style={{ ...chip, ...(lang === l.code ? chipActive : {}) }}>
-                <span style={{ fontSize: 15 }}>{l.flag}</span> {l.label}
-              </button>
-            ))}
-          </div>
-          <h1 style={{ ...h1, fontSize: isMobile ? 22 : 30 }}>{t.heading}</h1>
-          <p style={{ ...subtitle, fontSize: isMobile ? 13.5 : 15 }}>{t.chooseTpl}</p>
-
-          <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(auto-fill, minmax(140px, 1fr))" : "repeat(auto-fill, minmax(220px, 1fr))" }}>
-            {TEMPLATES.map((tp) => (
-              <button key={tp.id} onClick={() => { setTpl(tp); setStep("form"); }} style={tplCard}>
-                <ThumbPreview tp={tp} />
-                <div style={{ padding: isMobile ? "8px 10px" : "12px 14px", textAlign: rtl ? "right" : "left" }}>
-                  <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: "#f5f8fc" }}>{tp.name}</div>
-                  <div style={{ fontSize: isMobile ? 11 : 12.5, color: "#8a98a8", marginTop: 2 }}>{tp.tag}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-          <PageFooter t={t} />
-        </div>
+  const mainContent = step === "templates" ? (
+    <div style={{ ...rShell }}>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 22 }}>
+        {LANGUAGES.map((l) => (
+          <button key={l.code} onClick={() => setLang(l.code)}
+            style={{ ...chip, ...(lang === l.code ? chipActive : {}) }}>
+            <span style={{ fontSize: 15 }}>{l.flag}</span> {l.label}
+          </button>
+        ))}
       </div>
-    );
-  }
+      <h1 style={{ ...h1, fontSize: isMobile ? 22 : 30 }}>{t.heading}</h1>
+      <p style={{ ...subtitle, fontSize: isMobile ? 13.5 : 15 }}>{t.chooseTpl}</p>
+      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(auto-fill, minmax(140px, 1fr))" : "repeat(auto-fill, minmax(200px, 1fr))" }}>
+        {TEMPLATES.map((tp) => (
+          <button key={tp.id} onClick={() => { setTpl(tp); setStep("form"); }} style={tplCard}>
+            <ThumbPreview tp={tp} />
+            <div style={{ padding: isMobile ? "8px 10px" : "12px 14px", textAlign: rtl ? "right" : "left" }}>
+              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: "#f5f8fc" }}>{tp.name}</div>
+              <div style={{ fontSize: isMobile ? 11 : 12.5, color: "#8a98a8", marginTop: 2 }}>{tp.tag}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+      <PageFooter t={t} />
+    </div>
+  ) : null;
 
   const field = (key, multiline, ph) =>
     multiline ? (
@@ -573,18 +579,17 @@ Awards: ${form.awards}`;
       <input value={form[key]} onChange={set(key)} placeholder={ph || ""} style={inputStyle} />
     );
 
-  return (
-    <div dir={rtl ? "rtl" : "ltr"} style={rPage}>
-      <div style={rShell}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-          marginBottom: 20, gap: 12, flexWrap: "wrap" }}>
-          <button onClick={() => setStep("templates")} style={backBtn}>← {t.back}</button>
-          <div style={{ fontSize: 13.5, color: "#8a98a8" }}>
-            {t.chooseTpl}: <strong style={{ color: tpl.accent }}>{tpl.name}</strong>
-          </div>
+  const formContent = (
+    <div style={rShell}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+        marginBottom: 20, gap: 12, flexWrap: "wrap" }}>
+        <button onClick={() => setStep("templates")} style={backBtn}>← {t.back}</button>
+        <div style={{ fontSize: 13.5, color: "#8a98a8" }}>
+          {t.chooseTpl}: <strong style={{ color: tpl.accent }}>{tpl.name}</strong>
         </div>
+      </div>
 
-        <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr" }}>
+      <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr" }}>
           <div>
             <label style={lbl}>{t.name}</label>{field("name", false, t.placeholderName)}
             <label style={lbl}>{t.title}</label>{field("title", false, t.placeholderTitle)}
@@ -704,6 +709,168 @@ Awards: ${form.awards}`;
           </div>
         </div>
         <PageFooter t={t} />
+      </div>
+  );
+
+  // ── Sidebar nav items ──────────────────────────────────────────────
+  const NAV = [
+    { id: "resume",    icon: "📄", label: "Resume" },
+    { id: "cover",     icon: "✉️",  label: "Cover Letter" },
+    { id: "tracker",   icon: "📋", label: "Job Tracker" },
+    { id: "signature", icon: "✍️",  label: "Email Signature" },
+    { id: "website",   icon: "🌐", label: "Personal Website" },
+  ];
+
+  const ComingSoon = ({ label }) => (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", minHeight: 320, gap: 16, color: "#5a6880", padding: 40 }}>
+      <span style={{ fontSize: 48 }}>🚧</span>
+      <div style={{ fontSize: 22, fontWeight: 700, color: "#9fb0c2" }}>{label}</div>
+      <div style={{ fontSize: 14, textAlign: "center", maxWidth: 320, lineHeight: 1.6 }}>
+        This feature is coming soon. Stay tuned for updates!
+      </div>
+    </div>
+  );
+
+  const PricingPage = () => (
+    <div style={{ padding: isMobile ? 16 : 32 }}>
+      <h2 style={{ ...h1, fontSize: 26, marginBottom: 4 }}>Plans & Pricing</h2>
+      <p style={{ ...subtitle, marginBottom: 32 }}>Choose the plan that fits your needs.</p>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
+        {[
+          { name: "Free", price: "$0", period: "forever", color: "#4b5563", features: [
+            "1 Resume (live preview)", "5 templates", "PDF & DOCX download", "All languages",
+          ], cta: "Get started", active: true },
+          { name: "Pro", price: "$9", period: "/ month", color: "#2563eb", features: [
+            "Unlimited resumes", "All 8 templates", "Cover letter builder", "Email signature", "AI polish (GPT-4)", "Priority support",
+          ], cta: "Upgrade to Pro", badge: "Most popular" },
+          { name: "Team", price: "$29", period: "/ month", color: "#7c3aed", features: [
+            "Everything in Pro", "5 team seats", "Job tracker board", "Personal website builder", "Custom domain", "Dedicated support",
+          ], cta: "Contact us" },
+        ].map((plan) => (
+          <div key={plan.name} style={{ background: plan.badge ? `${plan.color}11` : "#161c24",
+            border: `1.5px solid ${plan.badge ? plan.color : "#232c38"}`,
+            borderRadius: 16, padding: "28px 24px", position: "relative",
+            display: "flex", flexDirection: "column", gap: 0 }}>
+            {plan.badge && (
+              <div style={{ position: "absolute", top: -13, left: "50%", transform: "translateX(-50%)",
+                background: plan.color, color: "#fff", fontSize: 11, fontWeight: 700,
+                padding: "3px 14px", borderRadius: 999, whiteSpace: "nowrap" }}>
+                {plan.badge}
+              </div>
+            )}
+            <div style={{ fontSize: 13, fontWeight: 700, color: plan.color,
+              textTransform: "uppercase", letterSpacing: "1px", marginBottom: 8 }}>{plan.name}</div>
+            <div style={{ fontSize: 38, fontWeight: 800, color: "#f5f8fc", lineHeight: 1 }}>
+              {plan.price}<span style={{ fontSize: 15, fontWeight: 500, color: "#8a98a8" }}>{plan.period}</span>
+            </div>
+            <div style={{ height: 1, background: "#232c38", margin: "20px 0" }} />
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "flex", flexDirection: "column", gap: 10 }}>
+              {plan.features.map((f) => (
+                <li key={f} style={{ fontSize: 13.5, color: "#cdd8e4", display: "flex", gap: 8 }}>
+                  <span style={{ color: plan.color, fontWeight: 700, flexShrink: 0 }}>✓</span>{f}
+                </li>
+              ))}
+            </ul>
+            <button style={{ marginTop: "auto", padding: "11px 0", width: "100%",
+              background: plan.active ? "transparent" : plan.color,
+              border: `1.5px solid ${plan.color}`, borderRadius: 9,
+              color: plan.active ? plan.color : "#fff",
+              fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+              {plan.cta}
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  let pageBody;
+  if (navPage === "resume") pageBody = mainContent || formContent;
+  else if (navPage === "pricing") pageBody = <PricingPage />;
+  else pageBody = <ComingSoon label={NAV.find(n => n.id === navPage)?.label || ""} />;
+
+  return (
+    <div dir={rtl ? "rtl" : "ltr"} style={{ ...rPage, display: "flex", padding: 0, minHeight: "100vh" }}>
+      {/* ── Sidebar ── */}
+      {!isMobile && (
+        <aside style={{ width: 220, flexShrink: 0, background: "#0d1117",
+          borderRight: "1px solid #1e2733", display: "flex", flexDirection: "column",
+          padding: "24px 0", position: "sticky", top: 0, height: "100vh", overflowY: "auto" }}>
+          {/* Logo */}
+          <div style={{ padding: "0 20px 28px", borderBottom: "1px solid #1e2733" }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: "#f5f8fc", letterSpacing: "-0.5px" }}>
+              Resumely
+            </div>
+            <div style={{ fontSize: 11, color: "#5a6880", marginTop: 2 }}>Career toolkit</div>
+          </div>
+
+          {/* Main nav */}
+          <nav style={{ padding: "16px 10px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+            {NAV.map((item) => (
+              <button key={item.id} onClick={() => { setNavPage(item.id); if (item.id === "resume") {} }}
+                style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px",
+                  borderRadius: 9, border: "none", cursor: "pointer", textAlign: "left", width: "100%",
+                  fontSize: 13.5, fontWeight: navPage === item.id ? 700 : 500,
+                  background: navPage === item.id ? "#1e2d3d" : "transparent",
+                  color: navPage === item.id ? "#e7ecf2" : "#6b7fa3",
+                  transition: "background .15s, color .15s" }}>
+                <span style={{ fontSize: 16 }}>{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+          {/* Pricing link */}
+          <div style={{ padding: "12px 10px", borderTop: "1px solid #1e2733" }}>
+            <button onClick={() => setNavPage("pricing")}
+              style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px",
+                borderRadius: 9, border: "none", cursor: "pointer", textAlign: "left", width: "100%",
+                fontSize: 13.5, fontWeight: navPage === "pricing" ? 700 : 500,
+                background: navPage === "pricing" ? "#2563eb22" : "transparent",
+                color: navPage === "pricing" ? "#60a5fa" : "#6b7fa3",
+                transition: "background .15s, color .15s" }}>
+              <span style={{ fontSize: 16 }}>💎</span>
+              Plans & Pricing
+            </button>
+            <div style={{ margin: "10px 12px 0", padding: "10px 12px", background: "#2563eb18",
+              border: "1px solid #2563eb44", borderRadius: 9 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#60a5fa", marginBottom: 4 }}>FREE PLAN</div>
+              <div style={{ fontSize: 11, color: "#5a6880", lineHeight: 1.5 }}>Upgrade to Pro for AI polish, cover letters & more.</div>
+              <button onClick={() => setNavPage("pricing")} style={{ marginTop: 8, fontSize: 11, fontWeight: 700,
+                color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                View plans →
+              </button>
+            </div>
+          </div>
+        </aside>
+      )}
+
+      {/* ── Main content ── */}
+      <div style={{ flex: 1, minWidth: 0, overflowY: "auto", padding: isMobile ? "8px 4px" : "16px 12px" }}>
+        {/* Mobile top bar */}
+        {isMobile && (
+          <div style={{ display: "flex", gap: 6, overflowX: "auto", padding: "4px 0 12px",
+            borderBottom: "1px solid #1e2733", marginBottom: 12 }}>
+            {NAV.map((item) => (
+              <button key={item.id} onClick={() => setNavPage(item.id)}
+                style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 5, padding: "6px 11px",
+                  borderRadius: 8, border: "1px solid #2a3441", cursor: "pointer", fontSize: 12,
+                  background: navPage === item.id ? "#1e2d3d" : "transparent",
+                  color: navPage === item.id ? "#e7ecf2" : "#6b7fa3" }}>
+                {item.icon} {item.label}
+              </button>
+            ))}
+            <button onClick={() => setNavPage("pricing")}
+              style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 5, padding: "6px 11px",
+                borderRadius: 8, border: "1px solid #2563eb44", cursor: "pointer", fontSize: 12,
+                background: navPage === "pricing" ? "#2563eb22" : "transparent",
+                color: navPage === "pricing" ? "#60a5fa" : "#6b7fa3" }}>
+              💎 Pricing
+            </button>
+          </div>
+        )}
+        {pageBody}
       </div>
     </div>
   );
