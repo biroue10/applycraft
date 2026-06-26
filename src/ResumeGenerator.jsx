@@ -1124,11 +1124,13 @@ Awards: ${form.awards}`;
     <div style={{ padding: isMobile ? 20 : 40, maxWidth: 720 }}>
       {/* Hero */}
       <div style={{ marginBottom: 40 }}>
-        <div style={{ fontSize: isMobile ? 28 : 36, fontWeight: 800, letterSpacing: "-1px",
-          background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-          marginBottom: 12 }}>
+        <button onClick={() => setAppView("landing")}
+          style={{ background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            fontSize: isMobile ? 28 : 36, fontWeight: 800, letterSpacing: "-1px",
+            border: "none", cursor: "pointer", padding: 0, display: "block",
+            marginBottom: 12, fontFamily: "inherit" }}>
           ApplyCraft
-        </div>
+        </button>
         <p style={{ fontSize: 16, color: C.text2, lineHeight: 1.75, margin: 0, maxWidth: 560 }}>
           A free, privacy-first tool for building professional resumes and cover letters —
           no account required, no data stored, no paywalls.
@@ -1257,10 +1259,12 @@ Awards: ${form.awards}`;
           zIndex: 100, background: C.bg + "ee", backdropFilter: "blur(12px)" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 64,
             display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.5px",
-            background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          <button onClick={() => setAppView("landing")}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 0,
+              fontSize: 20, fontWeight: 800, letterSpacing: "-0.5px",
+              background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             ApplyCraft
-          </div>
+          </button>
           <button onClick={() => enter("resume")}
             style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
               padding: "8px 20px", fontSize: 13.5, fontWeight: 700, cursor: "pointer" }}>
@@ -1367,8 +1371,10 @@ Awards: ${form.awards}`;
         <div style={{ borderTop: `1px solid ${C.border}`, padding: "24px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex",
             justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, background: C.grad,
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ApplyCraft</div>
+            <button onClick={() => setAppView("landing")}
+              style={{ background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                fontSize: 14, fontWeight: 700, border: "none", cursor: "pointer", padding: 0,
+                fontFamily: "inherit" }}>ApplyCraft</button>
             <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft · applycraft.io</div>
           </div>
         </div>
