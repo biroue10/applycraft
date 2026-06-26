@@ -207,12 +207,12 @@ export default function ResumeGenerator() {
   });
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [phoneCode, setPhoneCode] = useState(() => LANG_CODE[lang] || "+1");
   const [zoomed, setZoomed] = useState(false);
+  const [aiPolished, setAiPolished] = useState(false);
 
   const t = UI[lang];
   const rtl = LANGUAGES.find((l) => l.code === lang)?.rtl;
@@ -252,7 +252,7 @@ export default function ResumeGenerator() {
     const pErr = validatePhone(form.phone);
     setEmailError(eErr); setPhoneError(pErr);
     if (eErr || pErr) return;
-    setLoading(true); setError(""); setResult(null);
+    setLoading(true); setResult(null); setAiPolished(false);
     const langName = LANGUAGES.find((l) => l.code === lang)?.label;
     const prompt = `You are an expert resume writer. Using the candidate details below, write a polished, ATS-friendly resume entirely in ${langName} (every word, including section headings, in ${langName}). Improve weak phrasing and use strong action verbs.
 
@@ -287,11 +287,9 @@ Skills: ${form.skills}`;
       const text = data.content.filter((b) => b.type === "text").map((b) => b.text).join("").trim();
       const clean = text.replace(/```json|```/g, "").trim();
       setResult(JSON.parse(clean));
-    } catch (err) {
-      // No AI backend (e.g. running locally or on static hosting):
-      // fall back to the live form data so the preview still renders.
+      setAiPolished(true);
+    } catch {
       setResult(buildLiveData({ ...form, phone: fullPhone }, t));
-      setError("AI polish needs a backend with an API key — showing your raw entries instead.");
     } finally {
       setLoading(false);
     }
@@ -562,16 +560,15 @@ Skills: ${form.skills}`;
             <button onClick={generate} disabled={loading || !form.name} style={{ ...cta, background: tpl.accent }}>
               {loading ? t.generating : t.generate}
             </button>
-            {error && <p style={{ color: "#f87171", fontSize: 14, marginTop: 12 }}>{error}</p>}
           </div>
 
           <div style={{ minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10,
               marginTop: isMobile ? 24 : 0, flexWrap: "wrap" }}>
-              <span style={{ ...badge, ...(result ? badgePolished : badgeLive),
-                background: result ? `${tpl.accent}22` : "#1f2937",
-                color: result ? tpl.accent : "#9fb0c2" }}>
-                {result ? "✦ AI-polished" : "● Live preview"}
+              <span style={{ ...badge, ...(aiPolished ? badgePolished : badgeLive),
+                background: aiPolished ? `${tpl.accent}22` : "#1f2937",
+                color: aiPolished ? tpl.accent : "#9fb0c2" }}>
+                {aiPolished ? "✦ AI-polished" : "● Live preview"}
               </span>
               {result && (
                 <>
