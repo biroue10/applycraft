@@ -1299,12 +1299,12 @@ Awards: ${form.awards}`;
         {/* Nav */}
         <nav style={{ borderBottom: `1px solid ${C.border}`, position: "fixed", top: 0,
           left: 0, right: 0, zIndex: 100, background: C.bg + "ee", backdropFilter: "blur(12px)" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 64,
+          <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px", height: 76,
             display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <button onClick={() => setAppView("landing")}
             style={{ background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               border: "none", cursor: "pointer", padding: 0, flexShrink: 0,
-              fontSize: 20, fontWeight: 800, letterSpacing: "-0.5px", fontFamily: "inherit" }}>
+              fontSize: 26, fontWeight: 800, letterSpacing: "-0.8px", fontFamily: "inherit" }}>
             ApplyCraft
           </button>
 
@@ -1334,8 +1334,8 @@ Awards: ${form.awards}`;
           </div>
 
           <button onClick={() => enter("resume")}
-            style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
-              padding: "8px 20px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
+            style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
+              padding: "10px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}>
             Get Started — Free
           </button>
           </div>
@@ -1343,7 +1343,7 @@ Awards: ${form.awards}`;
 
         {/* Hero */}
         <div style={{ background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${C.glow} 0%, transparent 70%)` }}>
-          <div style={{ maxWidth: 860, margin: "0 auto", textAlign: "center", padding: "154px 24px 80px" }}>
+          <div style={{ maxWidth: 860, margin: "0 auto", textAlign: "center", padding: "166px 24px 80px" }}>
             <div style={{ animation: "acFadeUp 0.6s ease 0.05s both", display: "inline-block",
               fontSize: 12, fontWeight: 600, letterSpacing: "2px",
               textTransform: "uppercase", color: C.accent2, background: `${C.accent}18`,
@@ -1366,7 +1366,7 @@ Awards: ${form.awards}`;
             <div style={{ animation: "acFadeUp 0.65s ease 0.5s both",
               display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
               <button onClick={() => enter("resume")}
-                style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
+                style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
                   padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer",
                   animation: "acPulse 2.8s ease-in-out 1.4s infinite",
                   transition: "opacity 0.2s" }}>
@@ -1374,7 +1374,7 @@ Awards: ${form.awards}`;
               </button>
               <button onClick={() => enter("cover")}
                 style={{ background: "transparent", color: C.text1, border: `1.5px solid ${C.borderHi}`,
-                  borderRadius: 10, padding: "14px 32px", fontSize: 15, fontWeight: 600, cursor: "pointer",
+                  borderRadius: 3, padding: "14px 32px", fontSize: 15, fontWeight: 600, cursor: "pointer",
                   transition: "border-color 0.2s, background 0.2s" }}
                 onMouseEnter={e => { e.currentTarget.style.background = `${C.borderHi}18`; }}
                 onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}>
@@ -1442,7 +1442,7 @@ Awards: ${form.awards}`;
             </div>
             <FadeIn delay={400} style={{ textAlign: "center", marginTop: 44 }}>
               <button onClick={() => enter("resume")}
-                style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
+                style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
                   padding: "13px 30px", fontSize: 14.5, fontWeight: 700, cursor: "pointer",
                   boxShadow: "0 4px 20px rgba(99,102,241,0.35)",
                   transition: "opacity 0.2s, transform 0.2s" }}
@@ -1463,9 +1463,10 @@ Awards: ${form.awards}`;
             </FadeIn>
             {(() => {
               const q = tplSearch.trim().toLowerCase();
-              const visible = TEMPLATES.filter(t => !t.blank).slice(0, 22).filter(t =>
+              const all = TEMPLATES.filter(t => !t.blank).filter(t =>
                 !q || t.name.toLowerCase().includes(q) || t.tag.toLowerCase().includes(q)
               );
+              const visible = all.slice(0, 6);
               if (visible.length === 0) return (
                 <div style={{ textAlign: "center", padding: "60px 0", color: C.text3 }}>
                   <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
@@ -1477,18 +1478,18 @@ Awards: ${form.awards}`;
                   </button>
                 </div>
               );
-              return (
+              return (<>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 32 }}>
               {visible.map((tp, i) => (
                 <FadeIn key={tp.id} delay={i * 60}>
                   <button onClick={() => enter("resume")}
-                    style={{ background: "transparent", border: "none", borderRadius: 10,
+                    style={{ background: "transparent", border: "none", borderRadius: 0,
                       overflow: "visible", cursor: "pointer", padding: 0, width: "100%",
                       transition: "transform 0.22s cubic-bezier(0.22,1,0.36,1)",
                       fontFamily: "inherit", textAlign: "left" }}
                     onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-7px) scale(1.015)"; }}
                     onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
-                    <div style={{ borderRadius: 8, overflow: "hidden",
+                    <div style={{ borderRadius: 0, overflow: "hidden",
                       boxShadow: "0 4px 22px rgba(0,0,0,0.38)",
                       transition: "box-shadow 0.22s ease" }}>
                       <ThumbPreview tp={tp} isMobile={false} />
@@ -1501,14 +1502,28 @@ Awards: ${form.awards}`;
                 </FadeIn>
               ))}
             </div>
-              );
+            <FadeIn delay={420} style={{ textAlign: "center", marginTop: 48 }}>
+              <button onClick={() => enter("resume")}
+                style={{ background: "transparent", border: `1.5px solid ${C.borderHi}`,
+                  borderRadius: 3, padding: "13px 36px", fontSize: 14.5, fontWeight: 600,
+                  color: C.text1, cursor: "pointer", fontFamily: "inherit",
+                  transition: "background 0.2s, border-color 0.2s" }}
+                onMouseEnter={e => { e.currentTarget.style.background = `${C.borderHi}18`; e.currentTarget.style.borderColor = C.accent2; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = C.borderHi; }}>
+                Browse all 22 templates →
+              </button>
+              <div style={{ fontSize: 12, color: C.text3, marginTop: 10 }}>
+                {all.length > 6 ? `Showing 6 of ${all.length} templates` : `${all.length} template${all.length !== 1 ? "s" : ""} found`}
+              </div>
+            </FadeIn>
+              </>);
             })()}
           </div>
         </div>
 
         {/* Free pledge */}
         <FadeIn>
-          <div style={{ margin: "0 24px 80px", borderRadius: 18,
+          <div style={{ margin: "0 24px 80px", borderRadius: 4,
             background: `linear-gradient(135deg, ${C.accent}14 0%, ${C.accent2}08 100%)`,
             border: `1px solid ${C.accent}30`, padding: "56px 40px", textAlign: "center" }}>
             <div style={{ maxWidth: 680, margin: "0 auto" }}>
@@ -1562,7 +1577,7 @@ Awards: ${form.awards}`;
               ].map((f, i) => (
                 <FadeIn key={f.title} delay={i * 55}>
                   <div style={{ background: C.elevated, border: `1px solid ${C.border}`,
-                    borderRadius: 14, padding: "22px 20px", position: "relative",
+                    borderRadius: 3, padding: "22px 20px", position: "relative",
                     opacity: f.soon ? 0.75 : 1,
                     transition: "border-color 0.2s, transform 0.2s" }}
                     onMouseEnter={e => { if (!f.soon) { e.currentTarget.style.borderColor = `${C.accent}66`; e.currentTarget.style.transform = "translateY(-2px)"; } }}
@@ -1621,7 +1636,7 @@ Awards: ${form.awards}`;
             </FadeIn>
             <FadeIn delay={120}>
               <button onClick={() => enter("resume")}
-                style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
+                style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
                   padding: "16px 40px", fontSize: 16, fontWeight: 700, cursor: "pointer",
                   boxShadow: "0 4px 24px rgba(99,102,241,0.35)",
                   transition: "opacity 0.2s, transform 0.2s" }}
