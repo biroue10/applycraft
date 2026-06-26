@@ -2339,7 +2339,7 @@ const subtitle = {
   color: C.text2, fontSize: 15, margin: "0 0 24px", lineHeight: 1.65,
   fontFamily: "'Inter', sans-serif", fontWeight: 400,
 };
-const tplGrid = { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 14 };
+const tplGrid = { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 28 };
 const tplCard = {
   background: "transparent",
   border: "none",
