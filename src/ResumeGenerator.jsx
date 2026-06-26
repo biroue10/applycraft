@@ -1345,21 +1345,25 @@ Awards: ${form.awards}`;
         </div>
 
         {/* Template strip */}
-        <div style={{ padding: "0 24px 80px" }}>
+        <div style={{ padding: "0 24px 100px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <p style={{ textAlign: "center", fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-              letterSpacing: "2px", color: C.text3, marginBottom: 28 }}>9 professional templates</p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
-              {TEMPLATES.filter(t => !t.blank).slice(0, 8).map((tp) => (
+              letterSpacing: "2px", color: C.text3, marginBottom: 40 }}>13 professional templates</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 32 }}>
+              {TEMPLATES.filter(t => !t.blank).slice(0, 12).map((tp) => (
                 <button key={tp.id} onClick={() => enter("resume")}
-                  style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8,
-                    overflow: "hidden", cursor: "pointer", padding: 0, transition: "border-color .2s, transform .15s",
-                    fontFamily: "inherit" }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = tp.accent; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.transform = "none"; }}>
-                  <ThumbPreview tp={tp} isMobile={true} />
-                  <div style={{ padding: "8px 10px", textAlign: "left" }}>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: C.text1 }}>{tp.name}</div>
+                  style={{ background: "transparent", border: "none", borderRadius: 10,
+                    overflow: "visible", cursor: "pointer", padding: 0,
+                    transition: "transform .18s", fontFamily: "inherit", textAlign: "left" }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-5px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
+                  <div style={{ borderRadius: 8, overflow: "hidden",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.35)" }}>
+                    <ThumbPreview tp={tp} isMobile={false} />
+                  </div>
+                  <div style={{ padding: "10px 4px 0" }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>{tp.name}</div>
+                    <div style={{ fontSize: 11.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
                   </div>
                 </button>
               ))}
