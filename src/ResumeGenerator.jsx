@@ -685,12 +685,12 @@ Awards: ${form.awards}`;
               boxShadow: "none",
             } : tplCard}>
             <ThumbPreview tp={tp} isMobile={isMobile} />
-            <div style={{ padding: isMobile ? "8px 10px" : "12px 14px", textAlign: rtl ? "right" : "left" }}>
-              <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: tp.blank ? C.text2 : C.text1 }}>
-                {tp.blank ? "✕  " : ""}{tp.name}
+            {!tp.blank && (
+              <div style={{ padding: isMobile ? "8px 10px" : "12px 14px", textAlign: rtl ? "right" : "left" }}>
+                <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 15, color: C.text1 }}>{tp.name}</div>
+                <div style={{ fontSize: isMobile ? 11 : 12.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
               </div>
-              <div style={{ fontSize: isMobile ? 11 : 12.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
-            </div>
+            )}
           </button>
         ))}
       </div>
