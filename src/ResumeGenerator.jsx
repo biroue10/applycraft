@@ -485,6 +485,13 @@ export default function ResumeGenerator() {
   const [coachAnswers, setCoachAnswers] = useState({});
   const [coachResult, setCoachResult] = useState("");
   const [atsOpen, setAtsOpen] = useState(false);
+  const [trackerCards, setTrackerCards] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("ac_tracker") || "[]"); } catch { return []; }
+  });
+  const [trackerModal, setTrackerModal] = useState({ open: false, card: null });
+  const [trackerDragId, setTrackerDragId] = useState(null);
+  const [trackerDragOver, setTrackerDragOver] = useState(null);
+  useEffect(() => { localStorage.setItem("ac_tracker", JSON.stringify(trackerCards)); }, [trackerCards]);
   const [demoName, setDemoName] = useState("");
   const [demoTitle, setDemoTitle] = useState("");
   const [demoExp, setDemoExp] = useState("");
@@ -2019,9 +2026,316 @@ Awards: ${form.awards}`;
     </div>
   );
 
+  // ── Job Tracker ─────────────────────────────────────────────────────
+  const TRACKER_COLS = [
+    { id: "saved",      label: "Saved",      icon: "🔖", color: "#64748B" },
+    { id: "preparing",  label: "Preparing",  icon: "✏️",  color: "#6366F1" },
+    { id: "applied",    label: "Applied",    icon: "📤", color: "#3B82F6" },
+    { id: "interview",  label: "Interview",  icon: "🎤", color: "#F59E0B" },
+    { id: "offer",      label: "Offer",      icon: "🎉", color: "#10B981" },
+    { id: "rejected",   label: "Rejected",   icon: "✕",  color: "#EF4444" },
+  ];
+
+  const newCard = (col) => ({
+    id: `tc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+    column: col,
+    company: "", position: "", jobDescription: "", salary: "", link: "",
+    resume: "", coverLetter: "", interviewDate: "", notes: "",
+    recruiter: "", reminder: "",
+    createdAt: Date.now(),
+  });
+
+  const saveCard = (card) => {
+    setTrackerCards(prev => {
+      const exists = prev.find(c => c.id === card.id);
+      return exists ? prev.map(c => c.id === card.id ? card : c) : [...prev, card];
+    });
+    setTrackerModal({ open: false, card: null });
+  };
+
+  const deleteCard = (id) => {
+    setTrackerCards(prev => prev.filter(c => c.id !== id));
+    setTrackerModal({ open: false, card: null });
+  };
+
+  const moveCard = (id, toCol) => {
+    setTrackerCards(prev => prev.map(c => c.id === id ? { ...c, column: toCol } : c));
+  };
+
+  const trackerContent = (() => {
+    const col = TRACKER_COLS.find(c => c.id === (trackerModal.card?.column || "saved"));
+    const editCard = trackerModal.card;
+
+    return (
+      <div style={{ padding: isMobile ? "16px 8px" : "24px 20px", minHeight: "100%" }}>
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+          marginBottom: 24, gap: 12, flexWrap: "wrap" }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: isMobile ? 20 : 26, fontWeight: 800,
+              color: C.text1, letterSpacing: "-0.5px" }}>Job Tracker</h2>
+            <p style={{ margin: "4px 0 0", fontSize: 13, color: C.text2 }}>
+              {trackerCards.length} application{trackerCards.length !== 1 ? "s" : ""} tracked
+            </p>
+          </div>
+          {/* Stats chips */}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {[
+              { label: "Applied", count: trackerCards.filter(c => ["applied","interview","offer"].includes(c.column)).length, color: "#3B82F6" },
+              { label: "Interviews", count: trackerCards.filter(c => c.column === "interview").length, color: "#F59E0B" },
+              { label: "Offers", count: trackerCards.filter(c => c.column === "offer").length, color: "#10B981" },
+            ].map(s => (
+              <div key={s.label} style={{ background: `${s.color}18`, border: `1px solid ${s.color}30`,
+                borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 700, color: s.color }}>
+                {s.count} {s.label}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Kanban board */}
+        <div style={{ display: "flex", gap: 14, overflowX: "auto", paddingBottom: 16,
+          alignItems: "flex-start", minHeight: 400 }}>
+          {TRACKER_COLS.map(tcol => {
+            const cards = trackerCards.filter(c => c.column === tcol.id);
+            const isDragTarget = trackerDragOver === tcol.id;
+            return (
+              <div key={tcol.id}
+                onDragOver={e => { e.preventDefault(); setTrackerDragOver(tcol.id); }}
+                onDragLeave={() => setTrackerDragOver(null)}
+                onDrop={e => {
+                  e.preventDefault();
+                  if (trackerDragId) moveCard(trackerDragId, tcol.id);
+                  setTrackerDragId(null); setTrackerDragOver(null);
+                }}
+                style={{ flex: "0 0 220px", background: isDragTarget ? `${tcol.color}18` : C.surface,
+                  border: `1.5px solid ${isDragTarget ? tcol.color : C.border}`,
+                  borderRadius: 12, padding: "12px 10px", minHeight: 160,
+                  transition: "border-color 0.15s, background 0.15s" }}>
+                {/* Column header */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+                  marginBottom: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ fontSize: 13 }}>{tcol.icon}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: tcol.color,
+                      textTransform: "uppercase", letterSpacing: "0.8px" }}>{tcol.label}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: C.text3,
+                      background: C.elevated, borderRadius: 999, padding: "1px 8px",
+                      border: `1px solid ${C.border}` }}>{cards.length}</span>
+                    <button onClick={() => setTrackerModal({ open: true, card: { ...newCard(tcol.id) } })}
+                      style={{ background: "none", border: `1px solid ${C.border}`, borderRadius: 6,
+                        width: 22, height: 22, cursor: "pointer", color: C.text3, fontSize: 14,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        lineHeight: 1, padding: 0, fontFamily: "inherit" }}>+</button>
+                  </div>
+                </div>
+
+                {/* Cards */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {cards.map(card => (
+                    <div key={card.id}
+                      draggable
+                      onDragStart={() => setTrackerDragId(card.id)}
+                      onDragEnd={() => { setTrackerDragId(null); setTrackerDragOver(null); }}
+                      onClick={() => setTrackerModal({ open: true, card: { ...card } })}
+                      style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 9,
+                        padding: "10px 12px", cursor: "grab", transition: "transform 0.1s, box-shadow 0.1s",
+                        opacity: trackerDragId === card.id ? 0.45 : 1,
+                        borderLeft: `3px solid ${tcol.color}` }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 4px 16px #0006"; }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: C.text1, marginBottom: 3,
+                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {card.company || <span style={{ color: C.text3 }}>Company</span>}
+                      </div>
+                      <div style={{ fontSize: 11.5, color: C.text2, marginBottom: 6,
+                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {card.position || <span style={{ color: C.text3 }}>Position</span>}
+                      </div>
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        {card.salary && (
+                          <span style={{ fontSize: 10, color: "#10B981", background: "#10B98114",
+                            padding: "1px 6px", borderRadius: 4, fontWeight: 600 }}>{card.salary}</span>
+                        )}
+                        {card.interviewDate && (
+                          <span style={{ fontSize: 10, color: "#F59E0B", background: "#F59E0B14",
+                            padding: "1px 6px", borderRadius: 4, fontWeight: 600 }}>📅 {card.interviewDate}</span>
+                        )}
+                        {card.reminder && (
+                          <span style={{ fontSize: 10, color: "#6366F1", background: "#6366F114",
+                            padding: "1px 6px", borderRadius: 4, fontWeight: 600 }}>⏰</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Empty state */}
+                {cards.length === 0 && (
+                  <div style={{ textAlign: "center", padding: "24px 8px", color: C.text3, fontSize: 12 }}>
+                    Drop cards here
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Add first application CTA */}
+        {trackerCards.length === 0 && (
+          <div style={{ textAlign: "center", marginTop: 32, padding: "28px 24px",
+            background: C.surface, border: `1px dashed ${C.border}`, borderRadius: 14 }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.text1, marginBottom: 8 }}>
+              Start tracking your applications
+            </div>
+            <div style={{ fontSize: 13, color: C.text2, marginBottom: 20 }}>
+              Click + in any column, or drag cards between stages as you progress.
+            </div>
+            <button onClick={() => setTrackerModal({ open: true, card: { ...newCard("saved") } })}
+              style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
+                padding: "10px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+              Add first application
+            </button>
+          </div>
+        )}
+
+        {/* ── Detail Modal ── */}
+        {trackerModal.open && editCard && (() => {
+          const tcol = TRACKER_COLS.find(c => c.id === editCard.column) || TRACKER_COLS[0];
+          const isNew = !trackerCards.find(c => c.id === editCard.id);
+          const setField = (k) => (e) => setTrackerModal(m => ({ ...m, card: { ...m.card, [k]: e.target.value } }));
+          const mInput = { width: "100%", background: C.surface, border: `1px solid ${C.border}`,
+            borderRadius: 8, padding: "9px 12px", fontSize: 13.5, color: C.text1,
+            fontFamily: "inherit", outline: "none", boxSizing: "border-box" };
+
+          return (
+            <div style={{ position: "fixed", inset: 0, background: "#00000088", zIndex: 1000,
+              display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+              onClick={e => { if (e.target === e.currentTarget) setTrackerModal({ open: false, card: null }); }}>
+              <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 18,
+                width: "100%", maxWidth: 600, maxHeight: "90vh", overflowY: "auto", padding: 0 }}>
+
+                {/* Modal header */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+                  padding: "18px 24px", borderBottom: `1px solid ${C.border}`,
+                  background: `${tcol.color}10`, borderRadius: "18px 18px 0 0", position: "sticky", top: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ fontSize: 18 }}>{tcol.icon}</span>
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 800, color: C.text1 }}>
+                        {isNew ? "New Application" : (editCard.company || "Application")}
+                      </div>
+                      <div style={{ fontSize: 12, color: tcol.color, fontWeight: 600 }}>{tcol.label}</div>
+                    </div>
+                  </div>
+                  <button onClick={() => setTrackerModal({ open: false, card: null })}
+                    style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8,
+                      width: 32, height: 32, cursor: "pointer", color: C.text2, fontSize: 16,
+                      display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>✕</button>
+                </div>
+
+                <div style={{ padding: "20px 24px" }}>
+                  {/* Move to column */}
+                  <div style={{ marginBottom: 20 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
+                      letterSpacing: "1px", color: C.text3, display: "block", marginBottom: 8 }}>Stage</label>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      {TRACKER_COLS.map(tc => (
+                        <button key={tc.id}
+                          onClick={() => setTrackerModal(m => ({ ...m, card: { ...m.card, column: tc.id } }))}
+                          style={{ padding: "5px 12px", borderRadius: 999, fontSize: 12, fontWeight: 600,
+                            border: `1.5px solid ${editCard.column === tc.id ? tc.color : C.border}`,
+                            background: editCard.column === tc.id ? `${tc.color}20` : "transparent",
+                            color: editCard.column === tc.id ? tc.color : C.text2,
+                            cursor: "pointer", fontFamily: "inherit", transition: "all 0.12s" }}>
+                          {tc.icon} {tc.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Core fields */}
+                  {[
+                    { k: "company",   label: "Company *",       ph: "e.g. Stripe" },
+                    { k: "position",  label: "Position *",      ph: "e.g. Senior Engineer" },
+                    { k: "salary",    label: "Salary / Range",  ph: "e.g. $120k–$140k" },
+                    { k: "link",      label: "Job listing URL", ph: "https://..." },
+                    { k: "recruiter", label: "Recruiter contact", ph: "Name · email · LinkedIn" },
+                    { k: "resume",    label: "Resume used",     ph: "e.g. Atlas template — tech variant" },
+                    { k: "coverLetter", label: "Cover letter used", ph: "e.g. Modern template" },
+                    { k: "interviewDate", label: "Interview date", ph: "e.g. 2026-07-15 at 14:00" },
+                    { k: "reminder",  label: "Follow-up reminder", ph: "e.g. Follow up if no reply by July 10" },
+                  ].map(({ k, label, ph }) => (
+                    <div key={k} style={{ marginBottom: 14 }}>
+                      <label style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
+                        display: "block", marginBottom: 5 }}>{label}</label>
+                      <input value={editCard[k] || ""} onChange={setField(k)}
+                        placeholder={ph} style={mInput}
+                        onFocus={e => { e.target.style.borderColor = tcol.color; e.target.style.boxShadow = `0 0 0 3px ${tcol.color}22`; }}
+                        onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = "none"; }} />
+                    </div>
+                  ))}
+
+                  {/* Job description */}
+                  <div style={{ marginBottom: 14 }}>
+                    <label style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
+                      display: "block", marginBottom: 5 }}>Job description / key requirements</label>
+                    <textarea value={editCard.jobDescription || ""} onChange={setField("jobDescription")}
+                      placeholder="Paste the job description or key points to tailor your resume..."
+                      rows={4} style={{ ...mInput, resize: "vertical", lineHeight: 1.6 }}
+                      onFocus={e => { e.target.style.borderColor = tcol.color; e.target.style.boxShadow = `0 0 0 3px ${tcol.color}22`; }}
+                      onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = "none"; }} />
+                  </div>
+
+                  {/* Notes */}
+                  <div style={{ marginBottom: 20 }}>
+                    <label style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
+                      display: "block", marginBottom: 5 }}>Notes</label>
+                    <textarea value={editCard.notes || ""} onChange={setField("notes")}
+                      placeholder="Interview feedback, impressions, to-dos..."
+                      rows={3} style={{ ...mInput, resize: "vertical", lineHeight: 1.6 }}
+                      onFocus={e => { e.target.style.borderColor = tcol.color; e.target.style.boxShadow = `0 0 0 3px ${tcol.color}22`; }}
+                      onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = "none"; }} />
+                  </div>
+
+                  {/* Action row */}
+                  <div style={{ display: "flex", gap: 10, justifyContent: "space-between", flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button onClick={() => saveCard(editCard)}
+                        style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
+                          padding: "10px 22px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                        {isNew ? "Add application" : "Save changes"}
+                      </button>
+                      <button onClick={() => setTrackerModal({ open: false, card: null })}
+                        style={{ background: "transparent", color: C.text2, border: `1px solid ${C.border}`,
+                          borderRadius: 8, padding: "10px 16px", fontSize: 13.5, cursor: "pointer", fontFamily: "inherit" }}>
+                        Cancel
+                      </button>
+                    </div>
+                    {!isNew && (
+                      <button onClick={() => deleteCard(editCard.id)}
+                        style={{ background: "transparent", color: "#EF4444", border: "1px solid #EF444430",
+                          borderRadius: 8, padding: "10px 16px", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+      </div>
+    );
+  })();
+
   let pageBody;
   if (navPage === "resume") pageBody = step === "form" ? (formContent || mainContent) : mainContent;
   else if (navPage === "cover") pageBody = coverStep === "form" ? (coverFormContent || coverTemplatesContent) : coverTemplatesContent;
+  else if (navPage === "tracker") pageBody = trackerContent;
   else if (navPage === "pricing") pageBody = <PricingPage />;
   else if (navPage === "about") pageBody = <AboutPage />;
   else pageBody = <ComingSoon label={NAV.find(n => n.id === navPage)?.label || ""} />;
