@@ -7,6 +7,10 @@
 <meta name="description" content="Paste your resume and get a free ATS score in seconds. See exactly which keywords are missing, what's hurting your score, and how to fix it. No sign-up, no email."/>
 <meta name="keywords" content="free ats resume checker, ats score checker, resume keyword scanner, ats resume test, free ats scan no signup, resume ats score, ats compatibility checker, keyword gap resume"/>
 <link rel="canonical" href="https://applycraft.io/ats-checker/"/>
+<link rel="alternate" hreflang="en" href="https://applycraft.io/ats-checker/"/>
+<link rel="alternate" hreflang="fr" href="https://applycraft.io/ats-checker-fr/"/>
+<link rel="alternate" hreflang="ar" href="https://applycraft.io/ats-checker-ar/"/>
+<link rel="alternate" hreflang="x-default" href="https://applycraft.io/ats-checker/"/>
 <meta property="og:title" content="Free ATS Resume Checker — Instant Score & Fixes"/>
 <meta property="og:description" content="Paste your resume and get a free ATS score instantly. Keyword gap analysis, formatting checks, and one-click fixes. No sign-up."/>
 <meta property="og:url" content="https://applycraft.io/ats-checker/"/>
@@ -234,7 +238,7 @@ With it, you'll also see:
   • Your keyword match % vs. the role"></textarea>
     </div>
   </div>
-  <button class="check-btn" id="check-btn" onclick="runCheck()">Check My Resume →</button>
+  <button class="check-btn" id="check-btn" onclick="runCheck(LOCALE)">Check My Resume →</button>
 
   <!-- Results -->
   <div id="results">
@@ -363,212 +367,35 @@ With it, you'll also see:
 </footer>
 
 <script>
-// ── Stopwords ──────────────────────────────────────────────────────
-const STOP = new Set(['and','or','the','a','an','in','on','to','for','of','with','at','by','from','as','is','are','was','were','be','been','have','has','had','do','does','did','will','would','can','could','should','may','might','must','shall','not','but','if','then','than','that','this','these','those','it','its','we','our','you','your','they','their','he','she','him','her','i','me','my','us','any','all','more','most','some','such','own','same','other','also','just','into','over','after','before','during','through','between','each','only','very','too','so','up','out','about','no','new','need','work','experience','years','year','role','team','company','skills','ability','strong','proven','excellent','good','great','well','using','use','used','including','include','includes','within','across','multiple','various','key','core','day','days','time','high','low','able','ensure','ensure','provide','provides','provided','making','make','take','takes','help','helps','both','per','etc']);
-
-function tokenize(text) {
-  return text.toLowerCase().split(/\W+/).filter(w => w.length > 2 && !STOP.has(w) && isNaN(w));
-}
-
-// ── Weak bullet detection ──────────────────────────────────────────
-const WEAK_RE = /^(responsible for|helped?( to)?|assisted?( with)?|worked on|was part of|involved in|supported?|participated in|contributed to|did |handled |performed |undertook |was involved)/i;
-function isWeakBullet(line) {
-  const t = line.trim();
-  if (t.length < 10) return false;
-  return WEAK_RE.test(t);
-}
-
-// ── Main scoring engine ────────────────────────────────────────────
-function scoreResume(text, jdText) {
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  const issues = [];
-
-  // Contact info
-  const hasEmail   = /\b[\w.+%-]+@[\w.-]+\.[a-z]{2,}\b/i.test(text);
-  const hasPhone   = /(\+?\d[\d\s\-().]{6,14}\d)/.test(text);
-  const hasLinkedin= /linkedin\.com/i.test(text);
-
-  // Sections
-  const hasExperience = /\b(experience|work history|employment|career history)\b/i.test(text) || /\b(20\d{2}|19[89]\d)\b/.test(text);
-  const hasEducation  = /\b(education|degree|university|college|bachelor|master|phd|mba|diploma|graduate|undergraduate)\b/i.test(text);
-  const hasSkills     = /\b(skills|technologies|tech stack|tools|expertise|proficient|competencies)\b/i.test(text);
-  const hasSummary    = /\b(summary|profile|objective|about me|professional)\b/i.test(text);
-
-  // Dates
-  const hasDates = /\b(20\d{2}|19[89]\d)\b/.test(text);
-
-  // Quantification
-  const bulletLines = lines.filter(l => /^[•\-\*▸›>]/.test(l) || (l.length > 20 && l.length < 220));
-  const hasNumbers  = bulletLines.some(l => /\d/.test(l));
-  const numberedCount = bulletLines.filter(l => /\d/.test(l)).length;
-  const totalBullets  = Math.max(bulletLines.length, 1);
-
-  // Passive bullets
-  const weakLines = lines.filter(isWeakBullet);
-
-  // Long lines
-  const longLines = lines.filter(l => l.length > 180);
-
-  // Word count
-  const wordCount = text.split(/\s+/).filter(Boolean).length;
-
-  // ── CRITICAL issues ──
-  if (!hasEmail)      issues.push({ level:'critical', icon:'✉️', title:'No email address detected', detail:'ATS systems extract your email to create your candidate profile. Without it, your application cannot be processed by most systems.' });
-  if (!hasExperience) issues.push({ level:'critical', icon:'📋', title:'No work experience section detected', detail:'Work experience is the most heavily weighted section in ATS ranking. Ensure your experience section is clearly labeled with a heading like "Experience" or "Work History."' });
-  if (!hasSkills)     issues.push({ level:'critical', icon:'⚡', title:'No skills section detected', detail:'ATS systems scan your skills section for exact keyword matches against the job description. This section has the highest keyword density impact. Add a "Skills" or "Technologies" section.' });
-
-  // ── WARNING issues ──
-  if (!hasPhone)     issues.push({ level:'warning', icon:'📞', title:'No phone number detected', detail:'Phone number is extracted by ATS systems for your candidate profile. Its absence may reduce completeness scoring in some systems.' });
-  if (!hasLinkedin)  issues.push({ level:'warning', icon:'🔗', title:'No LinkedIn URL', detail:'Many ATS systems auto-link your LinkedIn profile and score completeness partly on its presence. It also helps recruiters verify your background quickly.' });
-  if (!hasSummary)   issues.push({ level:'warning', icon:'📝', title:'No professional summary detected', detail:'A 2–4 sentence summary at the top increases keyword density and gives ATS systems immediate context about your profile before parsing experience.' });
-  if (hasExperience && !hasNumbers) issues.push({ level:'warning', icon:'🔢', title:'No quantified achievements detected', detail:'Bullets without numbers (%, $, team size, time saved, revenue) score lower in ATS ranking and are less compelling to human reviewers. Add at least one metric per role.' });
-  if (hasExperience && !hasDates) issues.push({ level:'warning', icon:'📅', title:'No dates found in experience', detail:'ATS systems calculate tenure and employment gaps from year ranges. Include start and end years on each role (e.g. Jan 2021 – Mar 2024).' });
-  if (weakLines.length > 0) issues.push({ level:'warning', icon:'✍️', title:`${weakLines.length} passive bullet opener${weakLines.length > 1 ? 's' : ''}`, detail:'Phrases like "Responsible for", "Helped", or "Assisted" are passive and keyword-poor. Use active-verb equivalents: "Led", "Built", "Reduced", "Grew". They also signal stronger impact to recruiters.' });
-  if (longLines.length > 0) issues.push({ level:'warning', icon:'📏', title:`${longLines.length} line${longLines.length > 1 ? 's' : ''} over 180 characters`, detail:'Very long lines are often truncated or misread by ATS parsers. Split each bullet into one focused sentence — aim for 80–140 characters per bullet.' });
-  if (wordCount < 200) issues.push({ level:'warning', icon:'📄', title:`Resume appears too short (${wordCount} words)`, detail:`A strong resume typically has 350–800 words. Add more detail to your experience section — specific projects, technologies used, and measurable outcomes.` });
-
-  // ── INFO issues ──
-  if (!hasEducation) issues.push({ level:'info', icon:'🎓', title:'Education section not detected', detail:'Some ATS systems require at least one education entry to complete parsing. Add your highest qualification at a minimum.' });
-  if (wordCount > 1200) issues.push({ level:'info', icon:'📏', title:`Resume may be too long (${wordCount} words)`, detail:`Most ATS systems and recruiters prefer resumes under 2 pages (~800 words). Consider condensing to the most relevant recent experience.` });
-
-  // ── Score calculation (matches React app logic) ──
-  const score = Math.max(0, 100
-    - issues.filter(i => i.level === 'critical').length * 20
-    - issues.filter(i => i.level === 'warning').length * 8
-    - issues.filter(i => i.level === 'info').length * 3);
-
-  // ── Keyword gap (only if JD provided) ──
-  let kwGap = null;
-  if (jdText && jdText.trim().length > 30) {
-    const jdWords  = new Set(tokenize(jdText));
-    const cvWords  = new Set(tokenize(text));
-    if (jdWords.size > 3) {
-      const present = [...jdWords].filter(w => cvWords.has(w));
-      const missing = [...jdWords].filter(w => !cvWords.has(w));
-      const pct = Math.round((present.length / jdWords.size) * 100);
-      kwGap = { present: present.slice(0, 20), missing: missing.slice(0, 20), pct, total: jdWords.size };
-
-      // Add keyword issue to list
-      if (pct < 30) issues.unshift({ level:'critical', icon:'🎯', title:`Low keyword match: ${pct}% vs. job description`, detail:`Your resume matches only ${pct}% of unique keywords in the job description. Most ATS systems rank candidates with 40%+ match significantly higher. See the Missing Keywords section below.` });
-      else if (pct < 45) issues.unshift({ level:'warning', icon:'🎯', title:`Keyword match: ${pct}% vs. job description`, detail:`You match ${pct}% of the job's unique keywords. Strong ATS candidates typically hit 45–70% for targeted roles. Add missing keywords naturally in your skills and experience.` });
-    }
+const LOCALE = {
+  emptyAlert: 'Please paste your resume text first (at least a few lines).',
+  analysing:  'Analysing…',
+  recheck:    'Re-check →',
+  scoreLabels: { 80: 'ATS Ready', 60: 'Needs Work', 40: 'Action Required', 0: 'Critical Issues' },
+  pills:       { critical: 'Critical', warning: 'Warning', info: 'Info', allGood: 'All good' },
+  badgeLabels: { critical: 'critical', warning: 'warning', info: 'info' },
+  matchedKw:   'Matched keywords',
+  noMissingKw: '✓ No significant missing keywords!',
+  allClear:    '✓ No significant issues detected — your resume is well-structured for ATS parsing.',
+  issues: {
+    noEmail:      { title: 'No email address detected',               detail: 'ATS systems extract your email to create your candidate profile. Without it, your application cannot be processed by most systems.' },
+    noExperience: { title: 'No work experience section detected',     detail: 'Work experience is the most heavily weighted section in ATS ranking. Ensure your experience section is clearly labeled with a heading like "Experience" or "Work History."' },
+    noSkills:     { title: 'No skills section detected',              detail: 'ATS systems scan your skills section for exact keyword matches against the job description. This section has the highest keyword density impact. Add a "Skills" or "Technologies" section.' },
+    noPhone:      { title: 'No phone number detected',                detail: 'Phone number is extracted by ATS systems for your candidate profile. Its absence may reduce completeness scoring in some systems.' },
+    noLinkedin:   { title: 'No LinkedIn URL',                         detail: 'Many ATS systems auto-link your LinkedIn profile and score completeness partly on its presence. It also helps recruiters verify your background quickly.' },
+    noSummary:    { title: 'No professional summary detected',        detail: 'A 2–4 sentence summary at the top increases keyword density and gives ATS systems immediate context about your profile before parsing experience.' },
+    noNumbers:    { title: 'No quantified achievements detected',     detail: 'Bullets without numbers (%, $, team size, time saved, revenue) score lower in ATS ranking and are less compelling to human reviewers. Add at least one metric per role.' },
+    noDates:      { title: 'No dates found in experience',            detail: 'ATS systems calculate tenure and employment gaps from year ranges. Include start and end years on each role (e.g. Jan 2021 – Mar 2024).' },
+    noEducation:  { title: 'Education section not detected',          detail: 'Some ATS systems require at least one education entry to complete parsing. Add your highest qualification at a minimum.' },
+    weakBullets: n => ({ title: `${n} passive bullet opener${n > 1 ? 's' : ''}`,     detail: 'Phrases like "Responsible for", "Helped", or "Assisted" are passive and keyword-poor. Use active-verb equivalents: "Led", "Built", "Reduced", "Grew".' }),
+    longLines:   n => ({ title: `${n} line${n > 1 ? 's' : ''} over 180 characters`,  detail: 'Very long lines are often truncated or misread by ATS parsers. Split each bullet into one focused sentence — aim for 80–140 characters per bullet.' }),
+    tooShort:   wc => ({ title: `Resume appears too short (${wc} words)`,            detail: `A strong resume typically has 350–800 words. Add more detail to your experience section — specific projects, technologies used, and measurable outcomes.` }),
+    tooLong:    wc => ({ title: `Resume may be too long (${wc} words)`,              detail: `Most ATS systems and recruiters prefer resumes under 2 pages (~800 words). Consider condensing to the most relevant recent experience.` }),
+    kwLow:     pct => ({ title: `Low keyword match: ${pct}% vs. job description`,    detail: `Your resume matches only ${pct}% of unique keywords in the job description. Most ATS systems rank candidates with 40%+ match significantly higher. See the Missing Keywords section below.` }),
+    kwMed:     pct => ({ title: `Keyword match: ${pct}% vs. job description`,        detail: `You match ${pct}% of the job's unique keywords. Strong ATS candidates typically hit 45–70% for targeted roles. Add missing keywords naturally in your skills and experience.` }),
   }
-
-  return { score, issues, kwGap, wordCount };
-}
-
-// ── SVG gauge ─────────────────────────────────────────────────────
-function setGauge(score) {
-  const arc  = document.getElementById('gauge-arc');
-  const total = 220;
-  const fill  = total * (score / 100);
-  arc.style.strokeDashoffset = total - fill;
-  const color = score >= 80 ? '#4ade80' : score >= 60 ? '#fbbf24' : score >= 40 ? '#fb923c' : '#f87171';
-  arc.style.stroke = color;
-  document.getElementById('score-num').style.color  = color;
-  document.getElementById('score-label').style.color = color;
-  return color;
-}
-
-// ── Render results ────────────────────────────────────────────────
-function runCheck() {
-  const text   = document.getElementById('resume-text').value.trim();
-  const jdText = document.getElementById('jd-text').value.trim();
-
-  if (text.length < 40) {
-    alert('Please paste your resume text first (at least a few lines).');
-    return;
-  }
-
-  const btn = document.getElementById('check-btn');
-  btn.disabled = true;
-  btn.textContent = 'Analysing…';
-
-  setTimeout(() => {
-    const { score, issues, kwGap, wordCount } = scoreResume(text, jdText);
-
-    // Show results block
-    const results = document.getElementById('results');
-    results.style.display = 'block';
-    results.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    // Score
-    const color = setGauge(score);
-    const num = document.getElementById('score-num');
-    num.textContent = score;
-    const labelMap = { 80: 'ATS Ready', 60: 'Needs Work', 40: 'Action Required', 0: 'Critical Issues' };
-    const label = Object.entries(labelMap).reverse().find(([k]) => score >= +k)?.[1] || 'Critical Issues';
-    document.getElementById('score-label').textContent = label;
-
-    // Summary pills
-    const pills = document.getElementById('summary-pills');
-    const critCount = issues.filter(i => i.level === 'critical').length;
-    const warnCount = issues.filter(i => i.level === 'warning').length;
-    const infoCount = issues.filter(i => i.level === 'info').length;
-    pills.innerHTML = [
-      critCount ? `<span class="pill pill-red">${critCount} Critical</span>` : '',
-      warnCount ? `<span class="pill pill-amber">${warnCount} Warning</span>` : '',
-      infoCount ? `<span class="pill pill-blue">${infoCount} Info</span>` : '',
-      !critCount && !warnCount ? '<span class="pill" style="background:#14532d44;color:#4ade80;border-color:#16a34a44">All good</span>' : '',
-    ].join('');
-
-    // Keyword gap
-    if (kwGap) {
-      document.getElementById('kw-section').style.display = 'block';
-      document.getElementById('kw-pct').textContent = kwGap.pct + '%';
-      document.getElementById('kw-present-count').textContent = kwGap.present.length;
-      document.getElementById('kw-missing-count').textContent = kwGap.missing.length;
-      setTimeout(() => { document.getElementById('kw-fill').style.width = kwGap.pct + '%'; }, 100);
-      document.getElementById('kw-present-tags').innerHTML =
-        '<span style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:8px">Matched keywords</span>' +
-        kwGap.present.map(w => `<span class="tag-present">✓ ${w}</span>`).join('');
-      document.getElementById('kw-missing-tags').innerHTML =
-        kwGap.missing.map(w => `<span class="tag-missing">✗ ${w}</span>`).join('') ||
-        '<span style="color:#4ade80;font-size:13px">✓ No significant missing keywords!</span>';
-    } else {
-      document.getElementById('kw-section').style.display = 'none';
-    }
-
-    // Issues list
-    const nonKwIssues = issues.filter(i => !i.title.includes('keyword match') && !i.title.includes('Keyword match'));
-    const list = document.getElementById('issues-list');
-    if (nonKwIssues.length === 0) {
-      list.innerHTML = '';
-      document.getElementById('all-clear').style.display = 'block';
-    } else {
-      document.getElementById('all-clear').style.display = 'none';
-      list.innerHTML = nonKwIssues.map(issue => `
-        <div class="issue-card">
-          <div class="issue-icon">${issue.icon}</div>
-          <div class="issue-body">
-            <div class="issue-title">
-              <span>${issue.title}</span>
-              <span class="badge badge-${issue.level}">${issue.level}</span>
-            </div>
-            <div class="issue-detail">${issue.detail}</div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // Save text for builder handoff
-    try { localStorage.setItem('ac_ats_text', text); } catch(e) {}
-
-    btn.disabled = false;
-    btn.textContent = 'Re-check →';
-  }, 320);
-}
-
-// ── Open in builder ───────────────────────────────────────────────
-function openInBuilder() {
-  try { localStorage.setItem('ac_ats_text', document.getElementById('resume-text').value.trim()); } catch(e) {}
-  window.location.href = '/';
-}
-
-// ── Enter key on textareas doesn't submit ──────────────────────────
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && e.ctrlKey) { runCheck(); }
-});
+};
 </script>
+<script src="/ats-engine.js"></script>
 </body>
 </html>
