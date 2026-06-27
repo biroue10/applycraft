@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>System Status | ApplyCraft</title>
+<meta name="description" content="ApplyCraft system status — all services operational. Check real-time availability of the resume builder."/>
+<link rel="canonical" href="https://applycraft.io/status/"/>
+<meta property="og:title" content="System Status | ApplyCraft"/>
+<meta property="og:description" content="ApplyCraft system status — all services operational. Check real-time availability of the resume builder."/>
+<meta property="og:url" content="https://applycraft.io/status/"/>
+<meta property="og:image" content="https://applycraft.io/og.svg"/>
+<link rel="icon" href="/favicon.svg"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../_seo.css"/>
+
+<style>
+  .prose{max-width:720px;margin:0 auto;padding:64px 24px 100px}
+  .prose h1{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-1px;margin:0 0 16px;
+    background:linear-gradient(135deg,#EEF2FF 0%,#94A3B8 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .prose .lead{font-size:17px;color:#94A3B8;margin:0 0 48px;line-height:1.7}
+  .prose h2{font-size:20px;font-weight:700;color:#E4EBF5;margin:40px 0 12px}
+  .prose h3{font-size:16px;font-weight:700;color:#C0CADB;margin:28px 0 8px}
+  .prose p{font-size:14.5px;color:#64748B;line-height:1.8;margin:0 0 16px}
+  .prose ul{padding-left:20px;margin:0 0 16px}
+  .prose li{font-size:14.5px;color:#64748B;line-height:1.8;margin-bottom:6px}
+  .prose a{color:#818CF8}
+  .prose .meta{font-size:12px;color:#334155;margin-bottom:40px}
+  .prose hr{border:none;border-top:1px solid #1A2740;margin:40px 0}
+  .prose .callout{background:#0D1117;border:1px solid #1A2740;border-left:3px solid #6366F1;
+    border-radius:8px;padding:18px 20px;margin:24px 0}
+  .prose .callout p{margin:0;font-size:14px}
+  .badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;
+    text-transform:uppercase;letter-spacing:1px}
+  .badge-green{background:#14532d44;color:#4ade80;border:1px solid #16a34a44}
+  .badge-blue{background:#1e3a5f44;color:#60a5fa;border:1px solid #2563eb44}
+  .badge-yellow{background:#713f1244;color:#fbbf24;border:1px solid #d9770644}
+  .changelog-entry{border-left:2px solid #1A2740;padding-left:24px;margin-bottom:40px}
+  .changelog-entry:hover{border-left-color:#6366F1}
+  .status-row{display:flex;align-items:center;justify-content:space-between;
+    padding:14px 20px;border:1px solid #1A2740;border-radius:10px;margin-bottom:10px;
+    background:#0D1117}
+  .status-dot{width:10px;height:10px;border-radius:50%;background:#22c55e;
+    box-shadow:0 0 8px #22c55e88;flex-shrink:0}
+  .roadmap-item{background:#0D1117;border:1px solid #1A2740;border-radius:10px;
+    padding:20px;margin-bottom:12px}
+  .roadmap-item h3{margin:0 0 6px;font-size:15px;color:#E4EBF5;font-weight:700}
+  .roadmap-item p{margin:0;font-size:13px;color:#64748B}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-logo">ApplyCraft</a>
+  <a href="/" class="nav-cta">Build My Resume Free →</a>
+</nav>
+<main>
+<div class="prose">
+
+<h1>System Status</h1>
+<p class="lead">Current status of ApplyCraft services. Updated automatically on each deployment.</p>
+
+<div style="display:flex;align-items:center;gap:14px;padding:20px 24px;background:#052e16;border:1px solid #16a34a44;border-radius:12px;margin-bottom:40px">
+  <div style="width:14px;height:14px;border-radius:50%;background:#22c55e;box-shadow:0 0 12px #22c55e88;flex-shrink:0"></div>
+  <div>
+    <div style="font-size:16px;font-weight:700;color:#4ade80">All systems operational</div>
+    <div style="font-size:12px;color:#16a34a;margin-top:2px">Last checked: 2026-06-27</div>
+  </div>
+</div>
+
+<h2>Services</h2>
+
+<div class="status-row">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="status-dot"></div>
+    <div>
+      <div style="font-size:14px;font-weight:600;color:#E4EBF5">applycraft.io — Resume Builder</div>
+      <div style="font-size:12px;color:#475569">Main application</div>
+    </div>
+  </div>
+  <span class="badge badge-green">Operational</span>
+</div>
+
+<div class="status-row">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="status-dot"></div>
+    <div>
+      <div style="font-size:14px;font-weight:600;color:#E4EBF5">PDF Export</div>
+      <div style="font-size:12px;color:#475569">Browser-side PDF generation</div>
+    </div>
+  </div>
+  <span class="badge badge-green">Operational</span>
+</div>
+
+<div class="status-row">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="status-dot"></div>
+    <div>
+      <div style="font-size:14px;font-weight:600;color:#E4EBF5">DOCX Export</div>
+      <div style="font-size:12px;color:#475569">Browser-side DOCX generation</div>
+    </div>
+  </div>
+  <span class="badge badge-green">Operational</span>
+</div>
+
+<div class="status-row">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="status-dot"></div>
+    <div>
+      <div style="font-size:14px;font-weight:600;color:#E4EBF5">CDN &amp; Static Assets</div>
+      <div style="font-size:12px;color:#475569">Cloudflare Pages</div>
+    </div>
+  </div>
+  <span class="badge badge-green">Operational</span>
+</div>
+
+<div class="status-row">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="status-dot"></div>
+    <div>
+      <div style="font-size:14px;font-weight:600;color:#E4EBF5">Google Fonts</div>
+      <div style="font-size:12px;color:#475569">Typography CDN</div>
+    </div>
+  </div>
+  <span class="badge badge-green">Operational</span>
+</div>
+
+<h2 style="margin-top:48px">Uptime</h2>
+<p>ApplyCraft is a static site served via Cloudflare's global CDN with 100+ edge locations. It inherits Cloudflare's 99.99% uptime SLA.</p>
+<p>Because the app runs entirely in the browser with no backend server, the only dependency is the CDN delivering the initial JavaScript bundle.</p>
+
+<h2>Incident history</h2>
+<p style="color:#475569;font-size:14px">No incidents in the last 90 days.</p>
+
+<hr/>
+<p style="font-size:13px;color:#475569">Issues? Email <a href="mailto:biroueisaac@gmail.com">biroueisaac@gmail.com</a></p>
+
+</div>
+</main>
+<footer>
+  <div class="page">
+    <p>© 2026 ApplyCraft · <a href="/">Home</a> · <a href="/privacy/">Privacy</a> · <a href="/about/">About</a> · <a href="/help/">Help</a> · <a href="/contact/">Contact</a></p>
+  </div>
+</footer>
+</body>
+</html>

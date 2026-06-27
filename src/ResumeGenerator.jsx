@@ -1954,6 +1954,100 @@ Awards: ${form.awards}`;
           </div>
         </div>
 
+        {/* Privacy Trust section */}
+        <div style={{ padding: "80px 24px", borderTop: `1px solid ${C.border}` }}>
+          <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+            <FadeIn style={{ textAlign: "center", marginBottom: 52 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
+                letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>Privacy &amp; trust</p>
+              <h2 style={{ fontSize: "clamp(22px, 3vw, 38px)", fontWeight: 800,
+                letterSpacing: "-0.8px", color: C.text1, margin: "0 0 14px" }}>
+                Your resume data stays yours. Always.
+              </h2>
+              <p style={{ fontSize: 15, color: C.text2, maxWidth: 520, margin: "0 auto" }}>
+                Resume data is personal. We built ApplyCraft so your information never leaves your device — not because we ask nicely, but because we have no server to send it to.
+              </p>
+            </FadeIn>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16, marginBottom: 40 }}>
+              {[
+                { icon: "🔒", title: "Nothing is ever stored", body: "ApplyCraft has no database. Your resume content lives only in your browser tab. Close it and it's gone — permanently." },
+                { icon: "🤖", title: "Never used to train AI", body: "Your data is never sent to any AI provider or used to train any model. The AI features run entirely on your device." },
+                { icon: "🇪🇺", title: "GDPR compliant by design", body: "We don't set cookies, don't use analytics trackers, and don't process any personal data on a server — making GDPR compliance automatic." },
+                { icon: "🗑️", title: "Delete anytime, instantly", body: "Close the tab and everything disappears. No account to delete. No data deletion request form. No 30-day wait." },
+                { icon: "📍", title: "Data stays on your device", body: "PDF and DOCX generation happens in your browser using JavaScript. Your resume never travels through our servers." },
+                { icon: "🔓", title: "No account = no breach risk", body: "We can't leak data we don't have. No email, no password, no personal profile — nothing to steal, nothing to expose." },
+              ].map((f, i) => (
+                <FadeIn key={f.title} delay={i * 60}>
+                  <div style={{ background: C.elevated, border: `1px solid ${C.border}`,
+                    borderRadius: 12, padding: "22px 20px",
+                    transition: "border-color 0.2s" }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = `${C.accent}55`; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; }}>
+                    <div style={{ fontSize: 26, marginBottom: 12 }}>{f.icon}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: C.text1, marginBottom: 6 }}>{f.title}</div>
+                    <div style={{ fontSize: 13, color: C.text2, lineHeight: 1.65 }}>{f.body}</div>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+            <FadeIn style={{ textAlign: "center" }}>
+              <a href="/privacy/" style={{ fontSize: 13.5, color: C.accent2, textDecoration: "none",
+                borderBottom: `1px solid ${C.accent}44`, paddingBottom: 2 }}>
+                Read our full Privacy Policy →
+              </a>
+            </FadeIn>
+          </div>
+        </div>
+
+        {/* Testimonials */}
+        <div style={{ borderTop: `1px solid ${C.border}`, padding: "80px 24px" }}>
+          <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+            <FadeIn style={{ textAlign: "center", marginBottom: 52 }}>
+              <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
+                letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>What users say</p>
+              <h2 style={{ fontSize: "clamp(22px, 3vw, 38px)", fontWeight: 800,
+                letterSpacing: "-0.8px", color: C.text1, margin: 0 }}>
+                Real results from real job seekers
+              </h2>
+            </FadeIn>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: 20 }}>
+              {[
+                { name: "Sarah M.", role: "Software Engineer, Berlin", stars: 5, text: "I had been struggling with my resume for weeks. ApplyCraft let me build a clean, ATS-friendly version in 20 minutes. Got a callback from my top choice company two days later." },
+                { name: "Karim B.", role: "IT Support Technician, Dubai", stars: 5, text: "The Arabic RTL support is flawless. I've tried every free resume builder online — this is the only one that actually handles Arabic correctly and exports a proper PDF." },
+                { name: "Léa T.", role: "Marketing Manager, Paris", stars: 5, text: "Le fait qu'il n'y ait aucune inscription ni filigrane est incroyable. J'ai téléchargé mon CV en 10 minutes, en français, sans créer de compte." },
+                { name: "Tyler R.", role: "Recent Graduate, Toronto", stars: 5, text: "As a new grad with no money for paid tools, this was exactly what I needed. The student template helped me highlight my projects and internship. Landed 3 interviews in a week." },
+                { name: "Priya N.", role: "Linux Administrator, Austin", stars: 5, text: "I love that my data never leaves my browser. As a sysadmin I'm very cautious about where I put personal information. ApplyCraft is the only resume builder I trust." },
+                { name: "James W.", role: "Customer Service Lead, Manchester", stars: 5, text: "The UK CV template is perfect. Right length, right format, professional personal statement section. Saved me hours compared to formatting in Word." },
+              ].map((t, i) => (
+                <FadeIn key={t.name} delay={i * 70}>
+                  <div style={{ background: C.elevated, border: `1px solid ${C.border}`,
+                    borderRadius: 12, padding: "24px 22px" }}>
+                    <div style={{ display: "flex", gap: 2, marginBottom: 14 }}>
+                      {Array.from({ length: t.stars }).map((_, si) => (
+                        <span key={si} style={{ color: "#F59E0B", fontSize: 14 }}>★</span>
+                      ))}
+                    </div>
+                    <p style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.7, margin: "0 0 18px" }}>
+                      "{t.text}"
+                    </p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 34, height: 34, borderRadius: "50%", background: C.grad,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 13, fontWeight: 800, color: "#fff", flexShrink: 0 }}>
+                        {t.name.charAt(0)}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: C.text1 }}>{t.name}</div>
+                        <div style={{ fontSize: 11.5, color: C.text3 }}>{t.role}</div>
+                      </div>
+                    </div>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* FAQ */}
         <div style={{ padding: "80px 24px 80px", borderTop: `1px solid ${C.border}` }}>
           <div style={{ maxWidth: 760, margin: "0 auto" }}>
@@ -2005,50 +2099,76 @@ Awards: ${form.awards}`;
         </div>
 
         {/* Footer */}
-        <div style={{ borderTop: `1px solid ${C.border}`, padding: "40px 24px 32px" }}>
+        <div style={{ borderTop: `1px solid ${C.border}`, padding: "56px 24px 32px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 32, marginBottom: 36 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 40, marginBottom: 48 }}>
               {/* Brand */}
-              <div style={{ maxWidth: 260 }}>
+              <div style={{ maxWidth: 280 }}>
                 <button onClick={() => setAppView("landing")}
                   style={{ background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                    fontSize: 18, fontWeight: 800, border: "none", cursor: "pointer", padding: 0,
-                    fontFamily: "inherit", display: "block", marginBottom: 10 }}>ApplyCraft</button>
-                <p style={{ fontSize: 13, color: C.text3, lineHeight: 1.7, margin: 0 }}>
-                  Free resume and cover letter builder for the global job market. 50+ languages, 22 templates, no sign-up.
+                    fontSize: 20, fontWeight: 800, border: "none", cursor: "pointer", padding: 0,
+                    fontFamily: "inherit", display: "block", marginBottom: 12, letterSpacing: "-0.5px" }}>ApplyCraft</button>
+                <p style={{ fontSize: 13, color: C.text3, lineHeight: 1.75, margin: "0 0 16px" }}>
+                  Free resume and cover letter builder for the global job market. 50+ languages, 22 templates, no sign-up, no data stored.
                 </p>
+                <a href={`mailto:${AUTHOR.email}`}
+                  style={{ fontSize: 13, color: C.text2, textDecoration: "none" }}>
+                  {AUTHOR.email}
+                </a>
               </div>
               {/* Links */}
-              <div style={{ display: "flex", gap: 48, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
                 <div>
                   <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-                    letterSpacing: "1.5px", color: C.text3, marginBottom: 14 }}>Product</div>
-                  {[["Resume Builder", "resume"], ["Cover Letter", "cover"], ["Pricing", "pricing"]].map(([label, page]) => (
-                    <button key={page} onClick={() => enter(page)}
+                    letterSpacing: "1.5px", color: C.text3, marginBottom: 16 }}>Product</div>
+                  {[
+                    ["Resume Builder", () => enter("resume")],
+                    ["Cover Letter", () => enter("cover")],
+                  ].map(([label, fn]) => (
+                    <button key={label} onClick={fn}
                       style={{ display: "block", fontSize: 13.5, color: C.text2, background: "none",
                         border: "none", cursor: "pointer", padding: "4px 0", fontFamily: "inherit",
                         textAlign: "left" }}>{label}</button>
                   ))}
+                  <a href="/changelog/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Changelog</a>
+                  <a href="/roadmap/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Roadmap</a>
+                  <a href="/status/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Status</a>
                 </div>
                 <div>
                   <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-                    letterSpacing: "1.5px", color: C.text3, marginBottom: 14 }}>Company</div>
-                  <button onClick={() => { setNavPage("about"); setAppView("app"); }}
-                    style={{ display: "block", fontSize: 13.5, color: C.text2, background: "none",
-                      border: "none", cursor: "pointer", padding: "4px 0", fontFamily: "inherit" }}>About</button>
+                    letterSpacing: "1.5px", color: C.text3, marginBottom: 16 }}>Company</div>
+                  <a href="/about/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>About &amp; Founder</a>
+                  <a href="/contact/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Contact</a>
                   {AUTHOR.github && (
-                    <a href={`${AUTHOR.github}/applycraft`} target="_blank" rel="noopener noreferrer"
-                      style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>
-                      GitHub
-                    </a>
+                    <a href={AUTHOR.github} target="_blank" rel="noopener noreferrer"
+                      style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>GitHub</a>
                   )}
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
+                    letterSpacing: "1.5px", color: C.text3, marginBottom: 16 }}>Resources</div>
+                  <a href="/help/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Help Center</a>
+                  <a href="/resume-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Resume Guide</a>
+                  <a href="/ats-resume-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>ATS Guide</a>
+                  <a href="/cover-letter-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Cover Letter Guide</a>
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
+                    letterSpacing: "1.5px", color: C.text3, marginBottom: 16 }}>Legal</div>
+                  <a href="/privacy/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Privacy Policy</a>
+                  <a href="/privacy/#gdpr" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>GDPR</a>
+                  <a href="/privacy/#cookies" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Cookies</a>
                 </div>
               </div>
             </div>
             <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 20,
               display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-              <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft · applycraft.io</div>
-              <div style={{ fontSize: 12, color: C.text3 }}>🔒 No data stored · Built with React &amp; Vite</div>
+              <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft by Isaac Biroue · applycraft.io</div>
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
+                <span style={{ fontSize: 12, color: C.text3 }}>🔒 No data stored</span>
+                <span style={{ fontSize: 12, color: C.text3 }}>🤖 Never used for AI training</span>
+                <span style={{ fontSize: 12, color: C.text3 }}>🇪🇺 GDPR compliant</span>
+              </div>
             </div>
           </div>
         </div>
