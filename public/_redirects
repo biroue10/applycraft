@@ -1,4 +1,3 @@
-# Cloudflare Pages SPA fallback.
-# Static files (robots.txt, sitemap.xml, /about/, etc.) are served directly
-# by CF Pages before this rule is checked, so they are never affected.
-/* /index.html 200
+# Let Cloudflare Pages return a real 404 for unknown URLs instead of serving
+# the app shell with a 200 status, which can create soft-404 SEO issues.
+/* /404.html 404

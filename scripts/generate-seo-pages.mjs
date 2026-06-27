@@ -9,6 +9,13 @@ const SITE = "https://applycraft.io";
 const TODAY = "2026-06-27";
 const CSS_PATH = "../_seo.css"; // relative from each subdir
 
+const RESUME_LOCALE_LINKS = [
+  `<link rel="alternate" hreflang="en" href="${SITE}/"/>`,
+  `<link rel="alternate" hreflang="ar" href="${SITE}/resume-in-arabic/"/>`,
+  `<link rel="alternate" hreflang="fr" href="${SITE}/resume-in-french/"/>`,
+  `<link rel="alternate" hreflang="x-default" href="${SITE}/"/>`,
+].join("\n");
+
 // ── Shared helpers ────────────────────────────────────────────────────────────
 function nav() {
   return `<nav class="nav">
@@ -56,15 +63,23 @@ function faqHtml(items) {
 function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard, features, faqs, canonicalPath, _cssPath }) {
   const canonical = `${SITE}${canonicalPath}`;
   const cssRel = _cssPath || CSS_PATH;
+  const htmlAttrs = canonicalPath === "/resume-in-arabic/"
+    ? `lang="ar" dir="rtl"`
+    : canonicalPath === "/resume-in-french/"
+      ? `lang="fr"`
+      : `lang="en"`;
+  const alternateLinks = canonicalPath === "/resume-in-arabic/" || canonicalPath === "/resume-in-french/"
+    ? `\n${RESUME_LOCALE_LINKS}`
+    : "";
   return `<!doctype html>
-<html lang="en">
+<html ${htmlAttrs}>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${title}</title>
 <meta name="description" content="${description}"/>
 <meta name="keywords" content="${keywords}"/>
-<link rel="canonical" href="${canonical}"/>
+<link rel="canonical" href="${canonical}"/>${alternateLinks}
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="${canonical}"/>
 <meta property="og:title" content="${title}"/>
@@ -73,6 +88,7 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="${title}"/>
 <meta name="twitter:description" content="${description}"/>
+<meta name="twitter:image" content="${SITE}/og.png"/>
 <link rel="icon" href="/favicon.svg"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -1141,8 +1157,22 @@ for (const p of EXAMPLES) {
 // ── Sitemap ───────────────────────────────────────────────────────────────────
 const allUrls = [
   { loc: "https://applycraft.io/", priority: "1.0", freq: "weekly" },
-  ...PAGES.map(p => ({ loc: `https://applycraft.io${p.canonicalPath}`, priority: "0.8", freq: "monthly" })),
+  { loc: "https://applycraft.io/ats-checker/", priority: "0.9", freq: "monthly" },
+  ...PAGES.map(p => ({
+    loc: `https://applycraft.io${p.canonicalPath}`,
+    priority: ["free-resume-builder", "resume-builder", "cover-letter-builder", "resume-checker"].includes(p.slug) ? "0.9" : "0.8",
+    freq: "monthly",
+  })),
+  { loc: "https://applycraft.io/ats-checker-fr/", priority: "0.9", freq: "monthly" },
+  { loc: "https://applycraft.io/ats-checker-ar/", priority: "0.9", freq: "monthly" },
   ...EXAMPLES.map(p => ({ loc: `https://applycraft.io${p.canonicalPath}`, priority: "0.7", freq: "monthly" })),
+  { loc: "https://applycraft.io/about/", priority: "0.5", freq: "monthly" },
+  { loc: "https://applycraft.io/help/", priority: "0.5", freq: "monthly" },
+  { loc: "https://applycraft.io/contact/", priority: "0.5", freq: "monthly" },
+  { loc: "https://applycraft.io/changelog/", priority: "0.5", freq: "weekly" },
+  { loc: "https://applycraft.io/roadmap/", priority: "0.5", freq: "monthly" },
+  { loc: "https://applycraft.io/status/", priority: "0.4", freq: "weekly" },
+  { loc: "https://applycraft.io/privacy/", priority: "0.3", freq: "yearly" },
 ];
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

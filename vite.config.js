@@ -21,6 +21,22 @@ const HREFLANG_LINKS = [
 export default defineConfig({
   plugins: [react()],
   base: "/",
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (id.includes("/react") || id.includes("/react-dom") || id.includes("/react-router-dom")) {
+            return "react-vendor";
+          }
+          if (id.includes("/jspdf")) return "jspdf";
+          if (id.includes("/docx")) return "docx";
+          if (id.includes("/html2canvas")) return "html2canvas";
+          if (id.includes("/dompurify")) return "dompurify";
+        },
+      },
+    },
+  },
   ssgOptions: {
     onBeforePageRender(path, html) {
       const { lang = "en", dir } = ROUTE_LANG[path] ?? {};
