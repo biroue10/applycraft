@@ -485,6 +485,11 @@ export default function ResumeGenerator() {
   const [coachAnswers, setCoachAnswers] = useState({});
   const [coachResult, setCoachResult] = useState("");
   const [atsOpen, setAtsOpen] = useState(false);
+  const [demoName, setDemoName] = useState("");
+  const [demoTitle, setDemoTitle] = useState("");
+  const [demoExp, setDemoExp] = useState("");
+  const [demoTplIdx, setDemoTplIdx] = useState(0);
+  const [demoLang, setDemoLang] = useState("en");
   const [coverStep, setCoverStep] = useState("templates");
   const [coverTpl, setCoverTpl] = useState(null);
   const [coverForm, setCoverForm] = useState({
@@ -2240,6 +2245,298 @@ Awards: ${form.awards}`;
             ))}
           </div>
         </div>
+
+        {/* ── Interactive Demo ── */}
+        {(() => {
+          const DEMO_TPLS = [
+            { name: "Atlas",  accent: "#6366F1", side: "#f8f8fd" },
+            { name: "Pulse",  accent: "#2563EB", side: "#eff6ff" },
+            { name: "Nova",   accent: "#7C3AED", side: "#f5f3ff" },
+            { name: "Slate",  accent: "#334155", side: "#f8fafc" },
+            { name: "Ember",  accent: "#DC2626", side: "#fef2f2" },
+          ];
+          const DEMO_LANGS = {
+            en: { exp: "Experience", skills: "Skills", contact: "Contact" },
+            fr: { exp: "Expérience", skills: "Compétences", contact: "Contact" },
+            ar: { exp: "الخبرة", skills: "المهارات", contact: "التواصل" },
+            de: { exp: "Erfahrung", skills: "Fähigkeiten", contact: "Kontakt" },
+            es: { exp: "Experiencia", skills: "Habilidades", contact: "Contacto" },
+          };
+          const tpl = DEMO_TPLS[demoTplIdx];
+          const lang = DEMO_LANGS[demoLang] || DEMO_LANGS.en;
+          const isRTL = demoLang === "ar";
+
+          const enterWithDemo = () => {
+            if (demoName || demoTitle || demoExp) {
+              setForm(f => ({
+                ...f,
+                name: demoName || f.name,
+                title: demoTitle || f.title,
+                experience: demoExp || f.experience,
+              }));
+            }
+            enter("resume");
+          };
+
+          const inputS = {
+            width: "100%", background: "#ffffff0d", border: "1px solid #ffffff1a",
+            borderRadius: 8, padding: "10px 14px", fontSize: 14, color: C.text1,
+            fontFamily: "inherit", outline: "none", boxSizing: "border-box",
+            transition: "border-color 0.2s, box-shadow 0.2s",
+          };
+
+          return (
+            <div style={{ padding: "72px 24px 80px", background: `${C.accent}06`, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}>
+              <div style={{ maxWidth: 960, margin: "0 auto" }}>
+                <FadeIn style={{ textAlign: "center", marginBottom: 48 }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
+                    letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>Live demo</p>
+                  <h2 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 800,
+                    letterSpacing: "-0.8px", color: C.text1, margin: "0 0 12px" }}>
+                    Try it right now — no account needed
+                  </h2>
+                  <p style={{ fontSize: 15, color: C.text2, margin: 0 }}>
+                    Type 3 fields. See your resume appear instantly. Download when ready.
+                  </p>
+                </FadeIn>
+
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 32, alignItems: "start" }}>
+                  {/* Left: Mini form */}
+                  <FadeIn delay={80}>
+                    <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: 28 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
+                        letterSpacing: "1.5px", color: C.text3, marginBottom: 20 }}>Your info</div>
+
+                      <label style={{ fontSize: 12, fontWeight: 600, color: C.text2, display: "block", marginBottom: 6 }}>Full name</label>
+                      <input
+                        value={demoName}
+                        onChange={e => setDemoName(e.target.value)}
+                        placeholder="e.g. Sarah Okonkwo"
+                        style={inputS}
+                        onFocus={e => { e.target.style.borderColor = tpl.accent; e.target.style.boxShadow = `0 0 0 3px ${tpl.accent}22`; }}
+                        onBlur={e => { e.target.style.borderColor = "#ffffff1a"; e.target.style.boxShadow = "none"; }}
+                      />
+
+                      <label style={{ fontSize: 12, fontWeight: 600, color: C.text2, display: "block", margin: "16px 0 6px" }}>Job title</label>
+                      <input
+                        value={demoTitle}
+                        onChange={e => setDemoTitle(e.target.value)}
+                        placeholder="e.g. Senior Product Designer"
+                        style={inputS}
+                        onFocus={e => { e.target.style.borderColor = tpl.accent; e.target.style.boxShadow = `0 0 0 3px ${tpl.accent}22`; }}
+                        onBlur={e => { e.target.style.borderColor = "#ffffff1a"; e.target.style.boxShadow = "none"; }}
+                      />
+
+                      <label style={{ fontSize: 12, fontWeight: 600, color: C.text2, display: "block", margin: "16px 0 6px" }}>One achievement</label>
+                      <textarea
+                        value={demoExp}
+                        onChange={e => setDemoExp(e.target.value)}
+                        placeholder="e.g. Redesigned checkout flow → 23% conversion lift"
+                        rows={3}
+                        style={{ ...inputS, resize: "none", fontFamily: "inherit", lineHeight: 1.6 }}
+                        onFocus={e => { e.target.style.borderColor = tpl.accent; e.target.style.boxShadow = `0 0 0 3px ${tpl.accent}22`; }}
+                        onBlur={e => { e.target.style.borderColor = "#ffffff1a"; e.target.style.boxShadow = "none"; }}
+                      />
+
+                      {/* Template picker */}
+                      <div style={{ marginTop: 22, marginBottom: 6 }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
+                          letterSpacing: "1.2px", color: C.text3, marginBottom: 12 }}>Template style</div>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                          {DEMO_TPLS.map((t, i) => (
+                            <button key={t.name} onClick={() => setDemoTplIdx(i)}
+                              style={{
+                                display: "flex", alignItems: "center", gap: 6,
+                                padding: "6px 12px", borderRadius: 999, border: `2px solid ${i === demoTplIdx ? t.accent : C.border}`,
+                                background: i === demoTplIdx ? `${t.accent}18` : "transparent",
+                                cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
+                              }}>
+                              <span style={{ width: 10, height: 10, borderRadius: "50%", background: t.accent, flexShrink: 0 }} />
+                              <span style={{ fontSize: 12, fontWeight: 600, color: i === demoTplIdx ? t.accent : C.text2 }}>{t.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Language picker */}
+                      <div style={{ marginTop: 18, marginBottom: 24 }}>
+                        <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
+                          letterSpacing: "1.2px", color: C.text3, marginBottom: 12 }}>Language</div>
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                          {[["en","English"],["fr","Français"],["ar","العربية"],["de","Deutsch"],["es","Español"]].map(([code, label]) => (
+                            <button key={code} onClick={() => setDemoLang(code)}
+                              style={{
+                                padding: "5px 12px", borderRadius: 6, border: `1.5px solid ${code === demoLang ? tpl.accent : C.border}`,
+                                background: code === demoLang ? `${tpl.accent}18` : "transparent",
+                                fontSize: 12.5, fontWeight: code === demoLang ? 700 : 500,
+                                color: code === demoLang ? tpl.accent : C.text2,
+                                cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
+                              }}>{label}</button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <button onClick={enterWithDemo}
+                        style={{ width: "100%", background: `linear-gradient(135deg, ${tpl.accent}, ${tpl.accent}bb)`,
+                          color: "#fff", border: "none", borderRadius: 10, padding: "14px 0",
+                          fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
+                          transition: "opacity 0.2s", letterSpacing: "-0.2px" }}
+                        onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; }}
+                        onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}>
+                        Build my full resume →
+                      </button>
+                      <div style={{ textAlign: "center", fontSize: 11.5, color: C.text3, marginTop: 10 }}>
+                        No sign-up · No credit card · Free forever
+                      </div>
+                    </div>
+                  </FadeIn>
+
+                  {/* Right: Live preview */}
+                  <FadeIn delay={160}>
+                    <div style={{ position: "sticky", top: 96 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
+                        letterSpacing: "1.5px", color: C.text3, marginBottom: 14, textAlign: "center" }}>
+                        Live preview
+                      </div>
+                      {/* Resume paper */}
+                      <div style={{ background: "#fff", borderRadius: 10, overflow: "hidden",
+                        boxShadow: "0 24px 64px #00000055", fontFamily: "'Segoe UI', Arial, sans-serif",
+                        fontSize: 13, color: "#111", direction: isRTL ? "rtl" : "ltr" }}>
+                        {/* Header */}
+                        <div style={{ padding: "24px 28px 18px", borderBottom: `3px solid ${tpl.accent}` }}>
+                          <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.4px", color: "#111", marginBottom: 4 }}>
+                            {demoName || <span style={{ color: "#ccc" }}>Your Name</span>}
+                          </div>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: tpl.accent,
+                            textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: 10 }}>
+                            {demoTitle || <span style={{ color: "#ddd" }}>Job Title</span>}
+                          </div>
+                          <div style={{ display: "flex", gap: 12, fontSize: 11, color: "#777", flexWrap: "wrap" }}>
+                            <span>biroueisaac@gmail.com</span>
+                            <span style={{ color: tpl.accent }}>·</span>
+                            <span>linkedin.com/in/yourname</span>
+                          </div>
+                        </div>
+                        {/* Body */}
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", minHeight: 280 }}>
+                          {/* Sidebar */}
+                          <div style={{ background: tpl.side, padding: "18px 16px", borderRight: "1px solid #eee" }}>
+                            <div style={{ fontSize: 8.5, fontWeight: 800, letterSpacing: "1.5px",
+                              textTransform: "uppercase", color: tpl.accent, marginBottom: 8 }}>{lang.skills}</div>
+                            {["Communication","Collaboration","Problem Solving"].map(s => (
+                              <div key={s} style={{ fontSize: 11, color: "#555", marginBottom: 5,
+                                display: "flex", alignItems: "center", gap: 5 }}>
+                                <span style={{ width: 5, height: 5, borderRadius: "50%", background: tpl.accent, flexShrink: 0 }} />
+                                {s}
+                              </div>
+                            ))}
+                          </div>
+                          {/* Main */}
+                          <div style={{ padding: "18px 20px" }}>
+                            <div style={{ fontSize: 8.5, fontWeight: 800, letterSpacing: "1.5px",
+                              textTransform: "uppercase", color: tpl.accent, marginBottom: 8,
+                              paddingBottom: 4, borderBottom: `1.5px solid ${tpl.accent}22` }}>{lang.exp}</div>
+                            {demoExp ? (
+                              demoExp.split("\n").filter(Boolean).map((line, i) => (
+                                <div key={i} style={{ fontSize: 11.5, color: "#444", lineHeight: 1.6, marginBottom: 5,
+                                  display: "flex", gap: 6 }}>
+                                  <span style={{ color: tpl.accent, flexShrink: 0, marginTop: 1 }}>▸</span>
+                                  <span>{line}</span>
+                                </div>
+                              ))
+                            ) : (
+                              <>
+                                {["Leading cross-functional teams to deliver product goals","Collaborating with stakeholders on quarterly planning"].map((ph, i) => (
+                                  <div key={i} style={{ fontSize: 11.5, color: "#ccc", lineHeight: 1.6, marginBottom: 5,
+                                    display: "flex", gap: 6 }}>
+                                    <span style={{ color: "#ddd", flexShrink: 0 }}>▸</span>
+                                    <span>{ph}</span>
+                                  </div>
+                                ))}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Feature callouts below preview */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 16 }}>
+                        {[
+                          ["📊", "ATS score in real-time"],
+                          ["🌍", "50+ languages"],
+                          ["✨", "Achievement coaching"],
+                          ["📄", "PDF & DOCX export"],
+                        ].map(([icon, label]) => (
+                          <div key={label} style={{ display: "flex", alignItems: "center", gap: 8,
+                            background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8,
+                            padding: "8px 12px", fontSize: 12, color: C.text2 }}>
+                            <span>{icon}</span>
+                            <span>{label}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </FadeIn>
+                </div>
+
+                {/* Before / After bullets */}
+                <FadeIn delay={200} style={{ marginTop: 60 }}>
+                  <div style={{ textAlign: "center", marginBottom: 32 }}>
+                    <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
+                      letterSpacing: "2px", color: C.accent2, marginBottom: 10 }}>Achievement coaching</p>
+                    <h3 style={{ fontSize: "clamp(18px, 2.5vw, 26px)", fontWeight: 800,
+                      letterSpacing: "-0.5px", color: C.text1, margin: 0 }}>
+                      From weak to powerful in one click
+                    </h3>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
+                    {[
+                      {
+                        before: "Responsible for helping customers with their issues and making sure they were satisfied with the outcome",
+                        after: "Resolved 40+ billing enquiries per day via phone and email, maintaining 96% CSAT across 6 months",
+                        role: "Customer Support",
+                      },
+                      {
+                        before: "Assisted with social media and helped grow the company's online presence",
+                        after: "Grew Instagram following by 40% in 3 months by posting 5×/week and running 3 targeted ad campaigns",
+                        role: "Marketing",
+                      },
+                    ].map(({ before, after, role }) => (
+                      <div key={role} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, overflow: "hidden" }}>
+                        <div style={{ padding: "10px 16px", borderBottom: `1px solid ${C.border}`,
+                          fontSize: 11, fontWeight: 700, color: C.text3, textTransform: "uppercase", letterSpacing: "1px" }}>{role}</div>
+                        <div style={{ padding: "14px 16px", borderBottom: `1px solid ${C.border}` }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "#f87171",
+                              background: "#f871711a", padding: "2px 8px", borderRadius: 999, letterSpacing: "0.5px" }}>BEFORE</span>
+                          </div>
+                          <div style={{ fontSize: 13, color: C.text3, lineHeight: 1.6, fontStyle: "italic" }}>"{before}"</div>
+                        </div>
+                        <div style={{ padding: "14px 16px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "#4ade80",
+                              background: "#4ade801a", padding: "2px 8px", borderRadius: 999, letterSpacing: "0.5px" }}>AFTER</span>
+                          </div>
+                          <div style={{ fontSize: 13, color: C.text1, lineHeight: 1.6, fontWeight: 500 }}>"{after}"</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ textAlign: "center", marginTop: 24 }}>
+                    <button onClick={() => enter("resume")}
+                      style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
+                        padding: "12px 28px", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                        fontFamily: "inherit" }}
+                      onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; }}
+                      onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}>
+                      Try the achievement coach →
+                    </button>
+                  </div>
+                </FadeIn>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* How it works */}
         <div style={{ padding: "72px 24px 80px", borderTop: `1px solid ${C.border}` }}>
