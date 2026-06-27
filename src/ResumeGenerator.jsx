@@ -479,6 +479,11 @@ export default function ResumeGenerator() {
   const [uploadedResume, setUploadedResume] = useState(null);
   const [uploadDragOver, setUploadDragOver] = useState(false);
   const [appView, setAppView] = useState("landing");
+  const [coachOpen, setCoachOpen] = useState(false);
+  const [coachBullet, setCoachBullet] = useState("");
+  const [coachBulletIdx, setCoachBulletIdx] = useState(0);
+  const [coachAnswers, setCoachAnswers] = useState({});
+  const [coachResult, setCoachResult] = useState("");
   const [coverStep, setCoverStep] = useState("templates");
   const [coverTpl, setCoverTpl] = useState(null);
   const [coverForm, setCoverForm] = useState({
@@ -900,6 +905,165 @@ Awards: ${form.awards}`;
       <input value={form[key]} onChange={set(key)} placeholder={ph || ""} style={inputStyle} />
     );
 
+  // ── Achievement coach helpers ──────────────────────────────────────────────
+  const WEAK_OPENERS = /^(responsible for|helped?( to)?|assisted?( with)?|worked on|was part of|involved in|supported?|participated in|contributed to|did |handled |performed |undertook |was involved)/i;
+  const isWeakBullet = (line) => {
+    const trimmed = line.trim();
+    if (trimmed.length < 10) return false;
+    const hasNumber = /\d/.test(trimmed);
+    if (WEAK_OPENERS.test(trimmed)) return true;
+    if (!hasNumber && trimmed.length < 60 && /^(managed|led|ran|ran|overseen?|oversaw)/i.test(trimmed)) return true;
+    return false;
+  };
+  const detectCoachContext = (line) => {
+    const l = line.toLowerCase();
+    if (/customer|client|support|help.?desk|ticket|complaint|satisfaction/.test(l)) return "customer";
+    if (/sales|revenue|quota|deal|pipeline|prospect|clos|upsell|convert/.test(l)) return "sales";
+    if (/code|software|develop|engineer|build|deploy|api|database|backend|frontend|bug|feature|ci.?cd/.test(l)) return "tech";
+    if (/manag|lead|team|supervis|report|hir|train|mentor|coach|staff/.test(l)) return "management";
+    if (/market|campaign|seo|content|social|email|analytic|brand|copywrite|advertis/.test(l)) return "marketing";
+    if (/account|financ|budget|invoic|reconcil|forecast|audit|tax|bookkeep/.test(l)) return "finance";
+    return "general";
+  };
+  const COACH_QUESTIONS = {
+    customer: [
+      { id: "volume",  label: "How many customers or requests per day/week?", ph: "e.g. 40+ daily, 200/week" },
+      { id: "channel", label: "Via phone, email, live chat, or in-person?",   ph: "e.g. phone and email" },
+      { id: "issue",   label: "What type of issues did you solve?",            ph: "e.g. billing, technical, returns" },
+      { id: "metric",  label: "Any satisfaction score or resolution rate?",    ph: "e.g. 96% CSAT, 92% first-call resolution" },
+    ],
+    sales: [
+      { id: "volume",  label: "Revenue generated or quota achieved?",          ph: "e.g. $1.2M ARR, 120% of quota" },
+      { id: "channel", label: "How? (calls, demos, partnerships…)",            ph: "e.g. cold outreach and product demos" },
+      { id: "metric",  label: "Deals closed or conversion rate?",              ph: "e.g. 24 enterprise deals, 18% conversion" },
+      { id: "impact",  label: "Business impact?",                              ph: "e.g. grew territory 40%, opened new market" },
+    ],
+    tech: [
+      { id: "action",  label: "What exactly did you build or fix?",            ph: "e.g. REST API, CI/CD pipeline, dashboard" },
+      { id: "scale",   label: "Scale or size? (users, requests, servers…)",    ph: "e.g. 500k users, 10M req/day, 200 servers" },
+      { id: "metric",  label: "Performance gain or time saved?",               ph: "e.g. 40% faster, reduced errors by 70%" },
+      { id: "impact",  label: "Business impact?",                              ph: "e.g. unblocked 3 teams, saved $50k/year" },
+    ],
+    management: [
+      { id: "volume",  label: "How many people did you lead?",                 ph: "e.g. 8 engineers, cross-functional team of 12" },
+      { id: "action",  label: "Main focus? (delivery, hiring, strategy…)",     ph: "e.g. delivery and roadmap planning" },
+      { id: "metric",  label: "Key result or outcome?",                        ph: "e.g. shipped 3 major releases, reduced churn 20%" },
+      { id: "impact",  label: "Business impact?",                              ph: "e.g. scaled team 2×, hit $2M ARR milestone" },
+    ],
+    marketing: [
+      { id: "channel", label: "Which channels? (SEO, paid, email, social…)",   ph: "e.g. SEO and Google Ads" },
+      { id: "metric",  label: "Key metric achieved?",                          ph: "e.g. 120% traffic growth, 3.2× ROAS" },
+      { id: "volume",  label: "Budget managed or audience size?",              ph: "e.g. $500k budget, 50k email list" },
+      { id: "impact",  label: "Business impact?",                              ph: "e.g. generated 400 leads, +18% revenue" },
+    ],
+    finance: [
+      { id: "action",  label: "What exactly did you manage or produce?",       ph: "e.g. monthly close, budget variance reports" },
+      { id: "volume",  label: "Portfolio or budget size?",                     ph: "e.g. $4M budget, 200-account portfolio" },
+      { id: "metric",  label: "Accuracy, time saved, or error reduction?",     ph: "e.g. <0.5% variance, 2-day faster close" },
+      { id: "impact",  label: "Business or audit impact?",                     ph: "e.g. zero audit findings, saved $80k" },
+    ],
+    general: [
+      { id: "action",  label: "What specific action did you take?",            ph: "e.g. led, built, redesigned, launched" },
+      { id: "volume",  label: "Any numbers? (quantity, frequency, scale)",     ph: "e.g. 20/week, team of 5, $100k budget" },
+      { id: "method",  label: "How did you do it?",                            ph: "e.g. automation, cross-team collaboration" },
+      { id: "metric",  label: "Measurable result?",                            ph: "e.g. 30% faster, saved 10 hours/week" },
+      { id: "impact",  label: "Why did it matter to the business?",            ph: "e.g. enabled growth, reduced costs" },
+    ],
+  };
+
+  const buildStrongBullet = (original, answers, ctx) => {
+    const a = answers;
+    const clean = original.trim()
+      .replace(/^responsible for /i, "")
+      .replace(/^helped? (to )?/i, "")
+      .replace(/^assisted? (with )?/i, "")
+      .replace(/^was part of /i, "")
+      .replace(/^involved in /i, "")
+      .replace(/^supported? /i, "")
+      .replace(/^participated in /i, "")
+      .replace(/^contributed to /i, "");
+
+    const parts = [];
+    if (ctx === "customer") {
+      const vol = a.volume ? `${a.volume}` : "";
+      const ch  = a.channel ? ` via ${a.channel}` : "";
+      const iss = a.issue ? ` ${a.issue.toLowerCase()} enquiries` : " customer requests";
+      const met = a.metric ? `, maintaining ${a.metric}` : "";
+      parts.push(`Resolved ${vol}${iss}${ch}${met}.`);
+      if (a.metric && !parts[0].includes(a.metric)) parts[0] = parts[0].replace(".", `, achieving ${a.metric}.`);
+    } else if (ctx === "sales") {
+      const vol = a.volume ? `${a.volume} in revenue` : "revenue targets";
+      const ch  = a.channel ? ` through ${a.channel.toLowerCase()}` : "";
+      const met = a.metric ? `, closing ${a.metric}` : "";
+      const imp = a.impact ? ` — ${a.impact.toLowerCase()}` : "";
+      parts.push(`Generated ${vol}${ch}${met}${imp}.`);
+    } else if (ctx === "tech") {
+      const act = a.action ? a.action : clean;
+      const sc  = a.scale ? ` serving ${a.scale}` : "";
+      const met = a.metric ? `, improving performance by ${a.metric}` : "";
+      const imp = a.impact ? ` — ${a.impact.toLowerCase()}` : "";
+      parts.push(`Built and shipped ${act}${sc}${met}${imp}.`);
+    } else if (ctx === "management") {
+      const vol = a.volume ? `a ${a.volume}` : "a cross-functional team";
+      const act = a.action ? ` focused on ${a.action.toLowerCase()}` : "";
+      const met = a.metric ? `, delivering ${a.metric}` : "";
+      const imp = a.impact ? ` — ${a.impact.toLowerCase()}` : "";
+      parts.push(`Led ${vol}${act}${met}${imp}.`);
+    } else if (ctx === "marketing") {
+      const ch  = a.channel ? `${a.channel} campaigns` : "marketing campaigns";
+      const vol = a.volume ? ` managing ${a.volume}` : "";
+      const met = a.metric ? `, achieving ${a.metric}` : "";
+      const imp = a.impact ? ` — ${a.impact.toLowerCase()}` : "";
+      parts.push(`Executed ${ch}${vol}${met}${imp}.`);
+    } else if (ctx === "finance") {
+      const act = a.action ? a.action : clean;
+      const vol = a.volume ? ` for ${a.volume}` : "";
+      const met = a.metric ? ` with ${a.metric}` : "";
+      const imp = a.impact ? ` — ${a.impact.toLowerCase()}` : "";
+      parts.push(`Managed ${act}${vol}${met}${imp}.`);
+    } else {
+      const act = a.action ? a.action : clean;
+      const vol = a.volume ? ` (${a.volume})` : "";
+      const meth = a.method ? ` via ${a.method.toLowerCase()}` : "";
+      const met = a.metric ? `, resulting in ${a.metric}` : "";
+      const imp = a.impact ? ` — ${a.impact.toLowerCase()}` : "";
+      parts.push(`${act.charAt(0).toUpperCase() + act.slice(1)}${vol}${meth}${met}${imp}.`);
+    }
+    return parts[0].replace(/\s{2,}/g, " ").replace(/\.\./g, ".").replace(/,\s*\./g, ".").trim();
+  };
+
+  const weakBullets = form.experience.split("\n").filter(l => isWeakBullet(l));
+
+  const openCoach = (idx = 0) => {
+    const weak = weakBullets[idx];
+    if (!weak) return;
+    setCoachBullet(weak);
+    setCoachBulletIdx(idx);
+    setCoachAnswers({});
+    setCoachResult("");
+    setCoachOpen(true);
+  };
+
+  const applyCoachResult = () => {
+    if (!coachResult) return;
+    const updated = form.experience.split("\n").map(l =>
+      l.trim() === coachBullet.trim() ? coachResult : l
+    ).join("\n");
+    setForm({ ...form, experience: updated });
+    const remaining = updated.split("\n").filter(l => isWeakBullet(l));
+    if (remaining.length > 0) {
+      setCoachBullet(remaining[0]);
+      setCoachBulletIdx(0);
+      setCoachAnswers({});
+      setCoachResult("");
+    } else {
+      setCoachOpen(false);
+      setCoachBullet("");
+      setCoachResult("");
+      setCoachAnswers({});
+    }
+  };
+
   // Form completion tracker
   const trackFields = ["name","title","email","phone","location","linkedin","website","summary","experience","education","skills","languages","certifications","projects","volunteer","awards"];
   const filledCount = trackFields.filter(k => form[k]?.trim()).length + (photoUrl ? 1 : 0);
@@ -1065,9 +1229,129 @@ Awards: ${form.awards}`;
           {field("summary", true, t.placeholderSummary)}
           <Hint text="2–4 sentences. Who you are, your years of experience, and your biggest strength." />
 
-          <label style={lbl}>{t.experience}</label>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+            <label style={{ ...lbl, marginBottom: 0 }}>{t.experience}</label>
+            {weakBullets.length > 0 && !coachOpen && (
+              <button onClick={() => openCoach(0)}
+                style={{ fontSize: 11.5, fontWeight: 700, color: C.accent2,
+                  background: `${C.accent}14`, border: `1px solid ${C.accent}33`,
+                  borderRadius: 999, padding: "3px 12px", cursor: "pointer",
+                  fontFamily: "inherit", display: "flex", alignItems: "center", gap: 5 }}>
+                ✦ Coach me · {weakBullets.length} weak {weakBullets.length === 1 ? "bullet" : "bullets"}
+              </button>
+            )}
+          </div>
           {field("experience", true, t.placeholderEx)}
           <Hint text="One role per line. Format: Job Title — Company | Start – End" />
+
+          {/* ── Achievement Coach Panel ── */}
+          {coachOpen && (() => {
+            const ctx = detectCoachContext(coachBullet);
+            const questions = COACH_QUESTIONS[ctx] || COACH_QUESTIONS.general;
+            return (
+              <div style={{ background: C.elevated, border: `1.5px solid ${C.accent}44`,
+                borderRadius: 12, padding: "18px 20px", marginTop: 8 }}>
+                {/* Header */}
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                      <div style={{ fontSize: 12.5, fontWeight: 800, color: C.accent2,
+                        textTransform: "uppercase", letterSpacing: "1px" }}>
+                        ✦ Achievement Coach
+                      </div>
+                      {weakBullets.length > 1 && (
+                        <span style={{ fontSize: 10.5, color: C.text3 }}>
+                          {coachBulletIdx + 1} / {weakBullets.length}
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: 11.5, color: C.text3, marginBottom: 10 }}>
+                      Weak bullet detected — let's make it measurable:
+                    </div>
+                    <div style={{ fontSize: 12.5, color: C.text2, background: C.bg,
+                      border: `1px solid ${C.border}`, borderRadius: 6, padding: "6px 10px",
+                      fontStyle: "italic" }}>
+                      "{coachBullet.trim()}"
+                    </div>
+                  </div>
+                  <button onClick={() => setCoachOpen(false)}
+                    style={{ background: "none", border: "none", color: C.text3,
+                      cursor: "pointer", fontSize: 16, padding: "0 0 0 12px", lineHeight: 1 }}>✕</button>
+                </div>
+
+                {/* ATRNI framework label */}
+                <div style={{ display: "flex", gap: 6, marginBottom: 14, flexWrap: "wrap" }}>
+                  {["Action", "Task", "Result", "Number", "Impact"].map((f, i) => (
+                    <span key={f} style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px",
+                      borderRadius: 999, background: `${C.accent}${["22","1a","14","0e","08"][i]}`,
+                      border: `1px solid ${C.accent}33`, color: C.accent2, letterSpacing: "0.5px" }}>
+                      {f}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Questions */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 14 }}>
+                  {questions.map(q => (
+                    <div key={q.id}>
+                      <label style={{ ...lbl, marginBottom: 4, fontSize: 12, color: C.text2 }}>{q.label}</label>
+                      <input
+                        value={coachAnswers[q.id] || ""}
+                        onChange={e => setCoachAnswers(a => ({ ...a, [q.id]: e.target.value }))}
+                        placeholder={q.ph}
+                        style={{ ...inputStyle, fontSize: 12.5, padding: "7px 10px" }} />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Generate button */}
+                <button
+                  onClick={() => {
+                    const bullet = buildStrongBullet(coachBullet, coachAnswers, ctx);
+                    setCoachResult(bullet);
+                  }}
+                  style={{ width: "100%", padding: "9px 0", background: C.grad, color: "#fff",
+                    border: "none", borderRadius: 8, fontSize: 13, fontWeight: 700,
+                    cursor: "pointer", fontFamily: "inherit", marginBottom: coachResult ? 12 : 0 }}>
+                  ✦ Generate strong bullet
+                </button>
+
+                {/* Result */}
+                {coachResult && (
+                  <div style={{ marginTop: 12 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: C.text3,
+                      textTransform: "uppercase", letterSpacing: "1px", marginBottom: 6 }}>
+                      Suggested bullet:
+                    </div>
+                    <div style={{ background: `${C.accent}0a`, border: `1px solid ${C.accent}30`,
+                      borderRadius: 8, padding: "10px 14px", marginBottom: 10 }}>
+                      <textarea
+                        value={coachResult}
+                        onChange={e => setCoachResult(e.target.value)}
+                        rows={2}
+                        style={{ ...inputStyle, fontSize: 13, background: "transparent",
+                          border: "none", padding: 0, resize: "vertical", boxShadow: "none",
+                          outline: "none", color: C.text1, width: "100%", fontFamily: "inherit" }} />
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button onClick={applyCoachResult}
+                        style={{ flex: 1, padding: "8px 0", background: C.grad, color: "#fff",
+                          border: "none", borderRadius: 7, fontSize: 12.5, fontWeight: 700,
+                          cursor: "pointer", fontFamily: "inherit" }}>
+                        ✓ Replace in my resume
+                      </button>
+                      <button onClick={() => { setCoachResult(""); setCoachAnswers({}); }}
+                        style={{ padding: "8px 14px", background: "transparent",
+                          border: `1px solid ${C.border}`, borderRadius: 7, fontSize: 12,
+                          color: C.text2, cursor: "pointer", fontFamily: "inherit" }}>
+                        Try again
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           <label style={lbl}>{t.education}</label>
           {field("education", true, t.placeholderEducation)}
