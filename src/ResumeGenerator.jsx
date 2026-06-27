@@ -935,7 +935,7 @@ Awards: ${form.awards}`;
       </div>
 
       <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-        flex: 1, minHeight: 0, overflow: "hidden", alignItems: "start" }}>
+        flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
         <div style={isMobile ? {} : { overflowY: "auto", height: "100%", paddingRight: 6,
           paddingBottom: 32, scrollbarWidth: "thin" }}>
 
@@ -1264,7 +1264,7 @@ Awards: ${form.awards}`;
           Template: <strong style={{ color: coverTpl.accent }}>{coverTpl.name}</strong>
         </div>
       </div>
-      <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr" }}>
+      <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", alignItems: "stretch" }}>
         {/* Left: form */}
         <div>
           {/* Section heading helper */}
