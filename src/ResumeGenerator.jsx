@@ -846,6 +846,21 @@ export default function ResumeGenerator() {
   const [trackerDragId, setTrackerDragId] = useState(null);
   const [trackerDragOver, setTrackerDragOver] = useState(null);
   useEffect(() => { localStorage.setItem("ac_tracker", JSON.stringify(trackerCards)); }, [trackerCards]);
+
+  useEffect(() => {
+    const styleId = "ac-no-cursor";
+    if (navPage === "resume" && appView === "app") {
+      if (!document.getElementById(styleId)) {
+        const s = document.createElement("style");
+        s.id = styleId;
+        s.textContent = "* { cursor: none !important }";
+        document.head.appendChild(s);
+      }
+    } else {
+      document.getElementById(styleId)?.remove();
+    }
+    return () => { document.getElementById(styleId)?.remove(); };
+  }, [navPage, appView]);
   const [atsText, setAtsText] = useState("");
   const [atsJd, setAtsJd] = useState("");
   const [atsResult, setAtsResult] = useState(null);
@@ -1651,7 +1666,7 @@ Awards: ${form.awards}`;
       )}
 
       <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-        gap: 16, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch", cursor: "none" }}>
+        gap: 16, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
         <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
           ...(isMobile ? { padding: "16px 12px" } : { overflowY: "auto", height: "100%",
           padding: "20px 20px 32px", scrollbarWidth: "thin" }) }}>
