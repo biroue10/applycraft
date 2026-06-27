@@ -27,11 +27,51 @@ function nav() {
 }
 
 function footer() {
-  return `<footer>
-  <div class="page">
-    <p>© 2026 ApplyCraft · <a href="/">Resume Builder</a> · <a href="/cover-letter-builder/">Cover Letter Builder</a> · <a href="/free-resume-builder/">Free Resume Builder</a> · <a href="/ats-resume-builder/">ATS Resume Builder</a> · <a href="/ats-checker/">ATS Checker</a></p>
-    <p style="margin-top:8px"><a href="/student-resume-builder/">Student Resume</a> · <a href="/canadian-resume-builder/">Canadian Resume</a> · <a href="/resume-in-french/">CV en Français</a> · <a href="/resume-in-arabic/">CV en Arabe</a></p>
-    <p style="margin-top:8px"><a href="/examples/entry-level-resume/">Entry-Level Resume Example</a> · <a href="/examples/it-support-technician-resume/">IT Support Resume Example</a> · <a href="/examples/customer-service-resume/">Customer Service Resume Example</a> · <a href="/examples/linux-administrator-resume/">Linux Administrator Resume Example</a></p>
+  return `<footer class="site-footer">
+  <div class="footer-shell">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="/" class="footer-logo">ApplyCraft</a>
+        <p>Free resume and cover letter builder for the global job market. 50+ languages, 22 templates, no sign-up required.</p>
+        <a href="mailto:hello@applycraft.io">hello@applycraft.io</a>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <div>
+          <h2>Product</h2>
+          <a href="/">Resume Builder</a>
+          <a href="/cover-letter-builder/">Cover Letter Builder</a>
+          <a href="/ats-checker/">ATS Checker</a>
+          <a href="/changelog/">Changelog</a>
+          <a href="/roadmap/">Roadmap</a>
+          <a href="/status/">Status</a>
+        </div>
+        <div>
+          <h2>Company</h2>
+          <a href="/about/">About &amp; Founder</a>
+          <a href="/contact/">Contact</a>
+          <a href="https://github.com/biroue10" rel="noopener">GitHub</a>
+        </div>
+        <div>
+          <h2>Resources</h2>
+          <a href="/help/">Help Center</a>
+          <a href="/resume-builder/">Resume Guide</a>
+          <a href="/ats-resume-builder/">ATS Guide</a>
+          <a href="/free-resume-builder/">Free Resume Builder</a>
+          <a href="/student-resume-builder/">Student Resume Builder</a>
+          <a href="/canadian-resume-builder/">Canadian Resume Builder</a>
+        </div>
+        <div>
+          <h2>Legal</h2>
+          <a href="/privacy/">Privacy Policy</a>
+          <a href="/privacy/#gdpr">GDPR</a>
+          <a href="/privacy/#cookies">Cookies</a>
+        </div>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 ApplyCraft by Isaac Biroue · applycraft.io</span>
+      <span>Browser-first editing · Optional AI helpers · No account required</span>
+    </div>
   </div>
 </footer>`;
 }

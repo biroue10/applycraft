@@ -84,9 +84,51 @@ ${extraHead}
 ${content}
 </div>
 </main>
-<footer>
-  <div class="page">
-    <p>© 2026 ApplyCraft · <a href="/">Home</a> · <a href="/privacy/">Privacy</a> · <a href="/about/">About</a> · <a href="/help/">Help</a> · <a href="/contact/">Contact</a></p>
+<footer class="site-footer">
+  <div class="footer-shell">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="/" class="footer-logo">ApplyCraft</a>
+        <p>Free resume and cover letter builder for the global job market. 50+ languages, 22 templates, no sign-up required.</p>
+        <a href="mailto:${EMAIL}">${EMAIL}</a>
+      </div>
+      <nav class="footer-grid" aria-label="Footer">
+        <div>
+          <h2>Product</h2>
+          <a href="/">Resume Builder</a>
+          <a href="/cover-letter-builder/">Cover Letter Builder</a>
+          <a href="/ats-checker/">ATS Checker</a>
+          <a href="/changelog/">Changelog</a>
+          <a href="/roadmap/">Roadmap</a>
+          <a href="/status/">Status</a>
+        </div>
+        <div>
+          <h2>Company</h2>
+          <a href="/about/">About &amp; Founder</a>
+          <a href="/contact/">Contact</a>
+          <a href="https://github.com/biroue10" rel="noopener">GitHub</a>
+        </div>
+        <div>
+          <h2>Resources</h2>
+          <a href="/help/">Help Center</a>
+          <a href="/resume-builder/">Resume Guide</a>
+          <a href="/ats-resume-builder/">ATS Guide</a>
+          <a href="/free-resume-builder/">Free Resume Builder</a>
+          <a href="/student-resume-builder/">Student Resume Builder</a>
+          <a href="/canadian-resume-builder/">Canadian Resume Builder</a>
+        </div>
+        <div>
+          <h2>Legal</h2>
+          <a href="/privacy/">Privacy Policy</a>
+          <a href="/privacy/#gdpr">GDPR</a>
+          <a href="/privacy/#cookies">Cookies</a>
+        </div>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 ApplyCraft by Isaac Biroue · applycraft.io</span>
+      <span>Browser-first editing · Optional AI helpers · No account required</span>
+    </div>
   </div>
 </footer>
 </body>

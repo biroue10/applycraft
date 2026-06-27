@@ -4230,6 +4230,7 @@ Awards: ${form.awards}`;
                         border: "none", cursor: "pointer", padding: "4px 0", fontFamily: "inherit",
                         textAlign: "left" }}>{label}</button>
                   ))}
+                  <a href="/ats-checker/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>ATS Checker</a>
                   <a href="/changelog/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Changelog</a>
                   <a href="/roadmap/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Roadmap</a>
                   <a href="/status/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Status</a>
@@ -4251,6 +4252,9 @@ Awards: ${form.awards}`;
                   <a href="/resume-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Resume Guide</a>
                   <a href="/ats-resume-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>ATS Guide</a>
                   <a href="/cover-letter-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Cover Letter Guide</a>
+                  <a href="/free-resume-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Free Resume Builder</a>
+                  <a href="/student-resume-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Student Resume Builder</a>
+                  <a href="/canadian-resume-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Canadian Resume Builder</a>
                 </div>
                 <div>
                   <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
