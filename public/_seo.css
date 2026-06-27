@@ -10,7 +10,9 @@ img{max-width:100%;height:auto}
   display:flex;align-items:center;justify-content:space-between}
 .nav-logo{font-size:22px;font-weight:800;letter-spacing:-0.6px;
   background:linear-gradient(135deg,#6366F1,#3B82F6);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  text-decoration:none}
+.nav-logo:hover,.nav-logo:focus{text-decoration:none}
 .nav-cta{background:linear-gradient(135deg,#6366F1,#3B82F6);color:#fff;border:none;
   border-radius:6px;padding:9px 20px;font-size:14px;font-weight:700;cursor:pointer;
   text-decoration:none;display:inline-block}
