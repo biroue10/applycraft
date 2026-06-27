@@ -4,7 +4,7 @@
 
 <br/>
 
-**The CV builder that actually works in Arabic, French, and 50+ languages.**
+**The CV builder that actually works in Arabic, French, and 99 document languages.**
 
 ATS-conscious templates · live preview · PDF and DOCX · no watermark · no credit card required.
 
@@ -12,6 +12,8 @@ ATS-conscious templates · live preview · PDF and DOCX · no watermark · no cr
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![Built with](https://img.shields.io/badge/built%20with-React%2018%20%2B%20Vite%206-61DAFB?style=flat-square&logo=react)](https://vitejs.dev)
 [![Deployed on](https://img.shields.io/badge/deployed%20on-Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflare)](https://pages.cloudflare.com)
+
+### → [Try it live at applycraft.io](https://applycraft.io)
 
 </div>
 
@@ -21,7 +23,7 @@ ATS-conscious templates · live preview · PDF and DOCX · no watermark · no cr
 
 ApplyCraft is a free, privacy-first resume and cover letter builder built for the global job market. No account. No watermark. No paywall. Just open the browser, pick a template, fill in your details, and download a polished PDF or DOCX in under 5 minutes.
 
-**22 templates · 50+ languages · ∞ free downloads**
+**22 templates · 99 document languages · ∞ free downloads**
 
 ---
 
@@ -101,7 +103,7 @@ Stop retyping your CV for every job. With the Master Profile workflow:
 
 <br/>
 
-Classic · Modern · Minimal · Bold · Elegant · Executive — and 16 more styles.
+Classic · Modern · Minimal · Bold · Elegant · Executive · Creative · Tech · Sharp · Slate · Prism · Compact · Horizon · Nordic · Dusk · Vertex · Academy · Spark · Stone · Ivy · Carbon · Pulse
 
 Every template is:
 - **ATS-safe** — structured for automated parsing, no tables or text boxes that break parsers
@@ -113,7 +115,7 @@ Every template is:
 ## Multilingual superpowers
 
 <div align="center">
-<img src="docs/screenshots/08_multilingual.png" alt="Built for the global job market — 50+ languages, full RTL support" width="540"/>
+<img src="docs/screenshots/08_multilingual.png" alt="Built for the global job market — 99 document languages, full RTL support" width="540"/>
 </div>
 
 <br/>
@@ -122,8 +124,9 @@ ApplyCraft is the only resume builder designed from the ground up for multilingu
 
 | Feature | Detail |
 |---------|--------|
-| **CV in 50+ languages** | Switch the full interface and document language with one click |
-| **Full right-to-left** | Arabic, Hebrew, Farsi and other RTL languages render correctly |
+| **99 document languages** | Set section labels (Experience, Education, Skills…) in any of 99 languages with one click |
+| **Full UI in 5 languages** | Complete interface translation for EN, FR, ES, AR, and DE |
+| **Full right-to-left** | Arabic, Hebrew, Farsi, Pashto, Urdu and other RTL languages render correctly |
 | **Formatting survives** | Your layout and design stay perfect after translation |
 | **Translate an existing CV** | Paste your CV and translate all content instantly — no rebuilding |
 
@@ -141,7 +144,7 @@ ApplyCraft is the only resume builder designed from the ground up for multilingu
 - No account required
 - No credit card
 - No paid tier or "Pro" upsell
-- Browser-first editing — your data never leaves your machine
+- Browser-first editing — your resume data never leaves your machine
 - PDF and DOCX downloads included
 
 **Everything above. Zero cost. Forever.**
@@ -161,6 +164,8 @@ ApplyCraft is the only resume builder designed from the ground up for multilingu
 - **Browser-side export** — PDF and DOCX generated in your browser, never uploaded
 - **Clear your session anytime** — one click wipes everything locally
 
+> **Note on AI features:** When AI achievement coaching is enabled (requires an Anthropic API key — see below), the text you submit for rewriting is sent to Anthropic's API. No other resume data is transmitted. When no API key is configured the feature falls back silently to the live preview — nothing leaves the browser.
+
 ---
 
 ## Tech stack
@@ -173,8 +178,28 @@ ApplyCraft is the only resume builder designed from the ground up for multilingu
 | PDF export | jsPDF (lazy-loaded) |
 | DOCX export | docx.js (lazy-loaded) |
 | HTML sanitisation | DOMPurify |
+| AI | Anthropic Claude API (optional — see below) |
 | Hosting | Cloudflare Pages |
 | CDN | Cloudflare global network |
+
+---
+
+## How the AI works
+
+The achievement-coaching feature calls the Anthropic Claude API (`claude-sonnet-4-6`) directly from the browser:
+
+```js
+fetch("https://api.anthropic.com/v1/messages", {
+  headers: { "Content-Type": "application/json", "x-api-key": YOUR_KEY },
+  body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, messages: [...] }),
+})
+```
+
+**Three things to know:**
+
+1. **No key = graceful fallback.** If the API key is missing or the call fails, the app silently falls back to the live-preview data. Nothing breaks.
+2. **Key handling.** The key should never be hardcoded in front-end code. For production, route the call through a Cloudflare Worker or other serverless function that holds the key as an environment secret, and point the `fetch` in `src/ResumeGenerator.jsx` at that Worker URL instead.
+3. **What gets sent.** Only the text fields you explicitly submit for rewriting are sent to the API. Your resume is not silently uploaded in the background.
 
 ---
 
@@ -185,7 +210,7 @@ ApplyCraft is the only resume builder designed from the ground up for multilingu
 git clone https://github.com/biroue10/applycraft.git
 cd applycraft
 
-# 2. Install dependencies
+# 2. Install dependencies (Node 20+ required)
 npm install
 
 # 3. Start dev server
@@ -211,7 +236,7 @@ resume-app/
 ├── src/
 │   ├── main.jsx              # SSG entry point (ViteReactSSG)
 │   ├── routes.jsx            # React route definitions
-│   └── ResumeGenerator.jsx   # Main app component (~7 000 lines)
+│   └── ResumeGenerator.jsx   # Main app component
 ├── public/
 │   ├── ats-checker/          # Free ATS checker tool (EN)
 │   ├── ats-checker-fr/       # Free ATS checker — French
@@ -239,6 +264,39 @@ resume-app/
 - **hreflang clusters** for EN / FR / AR resume builder and ATS checker variants
 - **JSON-LD schemas** on every page (WebPage, SoftwareApplication, FAQPage)
 - **Core Web Vitals** optimised — jsPDF and html2canvas are lazy-loaded
+
+---
+
+## Roadmap
+
+- [x] 22 resume templates + cover letter templates
+- [x] PDF and DOCX export
+- [x] RTL support (Arabic, Hebrew, Farsi, Pashto, Urdu)
+- [x] 99 document languages, 5 full UI translations
+- [x] Free ATS checker (EN, FR, AR)
+- [x] Static prerendering (SSG) for SEO
+- [ ] Serverless API key proxy (Cloudflare Worker) for safe AI usage
+- [ ] More templates (target: 30)
+- [ ] Cover letter AI coaching
+- [ ] Saved sessions via Supabase (optional auth)
+- [ ] PDF export with full Unicode / non-Latin font support
+
+---
+
+## Contributing
+
+```bash
+git clone https://github.com/biroue10/applycraft.git
+cd applycraft
+npm install
+npm run dev
+```
+
+1. Create a branch: `git checkout -b feat/your-feature`
+2. Make your changes
+3. Open a pull request — describe what you changed and why
+
+Bug reports and feature requests go in [GitHub Issues](https://github.com/biroue10/applycraft/issues).
 
 ---
 
