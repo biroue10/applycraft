@@ -18,7 +18,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
+      - run: npm ci
+      - run: npm run seo:sitemap
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
@@ -33,3 +34,37 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  indexnow:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run seo:sitemap
+      - name: Wait for production SEO files
+        run: |
+          set -euo pipefail
+          key="91a714f93cc24a8c95f1efe0d9e9a914"
+          key_url="https://applycraft.io/${key}.txt"
+          sitemap_url="https://applycraft.io/sitemap.xml"
+
+          for attempt in $(seq 1 20); do
+            key_body="$(curl -fsS "$key_url" || true)"
+            sitemap_status="$(curl -fsS -o /dev/null -w "%{http_code}" "$sitemap_url" || true)"
+
+            if [ "$key_body" = "$key" ] && [ "$sitemap_status" = "200" ]; then
+              echo "Production IndexNow key and sitemap are live."
+              exit 0
+            fi
+
+            echo "Production SEO files are not ready yet; retry ${attempt}/20."
+            sleep 15
+          done
+
+          echo "Production SEO files were not ready in time."
+          exit 1
+      - run: npm run seo:indexnow
