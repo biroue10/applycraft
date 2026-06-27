@@ -821,56 +821,6 @@ Awards: ${form.awards}`;
     URL.revokeObjectURL(url);
   }
 
-  const PageHeader = ({ eyebrow, icon, title, sub, pill }) => (
-    <div style={{ marginBottom: 28 }}>
-      <div style={{ display: "inline-flex", alignItems: "center", gap: 7,
-        background: `${C.accent}12`, border: `1px solid ${C.accent}28`,
-        borderRadius: 999, padding: "4px 14px", marginBottom: 14 }}>
-        {icon && <span style={{ fontSize: 13, lineHeight: 1 }}>{icon}</span>}
-        <span style={{ fontSize: 10.5, fontWeight: 800, color: C.accent2,
-          textTransform: "uppercase", letterSpacing: "1.4px" }}>{eyebrow}</span>
-        {pill && (
-          <span style={{ fontSize: 10.5, fontWeight: 700, color: C.text3,
-            background: C.elevated, borderRadius: 999, padding: "1px 8px",
-            border: `1px solid ${C.border}`, marginLeft: 2 }}>{pill}</span>
-        )}
-      </div>
-      <h1 style={{ ...h1, fontSize: isMobile ? 22 : 32, margin: "0 0 10px",
-        lineHeight: 1.15 }}>{title}</h1>
-      {sub && (
-        <p style={{ ...subtitle, margin: 0, maxWidth: 520, fontSize: isMobile ? 13.5 : 15 }}>{sub}</p>
-      )}
-      <div style={{ marginTop: 18, height: 2, width: 48,
-        background: `linear-gradient(90deg, ${C.accent}, ${C.blue})`,
-        borderRadius: 999 }} />
-    </div>
-  );
-
-  const SectionHeader = ({ icon, title, filled }) => (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "28px 0 16px",
-      paddingBottom: 10, borderBottom: `1px solid ${C.border}` }}>
-      <span style={{ fontSize: 15 }}>{icon}</span>
-      <span style={{ fontSize: 11.5, fontWeight: 800, textTransform: "uppercase",
-        letterSpacing: "1px", color: C.text2, flex: 1 }}>{title}</span>
-      {filled && <span style={{ fontSize: 10, fontWeight: 700, color: "#4ade80",
-        background: "rgba(74,222,128,0.12)", padding: "2px 8px", borderRadius: 999 }}>✓ Filled</span>}
-    </div>
-  );
-
-  const Hint = ({ text }) => (
-    <div style={{ fontSize: 11.5, color: C.text3, marginTop: 6, lineHeight: 1.6, fontStyle: "italic" }}>{text}</div>
-  );
-
-  const IconInput = ({ icon, children }) => (
-    <div style={{ position: "relative" }}>
-      <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
-        fontSize: 14, opacity: 0.45, pointerEvents: "none", lineHeight: 1 }}>{icon}</span>
-      {React.cloneElement(children, {
-        style: { ...children.props.style, paddingLeft: 34 }
-      })}
-    </div>
-  );
-
   const mainContent = step === "templates" ? (
     <div style={{ ...rShell }}>
       <PageHeader
@@ -879,6 +829,7 @@ Awards: ${form.awards}`;
         title={t.heading}
         sub={t.chooseTpl}
         pill={`${TEMPLATES.length - 1} templates`}
+        isMobile={isMobile}
       />
       <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))" }}>
         {TEMPLATES.map((tp) => (
@@ -1773,6 +1724,7 @@ Awards: ${form.awards}`;
         title="Cover Letter Templates"
         sub="Choose a template to start writing your cover letter."
         pill={`${COVER_TEMPLATES.length - 1} templates`}
+        isMobile={isMobile}
       />
       <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))" }}>
         {COVER_TEMPLATES.map((tp) => (
@@ -1884,7 +1836,7 @@ Awards: ${form.awards}`;
 
   const ComingSoon = ({ label }) => (
     <div style={{ padding: isMobile ? 20 : 40 }}>
-      <PageHeader eyebrow="Coming Soon" icon="🚧" title={label} sub="This feature is on its way. Stay tuned for updates!" />
+      <PageHeader eyebrow="Coming Soon" icon="🚧" title={label} sub="This feature is on its way. Stay tuned for updates!" isMobile={isMobile} />
     </div>
   );
 
@@ -1895,6 +1847,7 @@ Awards: ${form.awards}`;
         icon="💎"
         title="Plans & Pricing"
         sub="Start free, upgrade when you're ready. No hidden fees."
+        isMobile={isMobile}
       />
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
         {[
@@ -1959,6 +1912,7 @@ Awards: ${form.awards}`;
         icon="✦"
         title="About ApplyCraft"
         sub="A free, privacy-first tool for building professional resumes and cover letters — no account required, no data stored, no paywalls."
+        isMobile={isMobile}
       />
 
       {/* Divider */}
@@ -3475,6 +3429,64 @@ function FAQItem({ item, C }) {
         </div>
       </div>
     </FadeIn>
+  );
+}
+
+function PageHeader({ eyebrow, icon, title, sub, pill, isMobile }) {
+  return (
+    <div style={{ marginBottom: 28 }}>
+      <div style={{ display: "inline-flex", alignItems: "center", gap: 7,
+        background: `${C.accent}12`, border: `1px solid ${C.accent}28`,
+        borderRadius: 999, padding: "4px 14px", marginBottom: 14 }}>
+        {icon && <span style={{ fontSize: 13, lineHeight: 1 }}>{icon}</span>}
+        <span style={{ fontSize: 10.5, fontWeight: 800, color: C.accent2,
+          textTransform: "uppercase", letterSpacing: "1.4px" }}>{eyebrow}</span>
+        {pill && (
+          <span style={{ fontSize: 10.5, fontWeight: 700, color: C.text3,
+            background: C.elevated, borderRadius: 999, padding: "1px 8px",
+            border: `1px solid ${C.border}`, marginLeft: 2 }}>{pill}</span>
+        )}
+      </div>
+      <h1 style={{ ...h1, fontSize: isMobile ? 22 : 32, margin: "0 0 10px",
+        lineHeight: 1.15 }}>{title}</h1>
+      {sub && (
+        <p style={{ ...subtitle, margin: 0, maxWidth: 520, fontSize: isMobile ? 13.5 : 15 }}>{sub}</p>
+      )}
+      <div style={{ marginTop: 18, height: 2, width: 48,
+        background: `linear-gradient(90deg, ${C.accent}, ${C.blue})`,
+        borderRadius: 999 }} />
+    </div>
+  );
+}
+
+function SectionHeader({ icon, title, filled }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "28px 0 16px",
+      paddingBottom: 10, borderBottom: `1px solid ${C.border}` }}>
+      <span style={{ fontSize: 15 }}>{icon}</span>
+      <span style={{ fontSize: 11.5, fontWeight: 800, textTransform: "uppercase",
+        letterSpacing: "1px", color: C.text2, flex: 1 }}>{title}</span>
+      {filled && <span style={{ fontSize: 10, fontWeight: 700, color: "#4ade80",
+        background: "rgba(74,222,128,0.12)", padding: "2px 8px", borderRadius: 999 }}>✓ Filled</span>}
+    </div>
+  );
+}
+
+function Hint({ text }) {
+  return (
+    <div style={{ fontSize: 11.5, color: C.text3, marginTop: 6, lineHeight: 1.6, fontStyle: "italic" }}>{text}</div>
+  );
+}
+
+function IconInput({ icon, children }) {
+  return (
+    <div style={{ position: "relative" }}>
+      <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
+        fontSize: 14, opacity: 0.45, pointerEvents: "none", lineHeight: 1 }}>{icon}</span>
+      {React.cloneElement(children, {
+        style: { ...children.props.style, paddingLeft: 34 }
+      })}
+    </div>
   );
 }
 
