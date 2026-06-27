@@ -6,8 +6,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..", "public");
 
 const SITE = "https://applycraft.io";
-const EMAIL = "biroueisaac@gmail.com";
+const EMAIL = "hello@applycraft.io";
 const TODAY = "2026-06-27";
+const SOCIAL_IMAGE = `${SITE}/og.png`;
+const SOCIAL_IMAGE_ALT = "ApplyCraft resume builder interface";
 
 function shell(title, description, canonicalPath, content, extraHead = "") {
   return `<!doctype html>
@@ -21,7 +23,17 @@ function shell(title, description, canonicalPath, content, extraHead = "") {
 <meta property="og:title" content="${title} | ApplyCraft"/>
 <meta property="og:description" content="${description}"/>
 <meta property="og:url" content="${SITE}${canonicalPath}"/>
-<meta property="og:image" content="${SITE}/og.svg"/>
+<meta property="og:image" content="${SOCIAL_IMAGE}"/>
+<meta property="og:image:secure_url" content="${SOCIAL_IMAGE}"/>
+<meta property="og:image:type" content="image/png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="${SOCIAL_IMAGE_ALT}"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="${title} | ApplyCraft"/>
+<meta name="twitter:description" content="${description}"/>
+<meta name="twitter:image" content="${SOCIAL_IMAGE}"/>
+<meta name="twitter:image:alt" content="${SOCIAL_IMAGE_ALT}"/>
 <link rel="icon" href="/favicon.svg"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -100,27 +112,27 @@ const PAGES = {
 
 <h2 id="data-we-collect">2. What data we collect</h2>
 <h3>2.1 Resume and cover letter content</h3>
-<p>Everything you type into the ApplyCraft form — your name, work history, skills, contact information — is stored exclusively in your browser's local memory. This data is never transmitted to any server. When you close or refresh the tab, it is gone permanently. We have no mechanism to retrieve it.</p>
+<p>Resume data is edited in your browser. ApplyCraft does not provide user accounts or cloud resume storage, so there is no saved profile for us to retrieve later. If you close or refresh the tab without downloading your document, your current in-memory edits may be lost.</p>
 
 <h3>2.2 Technical logs</h3>
 <p>Our hosting provider (Cloudflare) may record standard server access logs: IP address, browser type, URL requested, and timestamp. These are retained for up to 30 days for security and uptime monitoring. We do not use them for analytics or advertising.</p>
 
 <h3>2.3 Uploaded files</h3>
-<p>If you upload a PDF or DOCX resume using the upload feature, that file is processed entirely within your browser using JavaScript. It is never transmitted to our servers. We never see its contents.</p>
+<p>If you upload a PDF or DOCX resume using the upload feature, the intended behavior is browser-side processing. Avoid uploading sensitive documents if you are using a modified build or third-party mirror of ApplyCraft.</p>
 
 <h2 id="cookies">3. Cookies and tracking</h2>
 <p>ApplyCraft sets <strong>no cookies</strong> and uses <strong>no third-party analytics trackers</strong> (no Google Analytics, no Facebook Pixel, no Hotjar, no similar tools). There is no advertising network integration of any kind.</p>
 <p>Cloudflare, our CDN provider, may set a technical cookie (<code>__cf_bm</code>) for bot protection. This is a strictly necessary security cookie that does not track you for advertising purposes.</p>
 
 <h2>4. AI features and your data</h2>
-<p>The AI polish and suggestion features in ApplyCraft do <strong>not</strong> send your resume content to any external AI provider. All AI processing runs on your device. Your data is never used to train any AI model, by us or any third party.</p>
+<p>Some optional AI or translation features may depend on external services when enabled. Do not use those optional features with sensitive content unless you are comfortable with the relevant provider processing the submitted text.</p>
 
 <h2 id="gdpr">5. GDPR and your rights</h2>
-<p>Because ApplyCraft does not store personal data on a server, most GDPR obligations (right of access, right to erasure, data portability) are fulfilled automatically — there is simply no data on our systems to access, export, or delete.</p>
+<p>ApplyCraft is designed to minimize account-based storage of resume content. For privacy-related requests or questions about data handled by the site, contact us at <a href="mailto:${EMAIL}">${EMAIL}</a>.</p>
 <p>If you are a resident of the European Union, the United Kingdom, or another jurisdiction with data protection laws, you have the following rights:</p>
 <ul>
-  <li><strong>Right of access</strong> — you have access to all your data at all times because it lives in your browser.</li>
-  <li><strong>Right to erasure</strong> — close or refresh the tab. Your data is instantly and permanently erased.</li>
+  <li><strong>Right of access</strong> — you can ask what personal information is associated with support requests or other direct contact.</li>
+  <li><strong>Right to erasure</strong> — you can request deletion of personal information retained through direct contact.</li>
   <li><strong>Right to data portability</strong> — download your resume as PDF or DOCX at any time.</li>
   <li><strong>Right to object</strong> — we do not process your data for profiling, advertising, or automated decision-making.</li>
 </ul>
@@ -173,11 +185,11 @@ const PAGES = {
 
 <h2>What makes ApplyCraft different</h2>
 <ul>
-  <li><strong>No data stored, ever.</strong> Your resume content lives in your browser and nowhere else.</li>
-  <li><strong>No AI training.</strong> Your words are never sent to any AI provider or used to improve any model.</li>
+  <li><strong>Browser-first editing.</strong> ApplyCraft does not require an account or cloud resume storage.</li>
+  <li><strong>Optional AI features.</strong> Use AI or translation helpers only when you are comfortable with the relevant provider processing submitted text.</li>
   <li><strong>No watermarks.</strong> The resume you download looks exactly like a professionally prepared document.</li>
   <li><strong>50+ languages with RTL support.</strong> Built for the global job market, not just English speakers.</li>
-  <li><strong>ATS-optimised.</strong> All templates are tested against the major applicant tracking systems.</li>
+  <li><strong>ATS-conscious.</strong> Templates use clear headings, readable typography, and text-based layouts to improve parsing compatibility.</li>
   <li><strong>Open development.</strong> The code is on <a href="https://github.com/biroue10" rel="noopener">GitHub</a>. See exactly what it does.</li>
 </ul>
 
@@ -206,10 +218,10 @@ const PAGES = {
 <p>Click "Build My Resume" on the homepage. You'll be taken to the template selector — pick a template and you're in the editor. No account or sign-up required.</p>
 
 <h3>Do I need to create an account?</h3>
-<p>No. There is no account system. Open the app, build your resume, download it. Nothing is ever stored on our servers.</p>
+<p>No. Open the app, build your resume, and download it. The core builder does not require an email, password, or account profile.</p>
 
 <h3>Is ApplyCraft really free?</h3>
-<p>Yes. Every feature — all 22 templates, all 50+ languages, unlimited PDF and DOCX downloads — is completely free. No credit card, no paid tier, no watermarks.</p>
+<p>The current builder is free to use and does not require a credit card. If pricing changes in the future, the free workflow should remain clear before you invest time in a document.</p>
 
 <h2>Templates</h2>
 
@@ -217,7 +229,7 @@ const PAGES = {
 <p>Click "Templates" in the left sidebar. Choose a new template and your current data will transfer automatically.</p>
 
 <h3>Are the templates ATS-friendly?</h3>
-<p>Yes. All templates use clean, text-based layouts that ATS systems can parse correctly. No tables inside tables, no images replacing text, no multi-column hacks.</p>
+<p>The templates are designed with clean, text-based layouts that improve parsing compatibility: clear section labels, readable typography, and no image-only resume text.</p>
 
 <h3>Can I preview a template before using it?</h3>
 <p>Yes. On the template selection screen, hovering over a template shows a live preview of the layout.</p>
@@ -258,10 +270,10 @@ const PAGES = {
 <h2>Privacy and data</h2>
 
 <h3>Where is my resume data stored?</h3>
-<p>Only in your browser tab. There is no server, no database, no cloud sync. If you close or refresh the tab, your data is gone.</p>
+<p>Your active edits live in the browser session. ApplyCraft does not provide accounts or cloud resume storage, so download your document before closing the tab.</p>
 
 <h3>Is my data used to train AI?</h3>
-<p>No. Never. Your content is never sent to any AI provider.</p>
+<p>Optional AI or translation features may send submitted text to external services when enabled. Avoid those optional features for sensitive content unless you are comfortable with that processing.</p>
 
 <h3>How do I delete my data?</h3>
 <p>Close the tab. Instantly and permanently deleted. No deletion request form required.</p>
@@ -328,7 +340,7 @@ const PAGES = {
 <div class="changelog-entry">
   <p class="meta">v1.0 · June 2026</p>
   <h2>Initial launch</h2>
-  <p>ApplyCraft goes live. Resume builder with 5 templates, PDF export, and basic multilingual support. No sign-up, no watermarks, no data stored.</p>
+  <p>ApplyCraft goes live. Resume builder with 5 templates, PDF export, basic multilingual support, no sign-up requirement, and no watermarks.</p>
 </div>
 `,
   },
@@ -542,18 +554,5 @@ for (const [slug, p] of Object.entries(PAGES)) {
   writeFileSync(join(dir, "index.html"), shell(p.title, p.description, p.path, p.content), "utf8");
   console.log(`✓ /public/${slug}/index.html`);
 }
-
-// Update sitemap — append new URLs
-import { readFileSync } from "fs";
-const sitemapPath = join(ROOT, "sitemap.xml");
-let sitemap = readFileSync(sitemapPath, "utf8");
-
-const newUrls = Object.values(PAGES).map(p =>
-  `  <url>\n    <loc>${SITE}${p.path}</loc>\n    <lastmod>${TODAY}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`
-).join("\n");
-
-sitemap = sitemap.replace("</urlset>", `${newUrls}\n</urlset>`);
-writeFileSync(sitemapPath, sitemap, "utf8");
-console.log("✓ sitemap.xml updated");
 
 console.log(`\n✅ Generated ${Object.keys(PAGES).length} company pages`);

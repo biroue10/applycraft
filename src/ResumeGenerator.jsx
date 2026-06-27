@@ -2503,7 +2503,7 @@ Awards: ${form.awards}`;
         eyebrow="About"
         icon="✦"
         title="About ApplyCraft"
-        sub="A free, privacy-first tool for building professional resumes and cover letters — no account required, no data stored, no paywalls."
+        sub="A free, browser-first tool for building professional resumes and cover letters — no account required and no paywall for the core builder."
         isMobile={isMobile}
       />
 
@@ -2531,7 +2531,7 @@ Awards: ${form.awards}`;
             ["✉️", "Write a cover letter", "6 matching cover letter styles with full customisation."],
             ["🌍", "50+ languages", "Full RTL support for Arabic, Hebrew and more."],
             ["⬇️", "PDF & DOCX export", "Download in the format any employer expects."],
-            ["🔒", "100% private", "Everything stays in your browser. Nothing is ever uploaded."],
+            ["🔒", "Browser-first", "Build and export without creating an account or cloud profile."],
             ["✦", "AI suggestions", "Optional AI polish to sharpen your wording instantly."],
           ].map(([icon, title, desc]) => (
             <div key={title} style={{ background: C.elevated, border: `1px solid ${C.border}`,
@@ -3449,8 +3449,8 @@ Awards: ${form.awards}`;
             <p style={{ animation: "acFadeUp 0.65s ease 0.34s both",
               fontSize: "clamp(16px, 2vw, 20px)", color: C.text2, maxWidth: 520,
               margin: "0 auto 44px", lineHeight: 1.65 }}>
-              ATS-friendly templates, live preview, PDF & DOCX export. Every feature free,
-              forever — no sign-up, no watermark, no paywall, no data stored.
+              ATS-conscious templates, live preview, PDF & DOCX export. Build for free
+              with no sign-up, no watermark, and no credit card required.
             </p>
             <div style={{ animation: "acFadeUp 0.65s ease 0.5s both",
               display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
@@ -3481,7 +3481,7 @@ Awards: ${form.awards}`;
             {/* Trust row */}
             <div style={{ animation: "acFadeUp 0.5s ease 0.65s both",
               display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap", marginTop: 28 }}>
-              {["🔒 Nothing stored", "⚡ No sign-up", "💳 No credit card", "📄 PDF & DOCX"].map(t => (
+              {["🔒 Browser-first editing", "⚡ No sign-up", "💳 No credit card", "📄 PDF & DOCX"].map(t => (
                 <span key={t} style={{ fontSize: 12.5, color: C.text3, display: "flex", alignItems: "center", gap: 5 }}>{t}</span>
               ))}
             </div>
@@ -3702,7 +3702,7 @@ Awards: ${form.awards}`;
                         Build my full resume →
                       </button>
                       <div style={{ textAlign: "center", fontSize: 11.5, color: C.text3, marginTop: 10 }}>
-                        No sign-up · No credit card · Free forever
+                        No sign-up · No credit card · Free builder
                       </div>
                     </div>
                   </FadeIn>
@@ -4024,12 +4024,11 @@ Awards: ${form.awards}`;
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>actually free.</span>
               </h2>
               <p style={{ fontSize: 16, color: C.text2, lineHeight: 1.8, margin: "0 auto 36px", maxWidth: 520 }}>
-                No paid tier. No "Pro" upsell. No watermarks. No account, ever. All 22 templates,
-                every language, every feature — included for everyone, permanently. We make money
-                by not needing your data.
+                No paid tier. No "Pro" upsell. No watermarks. No account required for the core builder.
+                Templates, language options, previews, and PDF or DOCX downloads are available without a credit card.
               </p>
               <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-                {["✓ No watermarks", "✓ No account", "✓ No credit card", "✓ No data stored", "✓ Unlimited downloads"].map(t => (
+                {["✓ No watermarks", "✓ No account", "✓ No credit card", "✓ Browser-first editing", "✓ PDF & DOCX downloads"].map(t => (
                   <span key={t} style={{ fontSize: 12.5, fontWeight: 600, padding: "7px 16px",
                     borderRadius: 999, border: `1.5px solid ${C.accent}44`,
                     color: C.accent2, background: `${C.accent}12` }}>{t}</span>
@@ -4087,17 +4086,17 @@ Awards: ${form.awards}`;
                 Your resume data stays yours. Always.
               </h2>
               <p style={{ fontSize: 15, color: C.text2, maxWidth: 520, margin: "0 auto" }}>
-                Resume data is personal. We built ApplyCraft so your information never leaves your device — not because we ask nicely, but because we have no server to send it to.
+                Resume data is personal. ApplyCraft is designed around browser-first editing and export, without requiring an account or cloud resume storage.
               </p>
             </FadeIn>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16, marginBottom: 40 }}>
               {[
-                { icon: "🔒", title: "Nothing is ever stored", body: "ApplyCraft has no database. Your resume content lives only in your browser tab. Close it and it's gone — permanently." },
-                { icon: "🤖", title: "Never used to train AI", body: "When you use AI polish, your text is processed and immediately discarded — never logged, never stored, never used to train any model." },
-                { icon: "🇪🇺", title: "GDPR compliant by design", body: "We don't set cookies, don't use analytics trackers, and don't process any personal data on a server — making GDPR compliance automatic." },
-                { icon: "🗑️", title: "Delete anytime, instantly", body: "Close the tab and everything disappears. No account to delete. No data deletion request form. No 30-day wait." },
-                { icon: "📍", title: "Data stays on your device", body: "PDF and DOCX generation happens in your browser using JavaScript. Your resume never travels through our servers." },
-                { icon: "🔓", title: "No account = no breach risk", body: "We can't leak data we don't have. No email, no password, no personal profile — nothing to steal, nothing to expose." },
+                { icon: "🔒", title: "No account required", body: "ApplyCraft does not require an email, password, or account profile to use the core resume builder." },
+                { icon: "🤖", title: "Optional AI helpers", body: "Use AI or translation helpers only when you are comfortable with the relevant provider processing submitted text." },
+                { icon: "🇪🇺", title: "Privacy-conscious design", body: "The builder is designed to reduce the amount of personal data handled by the service." },
+                { icon: "🗑️", title: "Clear your session", body: "Because no account profile is required, you can close the browser tab when you are done and start fresh later." },
+                { icon: "📍", title: "Browser-side export", body: "The standard PDF and DOCX export flow runs in the browser using JavaScript." },
+                { icon: "🔓", title: "No account profile", body: "No email, password, or personal dashboard is required before creating and downloading a resume." },
               ].map((f, i) => (
                 <FadeIn key={f.title} delay={i * 60}>
                   <div style={{ background: C.elevated, border: `1px solid ${C.border}`,
@@ -4160,11 +4159,11 @@ Awards: ${form.awards}`;
             </FadeIn>
             {[
               { q: "Is ApplyCraft really free?",
-                a: "Yes — completely. All 22 templates, every language, every feature, and every download are free, with no paid tier and no premium upsell. We don't charge because we store nothing and have no costs to pass on. It's free now and it stays free." },
+                a: "Yes. The core builder, templates, language options, previews, and PDF or DOCX downloads are available without a paid tier, account, or credit card." },
               { q: "Do you store or sell my data?",
-                a: "No. Everything you type lives only in your browser. ApplyCraft has no backend, no database, and no account system. Nothing leaves your device. When you close the tab, your data is gone." },
+                a: "ApplyCraft does not require an account profile to build a resume. Standard editing and export are browser-first; optional AI and translation helpers may process the text you choose to submit." },
               { q: "Are the templates ATS-compatible?",
-                a: "Yes. All 22 resume templates are built with clean, linear HTML that applicant tracking systems can parse without issues — no multi-column hacks, no images replacing text." },
+                a: "The templates are designed with readable typography, clear section headings, and ATS-conscious layouts to improve parsing compatibility." },
               { q: "Can I really use 50+ languages?",
                 a: "Yes. Type directly in any language, switch document labels and date formats, and use the Translate button to convert an existing CV to a different language without rebuilding from scratch. RTL languages like Arabic are fully supported." },
               { q: "What download formats are available?",
@@ -4210,7 +4209,7 @@ Awards: ${form.awards}`;
                     fontSize: 20, fontWeight: 800, border: "none", cursor: "pointer", padding: 0,
                     fontFamily: "inherit", display: "block", marginBottom: 12, letterSpacing: "-0.5px" }}>ApplyCraft</button>
                 <p style={{ fontSize: 13, color: C.text3, lineHeight: 1.75, margin: "0 0 16px" }}>
-                  Free resume and cover letter builder for the global job market. 50+ languages, 22 templates, no sign-up, no data stored.
+                  Free resume and cover letter builder for the global job market. 50+ languages, 22 templates, no sign-up required.
                 </p>
                 <a href={`mailto:${AUTHOR.email}`}
                   style={{ fontSize: 13, color: C.text2, textDecoration: "none" }}>
@@ -4266,9 +4265,9 @@ Awards: ${form.awards}`;
               display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
               <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft by Isaac Biroue · applycraft.io</div>
               <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
-                <span style={{ fontSize: 12, color: C.text3 }}>🔒 No data stored</span>
-                <span style={{ fontSize: 12, color: C.text3 }}>🤖 Never used for AI training</span>
-                <span style={{ fontSize: 12, color: C.text3 }}>🇪🇺 GDPR compliant</span>
+                <span style={{ fontSize: 12, color: C.text3 }}>🔒 No account required</span>
+                <span style={{ fontSize: 12, color: C.text3 }}>🤖 Optional AI helpers</span>
+                <span style={{ fontSize: 12, color: C.text3 }}>🌐 Browser-first editing</span>
               </div>
             </div>
           </div>
@@ -4374,7 +4373,7 @@ Awards: ${form.awards}`;
                 <div style={{ fontSize: 13, fontWeight: 800, color: C.accent2, marginBottom: 4,
                   letterSpacing: "0.4px" }}>100% FREE</div>
                 <div style={{ fontSize: 12, color: C.text3, lineHeight: 1.55 }}>
-                  Every feature, every template, every language. No account, no limits.
+                  Templates, language options, and downloads are available without an account.
                 </div>
                 {AUTHOR.github && (
                   <a href={AUTHOR.github} target="_blank" rel="noopener noreferrer"
@@ -4518,7 +4517,7 @@ Awards: ${form.awards}`;
               <div style={{ padding: "10px 12px", borderTop: `1px solid ${C.border}` }}>
                 <div style={{ padding: "10px 12px", background: `${C.accent}0E`, border: `1px solid ${C.accent}30`, borderRadius: 10 }}>
                   <div style={{ fontSize: 13, fontWeight: 800, color: C.accent2, marginBottom: 4 }}>100% FREE</div>
-                  <div style={{ fontSize: 12, color: C.text3, lineHeight: 1.55 }}>Every feature, every template, every language. No account, no limits.</div>
+                  <div style={{ fontSize: 12, color: C.text3, lineHeight: 1.55 }}>Templates, language options, and downloads are available without an account.</div>
                   {AUTHOR.github && (
                     <a href={AUTHOR.github} target="_blank" rel="noopener noreferrer"
                       style={{ display: "inline-block", marginTop: 7, fontSize: 12, fontWeight: 700, color: C.accent2, textDecoration: "none" }}>

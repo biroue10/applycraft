@@ -8,6 +8,8 @@ const ROOT = join(__dirname, "..", "public");
 const SITE = "https://applycraft.io";
 const TODAY = "2026-06-27";
 const CSS_PATH = "../_seo.css"; // relative from each subdir
+const SOCIAL_IMAGE = `${SITE}/og.png`;
+const SOCIAL_IMAGE_ALT = "ApplyCraft resume builder interface";
 
 const RESUME_LOCALE_LINKS = [
   `<link rel="alternate" hreflang="en" href="${SITE}/"/>`,
@@ -27,8 +29,9 @@ function nav() {
 function footer() {
   return `<footer>
   <div class="page">
-    <p>© 2026 ApplyCraft · <a href="/">Resume Builder</a> · <a href="/cover-letter-builder/">Cover Letter Builder</a> · <a href="/free-resume-builder/">Free Resume Builder</a> · <a href="/ats-resume-builder/">ATS Resume Builder</a></p>
+    <p>© 2026 ApplyCraft · <a href="/">Resume Builder</a> · <a href="/cover-letter-builder/">Cover Letter Builder</a> · <a href="/free-resume-builder/">Free Resume Builder</a> · <a href="/ats-resume-builder/">ATS Resume Builder</a> · <a href="/ats-checker/">ATS Checker</a></p>
     <p style="margin-top:8px"><a href="/student-resume-builder/">Student Resume</a> · <a href="/canadian-resume-builder/">Canadian Resume</a> · <a href="/resume-in-french/">CV en Français</a> · <a href="/resume-in-arabic/">CV en Arabe</a></p>
+    <p style="margin-top:8px"><a href="/examples/entry-level-resume/">Entry-Level Resume Example</a> · <a href="/examples/it-support-technician-resume/">IT Support Resume Example</a> · <a href="/examples/customer-service-resume/">Customer Service Resume Example</a> · <a href="/examples/linux-administrator-resume/">Linux Administrator Resume Example</a></p>
   </div>
 </footer>`;
 }
@@ -68,6 +71,11 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
     : canonicalPath === "/resume-in-french/"
       ? `lang="fr"`
       : `lang="en"`;
+  const ogLocale = canonicalPath === "/resume-in-arabic/"
+    ? "ar_AR"
+    : canonicalPath === "/resume-in-french/"
+      ? "fr_FR"
+      : "en_US";
   const alternateLinks = canonicalPath === "/resume-in-arabic/" || canonicalPath === "/resume-in-french/"
     ? `\n${RESUME_LOCALE_LINKS}`
     : "";
@@ -78,17 +86,23 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>${title}</title>
 <meta name="description" content="${description}"/>
-<meta name="keywords" content="${keywords}"/>
 <link rel="canonical" href="${canonical}"/>${alternateLinks}
 <meta property="og:type" content="website"/>
+<meta property="og:locale" content="${ogLocale}"/>
 <meta property="og:url" content="${canonical}"/>
 <meta property="og:title" content="${title}"/>
 <meta property="og:description" content="${description}"/>
-<meta property="og:image" content="${SITE}/og.svg"/>
+<meta property="og:image" content="${SOCIAL_IMAGE}"/>
+<meta property="og:image:secure_url" content="${SOCIAL_IMAGE}"/>
+<meta property="og:image:type" content="image/png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="${SOCIAL_IMAGE_ALT}"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="${title}"/>
 <meta name="twitter:description" content="${description}"/>
-<meta name="twitter:image" content="${SITE}/og.png"/>
+<meta name="twitter:image" content="${SOCIAL_IMAGE}"/>
+<meta name="twitter:image:alt" content="${SOCIAL_IMAGE_ALT}"/>
 <link rel="icon" href="/favicon.svg"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -116,9 +130,9 @@ ${nav()}
         <a href="/resume-builder/" class="btn-secondary">See Templates</a>
       </div>
       <div class="trust">
-        <span>🔒 Nothing stored</span>
+        <span>🔒 Browser-first editing</span>
         <span>⚡ No sign-up needed</span>
-        <span>💳 100% free</span>
+        <span>💳 Free to use</span>
         <span>📄 PDF &amp; DOCX export</span>
       </div>
     </div>
@@ -212,8 +226,8 @@ const PAGES = [
       edu: [{ degree: "B.Sc. Computer Science", school: "UC Berkeley", date: "2015 – 2019" }],
     }),
     features: {
-      heading: "Why ApplyCraft is the best free resume builder",
-      intro: "ApplyCraft combines beautiful design with powerful features — all completely free. Here's why job seekers in 50+ countries choose ApplyCraft.",
+      heading: "Why use ApplyCraft for your resume?",
+      intro: "ApplyCraft combines polished templates, live editing, and practical export options in a browser-first resume builder.",
       ctaHeading: "Ready to build your resume?",
       ctaSub: "Join thousands of job seekers who landed interviews using ApplyCraft templates.",
       items: [
@@ -222,11 +236,11 @@ const PAGES = [
         { icon: "🤖", title: "AI-Powered Polish", body: "Our AI rewrites weak bullet points into strong action-oriented achievements recruiters love." },
         { icon: "📄", title: "PDF & DOCX Export", body: "Download your finished resume as a perfectly formatted PDF or editable DOCX file instantly." },
         { icon: "🌍", title: "50+ Languages", body: "Write your resume in English, French, Arabic, Spanish, German, and 45+ other languages." },
-        { icon: "🔒", title: "100% Private", body: "Everything stays in your browser. Your data is never uploaded to any server." },
+        { icon: "🔒", title: "Browser-First Editing", body: "Most editing and export work happens in your browser, so you can build documents without creating an account." },
       ],
     },
     faqs: [
-      { q: "Is ApplyCraft really free?", a: "Yes. All core features including all 22 templates, live preview, AI polish, PDF and DOCX export are completely free. No credit card, no sign-up required." },
+      { q: "Is ApplyCraft really free?", a: "Yes. The current core builder, templates, live preview, and PDF or DOCX downloads are available without a paid tier, account, or credit card." },
       { q: "Can I download my resume as a PDF?", a: "Yes. Click 'Download PDF' at any time. Your resume is rendered pixel-perfectly and saved as a high-quality PDF file." },
       { q: "How long does it take to build a resume?", a: "Most users complete a polished resume in 10–15 minutes. The live preview and AI suggestions speed up the writing process significantly." },
       { q: "Does ApplyCraft work on mobile?", a: "Yes. The form and preview adapt to mobile screens, though the two-column layout is optimised for desktop use." },
@@ -238,9 +252,9 @@ const PAGES = [
     canonicalPath: "/free-resume-builder/",
     title: "Free Resume Builder — No Sign-Up, No Hidden Fees | ApplyCraft",
     description: "Create a professional resume for free. No account needed, no watermarks, no paywalls. Download PDF or DOCX instantly with ApplyCraft.",
-    eyebrow: "100% Free",
+    eyebrow: "Free Builder",
     h1: "Free Resume Builder — No Sign-Up Required",
-    sub: "Every feature is free. No watermarks. No upsells. No paywalls. Just build your resume and download it as PDF or DOCX in minutes.",
+    sub: "Build your resume without signing up. Create a polished document and download it as PDF or DOCX in minutes.",
     keywords: "free resume builder, resume builder no sign up, free cv maker, free resume download, no watermark resume builder",
     resumeCard: rcGeneric({
       name: "Jordan Lee", title: "Marketing Manager",
@@ -256,20 +270,20 @@ const PAGES = [
     }),
     features: {
       heading: "Genuinely free — here's what you get",
-      intro: "Unlike other resume builders that hide features behind paywalls, ApplyCraft gives you everything for free, forever.",
+      intro: "ApplyCraft keeps the core resume-building workflow available without an account, credit card, watermark, or paid tier.",
       ctaHeading: "Start your free resume now",
       ctaSub: "No credit card. No account. No watermark. Download as PDF or DOCX in minutes.",
       items: [
-        { icon: "🚫", title: "No Watermarks", body: "Your downloaded resume has no ApplyCraft branding. It looks 100% professional and is yours to keep." },
+        { icon: "🚫", title: "No Watermarks", body: "Your downloaded resume has no ApplyCraft branding, so the document is ready to send to employers." },
         { icon: "🔓", title: "No Account Needed", body: "Skip the sign-up form. Open the builder, fill in your details, and download. That's it." },
-        { icon: "💰", title: "No Paywalls", body: "Every template, every feature, every language, every download is free. No Pro plan required." },
+        { icon: "💰", title: "No Paywalls", body: "The core builder, templates, language options, and downloads are available without a Pro plan." },
         { icon: "📦", title: "Unlimited Downloads", body: "Download as many versions as you want. Tailor your resume for different roles at no cost." },
-        { icon: "🎯", title: "ATS-Friendly Designs", body: "All templates pass ATS parsers used by major employers, so your resume gets seen by humans." },
-        { icon: "✨", title: "AI Writing Help", body: "Get instant AI suggestions to improve every bullet point — included free, no API key needed." },
+        { icon: "🎯", title: "ATS-Conscious Designs", body: "Templates use clear headings, readable typography, and text-based layouts to improve parsing compatibility." },
+        { icon: "✨", title: "Writing Help", body: "Use built-in prompts and optional polish features to improve bullet points and phrasing." },
       ],
     },
     faqs: [
-      { q: "Why is ApplyCraft completely free?", a: "ApplyCraft is funded by optional premium add-ons planned for the future. The core resume builder will always remain free." },
+      { q: "Why is ApplyCraft free?", a: "ApplyCraft is built as a free resume-building tool. If pricing or premium features are introduced later, the free workflow should remain clear before you invest time in a document." },
       { q: "Is there a free trial or do I need a credit card?", a: "No trial, no credit card. The tool is free with no time limits. Just open it and start building." },
       { q: "Are the downloaded resumes watermark-free?", a: "Yes. Downloaded PDFs and DOCX files contain no ApplyCraft branding whatsoever." },
       { q: "Can I create multiple resumes for free?", a: "Yes. Create as many versions as you need. Tailor each one to a specific job role, all for free." },
@@ -283,7 +297,7 @@ const PAGES = [
     description: "Build an ATS-optimised resume that passes automated screening. Clean formatting, keyword-rich content, and 22 ATS-friendly templates. Free.",
     eyebrow: "ATS Optimised",
     h1: "ATS Resume Builder — Get Past the Bots",
-    sub: "Over 75% of resumes are rejected by ATS before a human sees them. ApplyCraft templates are designed to pass every major applicant tracking system.",
+    sub: "ApplyCraft templates are designed with clear headings, readable typography, and ATS-conscious layouts to improve parsing compatibility.",
     keywords: "ATS resume builder, ATS friendly resume, applicant tracking system resume, ATS optimized cv, beat ATS",
     resumeCard: rcGeneric({
       name: "Sam Rivera", title: "Product Manager",
@@ -305,17 +319,17 @@ const PAGES = [
       items: [
         { icon: "📐", title: "Clean, Parseable Structure", body: "Standard section headings (Experience, Education, Skills) that every ATS recognises and correctly parses." },
         { icon: "🔤", title: "Standard Fonts & Sizing", body: "We use system-safe fonts and avoid tables, columns, and graphics that confuse ATS parsers." },
-        { icon: "🏷️", title: "Keyword Placement Tips", body: "Our AI highlights missing keywords from your target role so your resume scores higher in automated ranking." },
+        { icon: "🏷️", title: "Keyword Placement Tips", body: "Use role-specific wording from the job description naturally in your skills and experience sections." },
         { icon: "📋", title: "No Headers/Footers", body: "Contact info in the main body — not in headers or footers that ATS systems often strip." },
         { icon: "📎", title: "Clean PDF & DOCX Output", body: "Our exports use text-based (not image-based) rendering, so ATS can extract every word." },
-        { icon: "✅", title: "Tested on Major Systems", body: "Templates validated against Workday, Greenhouse, Lever, iCIMS, Taleo and other common ATS platforms." },
+        { icon: "✅", title: "ATS-Conscious Layouts", body: "Templates avoid common parsing problems such as image-only text, unusual section labels, and overly decorative layouts." },
       ],
     },
     faqs: [
-      { q: "What is an ATS and why does it matter?", a: "An Applicant Tracking System (ATS) is software used by 99% of Fortune 500 companies to filter and rank resumes automatically. If your resume isn't formatted correctly, it may never reach a human recruiter." },
+      { q: "What is an ATS and why does it matter?", a: "An Applicant Tracking System (ATS) is software many employers use to collect, parse, and search resumes. If your resume is hard to parse, important details may be missed." },
       { q: "Which resume formats are ATS-friendly?", a: "Single-column layouts with standard headings, no graphics, no tables, and clean fonts perform best. ApplyCraft's ATS-optimised templates follow all of these rules." },
       { q: "Should I use a DOCX or PDF for ATS?", a: "Both work with modern ATS systems. ApplyCraft exports both formats. When in doubt, submit DOCX — it's the format ATS systems were originally designed for." },
-      { q: "How do I add keywords to my resume for ATS?", a: "Mirror the exact language in the job description. Our AI Polish feature analyses your resume and suggests keywords commonly found in similar job postings." },
+      { q: "How do I add keywords to my resume for ATS?", a: "Mirror relevant language from the job description, but only when it honestly reflects your experience. Add those terms naturally in skills, tools, and achievement bullets." },
     ],
   },
 
@@ -1154,38 +1168,4 @@ for (const p of EXAMPLES) {
   console.log(`✓ /public/examples/${p.slug}/index.html`);
 }
 
-// ── Sitemap ───────────────────────────────────────────────────────────────────
-const allUrls = [
-  { loc: "https://applycraft.io/", priority: "1.0", freq: "weekly" },
-  { loc: "https://applycraft.io/ats-checker/", priority: "0.9", freq: "monthly" },
-  ...PAGES.map(p => ({
-    loc: `https://applycraft.io${p.canonicalPath}`,
-    priority: ["free-resume-builder", "resume-builder", "cover-letter-builder", "resume-checker"].includes(p.slug) ? "0.9" : "0.8",
-    freq: "monthly",
-  })),
-  { loc: "https://applycraft.io/ats-checker-fr/", priority: "0.9", freq: "monthly" },
-  { loc: "https://applycraft.io/ats-checker-ar/", priority: "0.9", freq: "monthly" },
-  ...EXAMPLES.map(p => ({ loc: `https://applycraft.io${p.canonicalPath}`, priority: "0.7", freq: "monthly" })),
-  { loc: "https://applycraft.io/about/", priority: "0.5", freq: "monthly" },
-  { loc: "https://applycraft.io/help/", priority: "0.5", freq: "monthly" },
-  { loc: "https://applycraft.io/contact/", priority: "0.5", freq: "monthly" },
-  { loc: "https://applycraft.io/changelog/", priority: "0.5", freq: "weekly" },
-  { loc: "https://applycraft.io/roadmap/", priority: "0.5", freq: "monthly" },
-  { loc: "https://applycraft.io/status/", priority: "0.4", freq: "weekly" },
-  { loc: "https://applycraft.io/privacy/", priority: "0.3", freq: "yearly" },
-];
-
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${allUrls.map(u => `  <url>
-    <loc>${u.loc}</loc>
-    <lastmod>${TODAY}</lastmod>
-    <changefreq>${u.freq}</changefreq>
-    <priority>${u.priority}</priority>
-  </url>`).join("\n")}
-</urlset>`;
-
-writeFileSync(join(ROOT, "sitemap.xml"), sitemap, "utf8");
-console.log("✓ /public/sitemap.xml updated");
-
-console.log(`\n✅ Generated ${PAGES.length + EXAMPLES.length} SEO pages + sitemap`);
+console.log(`\n✅ Generated ${PAGES.length + EXAMPLES.length} SEO pages`);
