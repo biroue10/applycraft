@@ -847,20 +847,6 @@ export default function ResumeGenerator() {
   const [trackerDragOver, setTrackerDragOver] = useState(null);
   useEffect(() => { localStorage.setItem("ac_tracker", JSON.stringify(trackerCards)); }, [trackerCards]);
 
-  useEffect(() => {
-    const styleId = "ac-no-cursor";
-    if (navPage === "resume" && appView === "app") {
-      if (!document.getElementById(styleId)) {
-        const s = document.createElement("style");
-        s.id = styleId;
-        s.textContent = "* { cursor: none !important }";
-        document.head.appendChild(s);
-      }
-    } else {
-      document.getElementById(styleId)?.remove();
-    }
-    return () => { document.getElementById(styleId)?.remove(); };
-  }, [navPage, appView]);
   const [atsText, setAtsText] = useState("");
   const [atsJd, setAtsJd] = useState("");
   const [atsResult, setAtsResult] = useState(null);
@@ -1667,9 +1653,9 @@ Awards: ${form.awards}`;
 
       <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
         gap: 16, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
-        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
+        <div className="ac-panel-noscroll" style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
           ...(isMobile ? { padding: "16px 12px" } : { overflowY: "auto", height: "100%",
-          padding: "20px 20px 32px", scrollbarWidth: "thin" }) }}>
+          padding: "20px 20px 32px" }) }}>
 
           {/* ── SECTION: Personal Info ── */}
           <SectionHeader icon="👤" title="Personal Info" filled={!!(form.name && form.email)} />
@@ -2113,9 +2099,9 @@ Awards: ${form.awards}`;
         </div>
 
         {/* ── Preview column ── */}
-        <div style={{ minWidth: 0, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
+        <div className="ac-panel-noscroll" style={{ minWidth: 0, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
           ...(isMobile ? { padding: "16px 12px", marginTop: 16 } : { overflowY: "auto", height: "100%",
-          padding: "20px 20px 32px", scrollbarWidth: "thin" }) }}>
+          padding: "20px 20px 32px" }) }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10,
             marginTop: isMobile ? 24 : 0, flexWrap: "wrap" }}>
             <span style={{ ...badge, ...(aiPolished ? badgePolished : badgeLive),
