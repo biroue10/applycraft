@@ -807,6 +807,14 @@ export default function ResumeGenerator() {
   const [currentUser, setCurrentUser] = useState(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
+  const scrollCursorTimer = useRef(null);
+  const handlePanelScroll = () => {
+    document.documentElement.style.cursor = "none";
+    clearTimeout(scrollCursorTimer.current);
+    scrollCursorTimer.current = setTimeout(() => {
+      document.documentElement.style.cursor = "";
+    }, 400);
+  };
 
   useEffect(() => {
     const close = (e) => { if (userMenuRef.current && !userMenuRef.current.contains(e.target)) setUserMenuOpen(false); };
@@ -1652,7 +1660,7 @@ Awards: ${form.awards}`;
 
       <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
         gap: 16, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
-        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
+        <div onScroll={handlePanelScroll} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
           ...(isMobile ? { padding: "16px 12px" } : { overflowY: "auto", height: "100%",
           padding: "20px 20px 32px", scrollbarWidth: "thin" }) }}>
 
@@ -2098,7 +2106,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* ── Preview column ── */}
-        <div style={{ minWidth: 0, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
+        <div onScroll={handlePanelScroll} style={{ minWidth: 0, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
           ...(isMobile ? { padding: "16px 12px", marginTop: 16 } : { overflowY: "auto", height: "100%",
           padding: "20px 20px 32px", scrollbarWidth: "thin" }) }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10,
