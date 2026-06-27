@@ -1,0 +1,4 @@
+# Cloudflare Pages SPA fallback.
+# Static files (robots.txt, sitemap.xml, /about/, etc.) are served directly
+# by CF Pages before this rule is checked, so they are never affected.
+/* /index.html 200
