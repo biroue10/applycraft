@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "seo:sitemap": "node scripts/generate-sitemap.mjs",
     "seo:audit": "bash scripts/seo-audit.sh",
-    "seo:compare": "python3 scripts/compare-seo-pages.py"
+    "seo:compare": "python3 scripts/compare-seo-pages.py",
+    "seo:indexnow": "node scripts/submit-indexnow.mjs"
   },
   "dependencies": {
     "docx": "^9.7.1",
