@@ -348,10 +348,39 @@ function withSecurityHeaders(response) {
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
+async function handleFeedback(request, env) {
+  const cors = corsFor(request, env);
+  if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors.headers });
+  if (request.method !== "POST") {
+    return jsonResponse({ error: "METHOD_NOT_ALLOWED" }, 405, cors.headers);
+  }
+  let body;
+  try { body = await request.json(); } catch {
+    return jsonResponse({ error: "INVALID_JSON" }, 400, cors.headers);
+  }
+  const { rating, message, email } = body || {};
+  if (!rating || typeof rating !== "string" || rating.length > 50) {
+    return jsonResponse({ error: "INVALID_RATING" }, 400, cors.headers);
+  }
+  if (!message || typeof message !== "string" || message.length > 3000) {
+    return jsonResponse({ error: "INVALID_MESSAGE" }, 400, cors.headers);
+  }
+  const entry = {
+    rating,
+    message: message.slice(0, 3000),
+    email: email && typeof email === "string" ? email.slice(0, 200) : null,
+    ts: new Date().toISOString(),
+    ua: (request.headers.get("user-agent") || "").slice(0, 120),
+  };
+  console.log("[FEEDBACK]", JSON.stringify(entry));
+  return jsonResponse({ ok: true }, 200, cors.headers);
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/api/ai") return handleAi(request, env);
+    if (url.pathname === "/api/feedback") return handleFeedback(request, env);
     return withSecurityHeaders(await env.ASSETS.fetch(request));
   },
 };

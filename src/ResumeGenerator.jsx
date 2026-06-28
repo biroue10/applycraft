@@ -932,6 +932,7 @@ export default function ResumeGenerator() {
   const [coachResult, setCoachResult] = useState("");
   const [coachLoading, setCoachLoading] = useState(false);
   const [atsOpen, setAtsOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [master, setMaster] = useState(() => (
     typeof localStorage === "undefined" ? {...defaultMaster} : safeParseStoredJson(localStorage.getItem("ac_master"), {...defaultMaster})
   ));
@@ -3963,6 +3964,7 @@ Awards: ${form.awards}`;
         </nav>
         <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)}
           onLogin={user => { setCurrentUser(user); setAuthModal(false); }} />
+        <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
 
         {/* Coming soon modal */}
         {comingSoonFeature && (
@@ -4738,13 +4740,13 @@ Awards: ${form.awards}`;
                 No fake reviews. No VC spin. If you use ApplyCraft and it helps you land an interview,
                 we'd genuinely love to hear about it — your feedback shapes what gets built next.
               </p>
-              <a href="mailto:hello@applycraft.io?subject=ApplyCraft feedback"
+              <button onClick={() => setFeedbackOpen(true)}
                 style={{ display: "inline-flex", alignItems: "center", gap: 8,
-                  background: C.grad, color: "#fff", borderRadius: 8,
+                  background: C.grad, color: "#fff", borderRadius: 8, border: "none",
                   padding: "12px 28px", fontSize: 14.5, fontWeight: 700,
-                  textDecoration: "none" }}>
+                  cursor: "pointer", fontFamily: "inherit" }}>
                 Share your experience →
-              </a>
+              </button>
             </FadeIn>
           </div>
         </div>
@@ -5161,6 +5163,180 @@ Awards: ${form.awards}`;
             : pageBody}
         </div>
       </main>
+    </div>
+  );
+}
+
+// ── FeedbackModal ─────────────────────────────────────────────────
+function FeedbackModal({ open, onClose }) {
+  const RATINGS = [
+    { value: 1, emoji: "😕", label: "Not helpful" },
+    { value: 2, emoji: "😐", label: "Okay" },
+    { value: 3, emoji: "😊", label: "Helpful" },
+    { value: 4, emoji: "😍", label: "Really good" },
+    { value: 5, emoji: "🚀", label: "Love it!" },
+  ];
+  const [rating, setRating] = useState(null);
+  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle"); // idle | sending | done | error
+  const dialogRef = useRef(null);
+
+  useEffect(() => {
+    if (open) {
+      setRating(null); setMessage(""); setEmail(""); setStatus("idle");
+      setTimeout(() => dialogRef.current?.querySelector("button")?.focus(), 50);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  async function submit() {
+    if (!rating || !message.trim() || status === "sending") return;
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rating: RATINGS.find(r => r.value === rating)?.label,
+          message: message.trim(),
+          email: email.trim() || null,
+        }),
+      });
+      if (!res.ok) throw new Error("failed");
+      setStatus("done");
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  if (!open) return null;
+
+  const inp = {
+    width: "100%", background: C.elevated, border: `1px solid ${C.border}`,
+    borderRadius: 8, padding: "10px 12px", fontSize: 13.5, color: C.text1,
+    fontFamily: "inherit", outline: "none", boxSizing: "border-box",
+  };
+  const fieldLbl = {
+    display: "block", fontSize: 11, fontWeight: 700, color: C.text2,
+    marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.8px",
+  };
+
+  return (
+    <div onClick={onClose}
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 9999,
+        display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <div ref={dialogRef} onClick={e => e.stopPropagation()}
+        role="dialog" aria-modal="true" aria-labelledby="fb-modal-title"
+        style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16,
+          padding: "32px 28px", maxWidth: 460, width: "100%",
+          boxShadow: "0 24px 64px rgba(0,0,0,0.55)", position: "relative",
+          maxHeight: "90vh", overflowY: "auto" }}>
+
+        <button onClick={onClose} aria-label="Close"
+          style={{ position: "absolute", top: 14, right: 14, width: 28, height: 28,
+            borderRadius: "50%", background: C.elevated, border: `1px solid ${C.border}`,
+            color: C.text2, cursor: "pointer", display: "flex", alignItems: "center",
+            justifyContent: "center", fontSize: 13, fontFamily: "inherit" }}>✕</button>
+
+        {status === "done" ? (
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <div style={{ fontSize: 52, marginBottom: 16 }}>🙏</div>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: C.text1, margin: "0 0 10px" }}>
+              Thank you!
+            </h2>
+            <p style={{ fontSize: 14.5, color: C.text2, lineHeight: 1.65, margin: "0 0 28px" }}>
+              Your feedback means a lot and directly shapes what gets built next.
+            </p>
+            <button onClick={onClose}
+              style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
+                padding: "11px 32px", fontSize: 14, fontWeight: 700,
+                cursor: "pointer", fontFamily: "inherit" }}>
+              Done
+            </button>
+          </div>
+        ) : (
+          <>
+            <div id="fb-modal-title"
+              style={{ fontSize: 20, fontWeight: 800, color: C.text1, marginBottom: 6, paddingRight: 32 }}>
+              Share your experience
+            </div>
+            <p style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.6, margin: "0 0 24px" }}>
+              How has ApplyCraft helped you? Your honest feedback shapes what gets built next.
+            </p>
+
+            {/* Rating */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={fieldLbl}>How would you rate it?</div>
+              <div style={{ display: "flex", gap: 6 }}>
+                {RATINGS.map(r => (
+                  <button key={r.value} onClick={() => setRating(r.value)}
+                    aria-pressed={rating === r.value} title={r.label}
+                    style={{ flex: 1, padding: "10px 4px", borderRadius: 10,
+                      border: `2px solid ${rating === r.value ? C.accent : C.border}`,
+                      background: rating === r.value ? `${C.accent}14` : C.elevated,
+                      cursor: "pointer", display: "flex", flexDirection: "column",
+                      alignItems: "center", gap: 4, transition: "all 0.15s", fontFamily: "inherit" }}>
+                    <span style={{ fontSize: 22, lineHeight: 1 }}>{r.emoji}</span>
+                    <span style={{ fontSize: 9.5, fontWeight: 700, lineHeight: 1.2, textAlign: "center",
+                      color: rating === r.value ? C.accent2 : C.text3 }}>{r.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Message */}
+            <div style={{ marginBottom: 16 }}>
+              <label htmlFor="fb-message" style={fieldLbl}>
+                What made the difference?
+              </label>
+              <textarea id="fb-message" value={message} onChange={e => setMessage(e.target.value)} rows={4}
+                placeholder="Tell us what helped, what could be better, or share your win..."
+                style={{ ...inp, resize: "vertical", lineHeight: 1.6, minHeight: 100 }}
+                onFocus={e => { e.target.style.borderColor = C.accent; }}
+                onBlur={e => { e.target.style.borderColor = C.border; }} />
+            </div>
+
+            {/* Optional email */}
+            <div style={{ marginBottom: 24 }}>
+              <label htmlFor="fb-email" style={fieldLbl}>
+                Email{" "}
+                <span style={{ textTransform: "none", fontWeight: 400, color: C.text3, letterSpacing: 0 }}>
+                  (optional — only if you'd like a reply)
+                </span>
+              </label>
+              <input id="fb-email" type="email" value={email} onChange={e => setEmail(e.target.value)}
+                placeholder="you@email.com"
+                style={inp}
+                onFocus={e => { e.target.style.borderColor = C.accent; }}
+                onBlur={e => { e.target.style.borderColor = C.border; }} />
+            </div>
+
+            {status === "error" && (
+              <p role="alert" style={{ color: "#f87171", fontSize: 12.5, margin: "0 0 12px" }}>
+                Something went wrong — please try again.
+              </p>
+            )}
+
+            <button onClick={submit}
+              disabled={!rating || !message.trim() || status === "sending"}
+              style={{ width: "100%", background: C.grad, color: "#fff", border: "none",
+                borderRadius: 8, padding: "13px 0", fontSize: 14.5, fontWeight: 700,
+                cursor: (!rating || !message.trim() || status === "sending") ? "not-allowed" : "pointer",
+                fontFamily: "inherit",
+                opacity: (!rating || !message.trim()) ? 0.5 : 1,
+                transition: "opacity 0.15s" }}>
+              {status === "sending" ? "Sending…" : "Send feedback →"}
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
