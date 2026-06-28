@@ -1140,6 +1140,20 @@ Awards: ${form.awards}`;
       y += 4;
     }
 
+    // Footer on every page: name (left) | page X / Y (right)
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(210, 210, 210);
+      doc.setLineWidth(0.3);
+      doc.line(margin, 286, pageW - margin, 286);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(160, 160, 160);
+      doc.text(safe(src.name || ""), margin, 291);
+      doc.text(`${i} / ${totalPages}`, pageW - margin, 291, { align: "right" });
+    }
+
     const fname = safe(src.name || "resume").replace(/\s+/g, "_").toLowerCase() || "resume";
     doc.save(`${fname}.pdf`);
   }
@@ -2221,6 +2235,21 @@ Awards: ${form.awards}`;
     doc.text(`${safe(d.signoff || "Sincerely")},`, margin, y); y += 14;
     doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(17,17,17);
     doc.text(safe(d.name), margin, y);
+    // Footer on every page: name (left) | page X / Y (right)
+    const pageW2 = 210;
+    const totalPages2 = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages2; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(210, 210, 210);
+      doc.setLineWidth(0.3);
+      doc.line(margin, 286, pageW2 - margin, 286);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(160, 160, 160);
+      doc.text(safe(d.name || ""), margin, 291);
+      doc.text(`${i} / ${totalPages2}`, pageW2 - margin, 291, { align: "right" });
+    }
+
     doc.save(`${safe(d.name || "cover-letter").replace(/\s+/g,"_").toLowerCase()}-cover-letter.pdf`);
   }
 
