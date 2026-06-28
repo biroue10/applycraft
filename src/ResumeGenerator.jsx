@@ -3935,7 +3935,7 @@ Awards: ${form.awards}`;
       <div style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", overflowX: "hidden" }}>
         <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
         {/* Nav */}
-        <nav style={{ borderBottom: `1px solid ${C.border}`, position: "fixed", top: 0,
+        <nav style={{ position: "fixed", top: 0,
           left: 0, right: 0, zIndex: 100, background: C.bg + "ee", backdropFilter: "blur(12px)" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto", padding: isMobile ? "0 16px" : "0 32px", height: isMobile ? 60 : 76,
             display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -4108,8 +4108,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* Stats strip */}
-        <div style={{ borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`,
-          background: C.surface, padding: "28px 24px" }}>
+        <div style={{ background: C.surface, padding: "28px 24px" }}>
           <div style={{ maxWidth: 900, margin: "0 auto",
             display: "flex", justifyContent: "space-around", alignItems: "center",
             flexWrap: "wrap", gap: "16px 32px" }}>
@@ -4170,7 +4169,7 @@ Awards: ${form.awards}`;
           };
 
           return (
-            <div style={{ padding: "72px 24px 80px", background: `${C.accent}06`, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}>
+            <div style={{ padding: "72px 24px 80px", background: `${C.accent}06` }}>
               <div style={{ maxWidth: 960, margin: "0 auto" }}>
                 <FadeIn style={{ textAlign: "center", marginBottom: 48 }}>
                   <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
@@ -4424,7 +4423,7 @@ Awards: ${form.awards}`;
 
         {/* Master Profile teaser */}
         <FadeIn>
-          <div style={{ padding: "72px 24px 80px", borderTop: `1px solid ${C.border}` }}>
+          <div style={{ padding: "72px 24px 80px" }}>
             <div style={{ maxWidth: 860, margin: "0 auto", display: "flex",
               flexDirection: isMobile ? "column" : "row", gap: isMobile ? 32 : 64,
               alignItems: "center" }}>
@@ -4472,7 +4471,7 @@ Awards: ${form.awards}`;
         </FadeIn>
 
         {/* How it works */}
-        <div style={{ padding: "72px 24px 80px", borderTop: `1px solid ${C.border}` }}>
+        <div style={{ padding: "72px 24px 80px" }}>
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center" }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
@@ -4607,8 +4606,7 @@ Awards: ${form.awards}`;
         </FadeIn>
 
         {/* Multilingual superpowers */}
-        <div style={{ borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`,
-          background: C.surface, padding: "72px 24px 80px" }}>
+        <div style={{ background: C.surface, padding: "72px 24px 80px" }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 56 }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
@@ -4644,7 +4642,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* Privacy Trust section */}
-        <div style={{ padding: "80px 24px", borderTop: `1px solid ${C.border}` }}>
+        <div style={{ padding: "80px 24px" }}>
           <div style={{ maxWidth: 1000, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center", marginBottom: 52 }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
@@ -4707,7 +4705,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* Early adopter CTA — replaces fake testimonials */}
-        <div style={{ borderTop: `1px solid ${C.border}`, padding: "72px 24px" }}>
+        <div style={{ padding: "72px 24px" }}>
           <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center" }}>
             <FadeIn>
               <LineIcon name="spark" size={32} color={C.accent2} style={{ margin: "0 auto 16px" }} />
@@ -4735,7 +4733,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* FAQ */}
-        <div style={{ padding: "80px 24px 80px", borderTop: `1px solid ${C.border}` }}>
+        <div style={{ padding: "80px 24px 80px" }}>
           <div style={{ maxWidth: 760, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center", marginBottom: 52 }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
@@ -4785,7 +4783,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* Footer */}
-        <div style={{ borderTop: `1px solid ${C.border}`, padding: "56px 24px 32px" }}>
+        <div style={{ padding: "56px 24px 32px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 40, marginBottom: 48 }}>
               {/* Brand */}
