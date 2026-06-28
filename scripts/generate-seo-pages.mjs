@@ -70,7 +70,7 @@ function footer() {
       </nav>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 ApplyCraft by Isaac Biroue · applycraft.io</span>
+      <span>© 2026 ApplyCraft by Biroue Digital Ltd · applycraft.io</span>
       <span>Browser-first editing · Optional AI helpers · No account required</span>
     </div>
   </div>

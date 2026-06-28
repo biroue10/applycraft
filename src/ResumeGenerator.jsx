@@ -662,7 +662,7 @@ const COVER_THUMB_SAMPLES = {
 
 // ── Author info (edit here to update the footer) ─────────────────
 const AUTHOR = {
-  name: "Isaac Biroue",
+  name: "Biroue Digital Ltd",
   email: "hello@applycraft.io",
   github: "https://github.com/biroue10",
   linkedin: "", // paste your LinkedIn URL here, e.g. "https://linkedin.com/in/yourname"
@@ -3139,12 +3139,12 @@ Awards: ${form.awards}`;
           <div style={{ width: 48, height: 48, borderRadius: "50%",
             background: C.grad, display: "flex", alignItems: "center",
             justifyContent: "center", fontSize: 20, fontWeight: 800, color: "#fff", flexShrink: 0 }}>
-            IB
+            BD
           </div>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: C.text1 }}>Isaac Biroue</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.text1 }}>Biroue Digital Ltd</div>
             <div style={{ fontSize: 13, color: C.text2, marginTop: 3 }}>
-              Developer & designer — building tools that make job seekers' lives easier.
+              An independent studio building tools that make job seekers' lives easier.
             </div>
             {AUTHOR.github && (
               <a href={AUTHOR.github} target="_blank" rel="noopener noreferrer"
@@ -4841,7 +4841,7 @@ Awards: ${form.awards}`;
             </div>
             <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 20,
               display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-              <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft by Isaac Biroue · applycraft.io</div>
+              <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft by Biroue Digital Ltd · applycraft.io</div>
               <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
                 <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="lock" size={13} color={C.text3} /> No account required</span>
                 <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="spark" size={13} color={C.text3} /> Optional AI helpers</span>

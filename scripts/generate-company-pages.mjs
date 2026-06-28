@@ -126,7 +126,7 @@ ${content}
       </nav>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 ApplyCraft by Isaac Biroue · applycraft.io</span>
+      <span>© 2026 ApplyCraft by Biroue Digital Ltd · applycraft.io</span>
       <span>Browser-first editing · Optional AI helpers · No account required</span>
     </div>
   </div>
@@ -150,7 +150,7 @@ const PAGES = {
 <div class="callout"><p>⚡ <strong style="color:#E4EBF5">Short version:</strong> We don't store your resume. We don't set cookies. We don't track you. Everything you type stays in your browser only.</p></div>
 
 <h2>1. Who we are</h2>
-<p>ApplyCraft is an independent product built and operated by Isaac Biroue (<a href="mailto:${EMAIL}">${EMAIL}</a>). This website is accessible at <strong>applycraft.io</strong>.</p>
+<p>ApplyCraft is an independent product built and operated by Biroue Digital Ltd (<a href="mailto:${EMAIL}">${EMAIL}</a>). This website is accessible at <strong>applycraft.io</strong>.</p>
 
 <h2 id="data-we-collect">2. What data we collect</h2>
 <h3>2.1 Resume and cover letter content</h3>
@@ -207,18 +207,18 @@ const PAGES = {
   "about": {
     path: "/about/",
     title: "About ApplyCraft",
-    description: "ApplyCraft is a free resume builder built by Isaac Biroue — one developer, one mission: help every job seeker create a professional resume without paying or signing up.",
+    description: "ApplyCraft is a free resume builder from Biroue Digital Ltd — one mission: help every job seeker create a professional resume without paying or signing up.",
     content: `
 <h1>About ApplyCraft</h1>
-<p class="lead">ApplyCraft is a free resume and cover letter builder built by one person — Isaac Biroue — with a straightforward mission: every job seeker deserves a professional resume, regardless of budget.</p>
+<p class="lead">ApplyCraft is a free resume and cover letter builder from Biroue Digital Ltd, with a straightforward mission: every job seeker deserves a professional resume, regardless of budget.</p>
 
-<h2>The founder</h2>
-<p>Hi, I'm Isaac Biroue, the developer behind ApplyCraft. I built this tool because I was frustrated with every existing resume builder I tried: they either locked features behind a paywall, plastered watermarks on your download, or required an account just to see your own resume.</p>
-<p>I wanted to build something that respected the user: no sign-up, no watermarks, no hidden fees, and — critically — no storing of your personal career data on a server I control. Your resume is yours.</p>
-<p>I work on ApplyCraft as an independent side project alongside my main work as a software developer. It's not VC-funded, not backed by an ad network, and not secretly harvesting data to monetise later. It's just a tool I built to be genuinely useful.</p>
+<h2>Who we are</h2>
+<p>ApplyCraft is built and operated by Biroue Digital Ltd. We built this tool because we were frustrated with every existing resume builder out there: they either locked features behind a paywall, plastered watermarks on your download, or required an account just to see your own resume.</p>
+<p>We wanted to build something that respected the user: no sign-up, no watermarks, no hidden fees, and — critically — no storing of your personal career data on a server we control. Your resume is yours.</p>
+<p>ApplyCraft is an independent product. It's not VC-funded, not backed by an ad network, and not secretly harvesting data to monetise later. It's simply a tool built to be genuinely useful.</p>
 
 <div class="callout">
-  <p>📬 Want to reach me directly? Email: <a href="mailto:${EMAIL}">${EMAIL}</a></p>
+  <p>📬 Want to reach us? Email: <a href="mailto:${EMAIL}">${EMAIL}</a></p>
 </div>
 
 <h2>The mission</h2>
@@ -240,9 +240,9 @@ const PAGES = {
 <p>Hosted on Cloudflare Pages. Deployed automatically on every commit to main.</p>
 
 <h2>Roadmap and feedback</h2>
-<p>See what's coming on the <a href="/roadmap/">product roadmap</a>. Have a feature request or found a bug? Email me directly at <a href="mailto:${EMAIL}">${EMAIL}</a> — I read every message.</p>
+<p>See what's coming on the <a href="/roadmap/">product roadmap</a>. Have a feature request or found a bug? Email us directly at <a href="mailto:${EMAIL}">${EMAIL}</a> — we read every message.</p>
 
-<p style="margin-top:40px;font-size:13px;color:#475569">Isaac Biroue · <a href="mailto:${EMAIL}">${EMAIL}</a> · <a href="https://github.com/biroue10" rel="noopener">GitHub</a></p>
+<p style="margin-top:40px;font-size:13px;color:#475569">Biroue Digital Ltd · <a href="mailto:${EMAIL}">${EMAIL}</a> · <a href="https://github.com/biroue10" rel="noopener">GitHub</a></p>
 `,
   },
 
@@ -252,7 +252,7 @@ const PAGES = {
     description: "Answers to common questions about ApplyCraft — how to build a resume, download as PDF, use templates, and more.",
     content: `
 <h1>Help Center</h1>
-<p class="lead">Find answers to common questions below. If you don't see what you need, email <a href="mailto:${EMAIL}">${EMAIL}</a> and I'll reply within 24 hours.</p>
+<p class="lead">Find answers to common questions below. If you don't see what you need, email <a href="mailto:${EMAIL}">${EMAIL}</a> and we'll reply within 24 hours.</p>
 
 <h2>Getting started</h2>
 
@@ -321,7 +321,7 @@ const PAGES = {
 <p>Close the tab. Instantly and permanently deleted. No deletion request form required.</p>
 
 <h2>Still need help?</h2>
-<p>Email <a href="mailto:${EMAIL}">${EMAIL}</a> — I read and respond to every message, usually within 24 hours.</p>
+<p>Email <a href="mailto:${EMAIL}">${EMAIL}</a> — we read and respond to every message, usually within 24 hours.</p>
 `,
   },
 
@@ -393,7 +393,7 @@ const PAGES = {
     description: "What's coming to ApplyCraft — upcoming features, improvements, and ideas in progress.",
     content: `
 <h1>Product Roadmap</h1>
-<p class="lead">What I'm working on, what's coming soon, and what's planned further out. Updated as things move.</p>
+<p class="lead">What we're working on, what's coming soon, and what's planned further out. Updated as things move.</p>
 
 <div class="callout">
   <p>💡 Have a feature request? Email <a href="mailto:${EMAIL}">${EMAIL}</a> — feature requests from users directly influence this roadmap.</p>
@@ -554,7 +554,7 @@ const PAGES = {
     description: "Contact ApplyCraft — bug reports, feature requests, privacy questions, and press inquiries.",
     content: `
 <h1>Contact</h1>
-<p class="lead">ApplyCraft is built and maintained by one person. I read every message and reply to almost all of them, usually within 24 hours.</p>
+<p class="lead">ApplyCraft is built and maintained by Biroue Digital Ltd. We read every message and reply to almost all of them, usually within 24 hours.</p>
 
 <div class="callout">
   <p>📬 Email: <a href="mailto:${EMAIL}" style="font-size:16px;font-weight:700">${EMAIL}</a></p>
@@ -566,25 +566,25 @@ const PAGES = {
 <p>Found something broken? Please include your browser name and version, operating system, and a description of what happened vs. what you expected. Screenshots are very helpful.</p>
 
 <h3>Feature requests</h3>
-<p>Have an idea for something that would make ApplyCraft more useful? I want to hear it. Feature requests from users directly influence the <a href="/roadmap/">product roadmap</a>.</p>
+<p>Have an idea for something that would make ApplyCraft more useful? We want to hear it. Feature requests from users directly influence the <a href="/roadmap/">product roadmap</a>.</p>
 
 <h3>Privacy questions</h3>
-<p>Privacy concerns, GDPR requests, or data questions — see the <a href="/privacy/">Privacy Policy</a> first. If you still have questions, email me directly.</p>
+<p>Privacy concerns, GDPR requests, or data questions — see the <a href="/privacy/">Privacy Policy</a> first. If you still have questions, email us directly.</p>
 
 <h3>Resume advice</h3>
-<p>I'm a software developer, not a professional career coach — but I'm happy to point you to the right resource for your situation.</p>
+<p>We're a software team, not professional career coaches — but we're happy to point you to the right resource for your situation.</p>
 
 <h3>Press &amp; partnerships</h3>
 <p>Writing about ApplyCraft or interested in a partnership? Get in touch with the subject line "Press" or "Partnership".</p>
 
 <h2>Response time</h2>
-<p>I aim to respond within 24 hours on weekdays. Complex technical issues or feature requests may take a little longer to investigate properly.</p>
+<p>We aim to respond within 24 hours on weekdays. Complex technical issues or feature requests may take a little longer to investigate properly.</p>
 
 <h2>GitHub</h2>
 <p>For technical issues or to see the source code, visit <a href="https://github.com/biroue10" rel="noopener">github.com/biroue10</a>.</p>
 
 <hr/>
-<p style="font-size:13px;color:#475569">Isaac Biroue · <a href="mailto:${EMAIL}">${EMAIL}</a></p>
+<p style="font-size:13px;color:#475569">Biroue Digital Ltd · <a href="mailto:${EMAIL}">${EMAIL}</a></p>
 `,
   },
 };
