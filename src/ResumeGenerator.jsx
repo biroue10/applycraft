@@ -1808,8 +1808,7 @@ Awards: ${form.awards}`;
 
       <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
         gap: 16, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
-        <div className="ac-panel-noscroll" style={{ background: C.surface, borderRadius: 12,
-          ...(isMobile ? { padding: "16px 12px" } : { overflowY: "auto", height: "100%",
+        <div className="ac-panel-noscroll" style={{ ...(isMobile ? { padding: "16px 12px" } : { overflowY: "auto", height: "100%",
           padding: "20px 20px 32px" }) }}>
 
           {/* ── SECTION: Personal Info ── */}
@@ -2268,8 +2267,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* ── Preview column ── */}
-        <div className="ac-panel-noscroll" style={{ minWidth: 0, background: C.surface, borderRadius: 12,
-          ...(isMobile ? { padding: "16px 12px", marginTop: 16 } : { overflowY: "auto", height: "100%",
+        <div className="ac-panel-noscroll" style={{ minWidth: 0, ...(isMobile ? { padding: "16px 12px", marginTop: 16 } : { overflowY: "auto", height: "100%",
           padding: "20px 20px 32px" }) }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10,
             marginTop: isMobile ? 24 : 0, flexWrap: "wrap" }}>
@@ -2436,8 +2434,7 @@ Awards: ${form.awards}`;
       </div>
       <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, alignItems: "stretch" }}>
         {/* Left: form */}
-        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
-          padding: isMobile ? "16px 12px" : "20px 20px 32px" }}>
+        <div style={{ padding: isMobile ? "16px 12px" : "20px 20px 32px" }}>
           {/* Section heading helper */}
           {(() => {
             const sh = (label) => (
@@ -2495,8 +2492,7 @@ Awards: ${form.awards}`;
           })()}
         </div>
         {/* Right: live preview */}
-        <div style={{ minWidth: 0, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
-          padding: isMobile ? "16px 12px" : "20px 20px 32px", marginTop: isMobile ? 16 : 0 }}>
+        <div style={{ minWidth: 0, padding: isMobile ? "16px 12px" : "20px 20px 32px", marginTop: isMobile ? 16 : 0 }}>
           <div style={{ fontSize: 12, color: C.text2, marginBottom: 10, display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ ...badge, ...badgeLive, background: C.elevated, color: C.text2 }}>● Live preview</span>
           </div>
