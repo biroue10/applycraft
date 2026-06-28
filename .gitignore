@@ -7,3 +7,6 @@ dist
 !.env.example
 .vite
 .wrangler
+
+# Local Cloudflare Functions secrets
+.dev.vars
