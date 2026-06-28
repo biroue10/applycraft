@@ -163,9 +163,44 @@
         72%     { transform: translateX(4px); }
       }
       .ac-shake { animation: acShake 0.42s ease; }
+
+      /* ── Skip link ── */
+      .skip-link {
+        position: absolute;
+        top: -100%;
+        left: 8px;
+        z-index: 99999;
+        padding: 8px 16px;
+        background: #6366F1;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        border-radius: 0 0 6px 6px;
+        text-decoration: none;
+        transition: top 0.1s;
+      }
+      .skip-link:focus {
+        top: 0;
+        outline: 3px solid #fff;
+        outline-offset: 2px;
+      }
+
+      /* ── Screen-reader only utility ── */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
     </style>
   </head>
   <body style="margin:0">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

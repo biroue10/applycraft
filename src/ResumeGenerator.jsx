@@ -787,6 +787,7 @@ export default function ResumeGenerator() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [statusMsg, setStatusMsg] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [nameError, setNameError] = useState("");
@@ -1060,7 +1061,8 @@ Awards: ${form.awards}`;
       ...(src.sections || []).flatMap((s) => [s.heading, ...s.items, ""])].join("\n");
     navigator.clipboard.writeText(flat);
     setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    setStatusMsg("Resume text copied to clipboard");
+    setTimeout(() => { setCopied(false); setStatusMsg(""); }, 1500);
   }
 
   async function downloadPDF() {
@@ -1262,6 +1264,7 @@ Awards: ${form.awards}`;
       <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))" }}>
         {TEMPLATES.map((tp) => (
           <button key={tp.id} onClick={() => { setTpl(tp); setStep("form"); }}
+            aria-label={`Use ${tp.name} template${tp.tag ? ` — ${tp.tag}` : ""}`}
             style={tplCard}
             onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; }}
             onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
@@ -1323,7 +1326,7 @@ Awards: ${form.awards}`;
 
   const FormattingBar = ({ fieldKey }) => {
     const btn = (label, title, onClick, extraStyle = {}) => (
-      <button type="button" title={title} onClick={onClick}
+      <button type="button" title={title} aria-label={title} onClick={onClick}
         style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 5,
           padding: "2px 7px", fontSize: 12, fontWeight: 700, color: C.text2,
           cursor: "pointer", fontFamily: "inherit", lineHeight: 1.5, ...extraStyle }}>
@@ -1404,7 +1407,7 @@ Awards: ${form.awards}`;
 
   const CoverFormattingBar = ({ fieldKey }) => {
     const btn = (label, title, onClick, extraStyle = {}) => (
-      <button type="button" title={title} onClick={onClick}
+      <button type="button" title={title} aria-label={title} onClick={onClick}
         style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 5,
           padding: "2px 7px", fontSize: 12, fontWeight: 700, color: C.text2,
           cursor: "pointer", fontFamily: "inherit", lineHeight: 1.5, ...extraStyle }}>
@@ -1875,7 +1878,7 @@ Awards: ${form.awards}`;
           </div>
 
           <div data-field-wrap="">
-            <label style={lbl}>{t.name} <span style={{ color: "#f87171" }}>*</span></label>
+            <label htmlFor="field-name" style={lbl}>{t.name} <span style={{ color: "#f87171" }}>*</span></label>
             <IconInput icon="✏️">
               <input id="field-name" value={form.name} onChange={onNameChange}
                 placeholder={t.placeholderName}
@@ -1883,13 +1886,13 @@ Awards: ${form.awards}`;
             </IconInput>
             {nameError && <p style={fieldErr}>{nameError}</p>}
           </div>
-          <label style={lbl}>{t.title}</label>
+          <label htmlFor="field-title" style={lbl}>{t.title}</label>
           <IconInput icon="💼">{field("title", false, t.placeholderTitle, undefined, titleError)}</IconInput>
           {titleError && <p style={fieldErr}>{titleError}</p>}
 
           <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
             <div style={{ flex: 1 }} data-field-wrap="">
-              <label style={lbl}>{t.email}</label>
+              <label htmlFor="field-email" style={lbl}>{t.email}</label>
               <IconInput icon="✉️">
                 <input id="field-email" value={form.email} onChange={onEmailChange}
                   onBlur={() => setEmailError(validateEmail(form.email))}
@@ -1899,9 +1902,9 @@ Awards: ${form.awards}`;
               {emailError && <p style={fieldErr}>{emailError}</p>}
             </div>
             <div style={{ flex: 1 }} data-field-wrap="">
-              <label style={lbl}>{t.phone}</label>
+              <label htmlFor="field-phone" style={lbl}>{t.phone}</label>
               <div style={{ display: "flex", gap: 6 }}>
-                <select value={phoneCode} onChange={(e) => {
+                <select aria-label="Country code" value={phoneCode} onChange={(e) => {
                   const newCode = e.target.value;
                   setPhoneCode(newCode);
                   if (form.phone.trim()) setPhoneError(validatePhone(form.phone, newCode));
@@ -1919,17 +1922,17 @@ Awards: ${form.awards}`;
             </div>
           </div>
 
-          <label style={lbl}>{t.location}</label>
+          <label htmlFor="field-location" style={lbl}>{t.location}</label>
           <IconInput icon="📍">{field("location", false, t.placeholderLocation, undefined, locationError)}</IconInput>
           {locationError && <p style={fieldErr}>{locationError}</p>}
 
           <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row", marginTop: 0 }}>
             <div style={{ flex: 1 }}>
-              <label style={lbl}>{t.linkedin}</label>
+              <label htmlFor="field-linkedin" style={lbl}>{t.linkedin}</label>
               <IconInput icon="🔗">{field("linkedin", false, t.placeholderLinkedin)}</IconInput>
             </div>
             <div style={{ flex: 1 }}>
-              <label style={lbl}>{t.website}</label>
+              <label htmlFor="field-website" style={lbl}>{t.website}</label>
               <IconInput icon="🌐">{field("website", false, t.placeholderWebsite)}</IconInput>
             </div>
           </div>
@@ -1937,13 +1940,13 @@ Awards: ${form.awards}`;
           {/* ── SECTION: Professional ── */}
           <SectionHeader icon="📝" title="Professional" filled={!!(form.summary && form.experience)} />
 
-          <label style={lbl}>{t.summary}</label>
+          <label htmlFor="field-summary" style={lbl}>{t.summary}</label>
           {field("summary", true, t.placeholderSummary, undefined, summaryError)}
           {summaryError && <p style={fieldErr}>{summaryError}</p>}
           <Hint text="2–4 sentences. Who you are, your years of experience, and your biggest strength." />
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-            <label style={{ ...lbl, marginBottom: 0 }}>{t.experience}</label>
+            <label htmlFor="field-experience" style={{ ...lbl, marginBottom: 0 }}>{t.experience}</label>
             {weakBullets.length > 0 && !coachOpen && (
               <button onClick={() => openCoach(0)}
                 style={{ fontSize: 11.5, fontWeight: 700, color: C.accent2,
@@ -1988,7 +1991,7 @@ Awards: ${form.awards}`;
                       "{coachBullet.trim()}"
                     </div>
                   </div>
-                  <button onClick={() => setCoachOpen(false)}
+                  <button onClick={() => setCoachOpen(false)} aria-label="Close achievement coach"
                     style={{ background: "none", border: "none", color: C.text3,
                       cursor: "pointer", fontSize: 16, padding: "0 0 0 12px", lineHeight: 1 }}>✕</button>
                 </div>
@@ -2094,7 +2097,7 @@ Awards: ${form.awards}`;
             );
           })()}
 
-          <label style={lbl}>{t.education}</label>
+          <label htmlFor="field-education" style={lbl}>{t.education}</label>
           {field("education", true, t.placeholderEducation, undefined, educationError)}
           {educationError && <p style={fieldErr}>{educationError}</p>}
           <Hint text="One entry per line. Format: Degree — Institution | Year" />
@@ -2104,13 +2107,13 @@ Awards: ${form.awards}`;
 
           <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
             <div style={{ flex: 1 }}>
-              <label style={lbl}>{t.skills}</label>
+              <label htmlFor="field-skills" style={lbl}>{t.skills}</label>
               {field("skills", false, t.placeholderSkills, undefined, skillsError)}
               {skillsError && <p style={fieldErr}>{skillsError}</p>}
               <Hint text="Comma-separated: React, Node.js, SQL…" />
             </div>
             <div style={{ flex: 1 }}>
-              <label style={lbl}>{t.languages}</label>
+              <label htmlFor="field-languages" style={lbl}>{t.languages}</label>
               {field("languages", false, t.placeholderLanguages)}
               <Hint text="English (Fluent), French (B2)…" />
             </div>
@@ -2119,10 +2122,10 @@ Awards: ${form.awards}`;
           {/* ── SECTION: Additional ── */}
           <SectionHeader icon="➕" title="Additional (optional)" filled={!!(form.certifications || form.projects || form.volunteer || form.awards)} />
 
-          <label style={lbl}>{t.certifications}</label>{field("certifications", true, t.placeholderCerts)}
-          <label style={lbl}>{t.projects}</label>{field("projects", true, t.placeholderProjects)}
-          <label style={lbl}>{t.volunteer}</label>{field("volunteer", true, t.placeholderVolunteer)}
-          <label style={lbl}>{t.awards}</label>{field("awards", true, t.placeholderAwards)}
+          <label htmlFor="field-certifications" style={lbl}>{t.certifications}</label>{field("certifications", true, t.placeholderCerts)}
+          <label htmlFor="field-projects" style={lbl}>{t.projects}</label>{field("projects", true, t.placeholderProjects)}
+          <label htmlFor="field-volunteer" style={lbl}>{t.volunteer}</label>{field("volunteer", true, t.placeholderVolunteer)}
+          <label htmlFor="field-awards" style={lbl}>{t.awards}</label>{field("awards", true, t.placeholderAwards)}
 
           {/* ── ATS Checker Panel ── */}
           {atsOpen && (() => {
@@ -2155,7 +2158,7 @@ Awards: ${form.awards}`;
                       Designed to improve readability and parsing across common applicant-tracking systems. Scores reflect form completeness and content quality — not a guarantee of ATS passage.
                     </div>
                   </div>
-                  <button onClick={() => setAtsOpen(false)}
+                  <button onClick={() => setAtsOpen(false)} aria-label="Close ATS checker"
                     style={{ background: "none", border: "none", color: C.text3,
                       cursor: "pointer", fontSize: 16, padding: "0 0 0 12px", lineHeight: 1 }}>✕</button>
                 </div>
@@ -2352,7 +2355,7 @@ Awards: ${form.awards}`;
           placeholder={ph} rows={4} style={{ ...inputStyle, resize: "vertical", minHeight: 90 }} />
       </>
     ) : (
-      <input value={coverForm[key]} onChange={e => setCoverForm(f => ({ ...f, [key]: e.target.value }))}
+      <input id={`cover-field-${key}`} value={coverForm[key]} onChange={e => setCoverForm(f => ({ ...f, [key]: e.target.value }))}
         placeholder={ph} style={inputStyle} />
     );
 
@@ -2466,43 +2469,43 @@ Awards: ${form.awards}`;
             return (
               <>
                 {sh("Your Details")}
-                <label style={lbl}>Full Name *</label>{coverField("name", false, "Alexandra Johnson")}
-                <label style={lbl}>Job Title</label>{coverField("jobTitle", false, "Senior Product Designer")}
-                <label style={lbl}>Email</label>{coverField("email", false, "you@email.com")}
-                <label style={lbl}>Phone</label>{coverField("phone", false, "+1 415 555 0000")}
-                <label style={lbl}>Location</label>{coverField("location", false, "City, Country")}
+                <label htmlFor="cover-field-name" style={lbl}>Full Name *</label>{coverField("name", false, "Alexandra Johnson")}
+                <label htmlFor="cover-field-jobTitle" style={lbl}>Job Title</label>{coverField("jobTitle", false, "Senior Product Designer")}
+                <label htmlFor="cover-field-email" style={lbl}>Email</label>{coverField("email", false, "you@email.com")}
+                <label htmlFor="cover-field-phone" style={lbl}>Phone</label>{coverField("phone", false, "+1 415 555 0000")}
+                <label htmlFor="cover-field-location" style={lbl}>Location</label>{coverField("location", false, "City, Country")}
 
                 {sh("Recipient & Company")}
-                <label style={lbl}>Date</label>{coverField("date", false, "June 26, 2026")}
-                <label style={lbl}>Recipient Name</label>{coverField("recipientName", false, "Mr. David Chen")}
-                <label style={lbl}>Recipient Title</label>{coverField("recipientTitle", false, "Head of Design")}
-                <label style={lbl}>Company</label>{coverField("company", false, "Stripe")}
-                <label style={lbl}>Company Address</label>{coverField("companyAddress", false, "123 Main St, City")}
+                <label htmlFor="cover-field-date" style={lbl}>Date</label>{coverField("date", false, "June 26, 2026")}
+                <label htmlFor="cover-field-recipientName" style={lbl}>Recipient Name</label>{coverField("recipientName", false, "Mr. David Chen")}
+                <label htmlFor="cover-field-recipientTitle" style={lbl}>Recipient Title</label>{coverField("recipientTitle", false, "Head of Design")}
+                <label htmlFor="cover-field-company" style={lbl}>Company</label>{coverField("company", false, "Stripe")}
+                <label htmlFor="cover-field-companyAddress" style={lbl}>Company Address</label>{coverField("companyAddress", false, "123 Main St, City")}
 
                 {sh("Letter Content")}
-                <label style={lbl}>Subject / Re:</label>{coverField("subject", false, "Senior Product Designer Position")}
-                <label style={lbl}>Salutation</label>
+                <label htmlFor="cover-field-subject" style={lbl}>Subject / Re:</label>{coverField("subject", false, "Senior Product Designer Position")}
+                <label htmlFor="cover-field-opening" style={lbl}>Salutation</label>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <span style={{ fontSize: 13.5, color: C.text2, whiteSpace: "nowrap" }}>Dear</span>
-                  <input value={coverForm.opening} onChange={e => setCoverForm(f => ({ ...f, opening: e.target.value }))}
+                  <span style={{ fontSize: 13.5, color: C.text2, whiteSpace: "nowrap" }} aria-hidden="true">Dear</span>
+                  <input id="cover-field-opening" value={coverForm.opening} onChange={e => setCoverForm(f => ({ ...f, opening: e.target.value }))}
                     placeholder="Mr. Chen / Hiring Manager" style={{ ...inputStyle, flex: 1 }} />
-                  <span style={{ fontSize: 13.5, color: C.text2 }}>,</span>
+                  <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
                 </div>
-                <label style={lbl}>Opening &amp; Body Paragraphs</label>
+                <label htmlFor="cover-field-body" style={lbl}>Opening &amp; Body Paragraphs</label>
                 <CoverFormattingBar fieldKey="body" />
                 <textarea id="cover-field-body" value={coverForm.body} onChange={e => setCoverForm(f => ({ ...f, body: e.target.value }))}
                   placeholder={"Write your paragraphs here.\n\nSeparate paragraphs with a blank line."}
                   rows={8} style={{ ...inputStyle, resize: "vertical", minHeight: 160 }} />
-                <label style={lbl}>Closing Paragraph</label>
+                <label htmlFor="cover-field-closing" style={lbl}>Closing Paragraph</label>
                 <CoverFormattingBar fieldKey="closing" />
                 <textarea id="cover-field-closing" value={coverForm.closing} onChange={e => setCoverForm(f => ({ ...f, closing: e.target.value }))}
                   placeholder="Thank you for your time and consideration. I look forward to speaking with you."
                   rows={3} style={{ ...inputStyle, resize: "vertical", minHeight: 80 }} />
-                <label style={lbl}>Sign-off</label>
+                <label htmlFor="cover-field-signoff" style={lbl}>Sign-off</label>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-                  <input value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
+                  <input id="cover-field-signoff" value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
                     placeholder="Sincerely" style={{ ...inputStyle, flex: 1 }} />
-                  <span style={{ fontSize: 13.5, color: C.text2 }}>,</span>
+                  <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
                 </div>
                 <button onClick={downloadCoverPDF} disabled={!coverForm.name}
                   style={{ ...cta, background: C.grad, opacity: !coverForm.name ? 0.5 : 1 }}>
@@ -3628,6 +3631,7 @@ Awards: ${form.awards}`;
     const enter = (page) => { setNavPage(page); setAppView("app"); };
     return (
       <div style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", overflowX: "hidden" }}>
+        <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
         {/* Nav */}
         <nav style={{ borderBottom: `1px solid ${C.border}`, position: "fixed", top: 0,
           left: 0, right: 0, zIndex: 100, background: C.bg + "ee", backdropFilter: "blur(12px)" }}>
@@ -3646,6 +3650,7 @@ Awards: ${form.awards}`;
               <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
                 color: C.text3, fontSize: 14, pointerEvents: "none" }}>🔍</span>
               <input
+                aria-label="Search templates"
                 value={tplSearch}
                 onChange={e => setTplSearch(e.target.value)}
                 placeholder="Search 22 templates..."
@@ -3657,7 +3662,7 @@ Awards: ${form.awards}`;
                 onBlur={e => { e.target.style.borderColor = C.border; }}
               />
               {tplSearch && (
-                <button onClick={() => setTplSearch("")}
+                <button onClick={() => setTplSearch("")} aria-label="Clear template search"
                   style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
                     background: "none", border: "none", color: C.text3, cursor: "pointer",
                     fontSize: 14, padding: 0, lineHeight: 1, fontFamily: "inherit" }}>✕</button>
@@ -4574,6 +4579,7 @@ Awards: ${form.awards}`;
                   <a href="/privacy/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Privacy Policy</a>
                   <a href="/privacy/#gdpr" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>GDPR</a>
                   <a href="/privacy/#cookies" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Cookies</a>
+                  <a href="/accessibility/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Accessibility</a>
                 </div>
               </div>
             </div>
@@ -4596,6 +4602,7 @@ Awards: ${form.awards}`;
 
   return (
     <div dir={rtl ? "rtl" : "ltr"} style={{ ...rPage, display: "flex", padding: 0, height: "100vh", overflow: "hidden" }}>
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
 
       {/* ── Sidebar (desktop) ── */}
       {!isMobile && (
@@ -4622,7 +4629,8 @@ Awards: ${form.awards}`;
               </button>
             )}
             <button onClick={() => setSidebarOpen(o => !o)}
-              title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+              aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+              aria-expanded={sidebarOpen}
               style={{ flexShrink: 0, width: 30, height: 30, borderRadius: 8,
                 background: C.surface, border: `1px solid ${C.border}`, color: C.text2,
                 cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
@@ -4639,6 +4647,7 @@ Awards: ${form.awards}`;
                 <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)",
                   color: C.text3, fontSize: 13, pointerEvents: "none" }}>🔍</span>
                 <input
+                  aria-label="Search features"
                   value={sideSearch}
                   onChange={e => setSideSearch(e.target.value)}
                   placeholder="Search features..."
@@ -4650,7 +4659,7 @@ Awards: ${form.awards}`;
                   onBlur={e => { e.target.style.borderColor = C.border; }}
                 />
                 {sideSearch && (
-                  <button onClick={() => setSideSearch("")}
+                  <button onClick={() => setSideSearch("")} aria-label="Clear search"
                     style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
                       background: "none", border: "none", color: C.text3, cursor: "pointer",
                       fontSize: 13, padding: 0, lineHeight: 1, fontFamily: "inherit" }}>✕</button>
@@ -4660,10 +4669,11 @@ Awards: ${form.awards}`;
           )}
 
           {/* Main nav */}
-          <nav style={{ padding: "10px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          <nav aria-label="Main navigation" style={{ padding: "10px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
             {(sideSearch ? NAV.filter(n => n.label.toLowerCase().includes(sideSearch.toLowerCase())) : NAV).map((item) => (
               <button key={item.id} onClick={() => setNavPage(item.id)}
-                title={!sidebarOpen ? item.label : undefined}
+                aria-label={!sidebarOpen ? item.label : undefined}
+                aria-current={navPage === item.id ? "page" : undefined}
                 style={{ display: "flex", alignItems: "center", gap: 10,
                   padding: sidebarOpen ? "9px 12px" : "9px 0",
                   justifyContent: sidebarOpen ? "flex-start" : "center",
@@ -4705,7 +4715,7 @@ Awards: ${form.awards}`;
       )}
 
       {/* ── Main content ── */}
-      <div style={{ flex: 1, minWidth: 0, overflow: isFormView ? "hidden" : "auto",
+      <main id="main-content" style={{ flex: 1, minWidth: 0, overflow: isFormView ? "hidden" : "auto",
         padding: isFormView ? 0 : (isMobile ? "8px 4px" : "16px 24px"),
         ...(isFormView ? { display: "flex", flexDirection: "column" } : {}) }}>
         <div style={{ width: "100%",
@@ -4771,7 +4781,7 @@ Awards: ${form.awards}`;
           <div style={{ display: "flex", alignItems: "center", gap: 6, overflowX: "auto",
             padding: "4px 0 12px", borderBottom: `1px solid ${C.border}`, marginBottom: 12 }}>
             {/* Hamburger */}
-            <button onClick={() => setSidebarOpen(o => !o)}
+            <button onClick={() => setSidebarOpen(o => !o)} aria-label="Open menu" aria-expanded={sidebarOpen}
               style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 8, background: C.surface,
                 border: `1px solid ${C.border}`, color: C.text2, cursor: "pointer",
                 fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center",
@@ -4809,15 +4819,16 @@ Awards: ${form.awards}`;
                   </div>
                   <div style={{ fontSize: 10.5, color: C.text3, marginTop: 1 }}>Career toolkit</div>
                 </button>
-                <button onClick={() => setSidebarOpen(false)}
+                <button onClick={() => setSidebarOpen(false)} aria-label="Close menu"
                   style={{ width: 30, height: 30, borderRadius: 8, background: C.surface,
                     border: `1px solid ${C.border}`, color: C.text2, cursor: "pointer",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 14, fontFamily: "inherit" }}>✕</button>
               </div>
-              <nav style={{ padding: "10px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+              <nav aria-label="Main navigation" style={{ padding: "10px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
                 {NAV.map((item) => (
                   <button key={item.id} onClick={() => { setNavPage(item.id); setSidebarOpen(false); }}
+                    aria-current={navPage === item.id ? "page" : undefined}
                     style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
                       borderRadius: 9, border: "none", cursor: "pointer", width: "100%", textAlign: "left",
                       fontSize: 14, fontWeight: navPage === item.id ? 700 : 500, fontFamily: "inherit",
@@ -4852,7 +4863,7 @@ Awards: ${form.awards}`;
             ? <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>{pageBody}</div>
             : pageBody}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
@@ -4868,6 +4879,7 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
   const [captchaInput, setCaptchaInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [signupDone, setSignupDone] = useState(false);
+  const dialogRef = useRef(null);
 
   useEffect(() => {
     if (open) {
@@ -4879,8 +4891,19 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
       setShowPw(false);
       setShowCf(false);
       setCaptchaQ({ a: Math.ceil(Math.random() * 9), b: Math.ceil(Math.random() * 9) });
+      setTimeout(() => {
+        const first = dialogRef.current?.querySelector('input, button:not([aria-label="Close"])');
+        first?.focus();
+      }, 50);
     }
   }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
 
   useEffect(() => {
     if (tab === "signup") {
@@ -4985,31 +5008,33 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
       background: "rgba(0,0,0,0.75)", backdropFilter: "blur(10px)", padding: 16 }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
 
-      <div style={{ width: "100%", maxWidth: 430, background: C.surface,
-        border: `1px solid ${C.border}`, borderRadius: 16,
-        boxShadow: "0 32px 80px rgba(0,0,0,0.7)",
-        animation: "acFadeUp 0.3s cubic-bezier(0.22,1,0.36,1)" }}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="auth-modal-title"
+        style={{ width: "100%", maxWidth: 430, background: C.surface,
+          border: `1px solid ${C.border}`, borderRadius: 16,
+          boxShadow: "0 32px 80px rgba(0,0,0,0.7)",
+          animation: "acFadeUp 0.3s cubic-bezier(0.22,1,0.36,1)" }}>
 
         {/* ── Header ── */}
         <div style={{ padding: "24px 28px 20px", borderBottom: `1px solid ${C.border}`,
           display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.5px",
+          <div id="auth-modal-title" style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.5px",
             background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             ApplyCraft
           </div>
-          <button onClick={onClose}
+          <button onClick={onClose} aria-label="Close"
             style={{ width: 30, height: 30, borderRadius: "50%", border: `1px solid ${C.border}`,
               background: C.elevated, color: C.text2, cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 13, fontFamily: "inherit" }}>✕</button>
+              fontSize: 13, fontFamily: "inherit" }} aria-hidden="false">✕</button>
         </div>
 
         {/* ── Tabs ── */}
         <div style={{ padding: "16px 28px 0" }}>
-          <div style={{ display: "flex", background: C.elevated, borderRadius: 8,
+          <div role="tablist" aria-label="Sign in options" style={{ display: "flex", background: C.elevated, borderRadius: 8,
             padding: 3, border: `1px solid ${C.border}` }}>
             {[["login", "Log In"], ["signup", "Create Account"]].map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { setTab(id); setErrors({}); }}
+              <button key={id} type="button" role="tab" aria-selected={tab === id} aria-controls={`auth-panel-${id}`}
+                id={`auth-tab-${id}`} onClick={() => { setTab(id); setErrors({}); }}
                 style={{ flex: 1, padding: "9px 12px", borderRadius: 6, border: "none",
                   fontSize: 13.5, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
                   transition: "all 0.18s",
@@ -5056,30 +5081,33 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
 
             {/* ── Login form ── */}
             {tab === "login" && (
-              <form onSubmit={handleLogin} noValidate>
+              <form id="auth-panel-login" role="tabpanel" aria-labelledby="auth-tab-login" onSubmit={handleLogin} noValidate>
                 <div style={{ marginBottom: 14 }}>
-                  <label style={mlbl}>Email address</label>
-                  <input type="email" autoComplete="email" value={form.email} onChange={setF("email")}
+                  <label htmlFor="auth-login-email" style={mlbl}>Email address</label>
+                  <input id="auth-login-email" type="email" autoComplete="email" value={form.email} onChange={setF("email")}
                     placeholder="you@example.com"
+                    aria-invalid={!!errors.email} aria-describedby={errors.email ? "auth-login-email-err" : undefined}
                     style={{ ...minp(), ...(errors.email ? { borderColor: "#f87171" } : {}) }}
                     onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
                     onBlur={e => { e.target.style.borderColor = errors.email ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
-                  {errors.email && <p style={merr}>{errors.email}</p>}
+                  {errors.email && <p id="auth-login-email-err" role="alert" style={merr}>{errors.email}</p>}
                 </div>
                 <div style={{ marginBottom: 22 }}>
-                  <label style={mlbl}>Password</label>
+                  <label htmlFor="auth-login-password" style={mlbl}>Password</label>
                   <div style={{ position: "relative" }}>
-                    <input type={showPw ? "text" : "password"} autoComplete="current-password"
+                    <input id="auth-login-password" type={showPw ? "text" : "password"} autoComplete="current-password"
                       value={form.password} onChange={setF("password")} placeholder="••••••••"
+                      aria-invalid={!!errors.password} aria-describedby={errors.password ? "auth-login-pw-err" : undefined}
                       style={{ ...minp({ paddingRight: 42 }), ...(errors.password ? { borderColor: "#f87171" } : {}) }}
                       onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
                       onBlur={e => { e.target.style.borderColor = errors.password ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
                     <button type="button" onClick={() => setShowPw(v => !v)}
+                      aria-label={showPw ? "Hide password" : "Show password"}
                       style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
                         background: "none", border: "none", cursor: "pointer", color: C.text3,
                         fontSize: 16, padding: 0, lineHeight: 1 }}>{showPw ? "🙈" : "👁"}</button>
                   </div>
-                  {errors.password && <p style={merr}>{errors.password}</p>}
+                  {errors.password && <p id="auth-login-pw-err" role="alert" style={merr}>{errors.password}</p>}
                 </div>
                 <button type="submit" disabled={loading}
                   style={{ width: "100%", padding: "13px", background: C.grad, border: "none",
@@ -5103,65 +5131,70 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
 
             {/* ── Sign up form ── */}
             {tab === "signup" && (
-              <form onSubmit={handleSignup} noValidate>
+              <form id="auth-panel-signup" role="tabpanel" aria-labelledby="auth-tab-signup" onSubmit={handleSignup} noValidate>
                 <div style={{ marginBottom: 14 }}>
-                  <label style={mlbl}>Full Name</label>
-                  <input autoComplete="name" value={form.name} onChange={setF("name")}
+                  <label htmlFor="auth-signup-name" style={mlbl}>Full Name</label>
+                  <input id="auth-signup-name" autoComplete="name" value={form.name} onChange={setF("name")}
                     placeholder="Jane Doe"
+                    aria-invalid={!!errors.name} aria-describedby={errors.name ? "auth-signup-name-err" : undefined}
                     style={{ ...minp(), ...(errors.name ? { borderColor: "#f87171" } : {}) }}
                     onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
                     onBlur={e => { e.target.style.borderColor = errors.name ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
-                  {errors.name && <p style={merr}>{errors.name}</p>}
+                  {errors.name && <p id="auth-signup-name-err" role="alert" style={merr}>{errors.name}</p>}
                 </div>
                 <div style={{ marginBottom: 14 }}>
-                  <label style={mlbl}>Email address</label>
-                  <input type="email" autoComplete="email" value={form.email} onChange={setF("email")}
+                  <label htmlFor="auth-signup-email" style={mlbl}>Email address</label>
+                  <input id="auth-signup-email" type="email" autoComplete="email" value={form.email} onChange={setF("email")}
                     placeholder="you@example.com"
                     style={{ ...minp(), ...(errors.email ? { borderColor: "#f87171" } : {}) }}
                     onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
                     onBlur={e => { e.target.style.borderColor = errors.email ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
-                  {errors.email && <p style={merr}>{errors.email}</p>}
+                  {errors.email && <p id="auth-signup-email-err" role="alert" style={merr}>{errors.email}</p>}
                 </div>
                 <div style={{ marginBottom: 14 }}>
-                  <label style={mlbl}>Password</label>
+                  <label htmlFor="auth-signup-password" style={mlbl}>Password</label>
                   <div style={{ position: "relative" }}>
-                    <input type={showPw ? "text" : "password"} autoComplete="new-password"
+                    <input id="auth-signup-password" type={showPw ? "text" : "password"} autoComplete="new-password"
                       value={form.password} onChange={setF("password")} placeholder="Min. 8 characters"
+                      aria-invalid={!!errors.password} aria-describedby={errors.password ? "auth-signup-pw-err" : undefined}
                       style={{ ...minp({ paddingRight: 42 }), ...(errors.password ? { borderColor: "#f87171" } : {}) }}
                       onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
                       onBlur={e => { e.target.style.borderColor = errors.password ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
                     <button type="button" onClick={() => setShowPw(v => !v)}
+                      aria-label={showPw ? "Hide password" : "Show password"}
                       style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
                         background: "none", border: "none", cursor: "pointer",
                         color: C.text3, fontSize: 16, padding: 0, lineHeight: 1 }}>{showPw ? "🙈" : "👁"}</button>
                   </div>
                   {form.password.length > 0 && (
-                    <div style={{ display: "flex", gap: 4, alignItems: "center", marginTop: 7 }}>
+                    <div style={{ display: "flex", gap: 4, alignItems: "center", marginTop: 7 }} aria-live="polite" aria-atomic="true">
                       {[1,2,3,4].map(i => (
                         <div key={i} style={{ flex: 1, height: 4, borderRadius: 999,
                           background: i <= strength ? strengthColor : C.elevated,
-                          transition: "background 0.22s" }} />
+                          transition: "background 0.22s" }} aria-hidden="true" />
                       ))}
                       <span style={{ fontSize: 11, fontWeight: 700, color: strengthColor,
                         marginLeft: 6, flexShrink: 0, minWidth: 36 }}>{strengthLabel}</span>
                     </div>
                   )}
-                  {errors.password && <p style={merr}>{errors.password}</p>}
+                  {errors.password && <p id="auth-signup-pw-err" role="alert" style={merr}>{errors.password}</p>}
                 </div>
                 <div style={{ marginBottom: 18 }}>
-                  <label style={mlbl}>Confirm Password</label>
+                  <label htmlFor="auth-signup-confirm" style={mlbl}>Confirm Password</label>
                   <div style={{ position: "relative" }}>
-                    <input type={showCf ? "text" : "password"} autoComplete="new-password"
+                    <input id="auth-signup-confirm" type={showCf ? "text" : "password"} autoComplete="new-password"
                       value={form.confirm} onChange={setF("confirm")} placeholder="Repeat your password"
+                      aria-invalid={!!errors.confirm} aria-describedby={errors.confirm ? "auth-signup-confirm-err" : undefined}
                       style={{ ...minp({ paddingRight: 42 }), ...(errors.confirm ? { borderColor: "#f87171" } : {}) }}
                       onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
                       onBlur={e => { e.target.style.borderColor = errors.confirm ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
                     <button type="button" onClick={() => setShowCf(v => !v)}
+                      aria-label={showCf ? "Hide confirm password" : "Show confirm password"}
                       style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
                         background: "none", border: "none", cursor: "pointer",
                         color: C.text3, fontSize: 16, padding: 0, lineHeight: 1 }}>{showCf ? "🙈" : "👁"}</button>
                   </div>
-                  {errors.confirm && <p style={merr}>{errors.confirm}</p>}
+                  {errors.confirm && <p id="auth-signup-confirm-err" role="alert" style={merr}>{errors.confirm}</p>}
                 </div>
 
                 {/* CAPTCHA */}
@@ -5170,26 +5203,28 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
                   <div style={{ fontSize: 11, fontWeight: 800, color: C.accent2,
                     textTransform: "uppercase", letterSpacing: "1px", marginBottom: 10,
                     display: "flex", alignItems: "center", gap: 6 }}>
-                    <span>🔒</span> Security Check
+                    <span aria-hidden="true">🔒</span> Security Check
                   </div>
                   <div style={{ fontSize: 12.5, color: C.text2, marginBottom: 10 }}>
                     Solve this to verify you're human:
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ fontFamily: "monospace", fontSize: 18, fontWeight: 700,
+                    <div id="auth-captcha-question" style={{ fontFamily: "monospace", fontSize: 18, fontWeight: 700,
                       color: C.text1, background: C.surface, padding: "8px 18px",
                       borderRadius: 8, border: `1px solid ${C.border}`,
                       letterSpacing: "2px", flexShrink: 0 }}>
                       {captchaQ.a} + {captchaQ.b} = ?
                     </div>
-                    <input type="number" inputMode="numeric" value={captchaInput}
+                    <input id="auth-captcha-answer" type="number" inputMode="numeric" value={captchaInput}
+                      aria-label={`Security check: ${captchaQ.a} plus ${captchaQ.b} equals?`}
+                      aria-invalid={!!errors.captcha} aria-describedby={errors.captcha ? "auth-captcha-err" : undefined}
                       onChange={e => { setCaptchaInput(e.target.value); if (errors.captcha) setErrors(er => ({ ...er, captcha: "" })); }}
                       placeholder="Answer"
                       style={{ ...minp({ width: 100, flexShrink: 0 }), ...(errors.captcha ? { borderColor: "#f87171" } : {}) }}
                       onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
                       onBlur={e => { e.target.style.borderColor = errors.captcha ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
                   </div>
-                  {errors.captcha && <p style={{ ...merr, marginTop: 8 }}>{errors.captcha}</p>}
+                  {errors.captcha && <p id="auth-captcha-err" role="alert" style={{ ...merr, marginTop: 8 }}>{errors.captcha}</p>}
                 </div>
 
                 <button type="submit" disabled={loading}
@@ -6674,6 +6709,8 @@ function PageFooter({ t }) {
       {dot}
       <a href={AUTHOR.github} target="_blank" rel="noreferrer" style={footerLink}>GitHub</a>
       {AUTHOR.linkedin && <>{dot}<a href={AUTHOR.linkedin} target="_blank" rel="noreferrer" style={footerLink}>LinkedIn</a></>}
+      {dot}
+      <a href="/accessibility/" style={footerLink}>Accessibility</a>
     </footer>
   );
 }

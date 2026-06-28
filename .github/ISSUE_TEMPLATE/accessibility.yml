@@ -1,0 +1,97 @@
+name: Accessibility issue
+description: Report a WCAG barrier or accessibility bug on ApplyCraft
+title: "[A11Y] "
+labels: ["accessibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping make ApplyCraft more accessible. Please fill in as much detail as you can.
+
+  - type: input
+    id: url
+    attributes:
+      label: Affected page or feature
+      description: The URL or feature where the barrier occurs
+      placeholder: "https://applycraft.io/ — resume form, template picker…"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the accessibility barrier
+      description: What did you try to do? What happened? What did you expect instead?
+      placeholder: "When using NVDA + Firefox, the close button on the login modal has no accessible name announced."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: wcag
+    attributes:
+      label: WCAG criterion (if known)
+      description: The relevant WCAG 2.2 success criterion, if you know it
+      options:
+        - "Not sure"
+        - "1.1.1 Non-text Content (alt text)"
+        - "1.3.1 Info and Relationships (semantic structure)"
+        - "1.3.3 Sensory Characteristics (not relying on colour alone)"
+        - "1.4.1 Use of Colour"
+        - "1.4.3 Contrast (Minimum)"
+        - "1.4.4 Resize Text"
+        - "1.4.11 Non-text Contrast"
+        - "2.1.1 Keyboard"
+        - "2.1.2 No Keyboard Trap"
+        - "2.4.1 Bypass Blocks (skip link)"
+        - "2.4.3 Focus Order"
+        - "2.4.7 Focus Visible"
+        - "2.4.11 Focus Appearance (WCAG 2.2)"
+        - "3.1.1 Language of Page"
+        - "3.3.1 Error Identification"
+        - "3.3.2 Labels or Instructions"
+        - "4.1.2 Name, Role, Value"
+        - "4.1.3 Status Messages"
+        - "Other"
+    validations:
+      required: false
+
+  - type: input
+    id: at
+    attributes:
+      label: Assistive technology
+      description: Browser and AT you are using
+      placeholder: "NVDA 2024.2 + Firefox 127 on Windows 11"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - "Critical — completely blocks usage"
+        - "High — major barrier, workaround is difficult"
+        - "Medium — inconvenient but workable"
+        - "Low — minor or cosmetic"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to https://applycraft.io/
+        2. Open the Sign In modal
+        3. Tab to the close button
+        4. Listen to screen reader announcement
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Screenshots, screen recordings, or any other relevant information
+    validations:
+      required: false

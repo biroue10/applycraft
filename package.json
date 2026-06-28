@@ -13,7 +13,8 @@
     "seo:indexnow": "node scripts/submit-indexnow.mjs",
     "validate:seo": "SEO_AUDIT_SKIP_HTTP=1 bash scripts/seo-audit.sh",
     "validate:performance": "node scripts/validate-performance.mjs",
-    "analyze": "ANALYZE=true npm run build"
+    "analyze": "ANALYZE=true npm run build",
+    "test:a11y": "node scripts/a11y-check.mjs"
   },
   "dependencies": {
     "docx": "^9.7.1",
@@ -25,6 +26,8 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.7.0",
+    "axe-core": "^4.12.1",
+    "jsdom": "^29.1.1",
     "rollup-plugin-visualizer": "^6.0.11",
     "vite": "^6.4.3"
   }
