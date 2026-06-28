@@ -886,20 +886,182 @@ async function callAi(action, text, language = "en", context = "") {
   return data.result.trim();
 }
 
+// ── Structured entry model (FlowCV-style) ─────────────────────────────────
+// Each section is a list of discrete entry objects — the editing source of
+// truth. The flat string field on `form` (e.g. form.experience) is kept as a
+// synced projection of these entries so the many existing string consumers
+// (ATS checker, achievement coach, AI prompts, validation, progress checklist)
+// keep working unchanged. buildLiveData below reads the arrays directly so it
+// can respect each entry's `visible` flag.
+
+let __uidCounter = 0;
+// SSR/old-browser-safe unique id.
+function uid() {
+  try {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  } catch { /* fall through */ }
+  return `e-${Date.now().toString(36)}-${(__uidCounter++).toString(36)}`;
+}
+
+// One schema per section drives parsing, serialization and which fields render.
+// `type`: "role" (dated, has description), "line" (single line, no description),
+// "tag" (comma list), "generic" (title/subtitle + description).
+const ENTRY_SCHEMAS = {
+  experience:     { type: "role",    icon: "💼", fields: ["title", "company", "startDate", "endDate", "description"], primary: "title",  secondary: "company" },
+  education:      { type: "line",    icon: "🎓", fields: ["degree", "institution", "year"],                          primary: "degree", secondary: "institution" },
+  skills:         { type: "tag",     icon: "⚡", fields: ["name"],                                                   primary: "name" },
+  languages:      { type: "tag",     icon: "🌐", fields: ["name"],                                                   primary: "name" },
+  certifications: { type: "generic", icon: "📜", fields: ["title", "subtitle", "description"],                       primary: "title",  secondary: "subtitle" },
+  projects:       { type: "generic", icon: "🛠️", fields: ["title", "subtitle", "description"],                       primary: "title",  secondary: "subtitle" },
+  volunteer:      { type: "generic", icon: "🤝", fields: ["title", "subtitle", "description"],                       primary: "title",  secondary: "subtitle" },
+  awards:         { type: "generic", icon: "🏆", fields: ["title", "subtitle", "description"],                       primary: "title",  secondary: "subtitle" },
+};
+const SECTION_KEYS = Object.keys(ENTRY_SCHEMAS);
+
+function blankEntry(key) {
+  const e = { id: uid(), visible: true };
+  ENTRY_SCHEMAS[key].fields.forEach((f) => { e[f] = ""; });
+  return e;
+}
+
+// A "header" line carries structure (a — / – / | delimiter); bullets and plain
+// continuation text are treated as description body.
+function isHeaderLine(line) {
+  const l = line.trim();
+  if (!l) return false;
+  if (/^([•\-*]|\d+\.)\s/.test(l)) return false;
+  return /\s[—–]\s|\|/.test(l);
+}
+
+// Build the single header line for an entry (mirrors the legacy "Title — Company | dates" format).
+function entryHeader(key, e) {
+  const s = ENTRY_SCHEMAS[key];
+  const parts = [e[s.primary], s.secondary ? e[s.secondary] : ""].map((x) => (x || "").trim()).filter(Boolean);
+  let head = parts.join(" — ");
+  if (s.type === "role") {
+    const d = [e.startDate, e.endDate].map((x) => (x || "").trim()).filter(Boolean).join(" – ");
+    if (d) head += (head ? " | " : "") + d;
+  } else if (key === "education" && (e.year || "").trim()) {
+    head += (head ? " | " : "") + e.year.trim();
+  }
+  return head;
+}
+
+// Flat list of preview/export lines for one entry (header + description bullets).
+function entryToLines(key, e) {
+  const s = ENTRY_SCHEMAS[key];
+  if (s.type === "tag") return [(e.name || "").trim()].filter(Boolean);
+  if (s.type === "line") return [entryHeader(key, e)].filter(Boolean);
+  const out = [];
+  const h = entryHeader(key, e);
+  if (h) out.push(h);
+  (e.description || "").split("\n").forEach((l) => { if (l.trim()) out.push(l); });
+  return out;
+}
+
+// Serialize entries back into the flat string projection kept on `form`.
+function entriesToText(key, entries) {
+  const list = entries || [];
+  const s = ENTRY_SCHEMAS[key];
+  if (s.type === "tag")  return list.map((e) => (e.name || "").trim()).filter(Boolean).join(", ");
+  if (s.type === "line") return list.map((e) => entryHeader(key, e)).filter(Boolean).join("\n");
+  return list.map((e) => entryToLines(key, e).join("\n")).filter(Boolean).join("\n\n");
+}
+
+// Visible-only flat items for the preview / export (matches old lines()/csv()).
+function entriesToItems(key, entries) {
+  const list = (entries || []).filter((e) => e.visible !== false);
+  if (ENTRY_SCHEMAS[key].type === "tag") return list.map((e) => (e.name || "").trim()).filter(Boolean);
+  return list.flatMap((e) => entryToLines(key, e)).filter(Boolean);
+}
+
+// Parse an existing flat string field into structured entries (migration / AI write-back).
+function parseEntries(key, text) {
+  if (!text || !text.trim()) return [];
+  const s = ENTRY_SCHEMAS[key];
+  const splitHead = (head) => head.split(/\s+[—–-]\s+/);
+  if (s.type === "tag") {
+    return text.split(/[,\n]/).map((x) => x.trim()).filter(Boolean).map((name) => ({ id: uid(), name, visible: true }));
+  }
+  if (s.type === "line") {
+    return text.split("\n").map((x) => x.trim()).filter(Boolean).map((line) => {
+      const e = blankEntry(key);
+      let head = line, datePart = "";
+      const pipe = head.indexOf("|");
+      if (pipe !== -1) { datePart = head.slice(pipe + 1).trim(); head = head.slice(0, pipe).trim(); }
+      const d = splitHead(head);
+      e[s.primary] = (d[0] || "").trim();
+      if (s.secondary) e[s.secondary] = d.slice(1).join(" — ").trim();
+      if (key === "education") e.year = datePart;
+      return e;
+    });
+  }
+  // role / generic: group header + following body lines into one entry.
+  const entries = [];
+  let cur = null;
+  text.split("\n").forEach((raw) => {
+    const line = raw.replace(/\s+$/, "");
+    if (!line.trim()) return;
+    if (isHeaderLine(line) || !cur) {
+      cur = blankEntry(key);
+      let head = line.trim(), datePart = "";
+      const pipe = head.indexOf("|");
+      if (pipe !== -1) { datePart = head.slice(pipe + 1).trim(); head = head.slice(0, pipe).trim(); }
+      const d = splitHead(head);
+      cur[s.primary] = (d[0] || "").trim();
+      if (s.secondary) cur[s.secondary] = d.slice(1).join(" — ").trim();
+      if (datePart) {
+        if (s.type === "role") {
+          const dd = datePart.split(/\s*[–-]\s*/);
+          cur.startDate = (dd[0] || "").trim();
+          cur.endDate = (dd[1] || "").trim();
+        } else if (s.secondary) {
+          cur[s.secondary] = [cur[s.secondary], datePart].filter(Boolean).join(" · ");
+        }
+      }
+      entries.push(cur);
+    } else {
+      cur.description = cur.description ? cur.description + "\n" + line : line;
+    }
+  });
+  return entries;
+}
+
+// Normalize a saved/loaded form: ensure every section has an entries array and a
+// synced string projection. Migrates legacy string-only drafts without data loss.
+function migrateForm(form) {
+  const out = { ...form };
+  if (!out.sectionTitles || typeof out.sectionTitles !== "object") out.sectionTitles = {};
+  SECTION_KEYS.forEach((key) => {
+    const arrKey = key + "Entries";
+    let entries = Array.isArray(out[arrKey]) ? out[arrKey] : null;
+    if (!entries) entries = parseEntries(key, typeof out[key] === "string" ? out[key] : "");
+    // Guarantee shape (id + visible) on every entry.
+    entries = entries.map((e) => ({ ...e, id: e.id || uid(), visible: e.visible !== false }));
+    out[arrKey] = entries;
+    out[key] = entriesToText(key, entries);
+  });
+  return out;
+}
+
 // Build resume data straight from the form so the preview updates as the user types.
+// Reads the entry arrays directly so hidden entries are excluded from the output.
 function buildLiveData(form, t) {
-  const lines = (s) => s.split("\n").map((x) => x.trim()).filter(Boolean);
-  const csv   = (s) => s.split(",").map((x) => x.trim()).filter(Boolean);
   const label = (key) => t[key].replace(/\s*\(.*\)/, "");
+  const headingOf = (key, def) => (form.sectionTitles && form.sectionTitles[key]) || def;
   const sections = [];
-  if (form.experience.trim())    sections.push({ heading: t.experience,           items: lines(form.experience) });
-  if (form.education.trim())     sections.push({ heading: t.education,            items: lines(form.education) });
-  if (form.skills.trim())        sections.push({ heading: label("skills"),        items: csv(form.skills) });
-  if (form.certifications.trim())sections.push({ heading: t.certifications,       items: lines(form.certifications) });
-  if (form.projects.trim())      sections.push({ heading: t.projects,             items: lines(form.projects) });
-  if (form.languages.trim())     sections.push({ heading: label("languages"),     items: csv(form.languages) });
-  if (form.volunteer.trim())     sections.push({ heading: t.volunteer,            items: lines(form.volunteer) });
-  if (form.awards.trim())        sections.push({ heading: t.awards,               items: lines(form.awards) });
+  const add = (key, heading) => {
+    const items = entriesToItems(key, form[key + "Entries"]);
+    if (items.length) sections.push({ heading, items });
+  };
+  add("experience",     headingOf("experience", t.experience));
+  add("education",       headingOf("education", t.education));
+  add("skills",          headingOf("skills", label("skills")));
+  add("certifications",  headingOf("certifications", t.certifications));
+  add("projects",        headingOf("projects", t.projects));
+  add("languages",       headingOf("languages", label("languages")));
+  add("volunteer",       headingOf("volunteer", t.volunteer));
+  add("awards",          headingOf("awards", t.awards));
   return {
     name: form.name || "—",
     title: form.title || "",
@@ -908,6 +1070,220 @@ function buildLiveData(form, t) {
     sections,
     photo: form.photo || null,
   };
+}
+
+// ── Entry-editor microcopy (5 languages, RTL-aware via caller) ─────────────
+const ENTRY_UI = {
+  en: { editHeading: "Edit heading", addEntry: "Add entry", remove: "Remove", show: "Show in resume", hide: "Hide from resume", untitled: "Untitled entry", collapse: "Collapse", expand: "Expand", reorder: "Drag to reorder",
+        labels: { title: "Job title", company: "Company", startDate: "Start date", endDate: "End date", description: "Description", degree: "Degree", institution: "Institution", year: "Year", subtitle: "Subtitle", skill: "Skill", language: "Language" } },
+  fr: { editHeading: "Modifier le titre", addEntry: "Ajouter", remove: "Supprimer", show: "Afficher dans le CV", hide: "Masquer du CV", untitled: "Entrée sans titre", collapse: "Réduire", expand: "Développer", reorder: "Glisser pour réordonner",
+        labels: { title: "Intitulé du poste", company: "Entreprise", startDate: "Date de début", endDate: "Date de fin", description: "Description", degree: "Diplôme", institution: "Établissement", year: "Année", subtitle: "Sous-titre", skill: "Compétence", language: "Langue" } },
+  es: { editHeading: "Editar título", addEntry: "Añadir", remove: "Eliminar", show: "Mostrar en el CV", hide: "Ocultar del CV", untitled: "Entrada sin título", collapse: "Contraer", expand: "Expandir", reorder: "Arrastra para reordenar",
+        labels: { title: "Puesto", company: "Empresa", startDate: "Fecha de inicio", endDate: "Fecha de fin", description: "Descripción", degree: "Título", institution: "Institución", year: "Año", subtitle: "Subtítulo", skill: "Habilidad", language: "Idioma" } },
+  ar: { editHeading: "تعديل العنوان", addEntry: "إضافة", remove: "حذف", show: "إظهار في السيرة", hide: "إخفاء من السيرة", untitled: "إدخال بدون عنوان", collapse: "طي", expand: "توسيع", reorder: "اسحب لإعادة الترتيب",
+        labels: { title: "المسمى الوظيفي", company: "الشركة", startDate: "تاريخ البدء", endDate: "تاريخ الانتهاء", description: "الوصف", degree: "الشهادة", institution: "المؤسسة", year: "السنة", subtitle: "عنوان فرعي", skill: "مهارة", language: "لغة" } },
+  de: { editHeading: "Überschrift bearbeiten", addEntry: "Eintrag hinzufügen", remove: "Entfernen", show: "Im Lebenslauf anzeigen", hide: "Im Lebenslauf ausblenden", untitled: "Eintrag ohne Titel", collapse: "Einklappen", expand: "Ausklappen", reorder: "Zum Umordnen ziehen",
+        labels: { title: "Position", company: "Unternehmen", startDate: "Startdatum", endDate: "Enddatum", description: "Beschreibung", degree: "Abschluss", institution: "Institution", year: "Jahr", subtitle: "Untertitel", skill: "Fähigkeit", language: "Sprache" } },
+};
+
+// Inline rich-text editor for an entry description. Reuses the markdown-marker
+// toolbar (bold/italic/underline/strike/bullet/numbered/divider/clear) but works
+// on its own textarea ref + value/onChange instead of the global form field.
+function EntryDescriptionEditor({ value, onChange, placeholder, rtl }) {
+  const ref = useRef(null);
+  const v = value || "";
+  const restore = (s, e) => setTimeout(() => { const el = ref.current; if (el) { el.focus(); el.setSelectionRange(s, e); } }, 0);
+  const wrap = (marker, endMarker) => {
+    const el = ref.current; if (!el) return;
+    const start = el.selectionStart, end = el.selectionEnd;
+    const selected = v.slice(start, end);
+    const close = endMarker !== undefined ? endMarker : marker;
+    if (selected.startsWith(marker) && selected.endsWith(close) && selected.length >= marker.length + close.length) {
+      const inner = selected.slice(marker.length, selected.length - close.length);
+      onChange(v.slice(0, start) + inner + v.slice(end)); restore(start, start + inner.length);
+    } else {
+      onChange(v.slice(0, start) + marker + selected + close + v.slice(end)); restore(start + marker.length, end + marker.length);
+    }
+  };
+  const linePrefix = (prefix, numbered) => {
+    const el = ref.current; if (!el) return;
+    const start = el.selectionStart, end = el.selectionEnd;
+    const lineStart = v.lastIndexOf("\n", start - 1) + 1;
+    const lineEnd = v.indexOf("\n", end);
+    const block = v.slice(lineStart, lineEnd === -1 ? undefined : lineEnd);
+    const ls = block.split("\n");
+    const allPrefixed = ls.every(l => l.startsWith(prefix) || (numbered && /^\d+\. /.test(l)));
+    let n = 1;
+    const updated = ls.map(l => {
+      if (allPrefixed) return l.replace(/^[•\-] |^\d+\. /, "");
+      if (numbered) return `${n++}. ${l}`;
+      return l.startsWith(prefix) ? l : `${prefix}${l}`;
+    }).join("\n");
+    onChange(v.slice(0, lineStart) + updated + (lineEnd === -1 ? "" : v.slice(lineEnd)));
+    restore(lineStart, lineStart + updated.length);
+  };
+  const btn = (label, title, onClick, extra = {}) => (
+    <button type="button" title={title} aria-label={title} onClick={onClick}
+      style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 5, padding: "2px 7px",
+        fontSize: 12, fontWeight: 700, color: C.text2, cursor: "pointer", fontFamily: "inherit", lineHeight: 1.5, ...extra }}>
+      {label}
+    </button>
+  );
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 3, marginBottom: 5, flexWrap: "wrap" }}>
+        {btn("B", "Bold", () => wrap("**"), { fontWeight: 900 })}
+        {btn("I", "Italic", () => wrap("*"), { fontStyle: "italic", fontWeight: 400 })}
+        {btn("U", "Underline", () => wrap("__"), { textDecoration: "underline" })}
+        {btn("S", "Strikethrough", () => wrap("~~"), { textDecoration: "line-through" })}
+        <div style={{ width: 1, background: C.border, margin: "2px 1px" }} />
+        {btn("•", "Bullet list", () => linePrefix("• "))}
+        {btn("1.", "Numbered list", () => linePrefix("1. ", true))}
+        <div style={{ width: 1, background: C.border, margin: "2px 1px" }} />
+        {btn("—", "Insert dash", () => wrap(" — ", ""), { fontWeight: 400 })}
+        {btn("✕", "Clear formatting", () => onChange(v.replace(/\*\*|__|\*|~~/g, "")), { fontSize: 10, color: C.text3 })}
+      </div>
+      <textarea ref={ref} value={v} onChange={(e) => onChange(e.target.value)} placeholder={placeholder || ""} rows={4}
+        dir={rtl ? "rtl" : "ltr"}
+        style={{ width: "100%", boxSizing: "border-box", padding: "10px 12px", background: C.elevated,
+          border: `1px solid ${C.border}`, borderRadius: 8, color: C.text1, fontSize: 14, outline: "none",
+          resize: "vertical", fontFamily: "inherit", lineHeight: 1.6 }} />
+    </div>
+  );
+}
+
+// One structured entry: drag handle, two-tone label, visibility + delete, and
+// an expandable inline edit form driven by the section schema.
+function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand, onChange, onDelete, onToggleVisible, dnd, isDropTarget }) {
+  const schema = ENTRY_SCHEMAS[sectionKey];
+  const primary = (entry[schema.primary] || "").trim();
+  const secondary = schema.secondary ? (entry[schema.secondary] || "").trim() : "";
+  const hidden = entry.visible === false;
+  const labelFor = (f) => (f === "name" ? (sectionKey === "skills" ? eui.labels.skill : eui.labels.language) : eui.labels[f]);
+  const iconBtn = (content, title, onClick, extra = {}) => (
+    <button type="button" title={title} aria-label={title} onClick={(e) => { e.stopPropagation(); onClick(); }}
+      style={{ background: SECTION_TOKENS.iconBtnBg, border: "none", borderRadius: SECTION_TOKENS.iconBtnRadius,
+        width: 30, height: 30, display: "inline-flex", alignItems: "center", justifyContent: "center",
+        cursor: "pointer", color: C.text2, fontSize: 14, lineHeight: 1, flexShrink: 0, ...extra }}>
+      {content}
+    </button>
+  );
+  const nonDesc = schema.fields.filter((f) => f !== "description");
+  return (
+    <div
+      onDragOver={(e) => { e.preventDefault(); }}
+      onDrop={(e) => { e.preventDefault(); dnd.onDrop(index); }}
+      style={{ borderTop: index === 0 ? "none" : `1px solid ${SECTION_TOKENS.rowDivider}`,
+        background: isDropTarget ? `${C.accent}14` : "transparent", opacity: hidden ? 0.55 : 1 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: SECTION_TOKENS.gap2, padding: `${SECTION_TOKENS.gap2}px ${SECTION_TOKENS.gap1}px` }}>
+        <span draggable role="button" aria-label={eui.reorder} title={eui.reorder}
+          onDragStart={(e) => { e.dataTransfer.effectAllowed = "move"; dnd.onDragStart(index); }}
+          onDragEnd={() => dnd.onDragEnd()}
+          style={{ cursor: "grab", color: C.text3, fontSize: 14, lineHeight: 1, userSelect: "none", flexShrink: 0, padding: "0 2px" }}>⠿</span>
+        <button type="button" onClick={onToggleExpand}
+          style={{ flex: 1, textAlign: rtl ? "right" : "left", background: "none", border: "none", cursor: "pointer",
+            color: C.text1, fontFamily: "inherit", fontSize: 14.5, padding: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <strong style={{ fontWeight: 700 }}>{primary || eui.untitled}</strong>
+          {secondary && <span style={{ color: C.text3, fontWeight: 400 }}>, {secondary}</span>}
+        </button>
+        {iconBtn(hidden ? "🚫" : "👁", hidden ? eui.show : eui.hide, onToggleVisible, hidden ? {} : { color: C.accent2 })}
+        {iconBtn("🗑", eui.remove, onDelete)}
+        <span aria-hidden style={{ color: C.text3, fontSize: 11, width: 12, textAlign: "center", flexShrink: 0 }}>{expanded ? "▾" : "▸"}</span>
+      </div>
+      {expanded && (
+        <div style={{ padding: `0 ${SECTION_TOKENS.gap1}px ${SECTION_TOKENS.gap3}px`, display: "flex", flexDirection: "column", gap: SECTION_TOKENS.gap2 }}>
+          {nonDesc.length > 0 && (
+            <div style={{ display: "grid", gridTemplateColumns: nonDesc.length === 1 ? "1fr" : "1fr 1fr", gap: SECTION_TOKENS.gap2 }}>
+              {nonDesc.map((f) => (
+                <div key={f}>
+                  <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: C.text3, marginBottom: 4 }}>{labelFor(f)}</label>
+                  <input value={entry[f] || ""} onChange={(e) => onChange({ [f]: e.target.value })} placeholder={labelFor(f)}
+                    dir={rtl ? "rtl" : "ltr"}
+                    style={{ width: "100%", boxSizing: "border-box", padding: "9px 12px", background: C.elevated,
+                      border: `1px solid ${C.border}`, borderRadius: 8, color: C.text1, fontSize: 14, outline: "none", fontFamily: "inherit" }} />
+                </div>
+              ))}
+            </div>
+          )}
+          {schema.fields.includes("description") && (
+            <div>
+              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: C.text3, marginBottom: 4 }}>{eui.labels.description}</label>
+              <EntryDescriptionEditor value={entry.description} onChange={(val) => onChange({ description: val })} rtl={rtl} />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Reusable section card. Drives every section from ENTRY_SCHEMAS — no per-section markup.
+function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onToggleCollapse, onEditHeading, onAdd, onChangeEntry, onDeleteEntry, onToggleVisible, onReorder }) {
+  const schema = ENTRY_SCHEMAS[sectionKey];
+  const [expandedId, setExpandedId] = useState(null);
+  const [editingHeading, setEditingHeading] = useState(false);
+  const [headingDraft, setHeadingDraft] = useState(heading);
+  const [dropTarget, setDropTarget] = useState(null);
+  const dragFrom = useRef(null);
+  const list = entries || [];
+  const dnd = {
+    onDragStart: (i) => { dragFrom.current = i; },
+    onDragEnd: () => { dragFrom.current = null; setDropTarget(null); },
+    onDrop: (to) => { const from = dragFrom.current; if (from != null && from !== to) onReorder(from, to); dragFrom.current = null; setDropTarget(null); },
+  };
+  const commitHeading = () => { setEditingHeading(false); const h = headingDraft.trim(); if (h && h !== heading) onEditHeading(h); else setHeadingDraft(heading); };
+  return (
+    <section style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: SECTION_TOKENS.radius,
+      boxShadow: SECTION_TOKENS.shadow, padding: SECTION_TOKENS.padCard, marginTop: SECTION_TOKENS.gap3 }}>
+      <header style={{ display: "flex", alignItems: "center", gap: SECTION_TOKENS.gap2 }}>
+        <span aria-hidden style={{ fontSize: 18, flexShrink: 0 }}>{schema.icon}</span>
+        {editingHeading ? (
+          <input autoFocus value={headingDraft} onChange={(e) => setHeadingDraft(e.target.value)}
+            onBlur={commitHeading} onKeyDown={(e) => { if (e.key === "Enter") commitHeading(); if (e.key === "Escape") { setEditingHeading(false); setHeadingDraft(heading); } }}
+            dir={rtl ? "rtl" : "ltr"}
+            style={{ flex: 1, background: C.elevated, border: `1px solid ${C.accent}`, borderRadius: 8, padding: "6px 10px",
+              color: C.text1, fontSize: 16, fontWeight: 800, fontFamily: "inherit", outline: "none" }} />
+        ) : (
+          <h3 style={{ flex: 1, margin: 0, fontSize: 16, fontWeight: 800, color: C.text1 }}>{heading}</h3>
+        )}
+        <button type="button" onClick={() => { setHeadingDraft(heading); setEditingHeading(true); }}
+          style={{ display: "inline-flex", alignItems: "center", gap: 5, background: C.elevated, border: `1px solid ${C.border}`,
+            borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 700, color: C.text2, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>
+          ✎ {eui.editHeading}
+        </button>
+        <button type="button" onClick={onToggleCollapse} aria-label={collapsed ? eui.expand : eui.collapse} aria-expanded={!collapsed}
+          style={{ background: "none", border: "none", color: C.text2, cursor: "pointer", fontSize: 16, padding: "0 4px", flexShrink: 0 }}>
+          {collapsed ? "▸" : "▾"}
+        </button>
+      </header>
+      {!collapsed && (
+        <>
+          <div style={{ marginTop: SECTION_TOKENS.gap2 }}
+            onDragOver={(e) => { e.preventDefault(); }}>
+            {list.map((entry, i) => (
+              <div key={entry.id} onDragOver={() => setDropTarget(i)}>
+                <EntryRow sectionKey={sectionKey} entry={entry} index={i} eui={eui} rtl={rtl}
+                  expanded={expandedId === entry.id}
+                  onToggleExpand={() => setExpandedId((id) => (id === entry.id ? null : entry.id))}
+                  onChange={(ch) => onChangeEntry(entry.id, ch)}
+                  onDelete={() => onDeleteEntry(entry.id)}
+                  onToggleVisible={() => onToggleVisible(entry.id)}
+                  dnd={dnd} isDropTarget={dropTarget === i && dragFrom.current != null && dragFrom.current !== i} />
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: SECTION_TOKENS.gap3 }}>
+            <button type="button" onClick={() => { const id = onAdd(); if (id) setExpandedId(id); }}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, background: `${C.accent}14`,
+                border: `1px solid ${C.accent}44`, borderRadius: 999, padding: "8px 18px", fontSize: 13, fontWeight: 700,
+                color: C.accent2, cursor: "pointer", fontFamily: "inherit" }}>
+              + {eui.addEntry}
+            </button>
+          </div>
+        </>
+      )}
+    </section>
+  );
 }
 
 const defaultMaster = {
@@ -926,16 +1302,17 @@ export default function ResumeGenerator() {
   const [step, setStep] = useState("templates");
   const [selectedLang, setSelectedLang] = useState(() => WORLD_LANGUAGES.find(l => l.code === "en"));
   const [tpl, setTpl] = useState(null);
-  const emptyResumeForm = {
+  const emptyResumeForm = migrateForm({
     name: "", title: "", email: "", phone: "", location: "",
     linkedin: "", website: "",
     summary: "", experience: "", education: "", skills: "",
     certifications: "", languages: "", projects: "", volunteer: "", awards: "",
-  };
+    sectionTitles: {},
+  });
   const [form, setForm] = useState(() => {
     if (typeof localStorage === "undefined") return emptyResumeForm;
     const saved = safeParseStoredJson(localStorage.getItem("ac_resume_draft"), null);
-    return saved && typeof saved === "object" ? { ...emptyResumeForm, ...saved } : emptyResumeForm;
+    return saved && typeof saved === "object" ? migrateForm({ ...emptyResumeForm, ...saved }) : emptyResumeForm;
   });
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -1114,9 +1491,58 @@ export default function ResumeGenerator() {
   const lang = UI_LANGS.has(selectedLang.code) ? selectedLang.code : "en";
   const t = UI[lang];
   const at = ACCT_UI[lang]; // account / sync / pass strings
+  const eui = ENTRY_UI[lang] || ENTRY_UI.en; // structured-entry editor strings
   const rtl = selectedLang.rtl || false;
   const set = useCallback((k) => (e) => setForm(f => ({ ...f, [k]: e.target.value })), []);
   const setField = useCallback((k, v) => setForm(f => ({ ...f, [k]: v })), []);
+
+  // ── Structured-entry update path ──────────────────────────────────────────
+  // The entry arrays are the editing source of truth; the flat string field is
+  // re-synced on every change so legacy string consumers keep working.
+  const setEntries = useCallback((key, updater) => {
+    setForm((f) => {
+      const prev = f[key + "Entries"] || [];
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      return { ...f, [key + "Entries"]: next, [key]: entriesToText(key, next) };
+    });
+  }, []);
+  // Set a section from a flat string (AI write-backs, Master fill, demo data),
+  // preserving each entry's visibility by position where possible.
+  const setSectionFromText = useCallback((key, text) => {
+    setForm((f) => {
+      const old = f[key + "Entries"] || [];
+      const parsed = parseEntries(key, text).map((e, i) => ({
+        ...e,
+        visible: old[i] ? old[i].visible !== false : true,
+      }));
+      return { ...f, [key + "Entries"]: parsed, [key]: entriesToText(key, parsed) };
+    });
+  }, []);
+  const setSectionTitle = useCallback((key, title) => {
+    setForm((f) => ({ ...f, sectionTitles: { ...(f.sectionTitles || {}), [key]: title } }));
+  }, []);
+  // Per-section entry handlers shared by every SectionCard.
+  const addSectionEntry = useCallback((key) => {
+    const e = blankEntry(key);
+    setEntries(key, (list) => [...list, e]);
+    return e.id;
+  }, [setEntries]);
+  const changeSectionEntry = useCallback((key, id, ch) => {
+    setEntries(key, (list) => list.map((x) => (x.id === id ? { ...x, ...ch } : x)));
+  }, [setEntries]);
+  const deleteSectionEntry = useCallback((key, id) => {
+    setEntries(key, (list) => list.filter((x) => x.id !== id));
+  }, [setEntries]);
+  const toggleSectionEntryVisible = useCallback((key, id) => {
+    setEntries(key, (list) => list.map((x) => (x.id === id ? { ...x, visible: x.visible === false } : x)));
+  }, [setEntries]);
+  const reorderSectionEntry = useCallback((key, from, to) => {
+    setEntries(key, (list) => { const a = [...list]; const [m] = a.splice(from, 1); a.splice(to, 0, m); return a; });
+  }, [setEntries]);
+  const [collapsedSections, setCollapsedSections] = useState({});
+  const toggleSectionCollapse = useCallback((key) => {
+    setCollapsedSections((c) => ({ ...c, [key]: !c[key] }));
+  }, []);
   const fullPhone = form.phone.trim() ? `${phoneCode} ${form.phone.trim()}` : "";
   // Memoised so non-form state changes (modal open, ATS result, etc.) don't
   // trigger an expensive re-parse of the entire form on every render.
@@ -1245,7 +1671,19 @@ export default function ResumeGenerator() {
       const text = await callAi("translate-resume", JSON.stringify(toTranslate), langCode);
       const clean = text.replace(/```json|```/g, "").trim();
       const translated = JSON.parse(clean);
-      setForm(f => ({ ...f, ...translated }));
+      setForm(f => {
+        const next = { ...f, ...translated };
+        // Re-sync entry arrays for any translated section (preserve visibility by position).
+        SECTION_KEYS.forEach((key) => {
+          if (typeof translated[key] === "string") {
+            const old = f[key + "Entries"] || [];
+            const parsed = parseEntries(key, translated[key]).map((e, i) => ({ ...e, visible: old[i] ? old[i].visible !== false : true }));
+            next[key + "Entries"] = parsed;
+            next[key] = entriesToText(key, parsed);
+          }
+        });
+        return next;
+      });
     } catch {
       // silently fail — user keeps original
     } finally {
@@ -1758,6 +2196,24 @@ Awards: ${form.awards}`;
     );
   };
 
+  // Render a structured-entry section card for `key`, wired to the shared handlers.
+  const renderSection = (key, defaultHeading) => (
+    <SectionCard
+      sectionKey={key}
+      heading={(form.sectionTitles && form.sectionTitles[key]) || defaultHeading}
+      entries={form[key + "Entries"] || []}
+      eui={eui} rtl={rtl}
+      collapsed={!!collapsedSections[key]}
+      onToggleCollapse={() => toggleSectionCollapse(key)}
+      onEditHeading={(h) => setSectionTitle(key, h)}
+      onAdd={() => addSectionEntry(key)}
+      onChangeEntry={(id, ch) => changeSectionEntry(key, id, ch)}
+      onDeleteEntry={(id) => deleteSectionEntry(key, id)}
+      onToggleVisible={(id) => toggleSectionEntryVisible(key, id)}
+      onReorder={(from, to) => reorderSectionEntry(key, from, to)}
+    />
+  );
+
   // ── Cover-letter formatting helpers ───────────────────────────────────────
   const setCoverField = (k, v) => setCoverForm(f => ({ ...f, [k]: v }));
 
@@ -1969,7 +2425,7 @@ Awards: ${form.awards}`;
     const updated = form.experience.split("\n").map(l =>
       l.trim() === coachBullet.trim() ? coachResult : l
     ).join("\n");
-    setForm({ ...form, experience: updated });
+    setSectionFromText("experience", updated);
     const remaining = updated.split("\n").filter(l => isWeakBullet(l));
     if (remaining.length > 0) {
       setCoachBullet(remaining[0]);
@@ -2056,7 +2512,7 @@ Awards: ${form.awards}`;
           }
           return l;
         }).join("\n");
-        setForm(f => ({ ...f, experience: fixed }));
+        setSectionFromText("experience", fixed);
       }
     });
 
@@ -2373,9 +2829,8 @@ Awards: ${form.awards}`;
           {summaryError && <p style={fieldErr}>{summaryError}</p>}
           <Hint text="2–4 sentences. Who you are, your years of experience, and your biggest strength." />
 
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-            <label htmlFor="field-experience" style={{ ...lbl, marginBottom: 0 }}>{t.experience}</label>
-            {weakBullets.length > 0 && !coachOpen && (
+          {weakBullets.length > 0 && !coachOpen && (
+            <div style={{ display: "flex", justifyContent: rtl ? "flex-start" : "flex-end", marginTop: 10 }}>
               <button onClick={() => openCoach(0)}
                 style={{ fontSize: 11.5, fontWeight: 700, color: C.accent2,
                   background: `${C.accent}14`, border: `1px solid ${C.accent}33`,
@@ -2383,11 +2838,10 @@ Awards: ${form.awards}`;
                   fontFamily: "inherit", display: "flex", alignItems: "center", gap: 5 }}>
                 ✦ Coach me · {weakBullets.length} weak {weakBullets.length === 1 ? "bullet" : "bullets"}
               </button>
-            )}
-          </div>
-          {field("experience", true, t.placeholderEx, undefined, experienceError)}
+            </div>
+          )}
+          <div id="field-experience">{renderSection("experience", t.experience)}</div>
           {experienceError && <p style={fieldErr}>{experienceError}</p>}
-          <Hint text="One role per line. Format: Job Title — Company | Start – End" />
 
           {/* ── Achievement Coach Panel ── */}
           {coachOpen && (() => {
@@ -2513,27 +2967,14 @@ Awards: ${form.awards}`;
             );
           })()}
 
-          <label htmlFor="field-education" style={lbl}>{t.education}</label>
-          {field("education", true, t.placeholderEducation, undefined, educationError)}
+          <div id="field-education">{renderSection("education", t.education)}</div>
           {educationError && <p style={fieldErr}>{educationError}</p>}
-          <Hint text="One entry per line. Format: Degree — Institution | Year" />
 
-          {/* ── SECTION: Skills ── */}
+          {/* ── SECTION: Skills & Languages ── */}
           <SectionHeader icon="⚡" title="Skills & Languages" filled={!!form.skills} />
-
-          <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
-            <div style={{ flex: 1 }}>
-              <label htmlFor="field-skills" style={lbl}>{t.skills}</label>
-              {field("skills", false, t.placeholderSkills, undefined, skillsError)}
-              {skillsError && <p style={fieldErr}>{skillsError}</p>}
-              <Hint text="Comma-separated: React, Node.js, SQL…" />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label htmlFor="field-languages" style={lbl}>{t.languages}</label>
-              {field("languages", false, t.placeholderLanguages)}
-              <Hint text="English (Fluent), French (B2)…" />
-            </div>
-          </div>
+          <div id="field-skills">{renderSection("skills", t.skills.replace(/\s*\(.*\)/, ""))}</div>
+          {skillsError && <p style={fieldErr}>{skillsError}</p>}
+          {renderSection("languages", t.languages.replace(/\s*\(.*\)/, ""))}
 
           {/* ── SECTION: Additional ── */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
@@ -2548,10 +2989,10 @@ Awards: ${form.awards}`;
           </div>
           {showOptionalSections && (
             <>
-              <label htmlFor="field-certifications" style={lbl}>{t.certifications}</label>{field("certifications", true, t.placeholderCerts)}
-              <label htmlFor="field-projects" style={lbl}>{t.projects}</label>{field("projects", true, t.placeholderProjects)}
-              <label htmlFor="field-volunteer" style={lbl}>{t.volunteer}</label>{field("volunteer", true, t.placeholderVolunteer)}
-              <label htmlFor="field-awards" style={lbl}>{t.awards}</label>{field("awards", true, t.placeholderAwards)}
+              {renderSection("certifications", t.certifications)}
+              {renderSection("projects", t.projects)}
+              {renderSection("volunteer", t.volunteer)}
+              {renderSection("awards", t.awards)}
             </>
           )}
 
@@ -3056,7 +3497,7 @@ Awards: ${form.awards}`;
 
     const importToBuilder = () => {
       if (!localText.trim()) return;
-      setForm(f => ({ ...f, experience: localText }));
+      setSectionFromText("experience", localText);
       setNavPage("resume");
       setStep("templates");
     };
@@ -3734,7 +4175,16 @@ Awards: ${form.awards}`;
       const projects = master.projects.filter(p => s.projects?.[p.id] !== false).map(p => `${p.name}${p.tech ? ` | ${p.tech}` : ""}${p.url ? ` | ${p.url}` : ""}${p.description ? `\n${p.description}` : ""}`).join("\n\n");
       const languages = master.languages.filter(l => s.languages?.[l.id] !== false).map(l => `${l.name}${l.level ? ` (${l.level})` : ""}`).join(", ");
       const achievements = master.achievements.filter(a => s.achievements?.[a.id] !== false).map(a => `${a.title}${a.date ? ` (${a.date})` : ""}${a.description ? ` — ${a.description}` : ""}`).join("\n");
-      setForm(f => ({...f, name: master.name||f.name, title: master.headline||f.title, email: master.email||f.email, phone: master.phone||f.phone, location: master.location||f.location, linkedin: master.linkedin||f.linkedin, website: master.website||f.website, summary: master.summary||f.summary, experience: experience||f.experience, education: education||f.education, skills: skills||f.skills, certifications: certifications||f.certifications, projects: projects||f.projects, languages: languages||f.languages, achievements: achievements||f.achievements}));
+      setForm(f => {
+        const next = {...f, name: master.name||f.name, title: master.headline||f.title, email: master.email||f.email, phone: master.phone||f.phone, location: master.location||f.location, linkedin: master.linkedin||f.linkedin, website: master.website||f.website, summary: master.summary||f.summary, experience: experience||f.experience, education: education||f.education, skills: skills||f.skills, certifications: certifications||f.certifications, projects: projects||f.projects, languages: languages||f.languages, achievements: achievements||f.achievements};
+        // Re-derive structured entries from the freshly built section strings.
+        ["experience","education","skills","certifications","projects","languages"].forEach((key) => {
+          const parsed = parseEntries(key, next[key] || "");
+          next[key + "Entries"] = parsed;
+          next[key] = entriesToText(key, parsed);
+        });
+        return next;
+      });
       setTailorOpen(false); setJdKws(null); setTailorSel(null);
       setNavPage("resume");
       if (tpl) setStep("form"); // stay on form if template already picked
@@ -4335,12 +4785,17 @@ Awards: ${form.awards}`;
 
           const enterWithDemo = () => {
             if (demoName || demoTitle || demoExp) {
-              setForm(f => ({
-                ...f,
-                name: demoName || f.name,
-                title: demoTitle || f.title,
-                experience: demoExp || f.experience,
-              }));
+              setForm(f => {
+                const expStr = demoExp || f.experience;
+                const parsed = parseEntries("experience", expStr);
+                return {
+                  ...f,
+                  name: demoName || f.name,
+                  title: demoTitle || f.title,
+                  experience: entriesToText("experience", parsed),
+                  experienceEntries: parsed,
+                };
+              });
             }
             startResume("demo_resume");
           };
@@ -7653,6 +8108,28 @@ const C = {
   radiusSm: 6,
   radiusMd: 10,
   radiusLg: 14,
+};
+
+// ── Section-card design tokens (FlowCV-style structure, dark theme colors) ──
+// Centralized here so radius / shadow / spacing / accent live in one place.
+const SECTION_TOKENS = {
+  radius: 16,
+  shadow: "0 1px 2px rgba(0,0,0,0.35), 0 10px 28px rgba(0,0,0,0.30)",
+  padCard: 22,
+  gap1: 8, gap2: 12, gap3: 16, gap4: 24,
+  rowDivider: C.border,
+  iconBtnBg: `${C.elevated}`,
+  iconBtnRadius: 8,
+  accent: C.accent,
+};
+// Matching CSS custom properties for the builder root (single source of truth).
+const SECTION_CSS_VARS = {
+  "--ac-radius": `${SECTION_TOKENS.radius}px`,
+  "--ac-gap-1": `${SECTION_TOKENS.gap1}px`,
+  "--ac-gap-2": `${SECTION_TOKENS.gap2}px`,
+  "--ac-gap-3": `${SECTION_TOKENS.gap3}px`,
+  "--ac-gap-4": `${SECTION_TOKENS.gap4}px`,
+  "--ac-accent": SECTION_TOKENS.accent,
 };
 
 const page = {
