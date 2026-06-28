@@ -1451,7 +1451,7 @@ Awards: ${form.awards}`;
         <button onClick={() => startWithTemplate(recommendedTemplate, "recommended_template")}
           style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 6,
             padding: "10px 16px", fontSize: 13.5, fontWeight: 800, cursor: "pointer",
-            fontFamily: "inherit" }}>
+            fontFamily: "inherit", width: isMobile ? "100%" : undefined }}>
           Use recommended template
         </button>
       </div>
@@ -1467,7 +1467,7 @@ Awards: ${form.awards}`;
           </button>
         ))}
       </div>
-      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))" }}>
+      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))", gap: isMobile ? 12 : 28 }}>
         {TEMPLATES.filter(filterTemplates).map((tp) => (
           <button key={tp.id} onClick={() => startWithTemplate(tp)}
             aria-label={`Use ${tp.name} template${tp.tag ? ` — ${tp.tag}` : ""}`}
@@ -1475,32 +1475,36 @@ Awards: ${form.awards}`;
             onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; }}
             onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
             <ThumbPreview tp={tp} isMobile={isMobile} />
-            <div style={{ padding: isMobile ? "8px 10px" : "10px 4px", textAlign: rtl ? "right" : "left",
+            <div style={{ padding: isMobile ? "6px 6px" : "10px 4px", textAlign: rtl ? "right" : "left",
               visibility: tp.blank ? "hidden" : "visible" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                <div style={{ fontWeight: 700, fontSize: isMobile ? 13 : 14, color: C.text1 }}>{tp.name}</div>
-                {tp.id === RECOMMENDED_TEMPLATE_ID && <span style={{ fontSize: 9.5, color: C.accent2,
-                  background: `${C.accent}18`, borderRadius: 999, padding: "1px 6px", fontWeight: 800 }}>
-                  Recommended
+                <div style={{ fontWeight: 700, fontSize: isMobile ? 12 : 14, color: C.text1 }}>{tp.name}</div>
+                {tp.id === RECOMMENDED_TEMPLATE_ID && <span style={{ fontSize: 9, color: C.accent2,
+                  background: `${C.accent}18`, borderRadius: 999, padding: "1px 5px", fontWeight: 800 }}>
+                  ★
                 </span>}
               </div>
-              <div style={{ fontSize: isMobile ? 11 : 12, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
-              <div style={{ fontSize: 11, color: C.text3, marginTop: 6, lineHeight: 1.45 }}>
-                {TEMPLATE_META[tp.id] || "Professional layout with clear sections and export support."}
-              </div>
-              <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 8 }}>
-                <span style={{ fontSize: 9.5, color: C.text3, border: `1px solid ${C.border}`, borderRadius: 999, padding: "1px 6px" }}>
-                  {["modern","compact","creative","vertex","slate","carbon","pulse"].includes(tp.id) ? "Two column" : "One column"}
-                </span>
-                <span style={{ fontSize: 9.5, color: C.text3, border: `1px solid ${C.border}`, borderRadius: 999, padding: "1px 6px" }}>
-                  ATS-conscious
-                </span>
-                {["classic","modern","minimal","bold","creative","compact"].includes(tp.id) && (
+              {!isMobile && <div style={{ fontSize: 12, color: C.text2, marginTop: 2 }}>{tp.tag}</div>}
+              {!isMobile && (
+                <div style={{ fontSize: 11, color: C.text3, marginTop: 6, lineHeight: 1.45 }}>
+                  {TEMPLATE_META[tp.id] || "Professional layout with clear sections and export support."}
+                </div>
+              )}
+              {!isMobile && (
+                <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 8 }}>
                   <span style={{ fontSize: 9.5, color: C.text3, border: `1px solid ${C.border}`, borderRadius: 999, padding: "1px 6px" }}>
-                    RTL-friendly
+                    {["modern","compact","creative","vertex","slate","carbon","pulse"].includes(tp.id) ? "Two column" : "One column"}
                   </span>
-                )}
-              </div>
+                  <span style={{ fontSize: 9.5, color: C.text3, border: `1px solid ${C.border}`, borderRadius: 999, padding: "1px 6px" }}>
+                    ATS-conscious
+                  </span>
+                  {["classic","modern","minimal","bold","creative","compact"].includes(tp.id) && (
+                    <span style={{ fontSize: 9.5, color: C.text3, border: `1px solid ${C.border}`, borderRadius: 999, padding: "1px 6px" }}>
+                      RTL-friendly
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </button>
         ))}
@@ -2040,16 +2044,18 @@ Awards: ${form.awards}`;
               </button>
             );
           })()}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 120 }}>
-            <div style={{ flex: 1, height: 6, borderRadius: 999, background: C.elevated,
-              border: `1px solid ${C.border}`, overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${Math.round((completedChecklist / resumeChecklist.length) * 100)}%`,
-                background: readyForReview ? "#4ade80" : C.grad,
-                borderRadius: 999, transition: "width 0.4s ease" }} />
+          {!isMobile && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 120 }}>
+              <div style={{ flex: 1, height: 6, borderRadius: 999, background: C.elevated,
+                border: `1px solid ${C.border}`, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${Math.round((completedChecklist / resumeChecklist.length) * 100)}%`,
+                  background: readyForReview ? "#4ade80" : C.grad,
+                  borderRadius: 999, transition: "width 0.4s ease" }} />
+              </div>
+              <span style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, whiteSpace: "nowrap",
+                minWidth: 58 }}>{completedChecklist}/{resumeChecklist.length}</span>
             </div>
-            <span style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, whiteSpace: "nowrap",
-              minWidth: 58 }}>{completedChecklist}/{resumeChecklist.length}</span>
-          </div>
+          )}
         </div>
       </div>
       <div style={{ background: C.elevated, border: `1px solid ${readyForReview ? "#4ade8044" : C.border}`,
@@ -2063,26 +2069,13 @@ Awards: ${form.awards}`;
             Saved locally in this browser{draftSavedAt ? ` · ${new Date(draftSavedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : ""}. No account or cloud backup required.
           </div>
         </div>
-        {nextChecklistItem?.target && (
+        {nextChecklistItem?.target && !isMobile && (
           <button onClick={() => scrollToError(nextChecklistItem.target)}
             style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text2,
               borderRadius: 7, padding: "7px 10px", fontSize: 12, fontWeight: 700,
               cursor: "pointer", fontFamily: "inherit" }}>
             Go to section
           </button>
-        )}
-        {isMobile && (
-          <div style={{ display: "flex", border: `1px solid ${C.border}`, borderRadius: 8, overflow: "hidden" }}>
-            {["edit", "preview"].map(mode => (
-              <button key={mode} onClick={() => setMobileResumeMode(mode)}
-                style={{ border: "none", background: mobileResumeMode === mode ? C.grad : C.surface,
-                  color: mobileResumeMode === mode ? "#fff" : C.text2,
-                  padding: "7px 11px", fontSize: 12, fontWeight: 800, cursor: "pointer",
-                  fontFamily: "inherit", textTransform: "capitalize" }}>
-                {mode}
-              </button>
-            ))}
-          </div>
         )}
       </div>
 
@@ -2626,23 +2619,24 @@ Awards: ${form.awards}`;
           gap: 8 }}>
           <button onClick={() => setMobileResumeMode(mobileResumeMode === "edit" ? "preview" : "edit")}
             style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text1,
-              borderRadius: 8, padding: "9px 6px", fontSize: 12, fontWeight: 800,
-              cursor: "pointer", fontFamily: "inherit" }}>
-            {mobileResumeMode === "edit" ? "Preview" : "Edit"}
+              borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
+              cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center",
+              justifyContent: "center", gap: 4 }}>
+            {mobileResumeMode === "edit" ? "👁 Preview" : "✏️ Edit"}
           </button>
           <button onClick={downloadPDF} disabled={!!exporting}
             style={{ border: "none", background: C.grad, color: "#fff",
-              borderRadius: 8, padding: "9px 6px", fontSize: 12, fontWeight: 800,
+              borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
               cursor: exporting ? "not-allowed" : "pointer", fontFamily: "inherit",
               opacity: exporting ? 0.7 : 1 }}>
-            {exporting === "pdf" ? "PDF..." : "PDF"}
+            {exporting === "pdf" ? "Saving..." : "⬇ PDF"}
           </button>
           <button onClick={downloadDOCX} disabled={!!exporting}
             style={{ border: `1px solid ${C.borderHi}`, background: C.surface, color: C.text1,
-              borderRadius: 8, padding: "9px 6px", fontSize: 12, fontWeight: 800,
+              borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
               cursor: exporting ? "not-allowed" : "pointer", fontFamily: "inherit",
               opacity: exporting ? 0.7 : 1 }}>
-            {exporting === "docx" ? "DOCX..." : "DOCX"}
+            {exporting === "docx" ? "Saving..." : "⬇ DOCX"}
           </button>
         </div>
       )}
