@@ -1558,7 +1558,12 @@ export default function ResumeGenerator() {
   const reorderSectionEntry = useCallback((key, from, to) => {
     setEntries(key, (list) => { const a = [...list]; const [m] = a.splice(from, 1); a.splice(to, 0, m); return a; });
   }, [setEntries]);
-  const [collapsedSections, setCollapsedSections] = useState({});
+  // Every section card starts collapsed; the user expands what they need.
+  const [collapsedSections, setCollapsedSections] = useState(() => {
+    const init = { personal: true, summary: true };
+    SECTION_KEYS.forEach((k) => { init[k] = true; });
+    return init;
+  });
   const toggleSectionCollapse = useCallback((key) => {
     setCollapsedSections((c) => ({ ...c, [key]: !c[key] }));
   }, []);
