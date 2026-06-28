@@ -4018,7 +4018,7 @@ Awards: ${form.awards}`;
               <p style={{ animation: isMobile ? "none" : "acFadeUp 0.65s ease 0.34s both",
                 fontSize: "clamp(16px, 2vw, 19px)", color: C.text2, maxWidth: 590,
                 margin: isMobile ? "0 auto 34px" : "0 0 34px", lineHeight: 1.65 }}>
-                Free resume builder with no signup, no watermark, and unlimited PDF or DOCX downloads. Editing and export happen in your browser unless you deliberately use an AI helper.
+                Build unlimited resumes with no signup, no watermark, and unlimited PDF or DOCX downloads — no paid tier, ever. Editing and export happen in your browser unless you deliberately use an AI helper.
               </p>
               <div style={{ animation: isMobile ? "none" : "acFadeUp 0.65s ease 0.5s both",
                 display: "flex", gap: 12, justifyContent: isMobile ? "center" : "flex-start", flexWrap: "wrap" }}>
@@ -4582,12 +4582,14 @@ Awards: ${form.awards}`;
                 Free means <span style={{ background: C.grad,
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>actually free.</span>
               </h2>
-              <p style={{ fontSize: 16, color: C.text2, lineHeight: 1.8, margin: "0 auto 36px", maxWidth: 520 }}>
-                No paid tier. No "Pro" upsell. No watermarks. No account required for the core builder.
-                Templates, language options, previews, and PDF or DOCX downloads are available without a credit card.
+              <p style={{ fontSize: 16, color: C.text2, lineHeight: 1.8, margin: "0 auto 36px", maxWidth: 560 }}>
+                Most resume builders give you one free resume, then charge for a second one, for AI help,
+                or just to remove a watermark. ApplyCraft has no paid tier at all — unlimited resumes,
+                unlimited cover letters, AI achievement coaching, and unlimited PDF or DOCX downloads,
+                without an account or a credit card.
               </p>
               <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-                {["✓ No watermarks", "✓ No account", "✓ No credit card", "✓ Browser-first editing", "✓ PDF & DOCX downloads"].map(t => (
+                {["✓ Unlimited resumes & cover letters", "✓ No watermarks", "✓ No account", "✓ No credit card", "✓ Free AI coaching", "✓ PDF & DOCX downloads"].map(t => (
                   <span key={t} style={{ fontSize: 12.5, fontWeight: 600, padding: "7px 16px",
                     borderRadius: 999, border: `1.5px solid ${C.accent}44`,
                     color: C.accent2, background: `${C.accent}12` }}>{t}</span>
@@ -4605,8 +4607,8 @@ Awards: ${form.awards}`;
                 letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>Multilingual superpowers</p>
               <h2 style={{ fontSize: "clamp(24px, 3.5vw, 40px)", fontWeight: 800, letterSpacing: "-1px",
                 color: C.text1, margin: "0 0 16px" }}>Built for the global job market</h2>
-              <p style={{ fontSize: 15.5, color: C.text2, maxWidth: 520, margin: "0 auto", lineHeight: 1.7 }}>
-                The only resume builder designed from the ground up for multilingual job seekers and international careers.
+              <p style={{ fontSize: 15.5, color: C.text2, maxWidth: 560, margin: "0 auto", lineHeight: 1.7 }}>
+                The only resume builder designed from the ground up for multilingual job seekers — write in any language, relabel across {DOCUMENT_LANGUAGE_COUNT} document languages, and run the interface in {UI_LANGUAGE_COUNT}, including full right-to-left support.
               </p>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
