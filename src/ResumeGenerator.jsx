@@ -2205,9 +2205,7 @@ Awards: ${form.awards}`;
           })()}
 
           {/* ── Actions ── */}
-          <div style={{ marginTop: 28, padding: "18px 20px", background: C.elevated,
-            border: `1px solid ${C.border}`, borderRadius: 12,
-            boxShadow: `0 -4px 24px rgba(0,0,0,0.22)` }}>
+          <div style={{ marginTop: 28, padding: "18px 0" }}>
             {selectedLang?.code && selectedLang.code !== "en" && (
               <button onClick={translateCV} disabled={translating || !form.name}
                 style={{ ...cta, marginTop: 0, marginBottom: 10, background: "transparent",
@@ -2424,7 +2422,7 @@ Awards: ${form.awards}`;
   );
 
   const coverFormContent = coverTpl ? (
-    <div style={rShell}>
+    <div style={{ padding: isMobile ? "8px 4px" : "10px 16px" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
         marginBottom: 20, gap: 12, flexWrap: "wrap" }}>
         <button onClick={() => setCoverStep("templates")} style={backBtn}>← Back</button>
