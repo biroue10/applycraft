@@ -1154,7 +1154,7 @@ function EntryDescriptionEditor({ value, onChange, placeholder, rtl }) {
 
 // One structured entry: drag handle, two-tone label, visibility + delete, and
 // an expandable inline edit form driven by the section schema.
-function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand, onChange, onDelete, onToggleVisible, dnd, isDropTarget }) {
+function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand, onChange, onDelete, onToggleVisible, dnd, dropSide }) {
   const schema = ENTRY_SCHEMAS[sectionKey];
   const primary = (entry[schema.primary] || "").trim();
   const secondary = schema.secondary ? (entry[schema.secondary] || "").trim() : "";
@@ -1171,13 +1171,19 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
   const nonDesc = schema.fields.filter((f) => f !== "description");
   return (
     <div
-      onDragOver={(e) => { e.preventDefault(); }}
-      onDrop={(e) => { e.preventDefault(); dnd.onDrop(index); }}
+      onDragOver={(e) => {
+        if (dnd.dragging() == null) return;
+        e.preventDefault();
+        const r = e.currentTarget.getBoundingClientRect();
+        dnd.onOver(index, e.clientY < r.top + r.height / 2 ? "above" : "below");
+      }}
+      onDrop={(e) => { e.preventDefault(); dnd.onDrop(); }}
       style={{ borderTop: index === 0 ? "none" : `1px solid ${SECTION_TOKENS.rowDivider}`,
-        background: isDropTarget ? `${C.accent}14` : "transparent", opacity: hidden ? 0.55 : 1 }}>
+        boxShadow: dropSide === "above" ? `inset 0 2px 0 0 ${C.accent}` : dropSide === "below" ? `inset 0 -2px 0 0 ${C.accent}` : "none",
+        opacity: hidden ? 0.55 : 1 }}>
       <div style={{ display: "flex", alignItems: "center", gap: SECTION_TOKENS.gap2, padding: `${SECTION_TOKENS.gap2}px ${SECTION_TOKENS.gap1}px` }}>
         <span draggable role="button" aria-label={eui.reorder} title={eui.reorder}
-          onDragStart={(e) => { e.dataTransfer.effectAllowed = "move"; dnd.onDragStart(index); }}
+          onDragStart={(e) => { e.dataTransfer.effectAllowed = "move"; try { e.dataTransfer.setData("text/plain", String(index)); } catch { /* IE guard */ } dnd.onDragStart(index); }}
           onDragEnd={() => dnd.onDragEnd()}
           style={{ cursor: "grab", color: C.text3, fontSize: 14, lineHeight: 1, userSelect: "none", flexShrink: 0, padding: "0 2px" }}>⠿</span>
         <button type="button" onClick={onToggleExpand}
@@ -1223,13 +1229,23 @@ function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onTogg
   const [expandedId, setExpandedId] = useState(null);
   const [editingHeading, setEditingHeading] = useState(false);
   const [headingDraft, setHeadingDraft] = useState(heading);
-  const [dropTarget, setDropTarget] = useState(null);
+  const [over, setOver] = useState(null); // { index, side: "above" | "below" }
   const dragFrom = useRef(null);
   const list = entries || [];
   const dnd = {
+    dragging: () => dragFrom.current,
     onDragStart: (i) => { dragFrom.current = i; },
-    onDragEnd: () => { dragFrom.current = null; setDropTarget(null); },
-    onDrop: (to) => { const from = dragFrom.current; if (from != null && from !== to) onReorder(from, to); dragFrom.current = null; setDropTarget(null); },
+    onDragEnd: () => { dragFrom.current = null; setOver(null); },
+    onOver: (index, side) => { if (dragFrom.current != null) setOver({ index, side }); },
+    onDrop: () => {
+      const from = dragFrom.current;
+      const o = over;
+      dragFrom.current = null; setOver(null);
+      if (from == null || !o) return;
+      let to = o.side === "below" ? o.index + 1 : o.index; // insertion slot in original array
+      if (from < to) to -= 1;                              // account for removal of dragged item
+      if (to !== from) onReorder(from, to);
+    },
   };
   const commitHeading = () => { setEditingHeading(false); const h = headingDraft.trim(); if (h && h !== heading) onEditHeading(h); else setHeadingDraft(heading); };
   return (
@@ -1265,15 +1281,14 @@ function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onTogg
         <div style={{ padding: `0 ${SECTION_TOKENS.padCard}px ${SECTION_TOKENS.padCard}px` }}>
           <div onDragOver={(e) => { e.preventDefault(); }}>
             {list.map((entry, i) => (
-              <div key={entry.id} onDragOver={() => setDropTarget(i)}>
-                <EntryRow sectionKey={sectionKey} entry={entry} index={i} eui={eui} rtl={rtl}
-                  expanded={expandedId === entry.id}
-                  onToggleExpand={() => setExpandedId((id) => (id === entry.id ? null : entry.id))}
-                  onChange={(ch) => onChangeEntry(entry.id, ch)}
-                  onDelete={() => onDeleteEntry(entry.id)}
-                  onToggleVisible={() => onToggleVisible(entry.id)}
-                  dnd={dnd} isDropTarget={dropTarget === i && dragFrom.current != null && dragFrom.current !== i} />
-              </div>
+              <EntryRow key={entry.id} sectionKey={sectionKey} entry={entry} index={i} eui={eui} rtl={rtl}
+                expanded={expandedId === entry.id}
+                onToggleExpand={() => setExpandedId((id) => (id === entry.id ? null : entry.id))}
+                onChange={(ch) => onChangeEntry(entry.id, ch)}
+                onDelete={() => onDeleteEntry(entry.id)}
+                onToggleVisible={() => onToggleVisible(entry.id)}
+                dnd={dnd}
+                dropSide={over && over.index === i && dragFrom.current != null && dragFrom.current !== i ? over.side : null} />
             ))}
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: SECTION_TOKENS.gap3 }}>
