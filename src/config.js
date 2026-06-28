@@ -21,7 +21,7 @@ export const ANALYTICS = {
   domain: env.VITE_PLAUSIBLE_DOMAIN || "",
   // Script + event endpoint. Override these to self-host or proxy Plausible
   // (recommended for ad-block resilience). See _headers for the matching CSP.
-  src: env.VITE_PLAUSIBLE_SRC || "https://plausible.io/js/script.manual.js",
+  src: env.VITE_PLAUSIBLE_SRC || "https://plausible.io/js/script.js",
 };
 
 // The single paid product: a one-time, NON-recurring pass that unlocks AI
