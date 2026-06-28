@@ -10,7 +10,8 @@
     "seo:sitemap": "node scripts/generate-sitemap.mjs",
     "seo:audit": "bash scripts/seo-audit.sh",
     "seo:compare": "python3 scripts/compare-seo-pages.py",
-    "seo:indexnow": "node scripts/submit-indexnow.mjs"
+    "seo:indexnow": "node scripts/submit-indexnow.mjs",
+    "validate:seo": "SEO_AUDIT_SKIP_HTTP=1 bash scripts/seo-audit.sh"
   },
   "dependencies": {
     "docx": "^9.7.1",

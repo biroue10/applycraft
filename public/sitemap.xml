@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://applycraft.io/</loc>
-    <lastmod>2026-06-27</lastmod>
+    <lastmod>2026-06-28</lastmod>
   </url>
   <url>
     <loc>https://applycraft.io/about/</loc>
@@ -29,10 +29,6 @@
     <lastmod>2026-06-27</lastmod>
   </url>
   <url>
-    <loc>https://applycraft.io/changelog/</loc>
-    <lastmod>2026-06-27</lastmod>
-  </url>
-  <url>
     <loc>https://applycraft.io/contact/</loc>
     <lastmod>2026-06-27</lastmod>
   </url>
@@ -43,6 +39,9 @@
   <url>
     <loc>https://applycraft.io/customer-service-resume/</loc>
     <lastmod>2026-06-27</lastmod>
+  </url>
+  <url>
+    <loc>https://applycraft.io/examples/</loc>
   </url>
   <url>
     <loc>https://applycraft.io/examples/canadian-resume-format/</loc>
@@ -110,14 +109,6 @@
   </url>
   <url>
     <loc>https://applycraft.io/resume-in-french/</loc>
-    <lastmod>2026-06-27</lastmod>
-  </url>
-  <url>
-    <loc>https://applycraft.io/roadmap/</loc>
-    <lastmod>2026-06-27</lastmod>
-  </url>
-  <url>
-    <loc>https://applycraft.io/status/</loc>
     <lastmod>2026-06-27</lastmod>
   </url>
   <url>

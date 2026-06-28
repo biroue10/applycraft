@@ -19,6 +19,7 @@ jobs:
       - run: npm ci
       - run: npm run seo:sitemap
       - run: npm run build
+      - run: npm run validate:seo
 
   indexnow:
     needs: build

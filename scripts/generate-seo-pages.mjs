@@ -54,6 +54,7 @@ function footer() {
         <div>
           <h2>Resources</h2>
           <a href="/help/">Help Center</a>
+          <a href="/examples/">Resume Examples</a>
           <a href="/resume-builder/">Resume Guide</a>
           <a href="/ats-resume-builder/">ATS Guide</a>
           <a href="/free-resume-builder/">Free Resume Builder</a>

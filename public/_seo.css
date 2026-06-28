@@ -1,4 +1,13 @@
 /*  ApplyCraft – shared SEO page styles  */
+
+/* ── Breadcrumbs ── */
+.breadcrumb{max-width:960px;margin:0 auto;padding:12px 24px 0;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  font-size:13px;color:#475569}
+.breadcrumb a{color:#6366F1;text-decoration:none}
+.breadcrumb a:hover{text-decoration:underline}
+.breadcrumb .bc-sep{color:#334155;user-select:none}
+.breadcrumb .bc-current{color:#94A3B8}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:#06080F;color:#E4EBF5;line-height:1.6}
 a{color:#818CF8;text-decoration:none}a:hover{text-decoration:underline}
