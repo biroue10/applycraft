@@ -824,6 +824,7 @@ export default function ResumeGenerator() {
   const [uploadDragOver, setUploadDragOver] = useState(false);
   const [appView, setAppView] = useState("landing");
   const [coachOpen, setCoachOpen] = useState(false);
+  const [comingSoonFeature, setComingSoonFeature] = useState(null);
   const [coachBullet, setCoachBullet] = useState("");
   const [coachBulletIdx, setCoachBulletIdx] = useState(0);
   const [coachAnswers, setCoachAnswers] = useState({});
@@ -2091,6 +2092,18 @@ Awards: ${form.awards}`;
                     alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13,
                     borderColor: tpl.accent, color: tpl.accent }}>
                   ↓ DOCX
+                </button>
+              </div>
+              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                <button onClick={() => setComingSoonFeature("Translate Resume")}
+                  style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
+                    alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13 }}>
+                  🌍 Translate resume
+                </button>
+                <button onClick={() => setComingSoonFeature("Spelling & Grammar Check")}
+                  style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
+                    alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13 }}>
+                  ✏️ Check spelling
                 </button>
               </div>
             )}
@@ -3502,6 +3515,32 @@ Awards: ${form.awards}`;
         </nav>
         <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)}
           onLogin={user => { setCurrentUser(user); setAuthModal(false); }} />
+
+        {/* Coming soon modal */}
+        {comingSoonFeature && (
+          <div onClick={() => setComingSoonFeature(null)}
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 9999,
+              display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+            <div onClick={e => e.stopPropagation()}
+              style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16,
+                padding: "36px 32px", maxWidth: 400, width: "100%", textAlign: "center",
+                boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}>
+              <div style={{ fontSize: 40, marginBottom: 16 }}>🚧</div>
+              <h3 style={{ margin: "0 0 10px", fontSize: 18, fontWeight: 700, color: C.text1 }}>
+                {comingSoonFeature}
+              </h3>
+              <p style={{ margin: "0 0 24px", fontSize: 14, color: C.text2, lineHeight: 1.6 }}>
+                This feature is not yet available. We're working on it and it will be ready soon.
+              </p>
+              <button onClick={() => setComingSoonFeature(null)}
+                style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
+                  padding: "10px 28px", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                  fontFamily: "inherit" }}>
+                Got it
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Hero */}
         <div style={{ background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${C.glow} 0%, transparent 70%)` }}>
