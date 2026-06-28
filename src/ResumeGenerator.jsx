@@ -3998,10 +3998,10 @@ Awards: ${form.awards}`;
 
         {/* Hero */}
         <div style={{ background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${C.glow} 0%, transparent 70%)` }}>
-          <div style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "108px 20px 48px" : "144px 24px 72px",
+          <div className="ac-hero-grid" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "108px 20px 48px" : "144px 24px 72px",
             display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.02fr 0.98fr",
             gap: isMobile ? 34 : 52, alignItems: "center" }}>
-            <div style={{ textAlign: isMobile ? "center" : "left" }}>
+            <div className="ac-hero-text" style={{ textAlign: isMobile ? "center" : "left" }}>
               <div style={{ animation: isMobile ? "none" : "acFadeUp 0.6s ease 0.05s both", display: "inline-block",
                 fontSize: 12, fontWeight: 600, letterSpacing: "2px",
                 textTransform: "uppercase", color: C.accent2, background: `${C.accent}18`,
@@ -4082,7 +4082,7 @@ Awards: ${form.awards}`;
               </div>
             </div>
             {!isMobile && (
-            <div style={{ animation: "acFadeUp 0.65s ease 0.42s both" }}>
+            <div className="ac-hero-visual" style={{ animation: "acFadeUp 0.65s ease 0.42s both" }}>
               <div style={{ background: C.surface, border: `1px solid ${C.border}`,
                 borderRadius: 10, padding: 12, boxShadow: "0 24px 70px rgba(0,0,0,0.42)" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",

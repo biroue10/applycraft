@@ -251,6 +251,21 @@
         outline-offset: 2px;
       }
 
+      /* ── Hero: keep the prerendered (pre-hydration) layout mobile-correct ──
+         Pages are prerendered with the desktop hero (two columns, 144px top
+         padding, live-preview column). Before the JS bundle hydrates, a phone
+         would otherwise paint that desktop layout and push the headline below
+         the fold. These rules mirror the post-hydration mobile values so the
+         headline sits near the top immediately, with no layout shift. */
+      @media (max-width: 768px) {
+        .ac-hero-grid {
+          grid-template-columns: 1fr !important;
+          padding: 108px 20px 48px !important;
+        }
+        .ac-hero-text { text-align: center !important; }
+        .ac-hero-visual { display: none !important; }
+      }
+
       /* ── Screen-reader only utility ── */
       .sr-only {
         position: absolute;
