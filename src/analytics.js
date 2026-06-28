@@ -22,24 +22,41 @@ const ALLOWED = new Set(Object.values(EVENTS));
 let loaded = false;
 
 // Inject the Plausible script once, in the browser only, and only when
-// analytics is enabled and a domain is configured.
+// analytics is enabled and a script src is configured.
+//
+// Supports the modern Plausible "tagged" snippet (src ".../pa-<id>.js", which
+// encodes the site and needs plausible.init()) as well as the classic
+// script.js (which uses a data-domain attribute). Set VITE_PLAUSIBLE_SRC to
+// the exact src Plausible gives you in the dashboard.
 export function initAnalytics() {
   if (loaded || typeof window === "undefined") return;
-  if (!ANALYTICS.enabled || !ANALYTICS.domain) return;
+  if (!ANALYTICS.enabled || !ANALYTICS.src) return;
   loaded = true;
 
-  // Stub queue so events fired before the script finishes loading are kept.
+  // Stub queue + init shim so events fired before the script finishes loading
+  // are preserved, matching Plausible's official inline snippet.
   window.plausible =
     window.plausible ||
     function () {
       (window.plausible.q = window.plausible.q || []).push(arguments);
     };
+  window.plausible.init =
+    window.plausible.init ||
+    function (i) {
+      window.plausible.o = i || {};
+    };
 
   const s = document.createElement("script");
-  s.defer = true;
-  s.setAttribute("data-domain", ANALYTICS.domain);
+  s.async = true;
   s.src = ANALYTICS.src;
+  // Only the classic script.js needs the domain attribute; the tagged script
+  // ignores it. Harmless to set when present.
+  if (ANALYTICS.domain) s.setAttribute("data-domain", ANALYTICS.domain);
   document.head.appendChild(s);
+
+  // No-op for classic script.js; starts auto pageview tracking for the
+  // tagged script.
+  window.plausible.init();
 }
 
 // Track one whitelisted event. `props` must be non-PII scalars only.
