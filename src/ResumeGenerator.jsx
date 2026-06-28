@@ -5450,7 +5450,7 @@ function ResumePaper({ tpl, result, rtl, placeholder = true, preview = false }) 
   const empty = placeholder && !hasContent;
   const data = result || { name: "—", title: "", contact: [], summary: "", sections: [] };
   const paper = { background: "#fff", color: "#1a1a1a",
-    borderRadius: preview ? 0 : 8, minHeight: preview ? 0 : 420,
+    borderRadius: preview ? 0 : 8, minHeight: preview ? 0 : 900,
     maxHeight: preview ? 906 : undefined,
     padding: preview ? 12 : 0,
     fontFamily: tpl.font, overflow: "hidden",
@@ -6771,7 +6771,7 @@ const footerLink = { color: C.text2, textDecoration: "none", transition: "color 
 function CoverLetterPaper({ tpl, data: d, preview = false }) {
   const paper = {
     background: "#fff", color: "#1a1a1a",
-    borderRadius: preview ? 0 : 8, minHeight: preview ? 0 : 500,
+    borderRadius: preview ? 0 : 8, minHeight: preview ? 0 : 900,
     maxHeight: preview ? 906 : undefined,
     padding: preview ? 12 : 0,
     fontFamily: tpl.font, overflow: "hidden",
