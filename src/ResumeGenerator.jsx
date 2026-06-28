@@ -2167,32 +2167,34 @@ Awards: ${form.awards}`;
               );
             })()}
             {result && (
-              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                <button onClick={downloadPDF}
-                  style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
-                    alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13,
-                    borderColor: tpl.accent, color: tpl.accent }}>
-                  ↓ PDF
-                </button>
-                <button onClick={downloadDOCX}
-                  style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
-                    alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13,
-                    borderColor: tpl.accent, color: tpl.accent }}>
-                  ↓ DOCX
-                </button>
-              </div>
-              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                <button onClick={() => setComingSoonFeature("Translate Resume")}
-                  style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
-                    alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13 }}>
-                  🌍 Translate resume
-                </button>
-                <button onClick={() => setComingSoonFeature("Spelling & Grammar Check")}
-                  style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
-                    alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13 }}>
-                  ✏️ Check spelling
-                </button>
-              </div>
+              <>
+                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                  <button onClick={downloadPDF}
+                    style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
+                      alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13,
+                      borderColor: tpl.accent, color: tpl.accent }}>
+                    ↓ PDF
+                  </button>
+                  <button onClick={downloadDOCX}
+                    style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
+                      alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13,
+                      borderColor: tpl.accent, color: tpl.accent }}>
+                    ↓ DOCX
+                  </button>
+                </div>
+                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                  <button onClick={() => setComingSoonFeature("Translate Resume")}
+                    style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
+                      alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13 }}>
+                    🌍 Translate resume
+                  </button>
+                  <button onClick={() => setComingSoonFeature("Spelling & Grammar Check")}
+                    style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
+                      alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13 }}>
+                    ✏️ Check spelling
+                  </button>
+                </div>
+              </>
             )}
           </div>
 
