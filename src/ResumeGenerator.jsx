@@ -3936,7 +3936,7 @@ Awards: ${form.awards}`;
         <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
         {/* Nav */}
         <nav style={{ position: "fixed", top: 0,
-          left: 0, right: 0, zIndex: 100, background: C.bg + "ee", backdropFilter: "blur(12px)" }}>
+          left: 0, right: 0, zIndex: 100, background: C.bg + "cc", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}>
           <div className="ac-nav-inner" style={{ maxWidth: 1200, margin: "0 auto", padding: isMobile ? "0 16px" : "0 32px", height: isMobile ? 60 : 76,
             display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <button className="ac-nav-logo" onClick={() => setAppView("landing")}
