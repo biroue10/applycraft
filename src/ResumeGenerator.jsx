@@ -855,7 +855,7 @@ const defaultMaster = {
 
 export default function ResumeGenerator() {
   const [navPage, setNavPage] = useState("resume");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sideSearch, setSideSearch] = useState("");
   const [tplSearch, setTplSearch] = useState("");
   const [tplFilter, setTplFilter] = useState("recommended");
