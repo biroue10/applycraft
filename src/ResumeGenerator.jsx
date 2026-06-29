@@ -332,6 +332,178 @@ const TEMPLATES = [
   { id: "pulse",    name: "Pulse",    tag: "Gradient left bar, modern startup",      accent: "#8b5cf6", font: "'Inter', system-ui, sans-serif" },
 ];
 
+const TEMPLATE_GALLERY_META = {
+  classic: {
+    description: "A traditional one-column resume with formal typography and generous section spacing.",
+    bestFor: "Best for finance, government, legal, education, and conservative applications.",
+    attributes: ["ATS-friendly", "One-column", "Traditional"],
+    layout: "One-column",
+    filters: ["ats", "one", "traditional", "rtl"],
+  },
+  modern: {
+    description: "A balanced two-column layout designed for clear scanning and flexible content.",
+    bestFor: "Best for product, technology, marketing, operations, and general professional roles.",
+    attributes: ["Recommended", "ATS-friendly", "Two-column"],
+    layout: "Two-column",
+    filters: ["recommended", "ats", "two", "modern", "rtl"],
+  },
+  minimal: {
+    description: "A spacious one-column layout that keeps attention on experience and achievements.",
+    bestFor: "Best for writing, consulting, research, and text-focused applications.",
+    attributes: ["ATS-friendly", "One-column", "Minimal"],
+    layout: "One-column",
+    filters: ["recommended", "ats", "one", "modern", "rtl"],
+  },
+  bold: {
+    description: "A confident header-led design with strong contrast and a compact content rhythm.",
+    bestFor: "Best for sales, leadership, brand, and applications with concise experience.",
+    attributes: ["Compact", "Strong header", "RTL-friendly"],
+    layout: "One-column",
+    filters: ["compact", "modern", "rtl"],
+  },
+  elegant: {
+    description: "A refined serif resume with subtle rules and a polished editorial feel.",
+    bestFor: "Best for legal, academic, editorial, executive, and senior professional roles.",
+    attributes: ["One-column", "Traditional", "Refined"],
+    layout: "One-column",
+    filters: ["one", "traditional"],
+  },
+  executive: {
+    description: "A structured leadership resume with strong section hierarchy and restrained accents.",
+    bestFor: "Best for senior professionals, management, finance, and leadership roles.",
+    attributes: ["Recommended", "Two-column", "Executive"],
+    layout: "Two-column",
+    filters: ["recommended", "two", "traditional", "modern"],
+  },
+  creative: {
+    description: "A distinctive design with a color panel and clear separation for profile details.",
+    bestFor: "Best for design, brand, communications, and creative portfolios.",
+    attributes: ["Two-column", "Creative", "RTL-friendly"],
+    layout: "Two-column",
+    filters: ["two", "modern", "rtl"],
+  },
+  tech: {
+    description: "A technical visual style with monospace details and a developer-focused tone.",
+    bestFor: "Best for engineering portfolios and technical profiles that need a distinctive look.",
+    attributes: ["Compact", "Technical", "Distinctive"],
+    layout: "One-column",
+    filters: ["compact", "modern"],
+  },
+  sharp: {
+    description: "A crisp corporate layout with black-and-white hierarchy and minimal ornament.",
+    bestFor: "Best for consulting, business, finance, and formal applications.",
+    attributes: ["ATS-friendly", "Compact", "Corporate"],
+    layout: "One-column",
+    filters: ["ats", "compact", "traditional"],
+  },
+  slate: {
+    description: "A polished sidebar layout with a dark navigation column and warm accents.",
+    bestFor: "Best for experienced professionals who want a structured, premium presentation.",
+    attributes: ["Two-column", "Compact", "Premium"],
+    layout: "Two-column",
+    filters: ["two", "compact", "modern"],
+  },
+  prism: {
+    description: "A modern resume with an energetic header treatment and clean content blocks.",
+    bestFor: "Best for startup, growth, product, and marketing applications.",
+    attributes: ["Two-column", "Modern", "Expressive"],
+    layout: "Two-column",
+    filters: ["two", "modern"],
+  },
+  compact: {
+    description: "A high-density two-column template built to fit more experience on one page.",
+    bestFor: "Best for content-heavy resumes, contractors, and experienced applicants.",
+    attributes: ["ATS-friendly", "Two-column", "Compact"],
+    layout: "Two-column",
+    filters: ["recommended", "ats", "two", "compact", "rtl"],
+  },
+  horizon: {
+    description: "A centered banner header with strong first-impression hierarchy.",
+    bestFor: "Best for management, operations, sales, and general professional resumes.",
+    attributes: ["Two-column", "Modern", "Header-led"],
+    layout: "Two-column",
+    filters: ["two", "modern"],
+  },
+  nordic: {
+    description: "A calm Scandinavian-inspired resume with wide margins and a light editorial tone.",
+    bestFor: "Best for research, design strategy, consulting, and academic-adjacent roles.",
+    attributes: ["One-column", "Minimal", "Refined"],
+    layout: "One-column",
+    filters: ["one", "traditional"],
+  },
+  dusk: {
+    description: "A dark paper concept for portfolios and profiles where presentation matters.",
+    bestFor: "Best for creative portfolios and non-traditional applications.",
+    attributes: ["Distinctive", "Modern", "Portfolio"],
+    layout: "One-column",
+    filters: ["modern"],
+  },
+  vertex: {
+    description: "A reversed two-column layout with strong contact hierarchy and crisp dividers.",
+    bestFor: "Best for product, engineering, design, and modern business roles.",
+    attributes: ["Two-column", "Modern", "Structured"],
+    layout: "Two-column",
+    filters: ["two", "modern"],
+  },
+  academy: {
+    description: "An academic CV format with classic typography and formal section rules.",
+    bestFor: "Best for education, research, publications, and academic applications.",
+    attributes: ["ATS-friendly", "One-column", "Academic"],
+    layout: "One-column",
+    filters: ["recommended", "ats", "one", "traditional"],
+  },
+  spark: {
+    description: "A vibrant professional layout with visible section bands and compact structure.",
+    bestFor: "Best for sales, marketing, startups, and energetic professional profiles.",
+    attributes: ["Two-column", "Compact", "Modern"],
+    layout: "Two-column",
+    filters: ["two", "compact", "modern"],
+  },
+  stone: {
+    description: "A warm gray serif template with understated hierarchy and conservative spacing.",
+    bestFor: "Best for consulting, administration, policy, and traditional applications.",
+    attributes: ["One-column", "Traditional", "Refined"],
+    layout: "One-column",
+    filters: ["one", "traditional"],
+  },
+  ivy: {
+    description: "A British CV-inspired layout with double rules and formal serif typography.",
+    bestFor: "Best for academic, legal, education, and UK-style applications.",
+    attributes: ["One-column", "Traditional", "CV style"],
+    layout: "One-column",
+    filters: ["one", "traditional"],
+  },
+  carbon: {
+    description: "A charcoal sidebar design with square profile hierarchy and concise sections.",
+    bestFor: "Best for technology, operations, leadership, and content-dense resumes.",
+    attributes: ["Two-column", "Compact", "Modern"],
+    layout: "Two-column",
+    filters: ["two", "compact", "modern"],
+  },
+  pulse: {
+    description: "A startup-ready layout with a gradient rail and fast-scanning content blocks.",
+    bestFor: "Best for product, growth, technology, and modern business roles.",
+    attributes: ["Two-column", "Modern", "Flexible"],
+    layout: "Two-column",
+    filters: ["two", "modern"],
+  },
+};
+
+const TEMPLATE_QUICK_FILTERS = [
+  { id: "all", label: "All" },
+  { id: "recommended", label: "Recommended" },
+  { id: "ats", label: "ATS-friendly" },
+  { id: "one", label: "One-column" },
+  { id: "two", label: "Two-column" },
+];
+
+const TEMPLATE_MORE_FILTERS = [
+  { id: "compact", label: "Compact" },
+  { id: "traditional", label: "Traditional" },
+  { id: "modern", label: "Modern" },
+  { id: "rtl", label: "RTL-friendly" },
+];
+
 // ── Per-template thumbnail samples (6 visible slots on landing) ───
 const THUMB_SAMPLES = {
   classic: {
@@ -2367,6 +2539,120 @@ function AddContentModal({ open, onClose, addedSet, onAdd, sectionName, eui, rtl
   );
 }
 
+function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl }) {
+  const dialogRef = useRef(null);
+  useEffect(() => {
+    if (!template || typeof document === "undefined") return;
+    const prev = document.activeElement;
+    const focusables = () => (dialogRef.current
+      ? Array.from(dialogRef.current.querySelectorAll('button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'))
+      : []);
+    setTimeout(() => focusables()[0]?.focus(), 20);
+    const onKey = (e) => {
+      if (e.key === "Escape") { e.preventDefault(); onClose(); return; }
+      if (e.key === "Tab") {
+        const f = focusables(); if (!f.length) return;
+        const i = f.indexOf(document.activeElement);
+        if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+        else if (!e.shiftKey && (i === f.length - 1 || i === -1)) { e.preventDefault(); f[0].focus(); }
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      if (prev && prev.focus) prev.focus();
+    };
+  }, [template, onClose]);
+
+  if (!template) return null;
+  const info = meta || {
+    description: template.tag || "Professional layout with clear sections and export support.",
+    bestFor: "Best for general professional applications.",
+    attributes: ["Professional", "Flexible"],
+    layout: "Flexible",
+  };
+  const sample = THUMB_SAMPLES[template.id] || {};
+  const isRtlPreview = sample.rtl || rtl;
+  return (
+    <div onClick={onClose} dir={rtl ? "rtl" : "ltr"}
+      style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,0.68)",
+        display: "flex", alignItems: isMobile ? "stretch" : "center", justifyContent: "center",
+        padding: isMobile ? 0 : 24 }}>
+      <div ref={dialogRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true"
+        aria-labelledby="template-preview-title"
+        style={{ width: "100%", maxWidth: isMobile ? "100%" : 1040, maxHeight: isMobile ? "100vh" : "88vh",
+          overflowY: "auto", background: C.surface, border: `1px solid ${C.border}`,
+          borderRadius: isMobile ? 0 : 18, boxShadow: "0 30px 90px rgba(0,0,0,0.55)" }}>
+        <div style={{ position: "sticky", top: 0, zIndex: 2, background: `${C.surface}f5`,
+          backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
+          borderBottom: `1px solid ${C.border}`, padding: isMobile ? "14px 16px" : "16px 20px",
+          display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: "1.2px", textTransform: "uppercase",
+              color: C.accent2, marginBottom: 4 }}>Template preview</div>
+            <h2 id="template-preview-title" style={{ margin: 0, color: C.text1, fontSize: isMobile ? 20 : 24,
+              letterSpacing: "-0.3px", lineHeight: 1.15 }}>{template.name}</h2>
+          </div>
+          <button type="button" onClick={() => onUse(template)}
+            style={{ minHeight: 42, background: C.grad, color: "#fff", border: "none", borderRadius: 9,
+              padding: isMobile ? "0 12px" : "0 18px", fontSize: 13.5, fontWeight: 900,
+              cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+            Use this template
+          </button>
+          <button type="button" onClick={onClose} aria-label="Close template preview"
+            style={{ width: 42, height: 42, borderRadius: 9, border: `1px solid ${C.border}`,
+              background: "transparent", color: C.text2, cursor: "pointer", fontSize: 22, lineHeight: 1,
+              fontFamily: "inherit" }}>×</button>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 0.72fr) minmax(260px, 0.28fr)",
+          gap: isMobile ? 18 : 24, padding: isMobile ? 16 : 24, alignItems: "start" }}>
+          <div style={{ background: "#e8edf5", borderRadius: 16, padding: isMobile ? 12 : 22,
+            overflow: "auto", display: "flex", justifyContent: "center" }}>
+            <div style={{ width: "min(100%, 700px)", minWidth: isMobile ? 0 : 520 }}>
+              <ResumePaper tpl={template}
+                result={sample.result || SAMPLE_RESUME}
+                rtl={isRtlPreview}
+                placeholder={false}
+                preview />
+            </div>
+          </div>
+          <aside style={{ display: "grid", gap: 14 }}>
+            <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 14, padding: 16 }}>
+              <h3 style={{ margin: "0 0 8px", color: C.text1, fontSize: 15.5 }}>Why choose {template.name}</h3>
+              <p style={{ margin: "0 0 12px", color: C.text2, fontSize: 13.5, lineHeight: 1.6 }}>{info.description}</p>
+              <p style={{ margin: 0, color: C.text3, fontSize: 13, lineHeight: 1.55 }}>{info.bestFor}</p>
+            </div>
+            <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 14, padding: 16 }}>
+              <h3 style={{ margin: "0 0 10px", color: C.text1, fontSize: 15.5 }}>Template details</h3>
+              <div style={{ display: "grid", gap: 8 }}>
+                {[
+                  ["Layout", info.layout || "Flexible"],
+                  ["ATS status", (info.attributes || []).includes("ATS-friendly") ? "ATS-friendly structure" : "Professional structure"],
+                  ["RTL support", (info.filters || []).includes("rtl") ? "Supported" : "Standard left-to-right preview"],
+                ].map(([label, value]) => (
+                  <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 12,
+                    borderBottom: `1px solid ${C.border}`, paddingBottom: 8 }}>
+                    <span style={{ color: C.text3, fontSize: 12.5 }}>{label}</span>
+                    <span style={{ color: C.text1, fontSize: 12.5, fontWeight: 800, textAlign: rtl ? "left" : "right" }}>{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {(info.attributes || []).map((attr) => (
+                <span key={attr} style={{ border: `1px solid ${C.border}`, background: C.elevated,
+                  color: C.text2, borderRadius: 999, padding: "5px 9px", fontSize: 12, fontWeight: 800 }}>
+                  {attr}
+                </span>
+              ))}
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const defaultMaster = {
   name: "", email: "", phone: "", location: "", linkedin: "", website: "",
   headline: "", summary: "",
@@ -2380,6 +2666,8 @@ export default function ResumeGenerator() {
   const [sideSearch, setSideSearch] = useState("");
   const [tplSearch, setTplSearch] = useState("");
   const [tplFilter, setTplFilter] = useState("recommended");
+  const [templateFiltersOpen, setTemplateFiltersOpen] = useState(false);
+  const [templatePreview, setTemplatePreview] = useState(null);
   const [step, setStep] = useState("templates");
   const [selectedLang, setSelectedLang] = useState(() => WORLD_LANGUAGES.find(l => l.code === "en"));
   const [tpl, setTpl] = useState(null);
@@ -3104,118 +3392,310 @@ Awards: ${form.awards}`;
     }
   }
 
-  const TEMPLATE_FILTERS = [
-    { id: "recommended", label: "Recommended" },
-    { id: "ats", label: "ATS-friendly" },
-    { id: "modern", label: "Modern" },
-    { id: "traditional", label: "Traditional" },
-    { id: "compact", label: "Compact" },
-    { id: "rtl", label: "RTL-friendly" },
-  ];
-  const TEMPLATE_META = {
-    classic: "Traditional one-column layout. Strong for conservative roles and long resumes.",
-    modern: "Recommended two-column layout. Good balance of scanability, ATS clarity, and visual polish.",
-    minimal: "Quiet one-column layout for focused, text-heavy resumes.",
-    bold: "High-contrast layout for confident applications with shorter content.",
-    elegant: "Refined serif style for academic, legal, or senior professional roles.",
-    executive: "Structured senior-profile layout with strong section hierarchy.",
-    creative: "Expressive layout for design, brand, and creative roles.",
-    tech: "Technical visual style. Best for tech portfolios, not the safest ATS default.",
-    compact: "Dense two-column layout for fitting more content on one page.",
-  };
   const filterTemplates = (template) => {
     if (template.blank) return false;
-    if (tplFilter === "recommended") return ["modern", "minimal", "classic", "compact", "executive", "academy"].includes(template.id);
-    if (tplFilter === "ats") return ["modern", "minimal", "classic", "compact", "academy", "sharp"].includes(template.id);
-    if (tplFilter === "traditional") return ["classic", "elegant", "academy", "ivy", "stone", "sharp"].includes(template.id);
-    if (tplFilter === "modern") return ["modern", "minimal", "executive", "vertex", "horizon", "carbon", "pulse"].includes(template.id);
-    if (tplFilter === "compact") return ["compact", "sharp", "slate", "carbon", "tech"].includes(template.id);
-    if (tplFilter === "rtl") return ["classic", "modern", "minimal", "bold", "creative", "compact"].includes(template.id);
-    return true;
+    const meta = TEMPLATE_GALLERY_META[template.id] || {
+      description: template.tag || "",
+      bestFor: "",
+      attributes: ["Professional", "Flexible"],
+      filters: [],
+    };
+    const q = tplSearch.trim().toLowerCase();
+    const filterOk = tplFilter === "all" || meta.filters.includes(tplFilter) || (tplFilter === "recommended" && template.id === RECOMMENDED_TEMPLATE_ID);
+    if (!filterOk) return false;
+    if (!q) return true;
+    return [
+      template.name,
+      template.tag,
+      meta.description,
+      meta.bestFor,
+      meta.layout,
+      ...(meta.attributes || []),
+      ...(meta.filters || []),
+    ].filter(Boolean).join(" ").toLowerCase().includes(q);
   };
 
+  const visibleTemplates = TEMPLATES
+    .filter(filterTemplates)
+    .sort((a, b) => (a.id === RECOMMENDED_TEMPLATE_ID ? -1 : b.id === RECOMMENDED_TEMPLATE_ID ? 1 : 0));
+
+  const isTemplateGalleryView = navPage === "resume" && step === "templates";
+  const primaryToolNav = [
+    { id: "resume", label: "Resume" },
+    { id: "cover", label: "Cover Letter" },
+    { id: "tracker", label: "Job Tracker" },
+    { id: "ats", label: "ATS Checker" },
+  ];
+
   const mainContent = step === "templates" ? (
-    <div style={{ ...rShell }}>
-      <PageHeader
-        eyebrow="Resume Builder"
-        icon="📄"
-        title={t.heading}
-        sub="Start with the recommended template now, or browse by style. You can switch later without losing content."
-        pill="Recommended default"
-        isMobile={isMobile}
-      />
-      <div style={{ background: C.elevated, border: `1px solid ${C.border}`,
-        borderRadius: 8, padding: 16, marginBottom: 16, display: "flex",
-        alignItems: "center", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 800, color: C.text1, marginBottom: 4 }}>
-            Recommended: Modern
+    <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
+      <header style={{ position: "sticky", top: 0, zIndex: 50, margin: isMobile ? "0 -4px 24px" : "0 0 42px",
+        background: `linear-gradient(180deg, ${C.bg}f7 0%, ${C.bg}e8 100%)`,
+        backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)",
+        borderBottom: `1px solid ${C.border}` }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto", minHeight: isMobile ? 64 : 72,
+          padding: isMobile ? "0 12px" : "0 28px", display: "flex", alignItems: "center", gap: 14 }}>
+          <button type="button" onClick={() => setAppView("landing")}
+            style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer",
+              display: "flex", flexDirection: "column", alignItems: rtl ? "flex-end" : "flex-start", fontFamily: "inherit" }}>
+            <span style={{ fontSize: isMobile ? 18 : 21, fontWeight: 900, letterSpacing: "-0.5px",
+              background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ApplyCraft</span>
+            {!isMobile && <span style={{ fontSize: 11.5, color: C.text3, marginTop: 1 }}>Resume Builder</span>}
+          </button>
+          {!isMobile && (
+            <nav aria-label="Primary tools" style={{ display: "flex", gap: 4, marginLeft: rtl ? 0 : 18, marginRight: rtl ? 18 : 0 }}>
+              {primaryToolNav.map((item) => (
+                <button key={item.id} type="button" onClick={() => setNavPage(item.id)}
+                  aria-current={navPage === item.id ? "page" : undefined}
+                  style={{ border: "none", borderRadius: 8, padding: "9px 12px",
+                    background: navPage === item.id ? `${C.accent}18` : "transparent",
+                    color: navPage === item.id ? C.accent2 : C.text2, cursor: "pointer",
+                    fontSize: 13.5, fontWeight: navPage === item.id ? 800 : 650, fontFamily: "inherit" }}>
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          )}
+          <div style={{ flex: 1 }} />
+          {!isMobile && (
+            <span title="Saved locally in this browser and not backed up to the cloud."
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
+              <LineIcon name="check" size={14} color={C.text3} /> Saved locally
+            </span>
+          )}
+          <LanguageDropdown
+            selected={selectedLang}
+            onSelect={(l) => {
+              setSelectedLang(l);
+              setPhoneCode(LANG_CODE[l.code] || "+1");
+            }}
+          />
+          {isMobile && (
+            <button type="button" onClick={() => setSidebarOpen(true)} aria-label="Open tools menu"
+              style={{ width: 44, height: 44, borderRadius: 10, border: `1px solid ${C.border}`,
+                background: C.surface, color: C.text2, cursor: "pointer", fontFamily: "inherit",
+                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>
+              ☰
+            </button>
+          )}
+        </div>
+      </header>
+
+      <section aria-labelledby="template-gallery-title" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "0 4px" : "0 28px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 0.92fr) minmax(300px, 0.48fr)",
+          gap: isMobile ? 22 : 42, alignItems: "end", marginBottom: isMobile ? 22 : 30 }}>
+          <div>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999,
+              background: `${C.accent}12`, border: `1px solid ${C.accent}2E`,
+              color: C.accent2, padding: "5px 12px", fontSize: 11, fontWeight: 900,
+              letterSpacing: "1.4px", textTransform: "uppercase", marginBottom: 14 }}>
+              Resume templates
+            </div>
+            <h1 id="template-gallery-title" style={{ margin: "0 0 12px", color: C.text1,
+              fontSize: isMobile ? 30 : 40, lineHeight: 1.08, letterSpacing: "-0.8px", fontWeight: 900 }}>
+              Choose a resume that fits your career
+            </h1>
+            <p style={{ margin: 0, maxWidth: 650, color: C.text2, fontSize: isMobile ? 15 : 16.5, lineHeight: 1.65 }}>
+              Start with a professionally designed, ATS-friendly template. You can change colors, sections, and layout at any time.
+            </p>
           </div>
-          <div style={{ fontSize: 12.5, color: C.text2, lineHeight: 1.55 }}>
-            ATS-conscious, easy to scan, and flexible for one-page or two-page resumes.
+          <div style={{ display: "grid", gap: 10, justifyContent: isMobile ? "stretch" : "end" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: isMobile ? "flex-start" : "flex-end",
+              color: C.text2, fontSize: 13.5 }}>
+              <LineIcon name="lock" size={16} color={C.accent2} />
+              <span>All templates are free to customize.</span>
+            </div>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: isMobile ? "flex-start" : "flex-end" }}>
+              {["PDF export", "DOCX export", "RTL support"].map((item) => (
+                <span key={item} style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text3,
+                  borderRadius: 999, padding: "6px 10px", fontSize: 12.5, fontWeight: 700 }}>
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
-        <button onClick={() => startWithTemplate(recommendedTemplate, "recommended_template")}
-          style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 6,
-            padding: "10px 16px", fontSize: 13.5, fontWeight: 800, cursor: "pointer",
-            fontFamily: "inherit", width: isMobile ? "100%" : undefined }}>
-          Use recommended template
-        </button>
-      </div>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-        {TEMPLATE_FILTERS.map((filter) => (
-          <button key={filter.id} onClick={() => setTplFilter(filter.id)}
-            style={{ border: `1px solid ${tplFilter === filter.id ? C.accent : C.border}`,
-              background: tplFilter === filter.id ? `${C.accent}18` : C.elevated,
-              color: tplFilter === filter.id ? C.accent2 : C.text2,
-              borderRadius: 999, padding: "6px 12px", fontSize: 12.5, fontWeight: 700,
-              cursor: "pointer", fontFamily: "inherit" }}>
-            {filter.label}
-          </button>
-        ))}
-      </div>
-      <div style={{ ...tplGrid, gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, minmax(0, 1fr))", gap: isMobile ? 12 : 28 }}>
-        {TEMPLATES.filter(filterTemplates).map((tp) => (
-          <button key={tp.id} onClick={() => startWithTemplate(tp)}
-            aria-label={`Use ${tp.name} template${tp.tag ? ` — ${tp.tag}` : ""}`}
-            style={{ ...tplCard, border: tp.id === RECOMMENDED_TEMPLATE_ID ? `1.5px solid ${C.accent}` : tplCard.border }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
-            <ThumbPreview tp={tp} isMobile={isMobile} />
-            <div style={{ padding: isMobile ? "6px 6px" : "10px 4px", textAlign: rtl ? "right" : "left",
-              visibility: tp.blank ? "hidden" : "visible" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                <div style={{ fontWeight: 700, fontSize: isMobile ? 12 : 14, color: C.text1 }}>{tp.name}</div>
-                {tp.id === RECOMMENDED_TEMPLATE_ID && <span style={{ fontSize: 9, color: C.accent2,
-                  background: `${C.accent}18`, borderRadius: 999, padding: "1px 5px", fontWeight: 800 }}>
-                  ★
-                </span>}
+
+        <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: isMobile ? 18 : 22, marginBottom: isMobile ? 18 : 26 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "minmax(260px, 360px) 1fr",
+            gap: 12, alignItems: "center" }}>
+            <label style={{ display: "block" }}>
+              <span className="sr-only">Search templates</span>
+              <input value={tplSearch} onChange={(e) => setTplSearch(e.target.value)}
+                placeholder="Search templates"
+                style={{ width: "100%", minHeight: 46, boxSizing: "border-box", borderRadius: 10,
+                  border: `1px solid ${C.border}`, background: C.surface, color: C.text1,
+                  padding: "0 14px", fontSize: 14, fontFamily: "inherit", outline: "none" }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.boxShadow = `0 0 0 3px ${C.accent}24`; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.boxShadow = "none"; }}
+              />
+            </label>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: isMobile ? "flex-start" : "flex-end" }}>
+              {TEMPLATE_QUICK_FILTERS.map((filter) => {
+                const active = tplFilter === filter.id;
+                return (
+                  <button key={filter.id} type="button" onClick={() => setTplFilter(filter.id)}
+                    aria-pressed={active}
+                    style={{ minHeight: 38, border: `1px solid ${active ? C.accent : C.border}`,
+                      background: active ? `${C.accent}1F` : "transparent",
+                      color: active ? C.accent2 : C.text2, borderRadius: 999, padding: "0 13px",
+                      fontSize: 12.8, fontWeight: 800, cursor: "pointer", fontFamily: "inherit",
+                      display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    {active && <LineIcon name="check" size={13} color={C.accent2} />}
+                    {filter.label}
+                  </button>
+                );
+              })}
+              <div style={{ position: "relative" }}>
+                <button type="button" onClick={() => setTemplateFiltersOpen((open) => !open)}
+                  aria-expanded={templateFiltersOpen}
+                  style={{ minHeight: 38, border: `1px solid ${TEMPLATE_MORE_FILTERS.some(f => f.id === tplFilter) ? C.accent : C.border}`,
+                    background: TEMPLATE_MORE_FILTERS.some(f => f.id === tplFilter) ? `${C.accent}1F` : C.surface,
+                    color: C.text2, borderRadius: 999, padding: "0 13px", fontSize: 12.8,
+                    fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                  Filters
+                </button>
+                {templateFiltersOpen && (
+                  <div role="menu" aria-label="More template filters"
+                    style={{ position: "absolute", right: rtl ? "auto" : 0, left: rtl ? 0 : "auto", top: "calc(100% + 8px)",
+                      minWidth: 190, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
+                      boxShadow: "0 18px 48px rgba(0,0,0,0.42)", padding: 6, zIndex: 20 }}>
+                    {TEMPLATE_MORE_FILTERS.map((filter) => {
+                      const active = tplFilter === filter.id;
+                      return (
+                        <button key={filter.id} type="button" role="menuitemcheckbox" aria-checked={active}
+                          onClick={() => { setTplFilter(filter.id); setTemplateFiltersOpen(false); }}
+                          style={{ width: "100%", display: "flex", alignItems: "center", gap: 8,
+                            border: "none", background: active ? `${C.accent}18` : "transparent",
+                            color: active ? C.accent2 : C.text2, borderRadius: 8, padding: "9px 10px",
+                            textAlign: rtl ? "right" : "left", cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>
+                          <LineIcon name={active ? "check" : "document"} size={14} color={active ? C.accent2 : C.text3} />
+                          {filter.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-              {!isMobile && <div style={{ fontSize: 12, color: C.text2, marginTop: 2 }}>{tp.tag}</div>}
-              {!isMobile && (
-                <div style={{ fontSize: 11, color: C.text3, marginTop: 6, lineHeight: 1.45 }}>
-                  {TEMPLATE_META[tp.id] || "Professional layout with clear sections and export support."}
-                </div>
-              )}
-              {!isMobile && (
-                <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginTop: 8 }}>
-                  <span style={{ fontSize: 9.5, color: C.text3, border: `1px solid ${C.border}`, borderRadius: 999, padding: "1px 6px" }}>
-                    {["modern","compact","creative","vertex","slate","carbon","pulse"].includes(tp.id) ? "Two column" : "One column"}
-                  </span>
-                  <span style={{ fontSize: 9.5, color: C.text3, border: `1px solid ${C.border}`, borderRadius: 999, padding: "1px 6px" }}>
-                    ATS-conscious
-                  </span>
-                  {["classic","modern","minimal","bold","creative","compact"].includes(tp.id) && (
-                    <span style={{ fontSize: 9.5, color: C.text3, border: `1px solid ${C.border}`, borderRadius: 999, padding: "1px 6px" }}>
-                      RTL-friendly
-                    </span>
-                  )}
-                </div>
+              {(tplSearch || tplFilter !== "all") && (
+                <button type="button" onClick={() => { setTplSearch(""); setTplFilter("all"); }}
+                  style={{ minHeight: 38, border: "none", background: "transparent", color: C.text3,
+                    padding: "0 8px", fontSize: 12.8, fontWeight: 750, cursor: "pointer", fontFamily: "inherit" }}>
+                  Clear
+                </button>
               )}
             </div>
-          </button>
-        ))}
-      </div>
+          </div>
+        </div>
+
+        {visibleTemplates.length === 0 ? (
+          <div style={{ border: `1px solid ${C.border}`, background: C.surface, borderRadius: 16,
+            padding: isMobile ? "28px 18px" : "42px", textAlign: "center", color: C.text2 }}>
+            <h2 style={{ margin: "0 0 8px", color: C.text1, fontSize: 20 }}>No templates found</h2>
+            <p style={{ margin: "0 0 18px", fontSize: 14 }}>Try removing a filter or searching with a broader term.</p>
+            <button type="button" onClick={() => { setTplSearch(""); setTplFilter("all"); }}
+              style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
+                padding: "11px 18px", fontSize: 13.5, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
+              Clear filters
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
+            gap: isMobile ? 16 : 22 }}>
+            {visibleTemplates.map((tp) => {
+              const meta = TEMPLATE_GALLERY_META[tp.id] || {
+                description: tp.tag || "Professional layout with clear sections and export support.",
+                bestFor: "Best for general professional applications.",
+                attributes: ["Professional", "Flexible"],
+                layout: "Flexible",
+              };
+              const recommended = tp.id === RECOMMENDED_TEMPLATE_ID;
+              const selected = tpl?.id === tp.id;
+              return (
+                <article key={tp.id} aria-labelledby={`template-${tp.id}-title`}
+                  style={{ position: "relative", display: "flex", flexDirection: "column", minWidth: 0,
+                    borderRadius: 16, border: `1px solid ${recommended ? `${C.accent}70` : selected ? C.accent : C.border}`,
+                    background: recommended ? `linear-gradient(180deg, ${C.elevated} 0%, ${C.surface} 100%)` : C.surface,
+                    boxShadow: recommended ? `0 22px 60px ${C.accent}18` : "0 14px 36px rgba(0,0,0,0.22)",
+                    overflow: "hidden", transform: "translateZ(0)", gridColumn: !isMobile && recommended ? "span 1" : undefined }}>
+                  <div style={{ padding: isMobile ? 14 : 16, background: "linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015))",
+                    borderBottom: `1px solid ${C.border}` }}>
+                    <div style={{ borderRadius: 12, overflow: "hidden", background: "#eef2f7",
+                      boxShadow: "0 18px 38px rgba(0,0,0,0.24)" }}>
+                      <ThumbPreview tp={tp} isMobile={isMobile} />
+                    </div>
+                  </div>
+                  <div style={{ padding: isMobile ? "16px 16px 18px" : "18px 18px 20px", display: "flex",
+                    flexDirection: "column", gap: 12, flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 5 }}>
+                          <h2 id={`template-${tp.id}-title`} style={{ margin: 0, color: C.text1, fontSize: 18, fontWeight: 900, letterSpacing: "-0.2px" }}>
+                            {tp.name}
+                          </h2>
+                          {recommended && (
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: C.accent2,
+                              background: `${C.accent}18`, border: `1px solid ${C.accent}35`,
+                              borderRadius: 999, padding: "3px 8px", fontSize: 11, fontWeight: 900 }}>
+                              <LineIcon name="check" size={12} color={C.accent2} /> Recommended
+                            </span>
+                          )}
+                        </div>
+                        <p style={{ margin: 0, color: C.text2, fontSize: 13.8, lineHeight: 1.55 }}>{meta.description}</p>
+                      </div>
+                      {selected && (
+                        <span aria-label="Selected template" title="Selected template"
+                          style={{ width: 28, height: 28, borderRadius: "50%", display: "inline-flex",
+                            alignItems: "center", justifyContent: "center", background: `${C.accent}22`,
+                            border: `1px solid ${C.accent}60`, flexShrink: 0 }}>
+                          <LineIcon name="check" size={15} color={C.accent2} />
+                        </span>
+                      )}
+                    </div>
+                    {recommended && (
+                      <p style={{ margin: 0, color: C.text3, fontSize: 12.8, lineHeight: 1.5 }}>
+                        Recommended for most users because it balances readability, flexibility, and ATS-conscious structure.
+                      </p>
+                    )}
+                    <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+                      {(meta.attributes || []).slice(0, 3).map((attr) => (
+                        <span key={attr} style={{ color: C.text3, border: `1px solid ${C.border}`,
+                          borderRadius: 999, padding: "4px 8px", fontSize: 11.5, fontWeight: 750 }}>
+                          {attr}
+                        </span>
+                      ))}
+                    </div>
+                    <div style={{ display: "flex", gap: 10, marginTop: "auto", paddingTop: 2 }}>
+                      <button type="button" aria-label={recommended ? "Use recommended template" : `Use ${tp.name} template`}
+                        onClick={() => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery")}
+                        style={{ flex: 1, minHeight: 42, background: recommended ? C.grad : C.elevated,
+                          color: recommended ? "#fff" : C.text1, border: recommended ? "none" : `1px solid ${C.border}`,
+                          borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
+                        Use template
+                      </button>
+                      <button type="button" onClick={() => setTemplatePreview(tp)}
+                        aria-label={`Preview ${tp.name} template`}
+                        style={{ minHeight: 42, padding: "0 13px", background: "transparent",
+                          color: C.text2, border: `1px solid ${C.border}`, borderRadius: 9,
+                          fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                        Preview
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+      <TemplatePreviewModal
+        template={templatePreview}
+        meta={templatePreview ? TEMPLATE_GALLERY_META[templatePreview.id] : null}
+        onClose={() => setTemplatePreview(null)}
+        onUse={(template) => startWithTemplate(template, "template_preview")}
+        isMobile={isMobile}
+        rtl={rtl}
+      />
     </div>
   ) : null;
 
@@ -5698,6 +6178,7 @@ Awards: ${form.awards}`;
     ),
     [isMobile, navPage, step, tpl, coverStep, coverTpl]
   );
+  const isImmersiveAppView = isFormView || isTemplateGalleryView;
 
   // ── Landing page ──────────────────────────────────────────────────
   if (appView === "landing") {
@@ -6358,7 +6839,7 @@ Awards: ${form.awards}`;
       <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
 
       {/* ── Sidebar (desktop) ── */}
-      {!isMobile && !isFormView && (
+      {!isMobile && !isImmersiveAppView && (
         <aside style={{ width: sbW, flexShrink: 0,
           background: `linear-gradient(180deg, ${C.sidebar} 0%, rgba(6,8,15,0.96) 100%)`,
           borderRight: `1px solid ${C.border}`,
@@ -6469,13 +6950,14 @@ Awards: ${form.awards}`;
 
       {/* ── Main content ── */}
       <main id="main-content" style={{ flex: 1, minWidth: 0, overflow: isFormView ? "hidden" : "auto",
-        padding: isFormView ? 0 : (isMobile ? "8px 4px" : "16px 24px"),
+        padding: isFormView || isTemplateGalleryView ? 0 : (isMobile ? "8px 4px" : "16px 24px"),
         ...(isFormView ? { display: "flex", flexDirection: "column" } : {}) }}>
         <div style={{ width: "100%",
-          ...(isFormView ? { flex: 1, display: "flex", flexDirection: "column", minHeight: 0 } : { maxWidth: 1320, margin: "0 auto" }) }}>
+          ...(isFormView ? { flex: 1, display: "flex", flexDirection: "column", minHeight: 0 } :
+            isTemplateGalleryView ? { maxWidth: "none", margin: 0 } : { maxWidth: 1320, margin: "0 auto" }) }}>
 
         {/* Persistent top bar: language picker + auth (desktop only) */}
-        <div style={{ display: isMobile || isFormView ? "none" : "flex", justifyContent: "flex-end", alignItems: "center",
+        <div style={{ display: isMobile || isFormView || isTemplateGalleryView ? "none" : "flex", justifyContent: "flex-end", alignItems: "center",
           marginBottom: 10, gap: 8, flexWrap: "wrap" }}>
           <LanguageDropdown
             selected={selectedLang}
@@ -6530,7 +7012,7 @@ Awards: ${form.awards}`;
         {ACCOUNTS_ENABLED && <UpsellModal feature={upsell} onClose={() => setUpsell(null)} onGetPass={handleStartCheckout} at={at} rtl={rtl} C={C} />}
 
         {/* Mobile top bar */}
-        {isMobile && (
+        {isMobile && !isTemplateGalleryView && (
           <div style={{ display: "flex", alignItems: "center", gap: 0,
             borderBottom: `1px solid ${C.border}`, marginBottom: 12, paddingBottom: 8 }}>
             {/* Scrollable: hamburger + nav items */}
