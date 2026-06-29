@@ -5,6 +5,7 @@ import * as account from "./account.js";
 
 // ── UI translation codes (languages with full UI translation) ──────
 const UI_LANGS = new Set(["en", "fr", "es", "ar", "de"]);
+const SITE_LANGUAGE_CODES = new Set(["en", "ar"]);
 const DOCUMENT_LANGUAGE_COUNT = 99;
 const UI_LANGUAGE_COUNT = UI_LANGS.size;
 
@@ -1048,7 +1049,8 @@ function useIsMobile(bp = 768) {
   return mobile;
 }
 
-const LOCAL_STORAGE_KEYS = ["ac_resume_draft", "ac_resume_draft_saved_at", "ac_master", "ac_tracker", "ac_ats_text"];
+const SITE_LANGUAGE_STORAGE_KEY = "ac_site_language";
+const LOCAL_STORAGE_KEYS = ["ac_resume_draft", "ac_resume_draft_saved_at", "ac_master", "ac_tracker", "ac_ats_text", SITE_LANGUAGE_STORAGE_KEY];
 const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
 const MAX_RESUME_UPLOAD_BYTES = 8 * 1024 * 1024;
 const ALLOWED_PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -1075,6 +1077,24 @@ function safeParseStoredJson(raw, fallback) {
   } catch {
     return fallback;
   }
+}
+
+function languageByCode(code, fallback = "en") {
+  return WORLD_LANGUAGES.find((l) => l.code === code) || WORLD_LANGUAGES.find((l) => l.code === fallback) || WORLD_LANGUAGES[0];
+}
+
+function getInitialSiteLanguage() {
+  if (typeof window === "undefined") return languageByCode("en");
+  try {
+    const saved = localStorage.getItem(SITE_LANGUAGE_STORAGE_KEY);
+    if (SITE_LANGUAGE_CODES.has(saved)) return languageByCode(saved);
+  } catch {}
+  const browserLanguages = navigator.languages?.length ? navigator.languages : [navigator.language || "en"];
+  for (const browserLanguage of browserLanguages) {
+    const code = String(browserLanguage || "").toLowerCase().split("-")[0];
+    if (SITE_LANGUAGE_CODES.has(code)) return languageByCode(code);
+  }
+  return languageByCode("en");
 }
 
 function sanitizeFilename(value, fallback = "resume") {
@@ -2784,7 +2804,7 @@ export default function ResumeGenerator() {
   const [coverTemplateHover, setCoverTemplateHover] = useState("");
   const [coverTemplateFocus, setCoverTemplateFocus] = useState("");
   const [step, setStep] = useState(initialRoute.step);
-  const [selectedLang, setSelectedLang] = useState(() => WORLD_LANGUAGES.find(l => l.code === "en"));
+  const [selectedLang, setSelectedLang] = useState(getInitialSiteLanguage);
   const [tpl, setTpl] = useState(null);
   const emptyResumeForm = migrateForm({
     name: "", title: "", email: "", phone: "", location: "",
@@ -2835,6 +2855,20 @@ export default function ResumeGenerator() {
   const hasPass = account.hasActivePass();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
+  const setSiteLanguage = useCallback((language) => {
+    const next = SITE_LANGUAGE_CODES.has(language?.code) ? language : languageByCode("en");
+    setSelectedLang(next);
+    setPhoneCode(LANG_CODE[next.code] || "+1");
+    try { localStorage.setItem(SITE_LANGUAGE_STORAGE_KEY, next.code); } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const direction = selectedLang.rtl ? "rtl" : "ltr";
+    document.documentElement.lang = selectedLang.code || "en";
+    document.documentElement.dir = direction;
+    document.body?.setAttribute("dir", direction);
+  }, [selectedLang]);
 
   useEffect(() => {
     const close = (e) => { if (userMenuRef.current && !userMenuRef.current.contains(e.target)) setUserMenuOpen(false); };
@@ -3617,10 +3651,8 @@ Awards: ${form.awards}`;
         )}
         <LanguageDropdown
           selected={selectedLang}
-          onSelect={(l) => {
-            setSelectedLang(l);
-            setPhoneCode(LANG_CODE[l.code] || "+1");
-          }}
+          onSelect={setSiteLanguage}
+          siteOnly
         />
         {isMobile && (
           <button type="button" onClick={() => setSidebarOpen(true)} aria-label="Open tools menu"
@@ -3676,10 +3708,8 @@ Awards: ${form.awards}`;
           )}
           <LanguageDropdown
             selected={selectedLang}
-            onSelect={(l) => {
-              setSelectedLang(l);
-              setPhoneCode(LANG_CODE[l.code] || "+1");
-            }}
+            onSelect={setSiteLanguage}
+            siteOnly
           />
           {isMobile && (
             <button type="button" onClick={() => setSidebarOpen(true)} aria-label="Open tools menu"
@@ -4485,10 +4515,10 @@ Awards: ${form.awards}`;
                 <LanguageDropdown
                   selected={selectedLang}
                   onSelect={(l) => {
-                    setSelectedLang(l);
-                    setPhoneCode(LANG_CODE[l.code] || "+1");
+                    setSiteLanguage(l);
                     setCustomizeOpen(false);
                   }}
+                  siteOnly
                 />
                 <p style={{ margin: "10px 0 0", fontSize: 11.5, color: C.text3, lineHeight: 1.5 }}>
                   Typography, spacing, colors, and page size remain controlled by the selected template.
@@ -6749,7 +6779,7 @@ Awards: ${form.awards}`;
             const nextTpl = TEMPLATES.find(t => t.id === demo.templateId) || recommendedTemplate;
             if (nextTpl) setTpl(nextTpl);
             const nextLang = WORLD_LANGUAGES.find(l => l.code === demo.langCode);
-            if (nextLang) setSelectedLang(nextLang);
+            if (nextLang && SITE_LANGUAGE_CODES.has(nextLang.code)) setSiteLanguage(nextLang);
             startResume("interactive_demo");
           }}
         />
@@ -7338,10 +7368,8 @@ Awards: ${form.awards}`;
           marginBottom: 10, gap: 8, flexWrap: "wrap" }}>
           <LanguageDropdown
             selected={selectedLang}
-            onSelect={(l) => {
-              setSelectedLang(l);
-              setPhoneCode(LANG_CODE[l.code] || "+1");
-            }}
+            onSelect={setSiteLanguage}
+            siteOnly
           />
           {currentUser ? (
             <div ref={userMenuRef} style={{ position: "relative" }}>
@@ -7418,10 +7446,8 @@ Awards: ${form.awards}`;
             <div style={{ flexShrink: 0, paddingLeft: 8 }}>
               <LanguageDropdown
                 selected={selectedLang}
-                onSelect={(l) => {
-                  setSelectedLang(l);
-                  setPhoneCode(LANG_CODE[l.code] || "+1");
-                }}
+                onSelect={setSiteLanguage}
+                siteOnly
               />
             </div>
           </div>
@@ -8308,7 +8334,7 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
   );
 }
 
-function LanguageDropdown({ selected, onSelect }) {
+function LanguageDropdown({ selected, onSelect, siteOnly = false }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const ref = useRef(null);
@@ -8319,7 +8345,8 @@ function LanguageDropdown({ selected, onSelect }) {
     return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  const filtered = WORLD_LANGUAGES.filter(l =>
+  const languageOptions = siteOnly ? WORLD_LANGUAGES.filter((l) => SITE_LANGUAGE_CODES.has(l.code)) : WORLD_LANGUAGES;
+  const filtered = languageOptions.filter(l =>
     l.name.toLowerCase().includes(search.toLowerCase()) ||
     l.native.toLowerCase().includes(search.toLowerCase()) ||
     l.code.toLowerCase().includes(search.toLowerCase())
@@ -8334,7 +8361,7 @@ function LanguageDropdown({ selected, onSelect }) {
         fontFamily: "inherit", transition: "border-color .15s",
       }}>
         <span style={{ fontSize: 17 }}>{selected.flag}</span>
-        <span>{selected.name}</span>
+        <span>{siteOnly ? (selected.code === "ar" ? "العربية" : "English") : selected.name}</span>
         <span style={{ fontSize: 10, color: C.text3, marginLeft: 2 }}>{open ? "▲" : "▼"}</span>
       </button>
 
@@ -8351,7 +8378,7 @@ function LanguageDropdown({ selected, onSelect }) {
               autoFocus
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Search language…"
+              placeholder={siteOnly ? "English or Arabic…" : "Search language…"}
               style={{
                 width: "100%", boxSizing: "border-box",
                 padding: "8px 10px", background: C.elevated,
@@ -8383,7 +8410,12 @@ function LanguageDropdown({ selected, onSelect }) {
                   <span style={{ fontSize: 13.5, fontWeight: 600, color: C.text1, display: "block" }}>{l.name}</span>
                   <span style={{ fontSize: 11.5, color: C.text3 }}>{l.native}</span>
                 </span>
-                {UI_LANGS.has(l.code) && (
+                {siteOnly ? (
+                  <span style={{ fontSize: 10, fontWeight: 700, color: C.accent2,
+                    background: `${C.accent}18`, padding: "2px 6px", borderRadius: 4, flexShrink: 0 }}>
+                    SITE
+                  </span>
+                ) : UI_LANGS.has(l.code) && (
                   <span style={{ fontSize: 10, fontWeight: 700, color: C.accent2,
                     background: `${C.accent}18`, padding: "2px 6px", borderRadius: 4, flexShrink: 0 }}>
                     UI
