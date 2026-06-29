@@ -2566,7 +2566,7 @@ function AddContentModal({ open, onClose, addedSet, onAdd, sectionName, eui, rtl
   );
 }
 
-function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl }) {
+function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, kind = "resume" }) {
   const dialogRef = useRef(null);
   useEffect(() => {
     if (!template || typeof document === "undefined") return;
@@ -2598,7 +2598,7 @@ function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl })
     attributes: ["Professional", "Flexible"],
     layout: "Flexible",
   };
-  const sample = THUMB_SAMPLES[template.id] || {};
+  const sample = kind === "cover" ? {} : (THUMB_SAMPLES[template.id] || {});
   const isRtlPreview = sample.rtl || rtl;
   return (
     <div onClick={onClose} dir={rtl ? "rtl" : "ltr"}
@@ -2635,13 +2635,19 @@ function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl })
           gap: isMobile ? 18 : 24, padding: isMobile ? 16 : 24, alignItems: "start" }}>
           <div style={{ background: "#e8edf5", borderRadius: 16, padding: isMobile ? 12 : 22,
             overflow: "auto", display: "flex", justifyContent: "center" }}>
-            <div style={{ width: "min(100%, 700px)", minWidth: isMobile ? 0 : 520 }}>
-              <ResumePaper tpl={template}
-                result={sample.result || SAMPLE_RESUME}
-                rtl={isRtlPreview}
-                placeholder={false}
-                preview />
-            </div>
+            {kind === "cover" ? (
+              <div style={{ width: "min(100%, 700px)", minWidth: isMobile ? 0 : 520 }}>
+                <CoverLetterPaper tpl={template} data={SAMPLE_COVER} />
+              </div>
+            ) : (
+              <div style={{ width: "min(100%, 700px)", minWidth: isMobile ? 0 : 520 }}>
+                <ResumePaper tpl={template}
+                  result={sample.result || SAMPLE_RESUME}
+                  rtl={isRtlPreview}
+                  placeholder={false}
+                  preview />
+              </div>
+            )}
           </div>
           <aside style={{ display: "grid", gap: 14 }}>
             <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 14, padding: 16 }}>
@@ -2654,8 +2660,8 @@ function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl })
               <div style={{ display: "grid", gap: 8 }}>
                 {[
                   ["Layout", info.layout || "Flexible"],
-                  ["ATS status", (info.attributes || []).includes("ATS-friendly") ? "ATS-friendly structure" : "Professional structure"],
-                  ["RTL support", (info.filters || []).includes("rtl") ? "Supported" : "Standard left-to-right preview"],
+                  ["ATS status", kind === "cover" ? "Professional letter layout" : ((info.attributes || []).includes("ATS-friendly") ? "ATS-friendly structure" : "Professional structure")],
+                  ["RTL support", kind === "cover" ? "Uses document language settings" : ((info.filters || []).includes("rtl") ? "Supported" : "Standard left-to-right preview")],
                 ].map(([label, value]) => (
                   <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 12,
                     borderBottom: `1px solid ${C.border}`, paddingBottom: 8 }}>
@@ -2734,6 +2740,11 @@ export default function ResumeGenerator() {
   const [tplFilter, setTplFilter] = useState("recommended");
   const [templateFiltersOpen, setTemplateFiltersOpen] = useState(false);
   const [templatePreview, setTemplatePreview] = useState(null);
+  const [templateHover, setTemplateHover] = useState("");
+  const [templateFocus, setTemplateFocus] = useState("");
+  const [coverTemplatePreview, setCoverTemplatePreview] = useState(null);
+  const [coverTemplateHover, setCoverTemplateHover] = useState("");
+  const [coverTemplateFocus, setCoverTemplateFocus] = useState("");
   const [step, setStep] = useState(initialRoute.step);
   const [selectedLang, setSelectedLang] = useState(() => WORLD_LANGUAGES.find(l => l.code === "en"));
   const [tpl, setTpl] = useState(null);
@@ -3757,7 +3768,7 @@ Awards: ${form.awards}`;
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
-            gap: isMobile ? 16 : 22 }}>
+            gap: isMobile ? 28 : 42, alignItems: "start" }}>
             {visibleTemplates.map((tp) => {
               const meta = TEMPLATE_GALLERY_META[tp.id] || {
                 description: tp.tag || "Professional layout with clear sections and export support.",
@@ -3767,76 +3778,88 @@ Awards: ${form.awards}`;
               };
               const recommended = tp.id === RECOMMENDED_TEMPLATE_ID;
               const selected = tpl?.id === tp.id;
+              const active = templateHover === tp.id || templateFocus === tp.id;
               return (
                 <article key={tp.id} aria-labelledby={`template-${tp.id}-title`}
-                  style={{ position: "relative", display: "flex", flexDirection: "column", minWidth: 0,
-                    borderRadius: 16, border: `1px solid ${recommended ? `${C.accent}70` : selected ? C.accent : C.border}`,
-                    background: recommended ? `linear-gradient(180deg, ${C.elevated} 0%, ${C.surface} 100%)` : C.surface,
-                    boxShadow: recommended ? `0 22px 60px ${C.accent}18` : "0 14px 36px rgba(0,0,0,0.22)",
-                    overflow: "hidden", transform: "translateZ(0)", gridColumn: !isMobile && recommended ? "span 1" : undefined }}>
-                  <div style={{ padding: isMobile ? 14 : 16, background: "linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015))",
-                    borderBottom: `1px solid ${C.border}` }}>
-                    <div style={{ borderRadius: 12, overflow: "hidden", background: "#eef2f7",
-                      boxShadow: "0 18px 38px rgba(0,0,0,0.24)" }}>
+                  onMouseEnter={() => setTemplateHover(tp.id)}
+                  onMouseLeave={() => setTemplateHover("")}
+                  onFocusCapture={() => setTemplateFocus(tp.id)}
+                  onBlurCapture={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setTemplateFocus(""); }}
+                  style={{ position: "relative", minWidth: 0 }}>
+                  <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", background: "#eef2f7",
+                    border: `1px solid ${selected ? C.accent : recommended ? `${C.accent}66` : "rgba(226,232,240,0.16)"}`,
+                    boxShadow: active || selected
+                      ? `0 24px 70px rgba(0,0,0,0.34), 0 0 0 3px ${C.accent}24`
+                      : "0 18px 44px rgba(0,0,0,0.28)",
+                    transition: "box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease",
+                    transform: active ? "translateY(-3px)" : "none" }}>
                       <ThumbPreview tp={tp} isMobile={isMobile} />
-                    </div>
-                  </div>
-                  <div style={{ padding: isMobile ? "16px 16px 18px" : "18px 18px 20px", display: "flex",
-                    flexDirection: "column", gap: 12, flex: 1 }}>
-                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 5 }}>
-                          <h2 id={`template-${tp.id}-title`} style={{ margin: 0, color: C.text1, fontSize: 18, fontWeight: 900, letterSpacing: "-0.2px" }}>
-                            {tp.name}
-                          </h2>
-                          {recommended && (
-                            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: C.accent2,
-                              background: `${C.accent}18`, border: `1px solid ${C.accent}35`,
-                              borderRadius: 999, padding: "3px 8px", fontSize: 11, fontWeight: 900 }}>
-                              <LineIcon name="check" size={12} color={C.accent2} /> Recommended
-                            </span>
-                          )}
-                        </div>
-                        <p style={{ margin: 0, color: C.text2, fontSize: 13.8, lineHeight: 1.55 }}>{meta.description}</p>
+                      {(selected || recommended) && (
+                        <span style={{ position: "absolute", top: 10, right: 10, display: "inline-flex",
+                          alignItems: "center", gap: 5, color: selected ? "#fff" : C.accent2,
+                          background: selected ? C.accent : "rgba(15,23,42,0.84)",
+                          border: `1px solid ${selected ? C.accent : `${C.accent}55`}`,
+                          borderRadius: 999, padding: "5px 9px", fontSize: 11, fontWeight: 900,
+                          boxShadow: "0 10px 24px rgba(0,0,0,0.25)" }}>
+                          <LineIcon name="check" size={12} color={selected ? "#fff" : C.accent2} />
+                          {selected ? "Selected" : "Recommended"}
+                        </span>
+                      )}
+                      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center",
+                        justifyContent: "center", gap: 10, padding: 16,
+                        background: active ? "rgba(2,6,23,0.48)" : "rgba(2,6,23,0)",
+                        opacity: isMobile ? 0 : active ? 1 : 0, pointerEvents: isMobile ? "none" : active ? "auto" : "none",
+                        transition: "opacity 0.18s ease, background 0.18s ease" }}>
+                        <button type="button" onClick={() => setTemplatePreview(tp)}
+                          aria-label={`Preview ${tp.name} template`}
+                          style={{ minHeight: 40, padding: "0 14px", background: "rgba(15,23,42,0.82)",
+                            color: "#fff", border: "1px solid rgba(255,255,255,0.28)", borderRadius: 9,
+                            fontSize: 13, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
+                          Preview
+                        </button>
+                        <button type="button" aria-label={recommended ? "Use recommended template" : `Use ${tp.name} template`}
+                          onClick={() => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery")}
+                          style={{ minHeight: 40, padding: "0 15px", background: C.grad, color: "#fff",
+                            border: "none", borderRadius: 9, fontSize: 13, fontWeight: 900,
+                            cursor: "pointer", fontFamily: "inherit" }}>
+                          Use template
+                        </button>
                       </div>
-                      {selected && (
-                        <span aria-label="Selected template" title="Selected template"
-                          style={{ width: 28, height: 28, borderRadius: "50%", display: "inline-flex",
-                            alignItems: "center", justifyContent: "center", background: `${C.accent}22`,
-                            border: `1px solid ${C.accent}60`, flexShrink: 0 }}>
-                          <LineIcon name="check" size={15} color={C.accent2} />
+                    </div>
+                  <div style={{ padding: isMobile ? "12px 2px 0" : "14px 2px 0" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 24 }}>
+                      <h2 id={`template-${tp.id}-title`} style={{ margin: 0, color: C.text1,
+                        fontSize: 16.5, fontWeight: 800, letterSpacing: "0" }}>
+                        {tp.name}
+                      </h2>
+                      {recommended && !selected && (
+                        <span style={{ color: C.accent2, background: `${C.accent}14`,
+                          borderRadius: 999, padding: "2px 7px", fontSize: 10.5, fontWeight: 900 }}>
+                          Recommended
                         </span>
                       )}
                     </div>
-                    {recommended && (
-                      <p style={{ margin: 0, color: C.text3, fontSize: 12.8, lineHeight: 1.5 }}>
-                        Recommended for most users because it balances readability, flexibility, and ATS-conscious structure.
-                      </p>
-                    )}
-                    <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
-                      {(meta.attributes || []).slice(0, 3).map((attr) => (
-                        <span key={attr} style={{ color: C.text3, border: `1px solid ${C.border}`,
-                          borderRadius: 999, padding: "4px 8px", fontSize: 11.5, fontWeight: 750 }}>
-                          {attr}
-                        </span>
-                      ))}
-                    </div>
-                    <div style={{ display: "flex", gap: 10, marginTop: "auto", paddingTop: 2 }}>
-                      <button type="button" aria-label={recommended ? "Use recommended template" : `Use ${tp.name} template`}
-                        onClick={() => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery")}
-                        style={{ flex: 1, minHeight: 42, background: recommended ? C.grad : C.elevated,
-                          color: recommended ? "#fff" : C.text1, border: recommended ? "none" : `1px solid ${C.border}`,
-                          borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
-                        Use template
-                      </button>
+                    <p style={{ margin: "4px 0 0", color: C.text2, fontSize: 13.2, lineHeight: 1.45 }}>
+                      {meta.description}
+                    </p>
+                    {isMobile && (
+                    <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
                       <button type="button" onClick={() => setTemplatePreview(tp)}
                         aria-label={`Preview ${tp.name} template`}
-                        style={{ minHeight: 42, padding: "0 13px", background: "transparent",
+                        style={{ flex: 1, minHeight: 44, padding: "0 13px", background: "transparent",
                           color: C.text2, border: `1px solid ${C.border}`, borderRadius: 9,
                           fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
                         Preview
                       </button>
+                      <button type="button" aria-label={recommended ? "Use recommended template" : `Use ${tp.name} template`}
+                        onClick={() => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery")}
+                        style={{ flex: 1, minHeight: 44, background: C.grad,
+                          color: "#fff", border: "none",
+                          borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
+                        Use template
+                      </button>
                     </div>
+                    )}
                   </div>
                 </article>
               );
@@ -5128,66 +5151,88 @@ Awards: ${form.awards}`;
         </div>
         <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: isMobile ? 18 : 24 }}>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
-            gap: isMobile ? 16 : 22 }}>
+            gap: isMobile ? 28 : 42, alignItems: "start" }}>
             {COVER_TEMPLATES.map((tp) => {
               const meta = COVER_GALLERY_META[tp.id] || { description: tp.tag, attributes: ["Professional"] };
               const recommended = tp.id === "modern";
               const selected = coverTpl?.id === tp.id;
+              const active = coverTemplateHover === tp.id || coverTemplateFocus === tp.id;
               return (
                 <article key={tp.id} aria-labelledby={`cover-template-${tp.id}-title`}
-                  style={{ display: "flex", flexDirection: "column", minWidth: 0, borderRadius: 16,
-                    border: `1px solid ${recommended ? `${C.accent}70` : selected ? C.accent : C.border}`,
-                    background: recommended ? `linear-gradient(180deg, ${C.elevated} 0%, ${C.surface} 100%)` : C.surface,
-                    boxShadow: recommended ? `0 22px 60px ${C.accent}18` : "0 14px 36px rgba(0,0,0,0.22)",
-                    overflow: "hidden" }}>
-                  <div style={{ padding: isMobile ? 14 : 16, borderBottom: `1px solid ${C.border}`,
-                    background: "linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015))" }}>
-                    <div style={{ borderRadius: 12, overflow: "hidden", background: "#eef2f7",
-                      boxShadow: "0 18px 38px rgba(0,0,0,0.24)" }}>
+                  onMouseEnter={() => setCoverTemplateHover(tp.id)}
+                  onMouseLeave={() => setCoverTemplateHover("")}
+                  onFocusCapture={() => setCoverTemplateFocus(tp.id)}
+                  onBlurCapture={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setCoverTemplateFocus(""); }}
+                  style={{ position: "relative", minWidth: 0 }}>
+                  <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", background: "#eef2f7",
+                    border: `1px solid ${selected ? C.accent : recommended ? `${C.accent}66` : "rgba(226,232,240,0.16)"}`,
+                    boxShadow: active || selected
+                      ? `0 24px 70px rgba(0,0,0,0.34), 0 0 0 3px ${C.accent}24`
+                      : "0 18px 44px rgba(0,0,0,0.28)",
+                    transition: "box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease",
+                    transform: active ? "translateY(-3px)" : "none" }}>
                       <CoverThumbPreview tp={tp} isMobile={isMobile} />
-                    </div>
-                  </div>
-                  <div style={{ padding: isMobile ? "16px 16px 18px" : "18px 18px 20px",
-                    display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 5 }}>
-                          <h2 id={`cover-template-${tp.id}-title`} style={{ margin: 0, color: C.text1,
-                            fontSize: 18, fontWeight: 900, letterSpacing: "-0.2px" }}>{tp.name}</h2>
-                          {recommended && (
-                            <span style={{ display: "inline-flex", alignItems: "center", gap: 4, color: C.accent2,
-                              background: `${C.accent}18`, border: `1px solid ${C.accent}35`,
-                              borderRadius: 999, padding: "3px 8px", fontSize: 11, fontWeight: 900 }}>
-                              <LineIcon name="check" size={12} color={C.accent2} /> Recommended
-                            </span>
-                          )}
-                        </div>
-                        <p style={{ margin: 0, color: C.text2, fontSize: 13.8, lineHeight: 1.55 }}>{meta.description}</p>
+                      {(selected || recommended) && (
+                        <span style={{ position: "absolute", top: 10, right: 10, display: "inline-flex",
+                          alignItems: "center", gap: 5, color: selected ? "#fff" : C.accent2,
+                          background: selected ? C.accent : "rgba(15,23,42,0.84)",
+                          border: `1px solid ${selected ? C.accent : `${C.accent}55`}`,
+                          borderRadius: 999, padding: "5px 9px", fontSize: 11, fontWeight: 900,
+                          boxShadow: "0 10px 24px rgba(0,0,0,0.25)" }}>
+                          <LineIcon name="check" size={12} color={selected ? "#fff" : C.accent2} />
+                          {selected ? "Selected" : "Recommended"}
+                        </span>
+                      )}
+                      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center",
+                        justifyContent: "center", gap: 10, padding: 16,
+                        background: active ? "rgba(2,6,23,0.48)" : "rgba(2,6,23,0)",
+                        opacity: isMobile ? 0 : active ? 1 : 0, pointerEvents: isMobile ? "none" : active ? "auto" : "none",
+                        transition: "opacity 0.18s ease, background 0.18s ease" }}>
+                        <button type="button" onClick={() => setCoverTemplatePreview(tp)}
+                          aria-label={`Preview ${tp.name} cover letter template`}
+                          style={{ minHeight: 40, padding: "0 14px", background: "rgba(15,23,42,0.82)",
+                            color: "#fff", border: "1px solid rgba(255,255,255,0.28)", borderRadius: 9,
+                            fontSize: 13, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
+                          Preview
+                        </button>
+                        <button type="button" aria-label={recommended ? "Use recommended cover letter template" : `Use ${tp.name} cover letter template`}
+                          onClick={() => { setCoverTpl(tp); setCoverStep("form"); }}
+                          style={{ minHeight: 40, padding: "0 15px", background: C.grad, color: "#fff",
+                            border: "none", borderRadius: 9, fontSize: 13, fontWeight: 900,
+                            cursor: "pointer", fontFamily: "inherit" }}>
+                          Use template
+                        </button>
                       </div>
-                      {selected && (
-                        <span aria-label="Selected cover letter template" title="Selected template"
-                          style={{ width: 28, height: 28, borderRadius: "50%", display: "inline-flex",
-                            alignItems: "center", justifyContent: "center", background: `${C.accent}22`,
-                            border: `1px solid ${C.accent}60`, flexShrink: 0 }}>
-                          <LineIcon name="check" size={15} color={C.accent2} />
+                    </div>
+                  <div style={{ padding: isMobile ? "12px 2px 0" : "14px 2px 0" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, minHeight: 24 }}>
+                      <h2 id={`cover-template-${tp.id}-title`} style={{ margin: 0, color: C.text1,
+                        fontSize: 16.5, fontWeight: 800, letterSpacing: "0" }}>{tp.name}</h2>
+                      {recommended && !selected && (
+                        <span style={{ color: C.accent2, background: `${C.accent}14`,
+                          borderRadius: 999, padding: "2px 7px", fontSize: 10.5, fontWeight: 900 }}>
+                          Recommended
                         </span>
                       )}
                     </div>
-                    <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
-                      {(meta.attributes || []).map((attr) => (
-                        <span key={attr} style={{ color: C.text3, border: `1px solid ${C.border}`,
-                          borderRadius: 999, padding: "4px 8px", fontSize: 11.5, fontWeight: 750 }}>
-                          {attr}
-                        </span>
-                      ))}
-                    </div>
-                    <button type="button" aria-label={recommended ? "Use recommended cover letter template" : `Use ${tp.name} cover letter template`}
-                      onClick={() => { setCoverTpl(tp); setCoverStep("form"); }}
-                      style={{ marginTop: "auto", minHeight: 42, background: recommended ? C.grad : C.elevated,
-                        color: recommended ? "#fff" : C.text1, border: recommended ? "none" : `1px solid ${C.border}`,
-                        borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
-                      Use template
-                    </button>
+                    <p style={{ margin: "4px 0 0", color: C.text2, fontSize: 13.2, lineHeight: 1.45 }}>{meta.description}</p>
+                    {isMobile && (
+                      <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+                        <button type="button" onClick={() => setCoverTemplatePreview(tp)}
+                          aria-label={`Preview ${tp.name} cover letter template`}
+                          style={{ flex: 1, minHeight: 44, padding: "0 13px", background: "transparent",
+                            color: C.text2, border: `1px solid ${C.border}`, borderRadius: 9,
+                            fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                          Preview
+                        </button>
+                        <button type="button" aria-label={recommended ? "Use recommended cover letter template" : `Use ${tp.name} cover letter template`}
+                          onClick={() => { setCoverTpl(tp); setCoverStep("form"); }}
+                          style={{ flex: 1, minHeight: 44, background: C.grad, color: "#fff", border: "none",
+                            borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
+                          Use template
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </article>
               );
@@ -5195,6 +5240,15 @@ Awards: ${form.awards}`;
           </div>
         </div>
       </section>
+      <TemplatePreviewModal
+        template={coverTemplatePreview}
+        meta={coverTemplatePreview ? COVER_GALLERY_META[coverTemplatePreview.id] : null}
+        onClose={() => setCoverTemplatePreview(null)}
+        onUse={(template) => { setCoverTpl(template); setCoverStep("form"); }}
+        isMobile={isMobile}
+        rtl={rtl}
+        kind="cover"
+      />
     </div>
   );
 
