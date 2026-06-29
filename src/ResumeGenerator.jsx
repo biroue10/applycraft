@@ -1256,9 +1256,13 @@ function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onTogg
   const [expandedId, setExpandedId] = useState(null);
   const [editingHeading, setEditingHeading] = useState(false);
   const [headingDraft, setHeadingDraft] = useState(heading);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [over, setOver] = useState(null); // { index, side: "above" | "below" }
   const dragFrom = useRef(null);
   const list = entries || [];
+  const visibleCount = list.filter(entry => entry.visible !== false).length;
+  const status = visibleCount > 0 ? "Complete" : "Missing";
+  const countLabel = visibleCount === 0 ? status : `${visibleCount} ${visibleCount === 1 ? "entry" : "entries"} · ${status}`;
   const dnd = {
     dragging: () => dragFrom.current,
     onDragStart: (i) => { dragFrom.current = i; },
@@ -1276,15 +1280,17 @@ function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onTogg
   };
   const commitHeading = () => { setEditingHeading(false); const h = headingDraft.trim(); if (h && h !== heading) onEditHeading(h); else setHeadingDraft(heading); };
   return (
-    <section style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: SECTION_TOKENS.radius,
-      boxShadow: SECTION_TOKENS.shadow, padding: 0, overflow: "hidden", marginTop: SECTION_TOKENS.gap3 }}>
+    <section style={{ background: collapsed ? "transparent" : C.surface,
+      border: collapsed ? `1px solid ${C.border}` : `1px solid ${C.border}`,
+      borderRadius: 12, boxShadow: collapsed ? "none" : "0 10px 34px rgba(0,0,0,0.16)",
+      padding: 0, overflow: "visible", marginTop: 10 }}>
       <header role="button" tabIndex={0} aria-expanded={!collapsed}
         aria-label={collapsed ? eui.expand : eui.collapse}
-        onClick={() => { if (!editingHeading) onToggleCollapse(); }}
+        onClick={() => { if (!editingHeading && !menuOpen) onToggleCollapse(); }}
         onKeyDown={(e) => { if (!editingHeading && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); onToggleCollapse(); } }}
-        style={{ display: "flex", alignItems: "center", gap: SECTION_TOKENS.gap2, cursor: "pointer", userSelect: "none",
-          padding: `${SECTION_TOKENS.gap3}px ${SECTION_TOKENS.padCard}px` }}>
-        <span aria-hidden style={{ fontSize: 18, flexShrink: 0 }}>{schema.icon}</span>
+        style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", userSelect: "none",
+          padding: collapsed ? "12px 14px" : "14px 16px", borderBottom: collapsed ? "none" : `1px solid ${C.border}` }}>
+        <span aria-hidden style={{ fontSize: 16, flexShrink: 0 }}>{schema.icon}</span>
         {editingHeading ? (
           <input autoFocus value={headingDraft} onChange={(e) => setHeadingDraft(e.target.value)}
             onClick={(e) => e.stopPropagation()}
@@ -1293,19 +1299,41 @@ function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onTogg
             style={{ flex: 1, background: C.elevated, border: `1px solid ${C.accent}`, borderRadius: 8, padding: "6px 10px",
               color: C.text1, fontSize: 16, fontWeight: 800, fontFamily: "inherit", outline: "none" }} />
         ) : (
-          <h3 style={{ flex: 1, margin: 0, fontSize: 16, fontWeight: 800, color: C.text1 }}>{heading}</h3>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 800, color: C.text1, lineHeight: 1.25 }}>{heading}</h3>
+            <div style={{ marginTop: 2, color: visibleCount ? C.text3 : "#fbbf24", fontSize: 12 }}>{countLabel}</div>
+          </div>
         )}
-        <button type="button" onClick={(e) => { e.stopPropagation(); setHeadingDraft(heading); setEditingHeading(true); }}
-          style={{ display: "inline-flex", alignItems: "center", gap: 5, background: C.elevated, border: `1px solid ${C.border}`,
-            borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 700, color: C.text2, cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>
-          ✎ {eui.editHeading}
-        </button>
-        <span aria-hidden style={{ color: C.text2, fontSize: 26, lineHeight: 1, padding: "0 4px", flexShrink: 0 }}>
+        <div style={{ position: "relative" }}>
+          <button type="button" aria-label={`${heading} options`} aria-expanded={menuOpen}
+            onClick={(e) => { e.stopPropagation(); setMenuOpen(o => !o); }}
+            style={{ width: 34, height: 34, borderRadius: 9, border: `1px solid ${C.border}`,
+              background: C.elevated, color: C.text2, cursor: "pointer", fontFamily: "inherit", fontSize: 18, lineHeight: 1 }}>
+            …
+          </button>
+          {menuOpen && (
+            <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, minWidth: 170, zIndex: 20,
+              background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10,
+              boxShadow: "0 12px 36px rgba(0,0,0,0.45)", overflow: "hidden" }}>
+              <button type="button" onClick={(e) => { e.stopPropagation(); setMenuOpen(false); setHeadingDraft(heading); setEditingHeading(true); }}
+                style={{ display: "block", width: "100%", padding: "10px 12px", textAlign: "left",
+                  background: "none", border: "none", color: C.text1, fontSize: 13, fontWeight: 700,
+                  cursor: "pointer", fontFamily: "inherit" }}>
+                Rename section
+              </button>
+              <div style={{ padding: "9px 12px", borderTop: `1px solid ${C.border}`, color: C.text3,
+                fontSize: 11.5, lineHeight: 1.4 }}>
+                Reorder, hide, and delete are available on individual entries.
+              </div>
+            </div>
+          )}
+        </div>
+        <span aria-hidden style={{ color: C.text2, fontSize: 22, lineHeight: 1, padding: "0 2px", flexShrink: 0 }}>
           {collapsed ? "▸" : "▾"}
         </span>
       </header>
       {!collapsed && (
-        <div style={{ padding: `0 ${SECTION_TOKENS.padCard}px ${SECTION_TOKENS.padCard}px` }}>
+        <div style={{ padding: "8px 16px 16px" }}>
           <div onDragOver={(e) => { e.preventDefault(); }}>
             {list.map((entry, i) => (
               <EntryRow key={entry.id} sectionKey={sectionKey} entry={entry} index={i} eui={eui} rtl={rtl}
@@ -1336,21 +1364,25 @@ function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onTogg
 // Summary) that aren't entry lists. Collapsible, no add/reorder/edit-heading.
 function FieldCard({ icon, title, children, collapsed, onToggleCollapse, rtl, eui }) {
   return (
-    <section style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: SECTION_TOKENS.radius,
-      boxShadow: SECTION_TOKENS.shadow, padding: 0, overflow: "hidden", marginTop: SECTION_TOKENS.gap3 }}>
+    <section style={{ background: collapsed ? "transparent" : C.surface, border: `1px solid ${C.border}`,
+      borderRadius: 12, boxShadow: collapsed ? "none" : "0 10px 34px rgba(0,0,0,0.16)",
+      padding: 0, overflow: "hidden", marginTop: 10 }}>
       <header role="button" tabIndex={0} aria-expanded={!collapsed}
         aria-label={collapsed ? eui.expand : eui.collapse}
         onClick={onToggleCollapse}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggleCollapse(); } }}
-        style={{ display: "flex", alignItems: "center", gap: SECTION_TOKENS.gap2, cursor: "pointer", userSelect: "none",
-          padding: `${SECTION_TOKENS.gap3}px ${SECTION_TOKENS.padCard}px` }}>
-        <span aria-hidden style={{ fontSize: 18, flexShrink: 0 }}>{icon}</span>
-        <h3 style={{ flex: 1, margin: 0, fontSize: 16, fontWeight: 800, color: C.text1, textAlign: rtl ? "right" : "left" }}>{title}</h3>
-        <span aria-hidden style={{ color: C.text2, fontSize: 26, lineHeight: 1, padding: "0 4px", flexShrink: 0 }}>
+        style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", userSelect: "none",
+          padding: collapsed ? "12px 14px" : "14px 16px", borderBottom: collapsed ? "none" : `1px solid ${C.border}` }}>
+        <span aria-hidden style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 800, color: C.text1, textAlign: rtl ? "right" : "left", lineHeight: 1.25 }}>{title}</h3>
+          <div style={{ marginTop: 2, color: C.text3, fontSize: 12 }}>{collapsed ? "Collapsed" : "Editing"}</div>
+        </div>
+        <span aria-hidden style={{ color: C.text2, fontSize: 22, lineHeight: 1, padding: "0 2px", flexShrink: 0 }}>
           {collapsed ? "▸" : "▾"}
         </span>
       </header>
-      {!collapsed && <div style={{ padding: `0 ${SECTION_TOKENS.padCard}px ${SECTION_TOKENS.padCard}px` }}>{children}</div>}
+      {!collapsed && <div style={{ padding: "8px 16px 16px" }}>{children}</div>}
     </section>
   );
 }
@@ -2379,8 +2411,12 @@ export default function ResumeGenerator() {
   const [shakeField, setShakeField] = useState("");
   const [phoneCode, setPhoneCode] = useState(() => LANG_CODE[selectedLang?.code] || "+1");
   const [zoomed, setZoomed] = useState(false);
+  const [previewZoom, setPreviewZoom] = useState(86);
   const [mobileResumeMode, setMobileResumeMode] = useState("edit");
   const [exporting, setExporting] = useState("");
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [customizeOpen, setCustomizeOpen] = useState(false);
+  const [guidanceDismissed, setGuidanceDismissed] = useState(false);
   const [exportSuccess, setExportSuccess] = useState("");
   const [aiPolished, setAiPolished] = useState(false);
   const [translating, setTranslating] = useState(false);
@@ -3695,78 +3731,147 @@ Awards: ${form.awards}`;
   const completedChecklist = resumeChecklist.filter(item => item.done).length;
   const nextChecklistItem = resumeChecklist.find(item => !item.done);
   const readyForReview = completedChecklist >= 5;
+  const atsIssues = computeATSIssues();
+  const atsScore = Math.max(0, 100
+    - atsIssues.filter(i => i.level === "critical").length * 20
+    - atsIssues.filter(i => i.level === "warning").length * 8
+    - atsIssues.filter(i => i.level === "info").length * 3);
+  const resumeTitle = form.name.trim()
+    ? `${form.name.trim().split(/\s+/)[0]}'s Resume`
+    : "Untitled Resume";
+  const savedLabel = draftSavedAt ? "Saved locally" : "Unsaved changes";
 
   const formContent = tpl ? (
     <div style={{ display: "flex", flexDirection: "column", height: "100%",
       boxSizing: "border-box", padding: isMobile ? "8px 4px" : "10px 16px" }}>
 
-      {/* ── Form header ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
-        <button onClick={() => setStep("templates")} style={backBtn}>← {t.back}</button>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}>
-          <div style={{ width: 12, height: 12, borderRadius: "50%", background: tpl.accent, flexShrink: 0 }} />
-          <span style={{ fontSize: 13, color: C.text2 }}>
-            Template: <strong style={{ color: C.text1 }}>{tpl.name}</strong>
-          </span>
-          <button onClick={() => setStep("templates")} style={{ marginLeft: 4, fontSize: 11.5,
-            color: C.accent2, background: "none", border: "none", cursor: "pointer",
-            padding: 0, fontFamily: "inherit", textDecoration: "underline" }}>
-            Change
-          </button>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {/* ATS score chip */}
-          {(() => {
-            const issues = computeATSIssues();
-            const score = Math.max(0, 100
-              - issues.filter(i => i.level === "critical").length * 20
-              - issues.filter(i => i.level === "warning").length * 8
-              - issues.filter(i => i.level === "info").length * 3);
-            const color = score >= 90 ? "#4ade80" : score >= 70 ? "#fbbf24" : score >= 50 ? "#fb923c" : "#f87171";
-            return (
-              <button onClick={() => setAtsOpen(o => !o)}
-                style={{ display: "flex", alignItems: "center", gap: 5, padding: "4px 10px",
-                  background: `${color}18`, border: `1px solid ${color}44`, borderRadius: 999,
-                  cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>
-                <span style={{ fontSize: 10, fontWeight: 800, color, letterSpacing: "0.5px" }}>ATS</span>
-                <span style={{ fontSize: 12, fontWeight: 800, color }}>{score}</span>
-              </button>
-            );
-          })()}
+      {/* ── Builder top bar ── */}
+      <div style={{ position: "sticky", top: 0, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
+        padding: isMobile ? "10px 12px" : "11px 18px", background: `${C.bg}f4`, backdropFilter: "blur(14px)",
+        borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", gap: 10, flexWrap: isMobile ? "wrap" : "nowrap" }}>
+        <button onClick={() => setStep("templates")} aria-label="Back to templates"
+          style={{ ...backBtn, minHeight: 38, padding: "8px 11px", margin: 0 }}>←</button>
+        <div style={{ minWidth: 0, flex: "1 1 220px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+            <h1 style={{ margin: 0, color: C.text1, fontSize: isMobile ? 16 : 18, lineHeight: 1.15,
+              fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resumeTitle}</h1>
+            <span title="Saved locally in this browser. Your resume is not backed up to the cloud."
+              style={{ color: C.text3, fontSize: 11.5, whiteSpace: "nowrap" }}>· {savedLabel}</span>
+          </div>
           {!isMobile && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 120 }}>
-              <div style={{ flex: 1, height: 6, borderRadius: 999, background: C.elevated,
-                border: `1px solid ${C.border}`, overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${Math.round((completedChecklist / resumeChecklist.length) * 100)}%`,
-                  background: readyForReview ? "#4ade80" : C.grad,
-                  borderRadius: 999, transition: "width 0.4s ease" }} />
-              </div>
-              <span style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, whiteSpace: "nowrap",
-                minWidth: 58 }}>{completedChecklist}/{resumeChecklist.length}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 3, color: C.text3, fontSize: 12 }}>
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: tpl.accent, flexShrink: 0 }} />
+              <span>{tpl.name}</span>
+              <span>·</span>
+              <span>{completedChecklist}/{resumeChecklist.length} complete</span>
             </div>
           )}
         </div>
-      </div>
-      <div style={{ background: C.elevated, border: `1px solid ${readyForReview ? "#4ade8044" : C.border}`,
-        borderRadius: 10, padding: "10px 12px", marginBottom: 14, display: "flex",
-        alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-        <div style={{ flex: 1, minWidth: 220 }}>
-          <div style={{ fontSize: 12.5, fontWeight: 800, color: readyForReview ? "#4ade80" : C.text1 }}>
-            {readyForReview ? "Your resume is ready for review" : `Next: ${nextChecklistItem?.label || "Review your resume"}`}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+          <div style={{ position: "relative" }}>
+            <button type="button" onClick={() => setCustomizeOpen(o => !o)}
+              aria-expanded={customizeOpen}
+              style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text1,
+                borderRadius: 9, minHeight: 38, padding: "0 12px", fontSize: 13, fontWeight: 800,
+                cursor: "pointer", fontFamily: "inherit" }}>Customize</button>
+            {customizeOpen && (
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
+                width: 300, maxWidth: "calc(100vw - 24px)", background: C.surface, border: `1px solid ${C.border}`,
+                borderRadius: 12, boxShadow: "0 18px 54px rgba(0,0,0,0.5)", padding: 14 }}>
+                <div style={{ fontSize: 13, fontWeight: 900, color: C.text1, marginBottom: 8 }}>Document settings</div>
+                <button onClick={() => { setCustomizeOpen(false); setStep("templates"); }}
+                  style={{ width: "100%", textAlign: "left", background: C.elevated, border: `1px solid ${C.border}`,
+                    color: C.text1, borderRadius: 9, padding: "10px 12px", cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
+                  <strong style={{ display: "block", fontSize: 13 }}>Template</strong>
+                  <span style={{ color: C.text3, fontSize: 12 }}>{tpl.name} · ATS-conscious</span>
+                </button>
+                <div style={{ fontSize: 12, fontWeight: 800, color: C.text3, marginBottom: 7 }}>Language</div>
+                <LanguageDropdown
+                  selected={selectedLang}
+                  onSelect={(l) => {
+                    setSelectedLang(l);
+                    setPhoneCode(LANG_CODE[l.code] || "+1");
+                    setCustomizeOpen(false);
+                  }}
+                />
+                <p style={{ margin: "10px 0 0", fontSize: 11.5, color: C.text3, lineHeight: 1.5 }}>
+                  Typography, spacing, colors, and page size remain controlled by the selected template.
+                </p>
+              </div>
+            )}
           </div>
-          <div style={{ fontSize: 11.5, color: C.text3, marginTop: 3 }}>
-            Saved locally in this browser{draftSavedAt ? ` · ${new Date(draftSavedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : ""}. No account or cloud backup required.
+          <button onClick={() => setAtsOpen(o => !o)} aria-expanded={atsOpen}
+            style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text1,
+              borderRadius: 9, minHeight: 38, padding: "0 12px", fontSize: 13, fontWeight: 900,
+              cursor: "pointer", fontFamily: "inherit" }}>
+            ATS {atsScore}
+          </button>
+          {isMobile && (
+            <button onClick={() => setMobileResumeMode(mobileResumeMode === "edit" ? "preview" : "edit")}
+              style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text1,
+                borderRadius: 9, minHeight: 38, padding: "0 12px", fontSize: 13, fontWeight: 800,
+                cursor: "pointer", fontFamily: "inherit" }}>
+              {mobileResumeMode === "edit" ? "Preview" : "Edit"}
+            </button>
+          )}
+          <div style={{ position: "relative" }}>
+            <button onClick={() => setExportMenuOpen(o => !o)} disabled={!!exporting} aria-expanded={exportMenuOpen}
+              style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 9, minHeight: 38,
+                padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: exporting ? "not-allowed" : "pointer",
+                fontFamily: "inherit", opacity: exporting ? 0.72 : 1 }}>
+              {exporting ? "Exporting..." : "Export"}
+            </button>
+            {exportMenuOpen && (
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
+                minWidth: 230, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
+                boxShadow: "0 18px 54px rgba(0,0,0,0.5)", overflow: "hidden" }}>
+                <div style={{ padding: "12px 14px", borderBottom: `1px solid ${C.border}` }}>
+                  <div style={{ color: C.text1, fontSize: 13.5, fontWeight: 900 }}>Export your resume</div>
+                  <div style={{ color: C.text3, fontSize: 11.5, marginTop: 3 }}>
+                    {readyForReview ? "Ready to export." : `${resumeChecklist.length - completedChecklist} recommended improvements remain.`}
+                  </div>
+                </div>
+                <button onClick={() => { setExportMenuOpen(false); downloadPDF(); }}
+                  style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px",
+                    background: "none", border: "none", color: C.text1, cursor: "pointer", fontFamily: "inherit" }}>
+                  <strong>Download PDF</strong><br /><span style={{ color: C.text3, fontSize: 12 }}>Recommended for applications</span>
+                </button>
+                <button onClick={() => { setExportMenuOpen(false); downloadDOCX(); }}
+                  style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px",
+                    background: "none", border: "none", color: C.text1, cursor: "pointer", fontFamily: "inherit", borderTop: `1px solid ${C.border}` }}>
+                  <strong>Download DOCX</strong><br /><span style={{ color: C.text3, fontSize: 12 }}>Editable Word document</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
-        {nextChecklistItem?.target && !isMobile && (
-          <button onClick={() => scrollToError(nextChecklistItem.target)}
-            style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text2,
-              borderRadius: 7, padding: "7px 10px", fontSize: 12, fontWeight: 700,
-              cursor: "pointer", fontFamily: "inherit" }}>
-            Go to section
-          </button>
-        )}
       </div>
+
+      {!guidanceDismissed && (
+        <div style={{ background: C.surface, border: `1px solid ${readyForReview ? "#4ade8044" : C.border}`,
+          borderRadius: 12, padding: "11px 13px", marginBottom: 14, display: "flex",
+          alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <div style={{ fontSize: 13, fontWeight: 900, color: readyForReview ? "#86efac" : C.text1 }}>
+              {readyForReview ? "Ready for final review" : "Next recommended step"}
+            </div>
+            <div style={{ fontSize: 12.5, color: C.text2, marginTop: 3 }}>
+              {readyForReview ? "Review the preview, then export when ready." : nextChecklistItem?.label || "Review your resume."}
+            </div>
+          </div>
+          {nextChecklistItem?.target && !isMobile && (
+            <button onClick={() => scrollToError(nextChecklistItem.target)}
+              style={{ border: `1px solid ${C.border}`, background: C.elevated, color: C.text1,
+                borderRadius: 8, padding: "8px 11px", fontSize: 12, fontWeight: 800,
+                cursor: "pointer", fontFamily: "inherit" }}>
+              Go there
+            </button>
+          )}
+          <button onClick={() => setGuidanceDismissed(true)} aria-label="Dismiss recommendation"
+            style={{ border: "none", background: "transparent", color: C.text3, cursor: "pointer",
+              fontSize: 18, lineHeight: 1, padding: 4 }}>×</button>
+        </div>
+      )}
 
       {/* Uploaded resume reference banner */}
       {uploadedResume && (
@@ -3783,10 +3888,10 @@ Awards: ${form.awards}`;
         </div>
       )}
 
-      <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-        gap: 16, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
-        <div className="ac-panel-noscroll" style={{ ...(isMobile ? { padding: "16px 12px", display: mobileResumeMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
-          padding: "20px 20px 32px" }) }}>
+      <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "minmax(420px, 45%) minmax(520px, 55%)",
+        gap: 18, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
+        <div className="ac-panel-noscroll" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileResumeMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
+          padding: "12px 14px 28px" }) }}>
 
           {/* ── SECTION: Personal Info ── */}
           <FieldCard icon="👤" title="Personal Info" rtl={rtl} eui={eui}
@@ -4055,12 +4160,12 @@ Awards: ${form.awards}`;
           ))}
 
           {/* ── Add content ── */}
-          <div style={{ display: "flex", justifyContent: "center", marginTop: SECTION_TOKENS.gap4 }}>
+          <div style={{ display: "flex", justifyContent: rtl ? "flex-start" : "flex-end", marginTop: 16 }}>
             <button type="button" onClick={() => setAddContentOpen(true)}
-              style={{ display: "inline-flex", alignItems: "center", gap: 8, background: C.grad, color: "#fff",
-                border: "none", borderRadius: 999, padding: "11px 24px", fontSize: 14, fontWeight: 700,
-                cursor: "pointer", fontFamily: "inherit", boxShadow: "0 6px 20px rgba(99,102,241,0.35)" }}>
-              <span aria-hidden style={{ fontSize: 17, lineHeight: 1, fontWeight: 800 }}>+</span> {eui.addContent}
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, background: C.surface, color: C.text1,
+                border: `1px solid ${C.borderHi}`, borderRadius: 10, padding: "10px 14px", fontSize: 13, fontWeight: 800,
+                cursor: "pointer", fontFamily: "inherit" }}>
+              <span aria-hidden style={{ fontSize: 16, lineHeight: 1, fontWeight: 800 }}>+</span> Add section
             </button>
           </div>
           <AddContentModal open={addContentOpen} onClose={() => setAddContentOpen(false)}
@@ -4166,47 +4271,8 @@ Awards: ${form.awards}`;
             );
           })()}
 
-          {/* ── Actions ── */}
-          <div style={{ marginTop: 28, padding: "18px 0" }}>
-            {selectedLang?.code && selectedLang.code !== "en" && (
-              <button onClick={translateCV} disabled={translating || !form.name}
-                style={{ ...cta, marginTop: 0, marginBottom: 10, background: "transparent",
-                  border: `1.5px solid ${C.borderHi}`, color: C.text1,
-                  opacity: (translating || !form.name) ? 0.5 : 1 }}>
-                {translating ? "⏳ Translating…" : `🌍 Translate to ${selectedLang.name}`}
-              </button>
-            )}
-            {(() => {
-              const hasEnoughForPolish = form.name.trim() && (form.summary.trim() || form.experience.trim() || form.skills.trim());
-              const disabled = loading || !hasEnoughForPolish;
-              return (
-                <button onClick={generate} disabled={disabled}
-                  title={!hasEnoughForPolish ? "Add your name and at least one resume section first" : undefined}
-                  style={{ ...cta, marginTop: 0, background: "transparent",
-                    border: `1.5px solid ${C.borderHi}`, color: C.text1,
-                    opacity: disabled ? 0.5 : 1,
-                    cursor: disabled ? "not-allowed" : "pointer",
-                    boxShadow: "none" }}>
-                  {loading ? "Polishing…" : "Improve wording with AI"}
-                </button>
-              );
-            })()}
-            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-              <button onClick={downloadPDF} disabled={!!exporting}
-                style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
-                  alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13,
-                  borderColor: tpl.accent, color: tpl.accent, opacity: exporting ? 0.65 : 1,
-                  cursor: exporting ? "not-allowed" : "pointer" }}>
-                {exporting === "pdf" ? "Preparing PDF…" : "Download PDF"}
-              </button>
-              <button onClick={downloadDOCX} disabled={!!exporting}
-                style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
-                  alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13,
-                  borderColor: tpl.accent, color: tpl.accent, opacity: exporting ? 0.65 : 1,
-                  cursor: exporting ? "not-allowed" : "pointer" }}>
-                {exporting === "docx" ? "Preparing DOCX…" : "Download DOCX"}
-              </button>
-            </div>
+          {/* ── Follow-up actions ── */}
+          <div style={{ marginTop: 28, padding: "14px 0 4px" }}>
             {exportSuccess && (
               <div style={{ marginTop: 10, background: "#4ade8012", border: "1px solid #4ade8040",
                 color: "#4ade80", borderRadius: 8, padding: "9px 11px", fontSize: 12.5,
@@ -4233,29 +4299,32 @@ Awards: ${form.awards}`;
         </div>
 
         {/* ── Preview column ── */}
-        <div className="ac-panel-noscroll" style={{ minWidth: 0, ...(isMobile ? { padding: "16px 12px", marginTop: 0, display: mobileResumeMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
-          padding: "20px 20px 32px" }) }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10,
-            marginTop: isMobile ? 24 : 0, flexWrap: "wrap" }}>
+        <div className="ac-panel-noscroll" style={{ minWidth: 0, ...(isMobile ? { padding: "10px 8px 84px", marginTop: 0, display: mobileResumeMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
+          padding: "12px 14px 28px" }) }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12,
+            marginTop: isMobile ? 8 : 0, flexWrap: "wrap" }}>
             <span style={{ ...badge, ...(aiPolished ? badgePolished : badgeLive),
               background: aiPolished ? `${tpl.accent}22` : C.elevated,
               color: aiPolished ? tpl.accent : C.text2 }}>
               {aiPolished ? "✦ AI-polished" : "● Live preview"}
             </span>
-            <button onClick={downloadPDF} disabled={!!exporting}
-              style={{ ...dlBtn, borderColor: tpl.accent, color: tpl.accent, opacity: exporting ? 0.65 : 1 }}>
-              {exporting === "pdf" ? "Preparing…" : t.dlPdf}
-            </button>
-            <button onClick={downloadDOCX} disabled={!!exporting}
-              style={{ ...dlBtn, borderColor: tpl.accent, color: tpl.accent, opacity: exporting ? 0.65 : 1 }}>
-              {exporting === "docx" ? "Preparing…" : t.dlDocx}
-            </button>
+            <div aria-label="Preview controls" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <button type="button" onClick={() => setPreviewZoom(z => Math.max(60, z - 10))}
+                aria-label="Zoom preview out" style={{ ...previewToolBtn }}>−</button>
+              <span style={{ color: C.text3, fontSize: 12, minWidth: 42, textAlign: "center" }}>{previewZoom}%</span>
+              <button type="button" onClick={() => setPreviewZoom(z => Math.min(120, z + 10))}
+                aria-label="Zoom preview in" style={{ ...previewToolBtn }}>+</button>
+              <button type="button" onClick={() => setPreviewZoom(86)}
+                style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>Fit</button>
+              <button type="button" onClick={() => setZoomed(true)}
+                style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>Full</button>
+            </div>
           </div>
           <div
             onClick={() => setZoomed(z => !z)}
             title={zoomed ? undefined : "Click to enlarge"}
             style={{
-              cursor: zoomed ? "zoom-out" : "zoom-in",
+              cursor: zoomed ? "zoom-out" : "default",
               ...(zoomed ? {
                 position: "fixed", inset: 0, zIndex: 9000,
                 background: "rgba(0,0,0,0.88)",
@@ -4269,7 +4338,10 @@ Awards: ${form.awards}`;
                 {copied ? t.copied : t.copy}
               </button>
             )}
-            <div style={zoomed ? { width: "min(780px, 94vw)", maxHeight: "94vh", overflowY: "auto", borderRadius: 8 } : {}}>
+            <div style={zoomed ? { width: "min(780px, 94vw)", maxHeight: "94vh", overflowY: "auto", borderRadius: 8 } : {
+              maxWidth: 760, margin: "0 auto", transform: `scale(${previewZoom / 100})`, transformOrigin: "top center",
+              transition: "transform 0.18s ease", paddingBottom: `${Math.max(0, 100 - previewZoom) * 2}px`
+            }}>
               <ResumePaper tpl={tpl} result={result || liveData} rtl={rtl} placeholder={false} />
             </div>
             {zoomed && (
@@ -4289,28 +4361,21 @@ Awards: ${form.awards}`;
       {isMobile && (
         <div style={{ position: "sticky", bottom: 0, zIndex: 20, margin: "12px -4px -8px",
           padding: "10px 12px", background: `${C.bg}f2`, backdropFilter: "blur(10px)",
-          borderTop: `1px solid ${C.border}`, display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
+          borderTop: `1px solid ${C.border}`, display: "grid", gridTemplateColumns: "1fr 1fr",
           gap: 8 }}>
           <button onClick={() => setMobileResumeMode(mobileResumeMode === "edit" ? "preview" : "edit")}
             style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text1,
               borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
               cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center",
               justifyContent: "center", gap: 4 }}>
-            {mobileResumeMode === "edit" ? "👁 Preview" : "✏️ Edit"}
+            {mobileResumeMode === "edit" ? "Preview" : "Edit"}
           </button>
-          <button onClick={downloadPDF} disabled={!!exporting}
+          <button onClick={() => setExportMenuOpen(o => !o)} disabled={!!exporting}
             style={{ border: "none", background: C.grad, color: "#fff",
               borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
               cursor: exporting ? "not-allowed" : "pointer", fontFamily: "inherit",
               opacity: exporting ? 0.7 : 1 }}>
-            {exporting === "pdf" ? "Saving..." : "⬇ PDF"}
-          </button>
-          <button onClick={downloadDOCX} disabled={!!exporting}
-            style={{ border: `1px solid ${C.borderHi}`, background: C.surface, color: C.text1,
-              borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
-              cursor: exporting ? "not-allowed" : "pointer", fontFamily: "inherit",
-              opacity: exporting ? 0.7 : 1 }}>
-            {exporting === "docx" ? "Saving..." : "⬇ DOCX"}
+            {exporting ? "Exporting..." : "Export"}
           </button>
         </div>
       )}
@@ -6293,7 +6358,7 @@ Awards: ${form.awards}`;
       <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
 
       {/* ── Sidebar (desktop) ── */}
-      {!isMobile && (
+      {!isMobile && !isFormView && (
         <aside style={{ width: sbW, flexShrink: 0,
           background: `linear-gradient(180deg, ${C.sidebar} 0%, rgba(6,8,15,0.96) 100%)`,
           borderRight: `1px solid ${C.border}`,
@@ -6410,7 +6475,7 @@ Awards: ${form.awards}`;
           ...(isFormView ? { flex: 1, display: "flex", flexDirection: "column", minHeight: 0 } : { maxWidth: 1320, margin: "0 auto" }) }}>
 
         {/* Persistent top bar: language picker + auth (desktop only) */}
-        <div style={{ display: isMobile ? "none" : "flex", justifyContent: "flex-end", alignItems: "center",
+        <div style={{ display: isMobile || isFormView ? "none" : "flex", justifyContent: "flex-end", alignItems: "center",
           marginBottom: 10, gap: 8, flexWrap: "wrap" }}>
           <LanguageDropdown
             selected={selectedLang}
@@ -8996,6 +9061,12 @@ const dlBtn = {
   padding: "5px 13px", background: `${C.accent}14`, border: `1px solid ${C.accent}44`,
   borderRadius: C.radiusSm, fontSize: 12, fontWeight: 700, cursor: "pointer",
   color: C.accent2, transition: "background .15s", fontFamily: "inherit",
+};
+const previewToolBtn = {
+  width: 32, height: 32, borderRadius: 8, background: C.surface,
+  border: `1px solid ${C.border}`, color: C.text2, cursor: "pointer",
+  fontSize: 14, fontWeight: 800, fontFamily: "inherit",
+  display: "inline-flex", alignItems: "center", justifyContent: "center",
 };
 const fieldErr  = { color: "#f87171", fontSize: 11.5, margin: "4px 0 0", lineHeight: 1.4 };
 const codeSelect = {
