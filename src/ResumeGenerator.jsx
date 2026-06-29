@@ -2689,8 +2689,9 @@ const defaultMaster = {
 
 const DEFAULT_APP_ROUTE = { appView: "landing", navPage: "resume", step: "templates", coverStep: "templates" };
 
-function routeFromHash(hash = "") {
-  const clean = hash.replace(/^#\/?/, "").replace(/\/+$/, "");
+function routeFromAppPath(pathname = "/", hash = "") {
+  const hashRoute = hash ? hash.replace(/^#\/?/, "").replace(/\/+$/, "") : "";
+  const clean = (hashRoute || pathname).replace(/^\/+/, "").replace(/\/+$/, "");
   if (!clean) return { ...DEFAULT_APP_ROUTE };
   const route = { ...DEFAULT_APP_ROUTE, appView: "app" };
   if (clean === "resume" || clean === "resume/templates") return { ...route, navPage: "resume", step: "templates" };
@@ -2698,7 +2699,7 @@ function routeFromHash(hash = "") {
   if (clean === "cover-letter" || clean === "cover-letter/templates") return { ...route, navPage: "cover", coverStep: "templates" };
   if (clean === "cover-letter/builder") return { ...route, navPage: "cover", coverStep: "form" };
   if (clean === "job-tracker") return { ...route, navPage: "tracker" };
-  if (clean === "ats-checker") return { ...route, navPage: "ats" };
+  if (clean === "app/ats-checker" || hashRoute === "ats-checker") return { ...route, navPage: "ats" };
   if (clean === "master-profile") return { ...route, navPage: "master" };
   if (clean === "about") return { ...route, navPage: "about" };
   if (clean === "email-signature") return { ...route, navPage: "signature" };
@@ -2706,22 +2707,22 @@ function routeFromHash(hash = "") {
   return { ...DEFAULT_APP_ROUTE };
 }
 
-function hashFromRoute({ appView, navPage, step, coverStep }) {
-  if (appView !== "app") return "";
-  if (navPage === "resume") return step === "form" ? "#resume/builder" : "#resume/templates";
-  if (navPage === "cover") return coverStep === "form" ? "#cover-letter/builder" : "#cover-letter/templates";
-  if (navPage === "tracker") return "#job-tracker";
-  if (navPage === "ats") return "#ats-checker";
-  if (navPage === "master") return "#master-profile";
-  if (navPage === "about") return "#about";
-  if (navPage === "signature") return "#email-signature";
-  if (navPage === "website") return "#personal-website";
-  return "";
+function pathFromRoute({ appView, navPage, step, coverStep }) {
+  if (appView !== "app") return "/";
+  if (navPage === "resume") return step === "form" ? "/resume/builder" : "/resume/templates";
+  if (navPage === "cover") return coverStep === "form" ? "/cover-letter/builder" : "/cover-letter/templates";
+  if (navPage === "tracker") return "/job-tracker";
+  if (navPage === "ats") return "/app/ats-checker";
+  if (navPage === "master") return "/master-profile";
+  if (navPage === "about") return "/about";
+  if (navPage === "signature") return "/email-signature";
+  if (navPage === "website") return "/personal-website";
+  return "/";
 }
 
 function getInitialAppRoute() {
   if (typeof window === "undefined") return { ...DEFAULT_APP_ROUTE };
-  return routeFromHash(window.location.hash);
+  return routeFromAppPath(window.location.pathname, window.location.hash);
 }
 
 export default function ResumeGenerator() {
@@ -2940,12 +2941,11 @@ export default function ResumeGenerator() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const nextHash = hashFromRoute({ appView, navPage, step, coverStep });
-    const currentHash = window.location.hash || "";
-    if (nextHash && currentHash !== nextHash) {
-      window.history.pushState({}, "", nextHash);
-    } else if (!nextHash && currentHash) {
-      window.history.pushState({}, "", `${window.location.pathname}${window.location.search}`);
+    const nextPath = pathFromRoute({ appView, navPage, step, coverStep });
+    const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const target = `${nextPath}${window.location.search || ""}`;
+    if (currentPath !== target) {
+      window.history.pushState({}, "", target);
     }
   }, [appView, navPage, step, coverStep]);
 
