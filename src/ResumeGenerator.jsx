@@ -1406,7 +1406,7 @@ function EntryDescriptionEditor({ value, onChange, placeholder, rtl }) {
   };
   const btn = (label, title, onClick, extra = {}) => (
     <button type="button" title={title} aria-label={title} onClick={onClick}
-      style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 5, padding: "2px 7px",
+      style={{ background: SECTION_TOKENS.softSurface, border: "none", borderRadius: 6, padding: "3px 8px",
         fontSize: 12, fontWeight: 700, color: C.text2, cursor: "pointer", fontFamily: "inherit", lineHeight: 1.5, ...extra }}>
       {label}
     </button>
@@ -1418,10 +1418,10 @@ function EntryDescriptionEditor({ value, onChange, placeholder, rtl }) {
         {btn("I", "Italic", () => wrap("*"), { fontStyle: "italic", fontWeight: 400 })}
         {btn("U", "Underline", () => wrap("__"), { textDecoration: "underline" })}
         {btn("S", "Strikethrough", () => wrap("~~"), { textDecoration: "line-through" })}
-        <div style={{ width: 1, background: C.border, margin: "2px 1px" }} />
+        <div style={{ width: 1, background: SECTION_TOKENS.rowDivider, margin: "3px 2px" }} />
         {btn("•", "Bullet list", () => linePrefix("• "))}
         {btn("1.", "Numbered list", () => linePrefix("1. ", true))}
-        <div style={{ width: 1, background: C.border, margin: "2px 1px" }} />
+        <div style={{ width: 1, background: SECTION_TOKENS.rowDivider, margin: "3px 2px" }} />
         {btn("—", "Insert dash", () => wrap(" — ", ""), { fontWeight: 400 })}
         {btn("✕", "Clear formatting", () => onChange(v.replace(/\*\*|__|\*|~~/g, "")), { fontSize: 10, color: C.text3 })}
       </div>
@@ -1448,7 +1448,7 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
   const iconBtn = (content, title, onClick, extra = {}) => (
     <button type="button" title={title} aria-label={title} onClick={(e) => { e.stopPropagation(); onClick(); }}
       style={{ background: "transparent", border: "none", borderRadius: SECTION_TOKENS.iconBtnRadius,
-        width: 34, height: 34, display: "inline-flex", alignItems: "center", justifyContent: "center",
+        width: 40, height: 40, display: "inline-flex", alignItems: "center", justifyContent: "center",
         cursor: "pointer", color: C.text2, fontSize: 14, lineHeight: 1, flexShrink: 0, ...extra }}>
       {content}
     </button>
@@ -1547,7 +1547,8 @@ function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onTogg
         onClick={() => { if (!editingHeading && !menuOpen) onToggleCollapse(); }}
         onKeyDown={(e) => { if (!editingHeading && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); onToggleCollapse(); } }}
         style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", userSelect: "none",
-          padding: collapsed ? "12px 14px" : "14px 16px", borderBottom: collapsed ? "none" : `1px solid ${SECTION_TOKENS.rowDivider}` }}>
+          padding: collapsed ? "12px 14px" : "14px 16px",
+          boxShadow: collapsed ? "none" : `inset 0 -1px 0 ${SECTION_TOKENS.rowDivider}` }}>
         <span aria-hidden style={{ fontSize: 16, flexShrink: 0 }}>{schema.icon}</span>
         {editingHeading ? (
           <input autoFocus value={headingDraft} onChange={(e) => setHeadingDraft(e.target.value)}
@@ -1571,7 +1572,7 @@ function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onTogg
           </button>
           {menuOpen && (
             <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, minWidth: 170, zIndex: 20,
-              background: C.surface, border: `1px solid ${SECTION_TOKENS.popoverEdge}`, borderRadius: 10,
+              background: C.surface, border: "none", borderRadius: 10,
               boxShadow: "0 12px 36px rgba(0,0,0,0.45)", overflow: "hidden" }}>
               <button type="button" onClick={(e) => { e.stopPropagation(); setMenuOpen(false); setHeadingDraft(heading); setEditingHeading(true); }}
                 style={{ display: "block", width: "100%", padding: "10px 12px", textAlign: "left",
@@ -1579,7 +1580,7 @@ function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onTogg
                   cursor: "pointer", fontFamily: "inherit" }}>
                 Rename section
               </button>
-              <div style={{ padding: "9px 12px", borderTop: `1px solid ${SECTION_TOKENS.rowDivider}`, color: C.text3,
+              <div style={{ padding: "9px 12px", boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}`, color: C.text3,
                 fontSize: 11.5, lineHeight: 1.4 }}>
                 Reorder, hide, and delete are available on individual entries.
               </div>
@@ -1630,7 +1631,8 @@ function FieldCard({ icon, title, children, collapsed, onToggleCollapse, rtl, eu
         onClick={onToggleCollapse}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggleCollapse(); } }}
         style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", userSelect: "none",
-          padding: collapsed ? "12px 14px" : "14px 16px", borderBottom: collapsed ? "none" : `1px solid ${SECTION_TOKENS.rowDivider}` }}>
+          padding: collapsed ? "12px 14px" : "14px 16px",
+          boxShadow: collapsed ? "none" : `inset 0 -1px 0 ${SECTION_TOKENS.rowDivider}` }}>
         <span aria-hidden style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 800, color: C.text1, textAlign: rtl ? "right" : "left", lineHeight: 1.25 }}>{title}</h3>
@@ -2589,7 +2591,7 @@ function AddContentModal({ open, onClose, addedSet, onAdd, sectionName, eui, rtl
       style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex",
         alignItems: isMobile ? "flex-end" : "center", justifyContent: "center", padding: isMobile ? 0 : 24 }}>
       <div ref={dialogRef} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="addcontent-title"
-        style={{ background: C.surface, border: `1px solid ${C.border}`,
+        style={{ background: C.surface, border: "none",
           borderRadius: isMobile ? "16px 16px 0 0" : 16, padding: "22px 22px 24px",
           width: "100%", maxWidth: isMobile ? "100%" : 460, maxHeight: isMobile ? "85vh" : "80vh",
           overflowY: "auto", boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}>
@@ -2605,7 +2607,7 @@ function AddContentModal({ open, onClose, addedSet, onAdd, sectionName, eui, rtl
             return (
               <button key={key} type="button" disabled={added} onClick={() => onAdd(key)}
                 style={{ display: "flex", alignItems: "center", gap: 12, textAlign: rtl ? "right" : "left",
-                  background: added ? "transparent" : C.elevated, border: `1px solid ${C.border}`, borderRadius: 10,
+                  background: added ? "transparent" : SECTION_TOKENS.softSurface, border: "none", borderRadius: 10,
                   padding: "11px 14px", cursor: added ? "default" : "pointer", fontFamily: "inherit", color: C.text1,
                   opacity: added ? 0.55 : 1, width: "100%" }}>
                 <span aria-hidden style={{ fontSize: 18, flexShrink: 0 }}>{PICKER_ICONS[key]}</span>
@@ -3995,8 +3997,8 @@ Awards: ${form.awards}`;
   const FormattingBar = ({ fieldKey }) => {
     const btn = (label, title, onClick, extraStyle = {}) => (
       <button type="button" title={title} aria-label={title} onClick={onClick}
-        style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 5,
-          padding: "2px 7px", fontSize: 12, fontWeight: 700, color: C.text2,
+        style={{ background: SECTION_TOKENS.softSurface, border: "none", borderRadius: 6,
+          padding: "3px 8px", fontSize: 12, fontWeight: 700, color: C.text2,
           cursor: "pointer", fontFamily: "inherit", lineHeight: 1.5, ...extraStyle }}>
         {label}
       </button>
@@ -4007,10 +4009,10 @@ Awards: ${form.awards}`;
         {btn("I", "Italic", () => applyFormat(fieldKey, "*"), { fontStyle: "italic", fontWeight: 400 })}
         {btn("U", "Underline", () => applyFormat(fieldKey, "__"), { textDecoration: "underline" })}
         {btn("~~S~~", "Strikethrough", () => applyFormat(fieldKey, "~~"), { textDecoration: "line-through", fontSize: 10 })}
-        <div style={{ width: 1, background: C.border, margin: "2px 1px" }} />
+        <div style={{ width: 1, background: SECTION_TOKENS.rowDivider, margin: "3px 2px" }} />
         {btn("•", "Bullet list", () => applyLinePrefix(fieldKey, "• "))}
         {btn("1.", "Numbered list", () => applyLinePrefix(fieldKey, "1. ", true))}
-        <div style={{ width: 1, background: C.border, margin: "2px 1px" }} />
+        <div style={{ width: 1, background: SECTION_TOKENS.rowDivider, margin: "3px 2px" }} />
         {btn("—", "Insert dash", () => applyFormat(fieldKey, " — ", ""), { fontWeight: 400 })}
         {btn("✕", "Clear formatting", () => clearFormat(fieldKey), { fontSize: 10, color: C.text3 })}
       </div>
@@ -4503,7 +4505,7 @@ Awards: ${form.awards}`;
               style={{ ...softBtn }}>Customize</button>
             {customizeOpen && (
               <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
-                width: 300, maxWidth: "calc(100vw - 24px)", background: C.surface, border: `1px solid ${SECTION_TOKENS.popoverEdge}`,
+                width: 300, maxWidth: "calc(100vw - 24px)", background: C.surface, border: "none",
                 borderRadius: 12, boxShadow: "0 18px 54px rgba(0,0,0,0.5)", padding: 14 }}>
                 <div style={{ fontSize: 13, fontWeight: 900, color: C.text1, marginBottom: 8 }}>Document settings</div>
                 <button onClick={() => { setCustomizeOpen(false); setStep("templates"); }}
@@ -4546,9 +4548,9 @@ Awards: ${form.awards}`;
             </button>
             {exportMenuOpen && (
               <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
-                minWidth: 230, background: C.surface, border: `1px solid ${SECTION_TOKENS.popoverEdge}`, borderRadius: 12,
+                minWidth: 230, background: C.surface, border: "none", borderRadius: 12,
                 boxShadow: "0 18px 54px rgba(0,0,0,0.5)", overflow: "hidden" }}>
-                <div style={{ padding: "12px 14px", borderBottom: `1px solid ${SECTION_TOKENS.rowDivider}` }}>
+                <div style={{ padding: "12px 14px", boxShadow: `inset 0 -1px 0 ${SECTION_TOKENS.rowDivider}` }}>
                   <div style={{ color: C.text1, fontSize: 13.5, fontWeight: 900 }}>Export your resume</div>
                   <div style={{ color: C.text3, fontSize: 11.5, marginTop: 3 }}>
                     {readyForReview ? "Ready to export." : `${resumeChecklist.length - completedChecklist} recommended improvements remain.`}
@@ -4561,7 +4563,8 @@ Awards: ${form.awards}`;
                 </button>
                 <button onClick={() => { setExportMenuOpen(false); downloadDOCX(); }}
                   style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px",
-                    background: "none", border: "none", color: C.text1, cursor: "pointer", fontFamily: "inherit", borderTop: `1px solid ${SECTION_TOKENS.rowDivider}` }}>
+                    background: "none", border: "none", color: C.text1, cursor: "pointer", fontFamily: "inherit",
+                    boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}` }}>
                   <strong>Download DOCX</strong><br /><span style={{ color: C.text3, fontSize: 12 }}>Editable Word document</span>
                 </button>
               </div>
@@ -10051,15 +10054,17 @@ const C = {
 // Centralized here so radius / shadow / spacing / accent live in one place.
 const SECTION_TOKENS = {
   radius: 16,
-  shadow: "0 1px 2px rgba(0,0,0,0.35), 0 10px 28px rgba(0,0,0,0.30)",
+  shadow: "0 14px 34px rgba(0,0,0,0.18)",
   padCard: 22,
   gap1: 8, gap2: 12, gap3: 16, gap4: 24,
-  rowBg: "rgba(30,41,59,0.64)",
-  expandedBg: "rgba(30,41,59,0.86)",
-  rowDivider: "rgba(148,163,184,0.10)",
-  inputEdge: "rgba(148,163,184,0.16)",
-  popoverEdge: "rgba(148,163,184,0.16)",
-  expandedShadow: "0 10px 26px rgba(0,0,0,0.16)",
+  rowBg: "rgba(20,31,51,0.74)",
+  expandedBg: "rgba(25,38,62,0.94)",
+  rowHoverBg: "rgba(37,54,85,0.82)",
+  rowDivider: "rgba(148,163,184,0.055)",
+  inputEdge: "rgba(148,163,184,0.10)",
+  popoverEdge: "rgba(148,163,184,0.08)",
+  expandedShadow: "0 14px 34px rgba(0,0,0,0.20)",
+  softSurface: "rgba(19,32,54,0.72)",
   iconBtnBg: "transparent",
   iconBtnRadius: 8,
   accent: C.accent,
@@ -10122,7 +10127,7 @@ const lbl = {
 };
 const inputStyle = {
   width: "100%", boxSizing: "border-box", padding: "11px 14px",
-  background: C.elevated, border: `1px solid rgba(148,163,184,0.16)`,
+  background: C.elevated, border: `1px solid ${SECTION_TOKENS.inputEdge}`,
   borderRadius: C.radiusMd, color: C.text1, fontSize: 14.5, outline: "none",
   transition: "border-color .15s, box-shadow .15s",
 };
@@ -10176,7 +10181,7 @@ const ghostIconBtn = {
 const fieldErr  = { color: "#f87171", fontSize: 11.5, margin: "4px 0 0", lineHeight: 1.4 };
 const codeSelect = {
   boxSizing: "border-box", padding: "10px 8px", background: C.elevated,
-  border: `1px solid ${C.border}`, borderRadius: C.radiusSm, color: C.text1, fontSize: 14,
+  border: `1px solid ${SECTION_TOKENS.inputEdge}`, borderRadius: C.radiusSm, color: C.text1, fontSize: 14,
   outline: "none", cursor: "pointer", minWidth: 82, flexShrink: 0, fontFamily: "inherit",
 };
 const footerWrap = {
