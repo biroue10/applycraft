@@ -2997,6 +2997,7 @@ export default function ResumeGenerator() {
   });
   const [coverStep, setCoverStep] = useState(initialRoute.coverStep);
   const [coverTpl, setCoverTpl] = useState(null);
+  const [mobileCoverMode, setMobileCoverMode] = useState("edit");
   const [coverForm, setCoverForm] = useState({
     name: "", jobTitle: "", email: "", phone: "", location: "",
     date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
@@ -4093,7 +4094,7 @@ Awards: ${form.awards}`;
   const CoverFormattingBar = ({ fieldKey }) => {
     const btn = (label, title, onClick, extraStyle = {}) => (
       <button type="button" title={title} aria-label={title} onClick={onClick}
-        style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 5,
+        style={{ background: C.elevated, border: "none", borderRadius: 5,
           padding: "2px 7px", fontSize: 12, fontWeight: 700, color: C.text2,
           cursor: "pointer", fontFamily: "inherit", lineHeight: 1.5, ...extraStyle }}>
         {label}
@@ -5267,7 +5268,7 @@ Awards: ${form.awards}`;
                           Preview
                         </button>
                         <button type="button" aria-label={recommended ? "Use recommended cover letter template" : `Use ${tp.name} cover letter template`}
-                          onClick={() => { setCoverTpl(tp); setCoverStep("form"); }}
+                          onClick={() => { setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); }}
                           style={{ minHeight: 40, padding: "0 15px", background: C.grad, color: "#fff",
                             border: "none", borderRadius: 9, fontSize: 13, fontWeight: 900,
                             cursor: "pointer", fontFamily: "inherit" }}>
@@ -5297,7 +5298,7 @@ Awards: ${form.awards}`;
                           Preview
                         </button>
                         <button type="button" aria-label={recommended ? "Use recommended cover letter template" : `Use ${tp.name} cover letter template`}
-                          onClick={() => { setCoverTpl(tp); setCoverStep("form"); }}
+                          onClick={() => { setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); }}
                           style={{ flex: 1, minHeight: 44, background: C.grad, color: "#fff", border: "none",
                             borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
                           Use template
@@ -5315,7 +5316,7 @@ Awards: ${form.awards}`;
         template={coverTemplatePreview}
         meta={coverTemplatePreview ? getCoverTemplateMeta(coverTemplatePreview) : null}
         onClose={() => setCoverTemplatePreview(null)}
-        onUse={(template) => { setCoverTpl(template); setCoverStep("form"); }}
+        onUse={(template) => { setCoverTpl(template); setMobileCoverMode("edit"); setCoverStep("form"); }}
         isMobile={isMobile}
         rtl={rtl}
         kind="cover"
@@ -5323,45 +5324,103 @@ Awards: ${form.awards}`;
     </div>
   );
 
-  const coverFormContent = coverTpl ? (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%",
-      boxSizing: "border-box", padding: isMobile ? "8px 4px" : "10px 16px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-        marginBottom: 20, gap: 12, flexWrap: "wrap" }}>
-        <button onClick={() => setCoverStep("templates")} style={backBtn}>← Back</button>
-        <div style={{ fontSize: 13.5, color: C.text2 }}>
-          Template: <strong style={{ color: coverTpl.accent }}>{coverTpl.name}</strong>
+  const coverFormContent = coverTpl ? (() => {
+    const coverReady = !!coverForm.name.trim();
+    const filledCoverFields = ["name", "email", "company", "body"].filter((key) => coverForm[key]?.trim()).length;
+    const coverSection = (icon, title, children, status) => (
+      <section style={{ background: SECTION_TOKENS.expandedBg, border: "none",
+        borderRadius: 12, boxShadow: SECTION_TOKENS.expandedShadow, padding: 0,
+        overflow: "hidden", marginTop: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 16px",
+          borderBottom: `1px solid ${SECTION_TOKENS.rowDivider}` }}>
+          <span aria-hidden style={{ fontSize: 16 }}>{icon}</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h3 style={{ margin: 0, color: C.text1, fontSize: 15.5, fontWeight: 800 }}>{title}</h3>
+            {status && <div style={{ marginTop: 2, color: C.text3, fontSize: 12 }}>{status}</div>}
+          </div>
         </div>
-      </div>
-      <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-        gap: 16, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
-        {/* Left: form */}
-        <div className="ac-panel-noscroll" style={{ ...(isMobile ? { padding: "16px 12px" } : { overflowY: "auto", height: "100%",
-          padding: "20px 20px 32px" }) }}>
-          {/* Section heading helper */}
-          {(() => {
-            const sh = (label) => (
-              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px",
-                color: C.text2, marginTop: 22, marginBottom: 10, paddingBottom: 6,
-                borderBottom: `1px solid ${C.border}` }}>{label}</div>
-            );
-            return (
+        <div style={{ padding: "8px 16px 16px" }}>{children}</div>
+      </section>
+    );
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", height: "100%",
+        boxSizing: "border-box", padding: isMobile ? "8px 4px" : "10px 16px" }}>
+        <div style={{ position: "sticky", top: 0, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
+          padding: isMobile ? "10px 12px" : "11px 18px", background: `${C.bg}f4`, backdropFilter: "blur(14px)",
+          boxShadow: "0 10px 28px rgba(0,0,0,0.14)", display: "flex", alignItems: "center", gap: 10, flexWrap: isMobile ? "wrap" : "nowrap" }}>
+          <button onClick={() => setCoverStep("templates")} aria-label="Back to cover letter templates"
+            style={{ ...ghostIconBtn, margin: 0, fontSize: 18 }}>←</button>
+          <div style={{ minWidth: 0, flex: "1 1 220px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+              <h1 style={{ margin: 0, color: C.text1, fontSize: isMobile ? 16 : 18, lineHeight: 1.15,
+                fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                Cover Letter
+              </h1>
+              <span style={{ color: C.text3, fontSize: 11.5, whiteSpace: "nowrap" }}>· Draft</span>
+            </div>
+            {!isMobile && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 3, color: C.text3, fontSize: 12 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: coverTpl.accent, flexShrink: 0 }} />
+                <span>{coverTpl.name}</span>
+                <span>·</span>
+                <span>{filledCoverFields}/4 essentials complete</span>
+              </div>
+            )}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <button type="button" onClick={() => setCoverStep("templates")} style={{ ...softBtn }}>Customize</button>
+            {isMobile && (
+              <button onClick={() => setMobileCoverMode(mobileCoverMode === "edit" ? "preview" : "edit")}
+                style={{ ...softBtn }}>
+                {mobileCoverMode === "edit" ? "Preview" : "Edit"}
+              </button>
+            )}
+            <button onClick={downloadCoverPDF} disabled={!coverReady}
+              style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 9, minHeight: 38,
+                padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: coverReady ? "pointer" : "not-allowed",
+                fontFamily: "inherit", opacity: coverReady ? 1 : 0.55 }}>
+              Export PDF
+            </button>
+          </div>
+        </div>
+
+        {!coverReady && (
+          <div style={{ background: C.surface, borderLeft: `3px solid ${C.accent}`, borderRadius: 12,
+            padding: "10px 13px", marginBottom: 14, display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 900, color: C.text1 }}>Next recommended step</div>
+              <div style={{ fontSize: 12.5, color: C.text2, marginTop: 3 }}>Add your name to unlock cover letter export.</div>
+            </div>
+          </div>
+        )}
+
+        <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "minmax(420px, 45%) minmax(520px, 55%)",
+          gap: 18, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
+          <div className="ac-panel-noscroll" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileCoverMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
+            padding: "12px 14px 28px" }) }}>
+            {coverSection("👤", "Your details", (
               <>
-                {sh("Your Details")}
                 <label htmlFor="cover-field-name" style={lbl}>Full Name *</label>{coverField("name", false, "Alexandra Johnson")}
                 <label htmlFor="cover-field-jobTitle" style={lbl}>Job Title</label>{coverField("jobTitle", false, "Senior Product Designer")}
                 <label htmlFor="cover-field-email" style={lbl}>Email</label>{coverField("email", false, "you@email.com")}
                 <label htmlFor="cover-field-phone" style={lbl}>Phone</label>{coverField("phone", false, "+1 415 555 0000")}
                 <label htmlFor="cover-field-location" style={lbl}>Location</label>{coverField("location", false, "City, Country")}
+              </>
+            ), coverForm.name ? "In progress" : "Missing")}
 
-                {sh("Recipient & Company")}
+            {coverSection("🏢", "Recipient and company", (
+              <>
                 <label htmlFor="cover-field-date" style={lbl}>Date</label>{coverField("date", false, "June 26, 2026")}
                 <label htmlFor="cover-field-recipientName" style={lbl}>Recipient Name</label>{coverField("recipientName", false, "Mr. David Chen")}
                 <label htmlFor="cover-field-recipientTitle" style={lbl}>Recipient Title</label>{coverField("recipientTitle", false, "Head of Design")}
                 <label htmlFor="cover-field-company" style={lbl}>Company</label>{coverField("company", false, "Stripe")}
                 <label htmlFor="cover-field-companyAddress" style={lbl}>Company Address</label>{coverField("companyAddress", false, "123 Main St, City")}
+              </>
+            ), coverForm.company ? "In progress" : "Optional")}
 
-                {sh("Letter Content")}
+            {coverSection("✍️", "Letter content", (
+              <>
                 <label htmlFor="cover-field-subject" style={lbl}>Subject / Re:</label>{coverField("subject", false, "Senior Product Designer Position")}
                 <label htmlFor="cover-field-opening" style={lbl}>Salutation</label>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
@@ -5381,32 +5440,63 @@ Awards: ${form.awards}`;
                   placeholder="Thank you for your time and consideration. I look forward to speaking with you."
                   rows={3} style={{ ...inputStyle, resize: "vertical", minHeight: 80 }} />
                 <label htmlFor="cover-field-signoff" style={lbl}>Sign-off</label>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <input id="cover-field-signoff" value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
                     placeholder="Sincerely" style={{ ...inputStyle, flex: 1 }} />
                   <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
                 </div>
-                <button onClick={downloadCoverPDF} disabled={!coverForm.name}
-                  style={{ ...cta, background: C.grad, opacity: !coverForm.name ? 0.5 : 1 }}>
-                  ↓ Download PDF
-                </button>
               </>
-            );
-          })()}
-        </div>
-        {/* Right: live preview */}
-        <div className="ac-panel-noscroll" style={{ minWidth: 0, ...(isMobile ? { padding: "16px 12px", marginTop: 16 } : { overflowY: "auto", height: "100%",
-          padding: "20px 20px 32px" }) }}>
-          <div style={{ fontSize: 12, color: C.text2, marginBottom: 10, display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ ...badge, ...badgeLive, background: C.elevated, color: C.text2 }}>● Live preview</span>
+            ), coverForm.body ? "In progress" : "Missing")}
           </div>
-          <div style={{ overflowX: "auto" }}>
-            <CoverLetterPaper tpl={coverTpl} data={coverForm} />
+
+          <div className="ac-panel-noscroll" style={{ minWidth: 0, ...(isMobile ? { padding: "10px 8px 84px", marginTop: 0, display: mobileCoverMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
+            padding: "12px 14px 28px" }) }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12,
+              marginTop: isMobile ? 8 : 0, flexWrap: "wrap" }}>
+              <span style={{ ...badge, ...badgeLive, background: C.elevated, color: C.text2 }}>● Live preview</span>
+              <div aria-label="Preview controls" style={{ display: "flex", alignItems: "center", gap: 4,
+                background: C.surface, borderRadius: 10, padding: 3 }}>
+                <button type="button" onClick={() => setPreviewZoom(z => Math.max(60, z - 10))}
+                  aria-label="Zoom preview out" style={{ ...previewToolBtn }}>−</button>
+                <span style={{ color: C.text3, fontSize: 12, minWidth: 42, textAlign: "center" }}>{previewZoom}%</span>
+                <button type="button" onClick={() => setPreviewZoom(z => Math.min(120, z + 10))}
+                  aria-label="Zoom preview in" style={{ ...previewToolBtn }}>+</button>
+                <button type="button" onClick={() => setPreviewZoom(86)}
+                  style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>Fit</button>
+              </div>
+            </div>
+            <div style={{ overflowX: "auto" }}>
+              <div style={{ maxWidth: 760, margin: "0 auto", transform: `scale(${previewZoom / 100})`,
+                transformOrigin: "top center", transition: "transform 0.18s ease",
+                paddingBottom: `${Math.max(0, 100 - previewZoom) * 2}px` }}>
+                <CoverLetterPaper tpl={coverTpl} data={coverForm} />
+              </div>
+            </div>
           </div>
         </div>
+        {isMobile && (
+          <div style={{ position: "sticky", bottom: 0, zIndex: 20, margin: "12px -4px -8px",
+            padding: "10px 12px", background: `${C.bg}f2`, backdropFilter: "blur(10px)",
+            boxShadow: "0 -12px 28px rgba(0,0,0,0.18)", display: "grid", gridTemplateColumns: "1fr 1fr",
+            gap: 8 }}>
+            <button onClick={() => setMobileCoverMode(mobileCoverMode === "edit" ? "preview" : "edit")}
+              style={{ border: "none", background: C.surface, color: C.text1,
+                borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
+                cursor: "pointer", fontFamily: "inherit" }}>
+              {mobileCoverMode === "edit" ? "Preview" : "Edit"}
+            </button>
+            <button onClick={downloadCoverPDF} disabled={!coverReady}
+              style={{ border: "none", background: C.grad, color: "#fff",
+                borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
+                cursor: coverReady ? "pointer" : "not-allowed", fontFamily: "inherit",
+                opacity: coverReady ? 1 : 0.55 }}>
+              Export PDF
+            </button>
+          </div>
+        )}
       </div>
-    </div>
-  ) : null;
+    );
+  })() : null;
 
   // ── Sidebar nav items ──────────────────────────────────────────────
   const NAV = [
