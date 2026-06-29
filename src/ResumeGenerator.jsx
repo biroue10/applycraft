@@ -2687,15 +2687,53 @@ const defaultMaster = {
   projects: [], languages: [], achievements: [], volunteer: [],
 };
 
+const DEFAULT_APP_ROUTE = { appView: "landing", navPage: "resume", step: "templates", coverStep: "templates" };
+
+function routeFromHash(hash = "") {
+  const clean = hash.replace(/^#\/?/, "").replace(/\/+$/, "");
+  if (!clean) return { ...DEFAULT_APP_ROUTE };
+  const route = { ...DEFAULT_APP_ROUTE, appView: "app" };
+  if (clean === "resume" || clean === "resume/templates") return { ...route, navPage: "resume", step: "templates" };
+  if (clean === "resume/builder") return { ...route, navPage: "resume", step: "form" };
+  if (clean === "cover-letter" || clean === "cover-letter/templates") return { ...route, navPage: "cover", coverStep: "templates" };
+  if (clean === "cover-letter/builder") return { ...route, navPage: "cover", coverStep: "form" };
+  if (clean === "job-tracker") return { ...route, navPage: "tracker" };
+  if (clean === "ats-checker") return { ...route, navPage: "ats" };
+  if (clean === "master-profile") return { ...route, navPage: "master" };
+  if (clean === "about") return { ...route, navPage: "about" };
+  if (clean === "email-signature") return { ...route, navPage: "signature" };
+  if (clean === "personal-website") return { ...route, navPage: "website" };
+  return { ...DEFAULT_APP_ROUTE };
+}
+
+function hashFromRoute({ appView, navPage, step, coverStep }) {
+  if (appView !== "app") return "";
+  if (navPage === "resume") return step === "form" ? "#resume/builder" : "#resume/templates";
+  if (navPage === "cover") return coverStep === "form" ? "#cover-letter/builder" : "#cover-letter/templates";
+  if (navPage === "tracker") return "#job-tracker";
+  if (navPage === "ats") return "#ats-checker";
+  if (navPage === "master") return "#master-profile";
+  if (navPage === "about") return "#about";
+  if (navPage === "signature") return "#email-signature";
+  if (navPage === "website") return "#personal-website";
+  return "";
+}
+
+function getInitialAppRoute() {
+  if (typeof window === "undefined") return { ...DEFAULT_APP_ROUTE };
+  return routeFromHash(window.location.hash);
+}
+
 export default function ResumeGenerator() {
-  const [navPage, setNavPage] = useState("resume");
+  const initialRoute = getInitialAppRoute();
+  const [navPage, setNavPage] = useState(initialRoute.navPage);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sideSearch, setSideSearch] = useState("");
   const [tplSearch, setTplSearch] = useState("");
   const [tplFilter, setTplFilter] = useState("recommended");
   const [templateFiltersOpen, setTemplateFiltersOpen] = useState(false);
   const [templatePreview, setTemplatePreview] = useState(null);
-  const [step, setStep] = useState("templates");
+  const [step, setStep] = useState(initialRoute.step);
   const [selectedLang, setSelectedLang] = useState(() => WORLD_LANGUAGES.find(l => l.code === "en"));
   const [tpl, setTpl] = useState(null);
   const emptyResumeForm = migrateForm({
@@ -2805,7 +2843,7 @@ export default function ResumeGenerator() {
   const [uploadedResume, setUploadedResume] = useState(null);
   const [uploadDragOver, setUploadDragOver] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
-  const [appView, setAppView] = useState("landing");
+  const [appView, setAppView] = useState(initialRoute.appView);
   const [coachOpen, setCoachOpen] = useState(false);
   const [comingSoonFeature, setComingSoonFeature] = useState(null);
   const [coachBullet, setCoachBullet] = useState("");
@@ -2873,7 +2911,7 @@ export default function ResumeGenerator() {
   const [atsFromChecker, setAtsFromChecker] = useState(() => {
     try { return localStorage.getItem("ac_ats_text") || ""; } catch { return ""; }
   });
-  const [coverStep, setCoverStep] = useState("templates");
+  const [coverStep, setCoverStep] = useState(initialRoute.coverStep);
   const [coverTpl, setCoverTpl] = useState(null);
   const [coverForm, setCoverForm] = useState({
     name: "", jobTitle: "", email: "", phone: "", location: "",
@@ -2881,6 +2919,35 @@ export default function ResumeGenerator() {
     recipientName: "", recipientTitle: "", company: "", companyAddress: "",
     subject: "", opening: "", body: "", closing: "", signoff: "Sincerely",
   });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const syncFromUrl = () => {
+      const route = getInitialAppRoute();
+      setAppView(route.appView);
+      setNavPage(route.navPage);
+      setStep(route.step);
+      setCoverStep(route.coverStep);
+      setSidebarOpen(false);
+    };
+    window.addEventListener("hashchange", syncFromUrl);
+    window.addEventListener("popstate", syncFromUrl);
+    return () => {
+      window.removeEventListener("hashchange", syncFromUrl);
+      window.removeEventListener("popstate", syncFromUrl);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const nextHash = hashFromRoute({ appView, navPage, step, coverStep });
+    const currentHash = window.location.hash || "";
+    if (nextHash && currentHash !== nextHash) {
+      window.history.pushState({}, "", nextHash);
+    } else if (!nextHash && currentHash) {
+      window.history.pushState({}, "", `${window.location.pathname}${window.location.search}`);
+    }
+  }, [appView, navPage, step, coverStep]);
 
   const lang = UI_LANGS.has(selectedLang.code) ? selectedLang.code : "en";
   const t = UI[lang];
@@ -3530,7 +3597,11 @@ Awards: ${form.awards}`;
           {!isMobile && (
             <nav aria-label="Primary tools" style={{ display: "flex", gap: 4, marginLeft: rtl ? 0 : 18, marginRight: rtl ? 18 : 0 }}>
               {primaryToolNav.map((item) => (
-                <button key={item.id} type="button" onClick={() => setNavPage(item.id)}
+                <button key={item.id} type="button" onClick={() => {
+                    setNavPage(item.id);
+                    if (item.id === "resume") setStep("templates");
+                    if (item.id === "cover") setCoverStep("templates");
+                  }}
                   aria-current={navPage === item.id ? "page" : undefined}
                   style={{ border: "none", borderRadius: 8, padding: "9px 12px",
                     background: navPage === item.id ? `${C.accent}18` : "transparent",
