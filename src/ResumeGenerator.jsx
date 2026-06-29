@@ -8623,7 +8623,7 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
           pointerEvents: "none", userSelect: "none", background: "#fff",
           borderRadius: 6, border: "1px solid rgba(148,163,184,0.24)",
           boxShadow: "0 18px 40px rgba(0,0,0,0.22)", overflow: "hidden" }}>
-        <div ref={contentRef} style={{ width: "100%" }}>
+        <div ref={contentRef} style={{ width: "100%", minHeight: "100%" }}>
           {type === "cover" ? (
             <CoverLetterPaper tpl={template} data={COVER_THUMB_SAMPLES[template.id] || SAMPLE_COVER} preview />
           ) : (
@@ -8664,7 +8664,8 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
   const empty = placeholder && !hasContent;
   const data = result || { name: "—", title: "", contact: [], summary: "", sections: [] };
   const paper = { background: "#fff", color: "#1a1a1a",
-    borderRadius: preview ? 0 : 8, minHeight: preview ? 0 : 900,
+    borderRadius: preview ? 0 : 8, minHeight: preview ? "100%" : 900,
+    height: preview ? "100%" : undefined,
     maxHeight: undefined,
     padding: preview ? 12 : 0,
     fontFamily: tpl.font, overflow: preview ? "visible" : "hidden",
@@ -10027,7 +10028,8 @@ function CoverLetterPaper({ tpl: rawTpl, data: d, preview = false }) {
   const tpl = rawTpl.variant ? { ...rawTpl, id: rawTpl.variant } : rawTpl;
   const paper = {
     background: "#fff", color: "#1a1a1a",
-    borderRadius: preview ? 0 : 8, minHeight: preview ? 0 : 900,
+    borderRadius: preview ? 0 : 8, minHeight: preview ? "100%" : 900,
+    height: preview ? "100%" : undefined,
     maxHeight: undefined,
     padding: preview ? 12 : 0,
     fontFamily: tpl.font, overflow: preview ? "visible" : "hidden",
