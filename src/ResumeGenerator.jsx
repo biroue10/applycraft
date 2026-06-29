@@ -330,6 +330,30 @@ const TEMPLATES = [
   { id: "ivy",      name: "Ivy",      tag: "British CV style, double-rule header",   accent: "#166534", font: "'Georgia', 'Times New Roman', serif" },
   { id: "carbon",   name: "Carbon",   tag: "Charcoal sidebar, square monogram",      accent: "#6b7280", font: "'Inter', system-ui, sans-serif" },
   { id: "pulse",    name: "Pulse",    tag: "Gradient left bar, modern startup",      accent: "#8b5cf6", font: "'Inter', system-ui, sans-serif" },
+  { id: "atlas",    name: "Atlas",    tag: "Executive sidebar with precise spacing", accent: "#1d4ed8", font: "'Plus Jakarta Sans', 'Inter', sans-serif", variant: "executive" },
+  { id: "nova",     name: "Nova",     tag: "Clean startup layout with bright accents", accent: "#2563eb", font: "'Inter', system-ui, sans-serif", variant: "pulse" },
+  { id: "ember",    name: "Ember",    tag: "Warm high-impact header for concise resumes", accent: "#dc2626", font: "'Plus Jakarta Sans', 'Inter', sans-serif", variant: "bold" },
+  { id: "linear",   name: "Linear",   tag: "Precise one-column layout with crisp rules", accent: "#334155", font: "'Inter', system-ui, sans-serif", variant: "minimal" },
+  { id: "folio",    name: "Folio",    tag: "Portfolio-forward layout for creative roles", accent: "#7c3aed", font: "'Plus Jakarta Sans', 'Inter', sans-serif", variant: "creative" },
+  { id: "signal",   name: "Signal",   tag: "Technical two-column layout with clear signals", accent: "#0284c7", font: "'Inter', system-ui, sans-serif", variant: "compact" },
+  { id: "orbit",    name: "Orbit",    tag: "Rounded modern structure with strong header", accent: "#4f46e5", font: "'Inter', system-ui, sans-serif", variant: "horizon" },
+  { id: "mariner",  name: "Mariner",  tag: "Deep blue professional sidebar layout", accent: "#1e40af", font: "'Plus Jakarta Sans', 'Inter', sans-serif", variant: "slate" },
+  { id: "summit",   name: "Summit",   tag: "Senior leadership layout with refined hierarchy", accent: "#0f766e", font: "'Plus Jakarta Sans', 'Inter', sans-serif", variant: "executive" },
+  { id: "ledger",   name: "Ledger",   tag: "Conservative serif layout for finance and law", accent: "#334155", font: "'Georgia', 'Times New Roman', serif", variant: "classic" },
+  { id: "craft",    name: "Craft",    tag: "Balanced designer resume with structured sidebar", accent: "#9333ea", font: "'Plus Jakarta Sans', 'Inter', sans-serif", variant: "elegant" },
+  { id: "mono",     name: "Mono",     tag: "Monospace technical layout for engineering", accent: "#16a34a", font: "'Courier New', 'Courier', monospace", variant: "tech" },
+  { id: "aurora",   name: "Aurora",   tag: "Vibrant gradient header for modern teams", accent: "#7c3aed", font: "'Inter', system-ui, sans-serif", variant: "prism" },
+  { id: "canvas",   name: "Canvas",   tag: "Spacious editorial layout with subtle detail", accent: "#475569", font: "'Georgia', 'Times New Roman', serif", variant: "stone" },
+  { id: "keystone", name: "Keystone", tag: "Formal CV structure for academic profiles", accent: "#1d4ed8", font: "'Georgia', 'Times New Roman', serif", variant: "academy" },
+  { id: "blueprint", name: "Blueprint", tag: "Structured right-sidebar layout for builders", accent: "#0891b2", font: "'Inter', system-ui, sans-serif", variant: "vertex" },
+  { id: "delta",    name: "Delta",    tag: "Sharp corporate layout with minimal color", accent: "#111827", font: "'Inter', system-ui, sans-serif", variant: "sharp" },
+  { id: "terra",    name: "Terra",    tag: "Calm serif layout with grounded spacing", accent: "#166534", font: "'Georgia', 'Times New Roman', serif", variant: "nordic" },
+  { id: "metro",    name: "Metro",    tag: "Compact city-style layout for fast scanning", accent: "#0369a1", font: "'Inter', system-ui, sans-serif", variant: "compact" },
+  { id: "verve",    name: "Verve",    tag: "Energetic bands for sales and marketing", accent: "#f97316", font: "'Plus Jakarta Sans', 'Inter', sans-serif", variant: "spark" },
+  { id: "consultant", name: "Consultant", tag: "Polished one-column format for client work", accent: "#1f2937", font: "'Inter', system-ui, sans-serif", variant: "minimal" },
+  { id: "founder",  name: "Founder",  tag: "Bold leadership resume for operators", accent: "#4338ca", font: "'Plus Jakarta Sans', 'Inter', sans-serif", variant: "bold" },
+  { id: "graduate", name: "Graduate", tag: "Clean academic-friendly layout for early careers", accent: "#2563eb", font: "'Inter', system-ui, sans-serif", variant: "academy" },
+  { id: "clinical", name: "Clinical", tag: "Clear healthcare layout with standard headings", accent: "#0f766e", font: "'Inter', system-ui, sans-serif", variant: "classic" },
 ];
 
 const TEMPLATE_GALLERY_META = {
@@ -823,7 +847,22 @@ const COVER_TEMPLATES = [
   { id: "minimal", name: "Minimal", tag: "Clean, precise, lots of whitespace",accent: "#0f766e", font: "'Inter', system-ui, sans-serif" },
   { id: "bold",    name: "Bold",    tag: "Full-bleed accent header",           accent: "#b91c1c", font: "'Plus Jakarta Sans', 'Inter', sans-serif" },
   { id: "elegant", name: "Elegant", tag: "Soft sidebar, refined serif type",  accent: "#7c3aed", font: "'Georgia', 'Palatino Linotype', serif" },
+  { id: "atlas",   name: "Atlas",   tag: "Polished blue sidebar for executive letters", accent: "#1d4ed8", font: "'Plus Jakarta Sans', 'Inter', sans-serif", variant: "modern" },
+  { id: "nova",    name: "Nova",    tag: "Bright modern letter with clean hierarchy", accent: "#2563eb", font: "'Inter', system-ui, sans-serif", variant: "minimal" },
+  { id: "ember",   name: "Ember",   tag: "Confident header style for concise pitches", accent: "#dc2626", font: "'Plus Jakarta Sans', 'Inter', sans-serif", variant: "bold" },
+  { id: "slate",   name: "Slate",   tag: "Dark professional sidebar with restrained detail", accent: "#334155", font: "'Plus Jakarta Sans', 'Inter', sans-serif", variant: "modern" },
+  { id: "folio",   name: "Folio",   tag: "Refined serif letter for creative applications", accent: "#7c3aed", font: "'Georgia', 'Palatino Linotype', serif", variant: "elegant" },
+  { id: "linear",  name: "Linear",  tag: "Minimal one-column letter with precise spacing", accent: "#334155", font: "'Inter', system-ui, sans-serif", variant: "minimal" },
+  { id: "summit",  name: "Summit",  tag: "Executive cover letter with calm blue accents", accent: "#1e40af", font: "'Plus Jakarta Sans', 'Inter', sans-serif", variant: "classic" },
+  { id: "craft",   name: "Craft",   tag: "Soft editorial letter for design and brand roles", accent: "#9333ea", font: "'Georgia', 'Palatino Linotype', serif", variant: "elegant" },
+  { id: "metro",   name: "Metro",   tag: "Compact modern letter for fast scanning", accent: "#0369a1", font: "'Inter', system-ui, sans-serif", variant: "modern" },
+  { id: "ledger",  name: "Ledger",  tag: "Formal serif letter for conservative industries", accent: "#1f2937", font: "'Georgia', 'Times New Roman', serif", variant: "classic" },
+  { id: "pulse",   name: "Pulse",   tag: "Startup-ready letter with strong accent treatment", accent: "#8b5cf6", font: "'Inter', system-ui, sans-serif", variant: "bold" },
+  { id: "clinical", name: "Clinical", tag: "Clear healthcare-friendly letter format", accent: "#0f766e", font: "'Inter', system-ui, sans-serif", variant: "minimal" },
 ];
+
+const RESUME_TEMPLATE_COUNT = TEMPLATES.filter((template) => !template.blank).length;
+const COVER_TEMPLATE_COUNT = COVER_TEMPLATES.length;
 
 const COVER_GALLERY_META = {
   blank: {
@@ -3497,14 +3536,20 @@ Awards: ${form.awards}`;
     }
   }
 
+  const getTemplateMeta = (template) => {
+    const baseMeta = TEMPLATE_GALLERY_META[template.id] || (template.variant ? TEMPLATE_GALLERY_META[template.variant] : null);
+    return {
+      description: template.tag || baseMeta?.description || "Professional layout with clear sections and export support.",
+      bestFor: baseMeta?.bestFor || "Best for general professional applications.",
+      attributes: baseMeta?.attributes || ["Professional", "Flexible"],
+      layout: baseMeta?.layout || "Flexible",
+      filters: baseMeta?.filters || [],
+    };
+  };
+
   const filterTemplates = (template) => {
     if (template.blank) return false;
-    const meta = TEMPLATE_GALLERY_META[template.id] || {
-      description: template.tag || "",
-      bestFor: "",
-      attributes: ["Professional", "Flexible"],
-      filters: [],
-    };
+    const meta = getTemplateMeta(template);
     const q = tplSearch.trim().toLowerCase();
     const filterOk = tplFilter === "all" || meta.filters.includes(tplFilter) || (tplFilter === "recommended" && template.id === RECOMMENDED_TEMPLATE_ID);
     if (!filterOk) return false;
@@ -3770,12 +3815,7 @@ Awards: ${form.awards}`;
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
             gap: isMobile ? 28 : 42, alignItems: "start" }}>
             {visibleTemplates.map((tp) => {
-              const meta = TEMPLATE_GALLERY_META[tp.id] || {
-                description: tp.tag || "Professional layout with clear sections and export support.",
-                bestFor: "Best for general professional applications.",
-                attributes: ["Professional", "Flexible"],
-                layout: "Flexible",
-              };
+              const meta = getTemplateMeta(tp);
               const recommended = tp.id === RECOMMENDED_TEMPLATE_ID;
               const selected = tpl?.id === tp.id;
               const active = templateHover === tp.id || templateFocus === tp.id;
@@ -3869,7 +3909,7 @@ Awards: ${form.awards}`;
       </section>
       <TemplatePreviewModal
         template={templatePreview}
-        meta={templatePreview ? TEMPLATE_GALLERY_META[templatePreview.id] : null}
+        meta={templatePreview ? getTemplateMeta(templatePreview) : null}
         onClose={() => setTemplatePreview(null)}
         onUse={(template) => startWithTemplate(template, "template_preview")}
         isMobile={isMobile}
@@ -5112,6 +5152,14 @@ Awards: ${form.awards}`;
     doc.save(`${sanitizeFilename(safe(d.name || "cover-letter"), "cover-letter")}-cover-letter.pdf`);
   }
 
+  const getCoverTemplateMeta = (template) => {
+    const baseMeta = COVER_GALLERY_META[template.id] || (template.variant ? COVER_GALLERY_META[template.variant] : null);
+    return {
+      description: template.tag || baseMeta?.description || "Professional cover letter layout.",
+      attributes: baseMeta?.attributes || ["Professional"],
+    };
+  };
+
   const coverTemplatesContent = (
     <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
       <AppToolHeader toolName="Cover Letter Builder" />
@@ -5137,7 +5185,7 @@ Awards: ${form.awards}`;
             <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: isMobile ? "flex-start" : "flex-end",
               color: C.text2, fontSize: 13.5 }}>
               <LineIcon name="document" size={16} color={C.accent2} />
-              <span>{COVER_TEMPLATES.length} letter styles available.</span>
+              <span>{COVER_TEMPLATE_COUNT} letter styles available.</span>
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: isMobile ? "flex-start" : "flex-end" }}>
               {["Live preview", "PDF export", "Resume matching"].map((item) => (
@@ -5153,7 +5201,7 @@ Awards: ${form.awards}`;
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
             gap: isMobile ? 28 : 42, alignItems: "start" }}>
             {COVER_TEMPLATES.map((tp) => {
-              const meta = COVER_GALLERY_META[tp.id] || { description: tp.tag, attributes: ["Professional"] };
+              const meta = getCoverTemplateMeta(tp);
               const recommended = tp.id === "modern";
               const selected = coverTpl?.id === tp.id;
               const active = coverTemplateHover === tp.id || coverTemplateFocus === tp.id;
@@ -5242,7 +5290,7 @@ Awards: ${form.awards}`;
       </section>
       <TemplatePreviewModal
         template={coverTemplatePreview}
-        meta={coverTemplatePreview ? COVER_GALLERY_META[coverTemplatePreview.id] : null}
+        meta={coverTemplatePreview ? getCoverTemplateMeta(coverTemplatePreview) : null}
         onClose={() => setCoverTemplatePreview(null)}
         onUse={(template) => { setCoverTpl(template); setCoverStep("form"); }}
         isMobile={isMobile}
@@ -5633,7 +5681,7 @@ Awards: ${form.awards}`;
           letterSpacing: "2px", color: C.accent2, marginBottom: 16 }}>What you can do</div>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
           {[
-            ["document", "Build a resume", "Choose from 22 professional templates with live preview."],
+            ["document", "Build a resume", `Choose from ${RESUME_TEMPLATE_COUNT} professional templates with live preview.`],
             ["document", "Write a cover letter", "6 matching cover letter styles with full customisation."],
             ["globe", `${DOCUMENT_LANGUAGE_COUNT} document languages`, "Full RTL support for Arabic, Hebrew and more."],
             ["upload", "PDF & DOCX export", "Download in the format any employer expects."],
@@ -6675,8 +6723,8 @@ Awards: ${form.awards}`;
             display: "flex", justifyContent: "space-around", alignItems: "center",
             flexWrap: "wrap", gap: "16px 32px" }}>
             {[
-              { n: "22", label: "Templates" },
-              { n: "6", label: "Cover letter styles" },
+              { n: `${RESUME_TEMPLATE_COUNT}`, label: "Templates" },
+              { n: `${COVER_TEMPLATE_COUNT}`, label: "Cover letter styles" },
               { n: DOCUMENT_LANGUAGE_COUNT, label: "Document languages" },
               { n: "2", label: "Export formats" },
               { n: "∞", label: "Free downloads" },
@@ -6775,7 +6823,7 @@ Awards: ${form.awards}`;
             </FadeIn>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 0 }}>
               {[
-                { n: "1", title: "Pick a template", desc: "Choose from 22 professional designs — from minimal to bold. Templates use ATS-conscious structure." },
+                { n: "1", title: "Pick a template", desc: `Choose from ${RESUME_TEMPLATE_COUNT} professional designs — from minimal to bold. Templates use ATS-conscious structure.` },
                 { n: "2", title: "Fill in your details", desc: "Type directly into the live form. The preview updates in real time as you write." },
                 { n: "3", title: "Download & apply", desc: "Export as PDF or DOCX in your chosen language. Ready to send in under 5 minutes." },
               ].map((s, i) => (
@@ -6807,7 +6855,7 @@ Awards: ${form.awards}`;
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center" }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-                letterSpacing: "2px", color: C.text3, marginBottom: 40 }}>22 professional templates</p>
+                letterSpacing: "2px", color: C.text3, marginBottom: 40 }}>{RESUME_TEMPLATE_COUNT} professional templates</p>
             </FadeIn>
             {(() => {
               const q = tplSearch.trim().toLowerCase();
@@ -6858,7 +6906,7 @@ Awards: ${form.awards}`;
                   transition: "background 0.2s, border-color 0.2s" }}
                 onMouseEnter={e => { e.currentTarget.style.background = `${C.borderHi}18`; e.currentTarget.style.borderColor = C.accent2; }}
                 onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = C.borderHi; }}>
-                Browse all 22 templates →
+                Browse all {RESUME_TEMPLATE_COUNT} templates →
               </button>
               <div style={{ fontSize: 12, color: C.text3, marginTop: 10 }}>
                 {all.length > 6 ? `Showing 6 of ${all.length} templates` : `${all.length} template${all.length !== 1 ? "s" : ""} found`}
@@ -7085,7 +7133,7 @@ Awards: ${form.awards}`;
                     fontSize: 20, fontWeight: 800, border: "none", cursor: "pointer", padding: 0,
                     fontFamily: "inherit", display: "block", marginBottom: 12, letterSpacing: "-0.5px" }}>ApplyCraft</button>
                 <p style={{ fontSize: 13, color: C.text3, lineHeight: 1.75, margin: "0 0 16px" }}>
-                  Free resume and cover letter builder for the global job market. {DOCUMENT_LANGUAGE_COUNT} document languages, {UI_LANGUAGE_COUNT} interface languages, 22 templates, no sign-up required.
+                  Free resume and cover letter builder for the global job market. {DOCUMENT_LANGUAGE_COUNT} document languages, {UI_LANGUAGE_COUNT} interface languages, {RESUME_TEMPLATE_COUNT} templates, no sign-up required.
                 </p>
                 <a href={`mailto:${AUTHOR.email}`}
                   style={{ fontSize: 13, color: C.text2, textDecoration: "none" }}>
@@ -8526,7 +8574,8 @@ function ThumbPreview({ tp, isMobile }) {
   );
 }
 
-function ResumePaper({ tpl, result, rtl, placeholder = true, preview = false }) {
+function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = false }) {
+  const tpl = rawTpl.variant ? { ...rawTpl, id: rawTpl.variant } : rawTpl;
   const hasContent = result && (result.name !== "—" || result.summary || (result.sections && result.sections.length));
   const empty = placeholder && !hasContent;
   const data = result || { name: "—", title: "", contact: [], summary: "", sections: [] };
@@ -9890,7 +9939,8 @@ const footerDot  = { color: C.border, margin: "0 2px" };
 const footerLink = { color: C.text2, textDecoration: "none", transition: "color .15s" };
 
 // ── CoverLetterPaper ──────────────────────────────────────────────
-function CoverLetterPaper({ tpl, data: d, preview = false }) {
+function CoverLetterPaper({ tpl: rawTpl, data: d, preview = false }) {
+  const tpl = rawTpl.variant ? { ...rawTpl, id: rawTpl.variant } : rawTpl;
   const paper = {
     background: "#fff", color: "#1a1a1a",
     borderRadius: preview ? 0 : 8, minHeight: preview ? 0 : 900,
