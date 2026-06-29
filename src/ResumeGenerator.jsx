@@ -1355,43 +1355,212 @@ function FieldCard({ icon, title, children, collapsed, onToggleCollapse, rtl, eu
   );
 }
 
-// Fit-to-page thumbnail: render the full resume at A4 document width, then scale
-// it down with a CSS transform so the WHOLE page is visible (never cropped).
-// SSR-safe: layout is only read inside an effect via ResizeObserver.
-function ScaledResumePreview({ tpl, result, pageWidth = 794, maxHeight = 500 }) {
-  const wrapRef = useRef(null);
-  const pageRef = useRef(null);
-  const [scale, setScale] = useState(0.46);          // sensible SSR default
-  const [pageH, setPageH] = useState(Math.round(pageWidth * 1.414)); // A4 ratio default
-  useEffect(() => {
-    if (typeof window === "undefined" || typeof ResizeObserver === "undefined") return;
-    const wrap = wrapRef.current, page = pageRef.current;
-    if (!wrap || !page) return;
-    const update = () => {
-      const w = wrap.clientWidth;
-      const h = page.scrollHeight;
-      const nextPageH = h > 0 ? h : pageH;
-      if (w > 0) {
-        setScale(Math.min(w / pageWidth, maxHeight / nextPageH));
-      }
-      if (h > 0) setPageH(h);
-    };
-    update();
-    const roW = new ResizeObserver(update); roW.observe(wrap);
-    const roP = new ResizeObserver(update); roP.observe(page);
-    return () => { roW.disconnect(); roP.disconnect(); };
-  }, [pageWidth, pageH, maxHeight, result, tpl]);
-  const previewW = Math.round(pageWidth * scale);
-  const previewH = Math.round(pageH * scale);
+const HERO_PREVIEW_THEMES = ["#2563eb", "#0f766e", "#7c3aed", "#d97706", "#db2777", "#111827"];
+
+function HeroResumePreview({ isMobile }) {
+  const [accent, setAccent] = useState(HERO_PREVIEW_THEMES[0]);
+  const compact = isMobile;
+  const text = {
+    ink: "#172033",
+    muted: "#5f6f86",
+    line: "#dce6f2",
+  };
+  const panel = {
+    background: "rgba(255,255,255,0.92)",
+    border: "1px solid rgba(203,213,225,0.82)",
+    boxShadow: "0 16px 42px rgba(15,23,42,0.16)",
+    backdropFilter: "blur(10px)",
+  };
+  const focusRing = `0 0 0 3px ${accent}33`;
+
   return (
-    <div ref={wrapRef} style={{ width: "100%", overflow: "hidden", borderRadius: 8, height: previewH,
-      display: "flex", justifyContent: "center", background: "#eef2f7" }}>
-      <div style={{ width: previewW, height: previewH, position: "relative", flex: "0 0 auto" }}>
-        <div ref={pageRef} style={{ width: pageWidth, transform: `scale(${scale})`, transformOrigin: "top left",
-          position: "absolute", top: 0, left: 0 }}>
-          <ResumePaper tpl={tpl} result={result} rtl={false} placeholder={false} />
+    <section aria-label="Interactive resume customization preview"
+      className="ac-hero-preview"
+      style={{ position: "relative", width: "100%", maxWidth: compact ? 390 : 520,
+        margin: compact ? "0 auto" : 0, padding: compact ? "24px 18px 18px" : "30px 34px 24px",
+        overflow: "visible" }}>
+      <div aria-hidden style={{ position: "absolute", inset: compact ? "18px 0 0" : "10px 4px 0",
+        borderRadius: 28, background: `linear-gradient(135deg, ${accent}1f, #e8f1ff 46%, #ffffff 100%)`,
+        boxShadow: `0 28px 80px ${accent}22`, transform: "rotate(-2deg)" }} />
+      {!compact && (
+        <>
+          <div aria-hidden style={{ position: "absolute", width: 94, height: 94, borderRadius: "50%",
+            background: `${accent}20`, top: 2, right: 24, filter: "blur(2px)" }} />
+          <div aria-hidden style={{ position: "absolute", width: 12, height: 12, borderRadius: "50%",
+            background: "#fde68a", top: 64, left: 28, boxShadow: "0 0 22px #fde68a" }} />
+          <div aria-hidden style={{ position: "absolute", width: 7, height: 7, borderRadius: "50%",
+            background: "#bfdbfe", right: 2, bottom: 104, boxShadow: "0 0 18px #bfdbfe" }} />
+        </>
+      )}
+
+      <div style={{ position: "relative", display: "grid", gridTemplateColumns: compact ? "1fr" : "42px 1fr",
+        gap: compact ? 12 : 14, alignItems: "center" }}>
+        <div aria-label="Choose resume theme color" role="group"
+          style={{ ...panel, borderRadius: 999, padding: compact ? "8px 10px" : "10px 8px",
+            display: "flex", flexDirection: compact ? "row" : "column", gap: 8,
+            justifyContent: "center", justifySelf: compact ? "center" : "auto" }}>
+          {HERO_PREVIEW_THEMES.map(color => (
+            <button key={color} type="button" aria-label={`Use ${color} resume accent`}
+              aria-pressed={accent === color}
+              onClick={() => setAccent(color)}
+              onFocus={e => { e.currentTarget.style.boxShadow = focusRing; }}
+              onBlur={e => { e.currentTarget.style.boxShadow = accent === color ? `0 0 0 2px #fff, 0 0 0 4px ${color}` : "none"; }}
+              style={{ width: compact ? 24 : 22, height: compact ? 24 : 22, borderRadius: "50%",
+                background: color, border: "2px solid #fff", cursor: "pointer",
+                boxShadow: accent === color ? `0 0 0 2px #fff, 0 0 0 4px ${color}` : "none",
+                transition: "transform 0.18s ease, box-shadow 0.18s ease" }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.08)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; }}
+            />
+          ))}
+        </div>
+
+        <div style={{ position: "relative", justifySelf: "center", width: "100%", maxWidth: compact ? 330 : 392 }}>
+          <div aria-hidden style={{ position: "absolute", inset: "-14px -18px", borderRadius: 24,
+            background: "linear-gradient(145deg, rgba(255,255,255,0.38), rgba(148,163,184,0.10))",
+            filter: "blur(1px)" }} />
+          <article aria-label="Sample professional resume"
+            style={{ position: "relative", background: "#fff", color: text.ink, borderRadius: 14,
+              overflow: "hidden", border: "1px solid #dbe5f2",
+              boxShadow: "0 28px 70px rgba(15,23,42,0.28)",
+              transform: compact ? "none" : "perspective(1000px) rotateY(-3deg) rotateX(1deg)",
+              transformOrigin: "center", transition: "border-color 0.22s ease, transform 0.22s ease" }}>
+            <header style={{ background: `linear-gradient(135deg, ${accent}, ${accent}dd)`,
+              color: "#fff", padding: compact ? "16px 16px 14px" : "18px 20px 16px",
+              display: "grid", gridTemplateColumns: "58px 1fr", gap: 14, alignItems: "center",
+              transition: "background 0.24s ease" }}>
+              <div aria-hidden style={{ width: 56, height: 56, borderRadius: "50%", overflow: "hidden",
+                background: "rgba(255,255,255,0.22)", border: "2px solid rgba(255,255,255,0.72)" }}>
+                <svg viewBox="0 0 64 64" width="56" height="56" role="img" aria-label="Professional profile photo">
+                  <defs>
+                    <linearGradient id="hero-avatar-bg" x1="0" x2="1" y1="0" y2="1">
+                      <stop stopColor="#dbeafe" />
+                      <stop offset="1" stopColor="#f8fafc" />
+                    </linearGradient>
+                  </defs>
+                  <rect width="64" height="64" fill="url(#hero-avatar-bg)" />
+                  <circle cx="32" cy="25" r="12" fill="#334155" />
+                  <path d="M14 64c3-15 12-23 18-23s15 8 18 23" fill="#475569" />
+                  <path d="M20 64c2-10 7-16 12-16s10 6 12 16" fill="#e2e8f0" opacity=".9" />
+                </svg>
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <h2 style={{ margin: 0, fontSize: compact ? 20 : 23, lineHeight: 1.1, color: "#fff",
+                  letterSpacing: "0", fontWeight: 800 }}>Maya Bennett</h2>
+                <p style={{ margin: "4px 0 8px", fontSize: compact ? 11.5 : 12.5,
+                  color: "rgba(255,255,255,0.88)", fontWeight: 700 }}>Senior Product Manager</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 9px", fontSize: 9.5,
+                  color: "rgba(255,255,255,0.84)", lineHeight: 1.35 }}>
+                  <span>maya@email.com</span><span>San Francisco</span><span>linkedin.com/in/maya</span>
+                </div>
+              </div>
+            </header>
+
+            <div style={{ display: "grid", gridTemplateColumns: compact ? "1fr" : "0.82fr 1.28fr",
+              minHeight: compact ? 390 : 452 }}>
+              <aside style={{ background: "#f5f8fc", padding: compact ? "14px 16px" : "16px 18px",
+                borderRight: compact ? "none" : `1px solid ${text.line}` }}>
+                <ResumeMiniSection accent={accent} title="Profile">
+                  Customer-focused product manager with 8+ years building SaaS onboarding, AI workflows, and analytics products.
+                </ResumeMiniSection>
+                <ResumeMiniSection accent={accent} title="Skills">
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                    {["Roadmaps", "AI UX", "SQL", "A/B tests", "Figma", "Jira"].map(skill => (
+                      <span key={skill} style={{ fontSize: 9.5, color: accent, background: `${accent}12`,
+                        border: `1px solid ${accent}20`, borderRadius: 999, padding: "2px 7px", fontWeight: 700 }}>{skill}</span>
+                    ))}
+                  </div>
+                </ResumeMiniSection>
+                <ResumeMiniSection accent={accent} title="Education">
+                  MBA, Berkeley Haas<br />B.S. Computer Science
+                </ResumeMiniSection>
+                {!compact && (
+                  <ResumeMiniSection accent={accent} title="Certification">
+                    Certified Scrum Product Owner
+                  </ResumeMiniSection>
+                )}
+              </aside>
+              <main style={{ padding: compact ? "14px 16px 16px" : "16px 20px 20px" }}>
+                <ResumeMiniSection accent={accent} title="Experience">
+                  <ResumeMiniRole title="Lead Product Manager" company="Northstar AI · 2022-Present"
+                    bullets={["Launched AI resume insights used by 120k candidates.", "Improved activation 31% by redesigning onboarding."]} />
+                  <ResumeMiniRole title="Product Manager" company="BrightHire · 2018-2022"
+                    bullets={["Shipped ATS-friendly profile scoring across 14 markets.", "Cut weekly support requests by 22% with clearer guidance."]} />
+                </ResumeMiniSection>
+                <ResumeMiniSection accent={accent} title="Projects">
+                  <ResumeMiniRole title="Career Match Engine" company="Internal platform"
+                    bullets={["Mapped job descriptions to measurable resume achievements."]} />
+                </ResumeMiniSection>
+              </main>
+            </div>
+          </article>
+
+          <div style={{ position: "absolute", top: compact ? 10 : 18, right: compact ? 4 : -48,
+            display: "flex", gap: 8 }}>
+            {["PDF", "DOCX"].map(label => (
+              <button key={label} type="button" aria-label={`${label} export preview button`}
+                onFocus={e => { e.currentTarget.style.boxShadow = focusRing; }}
+                onBlur={e => { e.currentTarget.style.boxShadow = panel.boxShadow; }}
+                style={{ ...panel, color: text.ink, borderRadius: 999, padding: compact ? "7px 9px" : "8px 11px",
+                  display: "inline-flex", alignItems: "center", gap: 5, fontSize: compact ? 10 : 11,
+                  fontWeight: 800, cursor: "default" }}>
+                <LineIcon name="document" size={compact ? 12 : 13} color={accent} />
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div aria-label="ATS Friendly" style={{ ...panel, position: "absolute", top: compact ? 62 : 84,
+            left: compact ? 4 : -32, borderRadius: 999, padding: compact ? "7px 10px" : "9px 13px",
+            display: "inline-flex", alignItems: "center", gap: 6, color: "#166534",
+            fontSize: compact ? 10.5 : 12, fontWeight: 800 }}>
+            <span style={{ width: 18, height: 18, borderRadius: "50%", background: "#dcfce7",
+              display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+              <LineIcon name="check" size={12} color="#16a34a" />
+            </span>
+            ATS Friendly
+          </div>
+
+          <div style={{ ...panel, position: "absolute", right: compact ? 4 : -54,
+            bottom: compact ? 14 : 28, width: compact ? 205 : 238, borderRadius: 14,
+            padding: compact ? "10px 11px" : "12px 13px", color: text.ink }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7,
+              fontSize: compact ? 11.5 : 12.5, fontWeight: 900 }}>
+              <LineIcon name="spark" size={14} color={accent} />
+              AI-powered suggestions
+            </div>
+            {["Improved your achievement with measurable results.", "Rewrote this bullet using stronger action verbs."].map(item => (
+              <p key={item} style={{ display: "flex", gap: 6, margin: "5px 0 0", fontSize: compact ? 9.5 : 10.5,
+                lineHeight: 1.4, color: text.muted }}>
+                <LineIcon name="check" size={11} color="#16a34a" style={{ marginTop: 1 }} />
+                <span>{item}</span>
+              </p>
+            ))}
+          </div>
         </div>
       </div>
+    </section>
+  );
+}
+
+function ResumeMiniSection({ accent, title, children }) {
+  return (
+    <section style={{ marginBottom: 13 }}>
+      <h3 style={{ margin: "0 0 7px", color: accent, fontSize: 9.5, lineHeight: 1,
+        letterSpacing: "1px", textTransform: "uppercase", fontWeight: 900 }}>{title}</h3>
+      <div style={{ color: "#526174", fontSize: 10.8, lineHeight: 1.55 }}>{children}</div>
+    </section>
+  );
+}
+
+function ResumeMiniRole({ title, company, bullets }) {
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <div style={{ fontSize: 11.5, fontWeight: 900, color: "#172033", lineHeight: 1.25 }}>{title}</div>
+      <div style={{ fontSize: 10, fontWeight: 700, color: "#64748b", margin: "2px 0 4px" }}>{company}</div>
+      <ul style={{ margin: 0, paddingLeft: 15, color: "#526174", fontSize: 10.3, lineHeight: 1.45 }}>
+        {bullets.map(bullet => <li key={bullet} style={{ marginBottom: 2 }}>{bullet}</li>)}
+      </ul>
     </div>
   );
 }
@@ -4923,20 +5092,9 @@ Awards: ${form.awards}`;
               </button>
               </div>
             </div>
-            {!isMobile && (
             <div className="ac-hero-visual" style={{ animation: "acFadeUp 0.65s ease 0.42s both" }}>
-              <div style={{ background: C.surface, border: `1px solid ${C.border}`,
-                borderRadius: 10, padding: 12, boxShadow: "0 24px 70px rgba(0,0,0,0.42)" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-                  marginBottom: 10 }}>
-                  <span style={{ fontSize: 12, color: C.text3, fontWeight: 700 }}>Live resume preview</span>
-                  <span style={{ fontSize: 11, color: C.accent2, background: `${C.accent}18`,
-                    borderRadius: 999, padding: "2px 8px", fontWeight: 800 }}>Updates as you type</span>
-                </div>
-                <ScaledResumePreview tpl={recommendedTemplate} result={SAMPLE_RESUME} maxHeight={480} />
-              </div>
+              <HeroResumePreview isMobile={isMobile} />
             </div>
-            )}
           </div>
         </div>
 
