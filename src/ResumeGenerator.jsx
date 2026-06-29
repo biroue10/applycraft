@@ -5106,8 +5106,8 @@ Awards: ${form.awards}`;
   ) : null;
 
   // ── Cover letter helpers ──────────────────────────────────────────
-  const coverField = (key, multiline, ph) =>
-    multiline ? (
+  const coverField = (key, multiline, ph, icon) => {
+    const control = multiline ? (
       <>
         <CoverFormattingBar fieldKey={key} />
         <textarea id={`cover-field-${key}`} value={coverForm[key]} onChange={e => setCoverForm(f => ({ ...f, [key]: e.target.value }))}
@@ -5117,6 +5117,8 @@ Awards: ${form.awards}`;
       <input id={`cover-field-${key}`} value={coverForm[key]} onChange={e => setCoverForm(f => ({ ...f, [key]: e.target.value }))}
         placeholder={ph} style={inputStyle} />
     );
+    return icon && !multiline ? <IconInput icon={icon}>{control}</IconInput> : control;
+  };
 
   async function downloadCoverPDF() {
     if (!coverTpl) return;
@@ -5401,32 +5403,48 @@ Awards: ${form.awards}`;
             padding: "12px 14px 28px" }) }}>
             {coverSection("👤", "Your details", (
               <>
-                <label htmlFor="cover-field-name" style={lbl}>Full Name *</label>{coverField("name", false, "Alexandra Johnson")}
-                <label htmlFor="cover-field-jobTitle" style={lbl}>Job Title</label>{coverField("jobTitle", false, "Senior Product Designer")}
-                <label htmlFor="cover-field-email" style={lbl}>Email</label>{coverField("email", false, "you@email.com")}
-                <label htmlFor="cover-field-phone" style={lbl}>Phone</label>{coverField("phone", false, "+1 415 555 0000")}
-                <label htmlFor="cover-field-location" style={lbl}>Location</label>{coverField("location", false, "City, Country")}
+                <label htmlFor="cover-field-name" style={lbl}>Full Name *</label>{coverField("name", false, "Alexandra Johnson", "✏️")}
+                <label htmlFor="cover-field-jobTitle" style={lbl}>Job Title</label>{coverField("jobTitle", false, "Senior Product Designer", "💼")}
+                <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
+                  <div style={{ flex: 1 }}>
+                    <label htmlFor="cover-field-email" style={lbl}>Email</label>{coverField("email", false, "you@email.com", "✉️")}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label htmlFor="cover-field-phone" style={lbl}>Phone</label>{coverField("phone", false, "+1 415 555 0000", "☎️")}
+                  </div>
+                </div>
+                <label htmlFor="cover-field-location" style={lbl}>Location</label>{coverField("location", false, "City, Country", "📍")}
               </>
             ), coverForm.name ? "In progress" : "Missing")}
 
             {coverSection("🏢", "Recipient and company", (
               <>
-                <label htmlFor="cover-field-date" style={lbl}>Date</label>{coverField("date", false, "June 26, 2026")}
-                <label htmlFor="cover-field-recipientName" style={lbl}>Recipient Name</label>{coverField("recipientName", false, "Mr. David Chen")}
-                <label htmlFor="cover-field-recipientTitle" style={lbl}>Recipient Title</label>{coverField("recipientTitle", false, "Head of Design")}
-                <label htmlFor="cover-field-company" style={lbl}>Company</label>{coverField("company", false, "Stripe")}
-                <label htmlFor="cover-field-companyAddress" style={lbl}>Company Address</label>{coverField("companyAddress", false, "123 Main St, City")}
+                <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
+                  <div style={{ flex: 1 }}>
+                    <label htmlFor="cover-field-date" style={lbl}>Date</label>{coverField("date", false, "June 26, 2026", "📅")}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label htmlFor="cover-field-company" style={lbl}>Company</label>{coverField("company", false, "Stripe", "🏢")}
+                  </div>
+                </div>
+                <label htmlFor="cover-field-recipientName" style={lbl}>Recipient Name</label>{coverField("recipientName", false, "Mr. David Chen", "👤")}
+                <label htmlFor="cover-field-recipientTitle" style={lbl}>Recipient Title</label>{coverField("recipientTitle", false, "Head of Design", "💼")}
+                <label htmlFor="cover-field-companyAddress" style={lbl}>Company Address</label>{coverField("companyAddress", false, "123 Main St, City", "📍")}
               </>
             ), coverForm.company ? "In progress" : "Optional")}
 
             {coverSection("✍️", "Letter content", (
               <>
-                <label htmlFor="cover-field-subject" style={lbl}>Subject / Re:</label>{coverField("subject", false, "Senior Product Designer Position")}
+                <label htmlFor="cover-field-subject" style={lbl}>Subject / Re:</label>{coverField("subject", false, "Senior Product Designer Position", "📌")}
                 <label htmlFor="cover-field-opening" style={lbl}>Salutation</label>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                   <span style={{ fontSize: 13.5, color: C.text2, whiteSpace: "nowrap" }} aria-hidden="true">Dear</span>
-                  <input id="cover-field-opening" value={coverForm.opening} onChange={e => setCoverForm(f => ({ ...f, opening: e.target.value }))}
-                    placeholder="Mr. Chen / Hiring Manager" style={{ ...inputStyle, flex: 1 }} />
+                  <div style={{ flex: 1 }}>
+                    <IconInput icon="👤">
+                      <input id="cover-field-opening" value={coverForm.opening} onChange={e => setCoverForm(f => ({ ...f, opening: e.target.value }))}
+                        placeholder="Mr. Chen / Hiring Manager" style={inputStyle} />
+                    </IconInput>
+                  </div>
                   <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
                 </div>
                 <label htmlFor="cover-field-body" style={lbl}>Opening &amp; Body Paragraphs</label>
@@ -5441,8 +5459,12 @@ Awards: ${form.awards}`;
                   rows={3} style={{ ...inputStyle, resize: "vertical", minHeight: 80 }} />
                 <label htmlFor="cover-field-signoff" style={lbl}>Sign-off</label>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <input id="cover-field-signoff" value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
-                    placeholder="Sincerely" style={{ ...inputStyle, flex: 1 }} />
+                  <div style={{ flex: 1 }}>
+                    <IconInput icon="✍️">
+                      <input id="cover-field-signoff" value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
+                        placeholder="Sincerely" style={inputStyle} />
+                    </IconInput>
+                  </div>
                   <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
                 </div>
               </>
