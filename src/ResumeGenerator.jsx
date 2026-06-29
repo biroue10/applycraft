@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import { ACCOUNTS_ENABLED, PAYMENTS_ENABLED, ACTIVE_SEARCH_PASS } from "./config.js";
 import { initAnalytics, track, EVENTS } from "./analytics.js";
 import * as account from "./account.js";
@@ -2786,13 +2787,15 @@ function pathFromRoute({ appView, navPage, step, coverStep }) {
   return "/";
 }
 
-function getInitialAppRoute() {
+function getInitialAppRoute(pathname, hash) {
+  if (pathname) return routeFromAppPath(pathname, hash || "");
   if (typeof window === "undefined") return { ...DEFAULT_APP_ROUTE };
   return routeFromAppPath(window.location.pathname, window.location.hash);
 }
 
 export default function ResumeGenerator() {
-  const initialRoute = getInitialAppRoute();
+  const location = useLocation();
+  const initialRoute = getInitialAppRoute(location.pathname, location.hash);
   const [navPage, setNavPage] = useState(initialRoute.navPage);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sideSearch, setSideSearch] = useState("");
@@ -2807,7 +2810,11 @@ export default function ResumeGenerator() {
   const [coverTemplateFocus, setCoverTemplateFocus] = useState("");
   const [step, setStep] = useState(initialRoute.step);
   const [selectedLang, setSelectedLang] = useState(getInitialSiteLanguage);
-  const [tpl, setTpl] = useState(null);
+  const [tpl, setTpl] = useState(() => (
+    initialRoute.navPage === "resume" && initialRoute.step === "form"
+      ? TEMPLATES.find((template) => template.id === RECOMMENDED_TEMPLATE_ID) || TEMPLATES.find((template) => !template.blank) || null
+      : null
+  ));
   const emptyResumeForm = migrateForm({
     name: "", title: "", email: "", phone: "", location: "",
     linkedin: "", website: "",
@@ -2998,7 +3005,11 @@ export default function ResumeGenerator() {
     try { return localStorage.getItem("ac_ats_text") || ""; } catch { return ""; }
   });
   const [coverStep, setCoverStep] = useState(initialRoute.coverStep);
-  const [coverTpl, setCoverTpl] = useState(null);
+  const [coverTpl, setCoverTpl] = useState(() => (
+    initialRoute.navPage === "cover" && initialRoute.coverStep === "form"
+      ? COVER_TEMPLATES.find((template) => template.id === "modern") || COVER_TEMPLATES.find((template) => !template.blank) || null
+      : null
+  ));
   const [mobileCoverMode, setMobileCoverMode] = useState("edit");
   const [coverForm, setCoverForm] = useState({
     name: "", jobTitle: "", email: "", phone: "", location: "",
