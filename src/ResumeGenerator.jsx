@@ -980,6 +980,44 @@ const LANDING2_UI = {
     toolkit: "Karriere-Toolkit", searchFeatures: "Funktionen suchen...",
   },
 };
+// ── Site-footer translations (phase 7) ──
+const FOOTER_UI = {
+  en: { brand: "Free resume and cover letter builder for the global job market. {docs} document languages, {ui} interface languages, {tpl} templates, no sign-up required.",
+    product: "Product", company: "Company", resources: "Resources", legal: "Legal",
+    resumeBuilder: "Resume Builder", coverLetter: "Cover Letter", atsChecker: "ATS Checker", changelog: "Changelog", roadmap: "Roadmap", status: "Status",
+    about: "About & Founder", contact: "Contact", blog: "Blog", help: "Help Center", resumeGuide: "Resume Guide", atsGuide: "ATS Guide", coverGuide: "Cover Letter Guide",
+    freeBuilder: "Free Resume Builder", studentBuilder: "Student Resume Builder", canadianBuilder: "Canadian Resume Builder",
+    privacy: "Privacy Policy", gdpr: "GDPR", cookies: "Cookies", accessibility: "Accessibility",
+    badge1: "No account required", badge2: "Optional AI helpers", badge3: "Browser-first editing" },
+  fr: { brand: "Créateur gratuit de CV et de lettres de motivation pour le marché de l'emploi mondial. {docs} langues de document, {ui} langues d'interface, {tpl} modèles, sans inscription.",
+    product: "Produit", company: "Entreprise", resources: "Ressources", legal: "Mentions légales",
+    resumeBuilder: "Créateur de CV", coverLetter: "Lettre de motivation", atsChecker: "Vérificateur ATS", changelog: "Journal des modifications", roadmap: "Feuille de route", status: "État du service",
+    about: "À propos et fondateur", contact: "Contact", blog: "Blog", help: "Centre d'aide", resumeGuide: "Guide du CV", atsGuide: "Guide ATS", coverGuide: "Guide de la lettre de motivation",
+    freeBuilder: "Créateur de CV gratuit", studentBuilder: "Créateur de CV étudiant", canadianBuilder: "Créateur de CV canadien",
+    privacy: "Politique de confidentialité", gdpr: "RGPD", cookies: "Cookies", accessibility: "Accessibilité",
+    badge1: "Aucun compte requis", badge2: "Assistants IA facultatifs", badge3: "Édition dans le navigateur" },
+  es: { brand: "Creador gratuito de currículums y cartas de presentación para el mercado laboral global. {docs} idiomas de documento, {ui} idiomas de interfaz, {tpl} plantillas, sin registro.",
+    product: "Producto", company: "Empresa", resources: "Recursos", legal: "Legal",
+    resumeBuilder: "Creador de currículums", coverLetter: "Carta de presentación", atsChecker: "Verificador ATS", changelog: "Registro de cambios", roadmap: "Hoja de ruta", status: "Estado",
+    about: "Acerca de y fundador", contact: "Contacto", blog: "Blog", help: "Centro de ayuda", resumeGuide: "Guía del currículum", atsGuide: "Guía ATS", coverGuide: "Guía de la carta",
+    freeBuilder: "Creador de currículums gratis", studentBuilder: "Creador de CV para estudiantes", canadianBuilder: "Creador de CV canadiense",
+    privacy: "Política de privacidad", gdpr: "RGPD", cookies: "Cookies", accessibility: "Accesibilidad",
+    badge1: "Sin cuenta requerida", badge2: "Asistentes de IA opcionales", badge3: "Edición en el navegador" },
+  ar: { brand: "منشئ مجاني للسير الذاتية وخطابات التقديم لسوق العمل العالمي. {docs} لغة مستند، {ui} لغات واجهة، {tpl} قالباً، دون تسجيل.",
+    product: "المنتج", company: "الشركة", resources: "الموارد", legal: "قانوني",
+    resumeBuilder: "منشئ السيرة الذاتية", coverLetter: "خطاب التقديم", atsChecker: "فاحص ATS", changelog: "سجل التغييرات", roadmap: "خارطة الطريق", status: "الحالة",
+    about: "حول والمؤسس", contact: "اتصل بنا", blog: "المدونة", help: "مركز المساعدة", resumeGuide: "دليل السيرة الذاتية", atsGuide: "دليل ATS", coverGuide: "دليل خطاب التقديم",
+    freeBuilder: "منشئ سيرة ذاتية مجاني", studentBuilder: "منشئ سيرة ذاتية للطلاب", canadianBuilder: "منشئ سيرة ذاتية كندية",
+    privacy: "سياسة الخصوصية", gdpr: "اللائحة العامة لحماية البيانات", cookies: "ملفات تعريف الارتباط", accessibility: "إمكانية الوصول",
+    badge1: "لا حاجة لحساب", badge2: "مساعدو ذكاء اصطناعي اختياريون", badge3: "التحرير في المتصفح" },
+  de: { brand: "Kostenloser Lebenslauf- und Anschreiben-Generator für den globalen Arbeitsmarkt. {docs} Dokumentsprachen, {ui} Oberflächensprachen, {tpl} Vorlagen, ohne Anmeldung.",
+    product: "Produkt", company: "Unternehmen", resources: "Ressourcen", legal: "Rechtliches",
+    resumeBuilder: "Lebenslauf-Generator", coverLetter: "Anschreiben", atsChecker: "ATS-Prüfer", changelog: "Änderungsprotokoll", roadmap: "Roadmap", status: "Status",
+    about: "Über uns & Gründer", contact: "Kontakt", blog: "Blog", help: "Hilfecenter", resumeGuide: "Lebenslauf-Leitfaden", atsGuide: "ATS-Leitfaden", coverGuide: "Anschreiben-Leitfaden",
+    freeBuilder: "Kostenloser Lebenslauf-Generator", studentBuilder: "Lebenslauf-Generator für Studenten", canadianBuilder: "Kanadischer Lebenslauf-Generator",
+    privacy: "Datenschutzerklärung", gdpr: "DSGVO", cookies: "Cookies", accessibility: "Barrierefreiheit",
+    badge1: "Kein Konto erforderlich", badge2: "Optionale KI-Helfer", badge3: "Bearbeitung im Browser" },
+};
 
 // ── Templates ─────────────────────────────────────────────────────
 const TEMPLATES = [
@@ -8478,7 +8516,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* Footer */}
-        <SiteFooter />
+        <SiteFooter lang={lang} />
       </div>
     );
   }
@@ -8802,7 +8840,7 @@ Awards: ${form.awards}`;
           : (navPage === "tracker" || navPage === "master" || navPage === "ats")
             ? <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>{pageBody}</div>
             : pageBody}
-        {!isFormView && <SiteFooter />}
+        {!isFormView && <SiteFooter lang={lang} />}
         </div>
       </main>
     </div>
@@ -11181,7 +11219,8 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
 
 // Shared site footer, used on the landing page and every scrollable app page.
 // Self-contained (anchor links only) so it works in any render scope.
-function SiteFooter() {
+function SiteFooter({ lang }) {
+  const f = FOOTER_UI[lang] || FOOTER_UI.en;
   const col = { fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px", color: C.text3, marginBottom: 16 };
   const lk = { display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" };
   return (
@@ -11193,44 +11232,44 @@ function SiteFooter() {
             <a href="/" style={{ background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               fontSize: 20, fontWeight: 800, textDecoration: "none", display: "block", marginBottom: 12, letterSpacing: "-0.5px" }}>ApplyCraft</a>
             <p style={{ fontSize: 13, color: C.text3, lineHeight: 1.75, margin: "0 0 16px" }}>
-              Free resume and cover letter builder for the global job market. {DOCUMENT_LANGUAGE_COUNT} document languages, {UI_LANGUAGE_COUNT} interface languages, {RESUME_TEMPLATE_COUNT} templates, no sign-up required.
+              {f.brand.replace("{docs}", DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT).replace("{tpl}", RESUME_TEMPLATE_COUNT)}
             </p>
             <a href={`mailto:${AUTHOR.email}`} style={{ fontSize: 13, color: C.text2, textDecoration: "none" }}>{AUTHOR.email}</a>
           </div>
           {/* Links */}
           <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
             <div>
-              <div style={col}>Product</div>
-              <a href="/resume/templates" style={lk}>Resume Builder</a>
-              <a href="/cover-letter/templates" style={lk}>Cover Letter</a>
-              <a href="/ats-checker/" style={lk}>ATS Checker</a>
-              <a href="/changelog/" style={lk}>Changelog</a>
-              <a href="/roadmap/" style={lk}>Roadmap</a>
-              <a href="/status/" style={lk}>Status</a>
+              <div style={col}>{f.product}</div>
+              <a href="/resume/templates" style={lk}>{f.resumeBuilder}</a>
+              <a href="/cover-letter/templates" style={lk}>{f.coverLetter}</a>
+              <a href="/ats-checker/" style={lk}>{f.atsChecker}</a>
+              <a href="/changelog/" style={lk}>{f.changelog}</a>
+              <a href="/roadmap/" style={lk}>{f.roadmap}</a>
+              <a href="/status/" style={lk}>{f.status}</a>
             </div>
             <div>
-              <div style={col}>Company</div>
-              <a href="/about/" style={lk}>About &amp; Founder</a>
-              <a href="/contact/" style={lk}>Contact</a>
+              <div style={col}>{f.company}</div>
+              <a href="/about/" style={lk}>{f.about}</a>
+              <a href="/contact/" style={lk}>{f.contact}</a>
               {AUTHOR.github && <a href={AUTHOR.github} target="_blank" rel="noopener noreferrer" style={lk}>GitHub</a>}
             </div>
             <div>
-              <div style={col}>Resources</div>
-              <a href="/blog/" style={lk}>Blog</a>
-              <a href="/help/" style={lk}>Help Center</a>
-              <a href="/resume-builder/" style={lk}>Resume Guide</a>
-              <a href="/ats-resume-builder/" style={lk}>ATS Guide</a>
-              <a href="/cover-letter-builder/" style={lk}>Cover Letter Guide</a>
-              <a href="/free-resume-builder/" style={lk}>Free Resume Builder</a>
-              <a href="/student-resume-builder/" style={lk}>Student Resume Builder</a>
-              <a href="/canadian-resume-builder/" style={lk}>Canadian Resume Builder</a>
+              <div style={col}>{f.resources}</div>
+              <a href="/blog/" style={lk}>{f.blog}</a>
+              <a href="/help/" style={lk}>{f.help}</a>
+              <a href="/resume-builder/" style={lk}>{f.resumeGuide}</a>
+              <a href="/ats-resume-builder/" style={lk}>{f.atsGuide}</a>
+              <a href="/cover-letter-builder/" style={lk}>{f.coverGuide}</a>
+              <a href="/free-resume-builder/" style={lk}>{f.freeBuilder}</a>
+              <a href="/student-resume-builder/" style={lk}>{f.studentBuilder}</a>
+              <a href="/canadian-resume-builder/" style={lk}>{f.canadianBuilder}</a>
             </div>
             <div>
-              <div style={col}>Legal</div>
-              <a href="/privacy/" style={lk}>Privacy Policy</a>
-              <a href="/privacy/#gdpr" style={lk}>GDPR</a>
-              <a href="/privacy/#cookies" style={lk}>Cookies</a>
-              <a href="/accessibility/" style={lk}>Accessibility</a>
+              <div style={col}>{f.legal}</div>
+              <a href="/privacy/" style={lk}>{f.privacy}</a>
+              <a href="/privacy/#gdpr" style={lk}>{f.gdpr}</a>
+              <a href="/privacy/#cookies" style={lk}>{f.cookies}</a>
+              <a href="/accessibility/" style={lk}>{f.accessibility}</a>
             </div>
           </div>
         </div>
@@ -11238,9 +11277,9 @@ function SiteFooter() {
           display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
           <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft by Biroue Digital Ltd · applycraft.io</div>
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
-            <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="lock" size={13} color={C.text3} /> No account required</span>
-            <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="spark" size={13} color={C.text3} /> Optional AI helpers</span>
-            <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="globe" size={13} color={C.text3} /> Browser-first editing</span>
+            <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="lock" size={13} color={C.text3} /> {f.badge1}</span>
+            <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="spark" size={13} color={C.text3} /> {f.badge2}</span>
+            <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="globe" size={13} color={C.text3} /> {f.badge3}</span>
           </div>
         </div>
       </div>
