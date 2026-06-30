@@ -822,6 +822,164 @@ const MODAL_UI = {
       errGeneric: "Etwas ist schiefgelaufen — bitte versuche es erneut.", sending: "Wird gesendet…", send: "Feedback senden →" },
   },
 };
+// ── Landing marketing-body translations (phase 6) ──
+const LANDING2_UI = {
+  en: {
+    mp: { eyebrow: "Master Profile", t1: "Build once.", t2: "Tailor for everything.",
+      desc: "Create your complete career profile a single time — every job, every skill, every achievement. Paste a job description and get a perfectly tailored resume in seconds. No retyping, ever.",
+      btn: "Build my Master Profile →", s1: "Fill your complete career history once", s2: "Paste any job description", s3: "AI scores and selects relevant items", s4: "One-click tailored resume, ready to send" },
+    hiw: { eyebrow: "How it works", title: "A polished CV in three steps",
+      s1t: "Pick a template", s1d: "Choose from {n} professional designs — from minimal to bold. Templates use ATS-conscious structure.",
+      s2t: "Fill in your details", s2d: "Type directly into the live form. The preview updates in real time as you write.",
+      s3t: "Download & apply", s3d: "Export as PDF or DOCX in your chosen language. Ready to send in under 5 minutes.", browse: "Browse templates" },
+    strip: { suffix: "professional templates", noMatch: "No templates match", clearSearch: "Clear search", browseAllPre: "Browse all", browseAllSuf: "templates →", templatesWord: "templates", showingPre: "Showing 6 of", foundSuf: "found" },
+    pledge: { eyebrow: "Our commitment", t1: "Free means", hi: "actually free.",
+      desc: "Most resume builders give you one free resume, then charge for a second one or to remove a watermark. The ApplyCraft builder is free forever — unlimited resumes and cover letters, AI achievement coaching, and unlimited PDF or DOCX downloads, without an account or a credit card. For an active job search, optional power-ups (AI tailoring and cross-device sync) are available as a one-time 7-day pass — never a subscription, and nothing that's free today ever becomes paid.",
+      chips: ["Unlimited resumes & cover letters", "No watermarks", "No account", "No credit card", "Free AI coaching", "PDF & DOCX downloads"] },
+    cmp: { eyebrow: "How we compare", title: "No paywall at the download button.",
+      desc: "Most builders let you design a resume, then ask for your card the moment you click download. ApplyCraft never does.", col2: "Typical builders", included: "Included",
+      rows: [["Download PDF & DOCX for free", "Paywalled"], ["No account required", "Sign-up first"], ["No credit card at download", "Card required"], ["No watermarks", "Watermarked"], ["Unlimited resumes & cover letters", "1 free, then pay"], ["Built-in ATS checker", "Premium only"], ["Your data stays in your browser", "Stored on servers"], ["5 interface languages incl. Arabic (RTL)", "English only"]],
+      footnote: "“Typical builders” reflects common practices across popular paid resume tools. Optional ApplyCraft power-ups (AI tailoring, cross-device sync) are a one-time 7-day pass — never a subscription." },
+    ml: { eyebrow: "Multilingual superpowers", title: "Built for the global job market",
+      desc: "The only resume builder designed from the ground up for multilingual job seekers — write in any language, relabel across {docs} document languages, and run the interface in {ui}, including full right-to-left support.",
+      cards: [{ t: "Document labels in {docs} languages", d: "Switch resume section labels and date formats across {docs} document languages without changing your written content." }, { t: "Full interface translation in {ui} languages", d: "Use the builder interface in English, French, Spanish, Arabic, or German while keeping the resume language separate." }, { t: "Full right-to-left support", d: "Arabic, Hebrew, Farsi and other RTL languages render with correct alignment, mirroring, and typography." }, { t: "Formatting survives translation", d: "Your layout, template, and design stay stable after translation. Only the words change." }, { t: "Multilingual cover letters", d: "Create a matching cover letter with the same formatting approach as your resume." }] },
+    priv: { eyebrow: "Privacy & trust", title: "Your resume data stays yours. Always.",
+      desc: "Resume data is personal. ApplyCraft is designed around browser-first editing and export, without requiring an account or cloud resume storage.",
+      cards: [{ t: "No account required", b: "ApplyCraft does not require an email, password, or account profile to use the core resume builder." }, { t: "Optional AI helpers", b: "Use AI or translation helpers only when you are comfortable with the relevant provider processing submitted text." }, { t: "Privacy-conscious design", b: "The builder is designed to reduce the amount of personal data handled by the service." }, { t: "Delete local data", b: "Remove ApplyCraft-created master profile, job tracker, and ATS checker records from this browser." }, { t: "Browser-side export", b: "The standard PDF and DOCX export flow runs in the browser using JavaScript." }, { t: "No account profile", b: "No email, password, or personal dashboard is required before creating and downloading a resume." }],
+      del: "Delete local data", read: "Read our full Privacy Policy →" },
+    ea: { title: "We're just getting started",
+      p1: "ApplyCraft is a new, independent tool built by one person who got tired of resume builders that paywalled basic features, added watermarks, and stored personal data without consent.",
+      p2: "No fake reviews. No VC spin. If you use ApplyCraft and it helps you land an interview, we'd genuinely love to hear about it — your feedback shapes what gets built next.", share: "Share your experience →" },
+    faq: { eyebrow: "FAQ", title: "Common questions",
+      items: [{ q: "Is ApplyCraft really free?", a: "Yes. The core builder, templates, language options, previews, and PDF or DOCX downloads are available without a paid tier, account, or credit card." }, { q: "Do you store or sell my data?", a: "ApplyCraft does not require an account profile to build a resume. Standard editing and export are browser-first; optional AI and translation helpers may process the text you choose to submit." }, { q: "Are the templates ATS-compatible?", a: "The templates are designed with readable typography, clear section headings, and ATS-conscious layouts to improve parsing compatibility." }, { q: "Can I really use {docs} document languages?", a: "Yes. Type directly in any language, switch document labels and date formats across {docs} document languages, and use the Translate button to convert an existing CV to a different language without rebuilding from scratch. RTL languages like Arabic are fully supported." }, { q: "What download formats are available?", a: "PDF and DOCX. PDF is ideal for most applications. DOCX is available for recruiters or employers who need an editable file." }, { q: "Do I need to create an account?", a: "No. There is no sign-up, no login, no email address required. Open the app and start building immediately." }] },
+    final: { title: "Start building for free", sub: "No account needed. Download your resume in seconds." },
+    toolkit: "Career toolkit", searchFeatures: "Search features...",
+  },
+  fr: {
+    mp: { eyebrow: "Profil principal", t1: "Créez une fois.", t2: "Adaptez pour tout.",
+      desc: "Créez une seule fois votre profil de carrière complet — chaque poste, chaque compétence, chaque réussite. Collez une description de poste et obtenez un CV parfaitement adapté en quelques secondes. Plus jamais de ressaisie.",
+      btn: "Créer mon profil principal →", s1: "Remplissez tout votre parcours une seule fois", s2: "Collez n'importe quelle description de poste", s3: "L'IA évalue et sélectionne les éléments pertinents", s4: "CV adapté en un clic, prêt à envoyer" },
+    hiw: { eyebrow: "Comment ça marche", title: "Un CV soigné en trois étapes",
+      s1t: "Choisissez un modèle", s1d: "Choisissez parmi {n} designs professionnels — du minimaliste au audacieux. Les modèles utilisent une structure compatible ATS.",
+      s2t: "Saisissez vos informations", s2d: "Saisissez directement dans le formulaire en direct. L'aperçu se met à jour en temps réel.",
+      s3t: "Téléchargez et postulez", s3d: "Exportez en PDF ou DOCX dans la langue choisie. Prêt à envoyer en moins de 5 minutes.", browse: "Parcourir les modèles" },
+    strip: { suffix: "modèles professionnels", noMatch: "Aucun modèle ne correspond à", clearSearch: "Effacer la recherche", browseAllPre: "Parcourir les", browseAllSuf: "modèles →", templatesWord: "modèles", showingPre: "Affichage de 6 sur", foundSuf: "trouvés" },
+    pledge: { eyebrow: "Notre engagement", t1: "Gratuit signifie", hi: "vraiment gratuit.",
+      desc: "La plupart des créateurs de CV offrent un CV gratuit, puis facturent le deuxième ou la suppression du filigrane. L'éditeur ApplyCraft est gratuit pour toujours — CV et lettres illimités, coaching IA des réalisations, et téléchargements PDF ou DOCX illimités, sans compte ni carte bancaire. Pour une recherche active, des options facultatives (adaptation IA et synchronisation multi-appareils) sont disponibles via un pass unique de 7 jours — jamais un abonnement, et rien de gratuit aujourd'hui ne deviendra payant.",
+      chips: ["CV et lettres illimités", "Sans filigrane", "Sans compte", "Sans carte bancaire", "Coaching IA gratuit", "Téléchargements PDF et DOCX"] },
+    cmp: { eyebrow: "Comparaison", title: "Aucun paywall au moment du téléchargement.",
+      desc: "La plupart des outils vous laissent concevoir un CV, puis réclament votre carte dès que vous cliquez sur télécharger. ApplyCraft ne le fait jamais.", col2: "Outils habituels", included: "Inclus",
+      rows: [["Téléchargement PDF et DOCX gratuit", "Payant"], ["Aucun compte requis", "Inscription d'abord"], ["Aucune carte au téléchargement", "Carte requise"], ["Sans filigrane", "Avec filigrane"], ["CV et lettres illimités", "1 gratuit, puis payant"], ["Vérificateur ATS intégré", "Premium uniquement"], ["Vos données restent dans votre navigateur", "Stockées sur des serveurs"], ["5 langues d'interface dont l'arabe (RTL)", "Anglais uniquement"]],
+      footnote: "« Outils habituels » reflète les pratiques courantes des principaux créateurs de CV payants. Les options ApplyCraft (adaptation IA, synchronisation) sont un pass unique de 7 jours — jamais un abonnement." },
+    ml: { eyebrow: "Super-pouvoirs multilingues", title: "Conçu pour le marché de l'emploi mondial",
+      desc: "Le seul créateur de CV conçu dès le départ pour les candidats multilingues — écrivez dans n'importe quelle langue, réétiquetez parmi {docs} langues de document, et utilisez l'interface en {ui}, avec une prise en charge complète de droite à gauche.",
+      cards: [{ t: "Étiquettes de document en {docs} langues", d: "Changez les étiquettes de section et les formats de date parmi {docs} langues de document sans modifier votre contenu." }, { t: "Interface traduite en {ui} langues", d: "Utilisez l'interface en anglais, français, espagnol, arabe ou allemand tout en gardant la langue du CV séparée." }, { t: "Prise en charge complète de droite à gauche", d: "L'arabe, l'hébreu, le farsi et d'autres langues RTL s'affichent avec un alignement et une typographie corrects." }, { t: "La mise en forme survit à la traduction", d: "Votre mise en page, votre modèle et votre design restent stables après traduction. Seuls les mots changent." }, { t: "Lettres de motivation multilingues", d: "Créez une lettre assortie avec la même approche de mise en forme que votre CV." }] },
+    priv: { eyebrow: "Confidentialité et confiance", title: "Vos données de CV restent les vôtres. Toujours.",
+      desc: "Les données de CV sont personnelles. ApplyCraft est conçu autour d'une édition et d'un export dans le navigateur, sans compte ni stockage de CV dans le cloud.",
+      cards: [{ t: "Aucun compte requis", b: "ApplyCraft n'exige ni e-mail, ni mot de passe, ni profil de compte pour utiliser l'éditeur principal." }, { t: "Assistants IA facultatifs", b: "Utilisez les assistants IA ou de traduction uniquement si vous acceptez que le prestataire traite le texte soumis." }, { t: "Conception soucieuse de la vie privée", b: "L'éditeur est conçu pour réduire la quantité de données personnelles traitées par le service." }, { t: "Supprimer les données locales", b: "Supprimez de ce navigateur le profil principal, le suivi des candidatures et les enregistrements du vérificateur ATS créés par ApplyCraft." }, { t: "Export côté navigateur", b: "L'export standard PDF et DOCX s'exécute dans le navigateur en JavaScript." }, { t: "Aucun profil de compte", b: "Aucun e-mail, mot de passe ou tableau de bord n'est requis avant de créer et télécharger un CV." }],
+      del: "Supprimer les données locales", read: "Lire notre politique de confidentialité →" },
+    ea: { title: "Nous ne faisons que commencer",
+      p1: "ApplyCraft est un nouvel outil indépendant créé par une seule personne, lassée des créateurs de CV qui verrouillaient les fonctions de base, ajoutaient des filigranes et stockaient les données personnelles sans consentement.",
+      p2: "Pas de faux avis. Pas de discours marketing. Si ApplyCraft vous aide à décrocher un entretien, nous serions ravis de le savoir — votre avis oriente les prochaines fonctionnalités.", share: "Partagez votre expérience →" },
+    faq: { eyebrow: "FAQ", title: "Questions fréquentes",
+      items: [{ q: "ApplyCraft est-il vraiment gratuit ?", a: "Oui. L'éditeur, les modèles, les options de langue, les aperçus et les téléchargements PDF ou DOCX sont disponibles sans offre payante, compte ni carte bancaire." }, { q: "Stockez-vous ou vendez-vous mes données ?", a: "ApplyCraft n'exige pas de compte pour créer un CV. L'édition et l'export standards se font dans le navigateur ; les assistants IA et de traduction facultatifs peuvent traiter le texte que vous soumettez." }, { q: "Les modèles sont-ils compatibles ATS ?", a: "Les modèles sont conçus avec une typographie lisible, des intitulés de section clairs et des mises en page compatibles ATS pour améliorer l'analyse." }, { q: "Puis-je vraiment utiliser {docs} langues de document ?", a: "Oui. Écrivez dans n'importe quelle langue, changez les étiquettes et formats de date parmi {docs} langues, et utilisez le bouton Traduire pour convertir un CV existant sans tout refaire. Les langues RTL comme l'arabe sont entièrement prises en charge." }, { q: "Quels formats de téléchargement sont disponibles ?", a: "PDF et DOCX. Le PDF convient à la plupart des candidatures. Le DOCX est disponible pour les recruteurs qui ont besoin d'un fichier modifiable." }, { q: "Dois-je créer un compte ?", a: "Non. Aucune inscription, aucune connexion, aucune adresse e-mail requise. Ouvrez l'application et commencez immédiatement." }] },
+    final: { title: "Commencez gratuitement", sub: "Aucun compte nécessaire. Téléchargez votre CV en quelques secondes." },
+    toolkit: "Boîte à outils carrière", searchFeatures: "Rechercher des fonctions...",
+  },
+  es: {
+    mp: { eyebrow: "Perfil maestro", t1: "Créalo una vez.", t2: "Adáptalo para todo.",
+      desc: "Crea una sola vez tu perfil de carrera completo — cada empleo, cada habilidad, cada logro. Pega una descripción de puesto y obtén un currículum perfectamente adaptado en segundos. Nunca más volver a escribir.",
+      btn: "Crear mi perfil maestro →", s1: "Completa todo tu historial profesional una vez", s2: "Pega cualquier descripción de puesto", s3: "La IA puntúa y selecciona los elementos relevantes", s4: "Currículum adaptado en un clic, listo para enviar" },
+    hiw: { eyebrow: "Cómo funciona", title: "Un CV pulido en tres pasos",
+      s1t: "Elige una plantilla", s1d: "Elige entre {n} diseños profesionales — de minimalista a llamativo. Las plantillas usan una estructura compatible con ATS.",
+      s2t: "Rellena tus datos", s2d: "Escribe directamente en el formulario en vivo. La vista previa se actualiza en tiempo real.",
+      s3t: "Descarga y postula", s3d: "Exporta en PDF o DOCX en el idioma elegido. Listo para enviar en menos de 5 minutos.", browse: "Ver plantillas" },
+    strip: { suffix: "plantillas profesionales", noMatch: "Ninguna plantilla coincide con", clearSearch: "Borrar búsqueda", browseAllPre: "Ver las", browseAllSuf: "plantillas →", templatesWord: "plantillas", showingPre: "Mostrando 6 de", foundSuf: "encontradas" },
+    pledge: { eyebrow: "Nuestro compromiso", t1: "Gratis significa", hi: "realmente gratis.",
+      desc: "La mayoría de los creadores de CV te dan uno gratis y luego cobran por el segundo o por quitar la marca de agua. El editor de ApplyCraft es gratis para siempre — currículums y cartas ilimitados, coaching de logros con IA y descargas ilimitadas en PDF o DOCX, sin cuenta ni tarjeta. Para una búsqueda activa, hay mejoras opcionales (adaptación con IA y sincronización entre dispositivos) mediante un pase único de 7 días — nunca una suscripción, y nada que sea gratis hoy pasará a ser de pago.",
+      chips: ["Currículums y cartas ilimitados", "Sin marcas de agua", "Sin cuenta", "Sin tarjeta", "Coaching de IA gratis", "Descargas PDF y DOCX"] },
+    cmp: { eyebrow: "Cómo comparamos", title: "Sin muro de pago en el botón de descarga.",
+      desc: "La mayoría de los creadores te dejan diseñar un currículum y luego piden tu tarjeta al pulsar descargar. ApplyCraft nunca lo hace.", col2: "Creadores típicos", included: "Incluido",
+      rows: [["Descarga PDF y DOCX gratis", "De pago"], ["Sin cuenta requerida", "Registro primero"], ["Sin tarjeta al descargar", "Tarjeta requerida"], ["Sin marcas de agua", "Con marca de agua"], ["Currículums y cartas ilimitados", "1 gratis, luego pago"], ["Verificador ATS integrado", "Solo premium"], ["Tus datos quedan en tu navegador", "Almacenados en servidores"], ["5 idiomas de interfaz incl. árabe (RTL)", "Solo inglés"]],
+      footnote: "«Creadores típicos» refleja prácticas comunes de las herramientas de CV de pago populares. Las mejoras opcionales de ApplyCraft (adaptación IA, sincronización) son un pase único de 7 días — nunca una suscripción." },
+    ml: { eyebrow: "Superpoderes multilingües", title: "Diseñado para el mercado laboral global",
+      desc: "El único creador de CV diseñado desde cero para candidatos multilingües — escribe en cualquier idioma, reetiqueta entre {docs} idiomas de documento y usa la interfaz en {ui}, con soporte completo de derecha a izquierda.",
+      cards: [{ t: "Etiquetas de documento en {docs} idiomas", d: "Cambia las etiquetas de sección y los formatos de fecha entre {docs} idiomas de documento sin cambiar tu contenido." }, { t: "Interfaz traducida en {ui} idiomas", d: "Usa la interfaz en inglés, francés, español, árabe o alemán manteniendo separado el idioma del currículum." }, { t: "Soporte completo de derecha a izquierda", d: "El árabe, el hebreo, el farsi y otros idiomas RTL se muestran con alineación y tipografía correctas." }, { t: "El formato sobrevive a la traducción", d: "Tu diseño, plantilla y estilo permanecen estables tras la traducción. Solo cambian las palabras." }, { t: "Cartas de presentación multilingües", d: "Crea una carta a juego con el mismo enfoque de formato que tu currículum." }] },
+    priv: { eyebrow: "Privacidad y confianza", title: "Tus datos del currículum son tuyos. Siempre.",
+      desc: "Los datos del currículum son personales. ApplyCraft está diseñado en torno a la edición y exportación en el navegador, sin requerir cuenta ni almacenamiento en la nube.",
+      cards: [{ t: "Sin cuenta requerida", b: "ApplyCraft no requiere correo, contraseña ni perfil de cuenta para usar el editor principal." }, { t: "Asistentes de IA opcionales", b: "Usa los asistentes de IA o traducción solo cuando te sientas cómodo con que el proveedor procese el texto enviado." }, { t: "Diseño respetuoso con la privacidad", b: "El editor está diseñado para reducir la cantidad de datos personales que maneja el servicio." }, { t: "Eliminar datos locales", b: "Elimina de este navegador el perfil maestro, el seguimiento de empleos y los registros del verificador ATS creados por ApplyCraft." }, { t: "Exportación en el navegador", b: "El flujo estándar de exportación PDF y DOCX se ejecuta en el navegador con JavaScript." }, { t: "Sin perfil de cuenta", b: "No se requiere correo, contraseña ni panel personal antes de crear y descargar un currículum." }],
+      del: "Eliminar datos locales", read: "Leer nuestra política de privacidad completa →" },
+    ea: { title: "Apenas estamos empezando",
+      p1: "ApplyCraft es una herramienta nueva e independiente creada por una sola persona, cansada de los creadores de CV que cobraban por funciones básicas, añadían marcas de agua y almacenaban datos personales sin consentimiento.",
+      p2: "Sin reseñas falsas. Sin discurso de inversores. Si usas ApplyCraft y te ayuda a conseguir una entrevista, nos encantaría saberlo — tu opinión define lo próximo que construiremos.", share: "Comparte tu experiencia →" },
+    faq: { eyebrow: "Preguntas frecuentes", title: "Preguntas comunes",
+      items: [{ q: "¿ApplyCraft es realmente gratis?", a: "Sí. El editor, las plantillas, las opciones de idioma, las vistas previas y las descargas en PDF o DOCX están disponibles sin nivel de pago, cuenta ni tarjeta." }, { q: "¿Almacenan o venden mis datos?", a: "ApplyCraft no requiere una cuenta para crear un currículum. La edición y exportación estándar son en el navegador; los asistentes opcionales de IA y traducción pueden procesar el texto que elijas enviar." }, { q: "¿Las plantillas son compatibles con ATS?", a: "Las plantillas están diseñadas con tipografía legible, encabezados de sección claros y diseños compatibles con ATS para mejorar el análisis." }, { q: "¿Puedo usar de verdad {docs} idiomas de documento?", a: "Sí. Escribe en cualquier idioma, cambia las etiquetas y formatos de fecha entre {docs} idiomas, y usa el botón Traducir para convertir un CV existente sin rehacerlo. Los idiomas RTL como el árabe son totalmente compatibles." }, { q: "¿Qué formatos de descarga hay?", a: "PDF y DOCX. El PDF es ideal para la mayoría de candidaturas. El DOCX está disponible para reclutadores que necesitan un archivo editable." }, { q: "¿Necesito crear una cuenta?", a: "No. No hay registro, ni inicio de sesión, ni correo requerido. Abre la app y empieza de inmediato." }] },
+    final: { title: "Empieza gratis", sub: "Sin cuenta. Descarga tu currículum en segundos." },
+    toolkit: "Kit de carrera", searchFeatures: "Buscar funciones...",
+  },
+  ar: {
+    mp: { eyebrow: "الملف الرئيسي", t1: "أنشئه مرة واحدة.", t2: "خصّصه لكل شيء.",
+      desc: "أنشئ ملفك المهني الكامل مرة واحدة — كل وظيفة، وكل مهارة، وكل إنجاز. الصق وصف وظيفة واحصل على سيرة ذاتية مخصصة تماماً في ثوانٍ. دون إعادة كتابة أبداً.",
+      btn: "أنشئ ملفي الرئيسي →", s1: "املأ تاريخك المهني الكامل مرة واحدة", s2: "الصق أي وصف وظيفة", s3: "يقيّم الذكاء الاصطناعي ويختار العناصر ذات الصلة", s4: "سيرة ذاتية مخصصة بنقرة واحدة، جاهزة للإرسال" },
+    hiw: { eyebrow: "كيف يعمل", title: "سيرة ذاتية أنيقة في ثلاث خطوات",
+      s1t: "اختر قالباً", s1d: "اختر من بين {n} تصميماً احترافياً — من البسيط إلى الجريء. تستخدم القوالب بنية متوافقة مع أنظمة ATS.",
+      s2t: "املأ بياناتك", s2d: "اكتب مباشرةً في النموذج المباشر. تتحدّث المعاينة فوراً أثناء الكتابة.",
+      s3t: "نزّل وقدّم", s3d: "صدّر بصيغة PDF أو DOCX باللغة التي تختارها. جاهزة للإرسال في أقل من 5 دقائق.", browse: "تصفّح القوالب" },
+    strip: { suffix: "قالباً احترافياً", noMatch: "لا توجد قوالب مطابقة لـ", clearSearch: "مسح البحث", browseAllPre: "تصفّح كل", browseAllSuf: "قالب →", templatesWord: "قالب", showingPre: "عرض 6 من", foundSuf: "موجودة" },
+    pledge: { eyebrow: "التزامنا", t1: "مجاني يعني", hi: "مجاني فعلاً.",
+      desc: "تمنحك معظم أدوات إنشاء السير الذاتية سيرة مجانية واحدة، ثم تتقاضى رسوماً مقابل الثانية أو لإزالة العلامة المائية. محرر ApplyCraft مجاني للأبد — سير ذاتية وخطابات غير محدودة، وتدريب على الإنجازات بالذكاء الاصطناعي، وتنزيلات PDF أو DOCX غير محدودة، دون حساب أو بطاقة ائتمان. للبحث النشط عن وظيفة، تتوفر إضافات اختيارية (تخصيص بالذكاء الاصطناعي ومزامنة عبر الأجهزة) كتذكرة لمرة واحدة لمدة 7 أيام — وليست اشتراكاً أبداً، ولن يصبح أي شيء مجاني اليوم مدفوعاً.",
+      chips: ["سير ذاتية وخطابات غير محدودة", "بدون علامات مائية", "بدون حساب", "بدون بطاقة ائتمان", "تدريب ذكاء اصطناعي مجاني", "تنزيلات PDF و DOCX"] },
+    cmp: { eyebrow: "كيف نتميز", title: "لا جدار دفع عند زر التنزيل.",
+      desc: "تتيح لك معظم الأدوات تصميم سيرة ذاتية، ثم تطلب بطاقتك لحظة النقر على التنزيل. ApplyCraft لا يفعل ذلك أبداً.", col2: "الأدوات المعتادة", included: "مُضمَّن",
+      rows: [["تنزيل PDF و DOCX مجاناً", "مدفوع"], ["لا حاجة لحساب", "التسجيل أولاً"], ["لا بطاقة عند التنزيل", "البطاقة مطلوبة"], ["بدون علامات مائية", "بعلامة مائية"], ["سير ذاتية وخطابات غير محدودة", "واحدة مجانية ثم الدفع"], ["فاحص ATS مدمج", "للنسخة المدفوعة فقط"], ["بياناتك تبقى في متصفحك", "مخزّنة على الخوادم"], ["5 لغات واجهة منها العربية (RTL)", "الإنجليزية فقط"]],
+      footnote: "تعكس عبارة «الأدوات المعتادة» الممارسات الشائعة بين أدوات السير الذاتية المدفوعة الشهيرة. إضافات ApplyCraft الاختيارية (التخصيص بالذكاء الاصطناعي والمزامنة) هي تذكرة لمرة واحدة لمدة 7 أيام — وليست اشتراكاً أبداً." },
+    ml: { eyebrow: "قدرات متعددة اللغات", title: "مصمّم لسوق العمل العالمي",
+      desc: "منشئ السير الذاتية الوحيد المصمّم من الأساس للباحثين عن عمل متعددي اللغات — اكتب بأي لغة، وأعد التسمية عبر {docs} لغة مستند، وشغّل الواجهة بـ{ui}، مع دعم كامل للكتابة من اليمين إلى اليسار.",
+      cards: [{ t: "تسميات المستند بـ{docs} لغة", d: "بدّل تسميات أقسام السيرة وصيغ التواريخ عبر {docs} لغة مستند دون تغيير المحتوى المكتوب." }, { t: "ترجمة كاملة للواجهة بـ{ui} لغات", d: "استخدم واجهة المحرر بالإنجليزية أو الفرنسية أو الإسبانية أو العربية أو الألمانية مع إبقاء لغة السيرة منفصلة." }, { t: "دعم كامل للكتابة من اليمين إلى اليسار", d: "تُعرض العربية والعبرية والفارسية وغيرها من لغات RTL بمحاذاة وانعكاس وطباعة صحيحة." }, { t: "التنسيق يصمد بعد الترجمة", d: "يبقى تخطيطك وقالبك وتصميمك ثابتاً بعد الترجمة. تتغيّر الكلمات فقط." }, { t: "خطابات تقديم متعددة اللغات", d: "أنشئ خطاب تقديم مطابقاً بنفس أسلوب تنسيق سيرتك الذاتية." }] },
+    priv: { eyebrow: "الخصوصية والثقة", title: "بيانات سيرتك الذاتية تبقى لك. دائماً.",
+      desc: "بيانات السيرة الذاتية شخصية. صُمّم ApplyCraft حول التحرير والتصدير في المتصفح، دون الحاجة إلى حساب أو تخزين سحابي للسيرة.",
+      cards: [{ t: "لا حاجة لحساب", b: "لا يتطلب ApplyCraft بريداً أو كلمة مرور أو ملف حساب لاستخدام المحرر الأساسي." }, { t: "مساعدو ذكاء اصطناعي اختياريون", b: "استخدم مساعدي الذكاء الاصطناعي أو الترجمة فقط عندما تكون مرتاحاً لمعالجة المزوّد للنص المُرسَل." }, { t: "تصميم يراعي الخصوصية", b: "صُمّم المحرر لتقليل كمية البيانات الشخصية التي تعالجها الخدمة." }, { t: "حذف البيانات المحلية", b: "احذف من هذا المتصفح الملف الرئيسي ومتابعة الوظائف وسجلات فاحص ATS التي أنشأها ApplyCraft." }, { t: "التصدير في المتصفح", b: "يجري تدفق التصدير القياسي بصيغة PDF و DOCX في المتصفح باستخدام JavaScript." }, { t: "لا ملف حساب", b: "لا حاجة لبريد أو كلمة مرور أو لوحة شخصية قبل إنشاء السيرة الذاتية وتنزيلها." }],
+      del: "حذف البيانات المحلية", read: "اقرأ سياسة الخصوصية الكاملة →" },
+    ea: { title: "نحن في البداية فقط",
+      p1: "ApplyCraft أداة جديدة ومستقلة بناها شخص واحد سئم من أدوات السير الذاتية التي تحجب الميزات الأساسية خلف الدفع، وتضيف علامات مائية، وتخزّن البيانات الشخصية دون موافقة.",
+      p2: "لا مراجعات مزيّفة. لا دعاية مستثمرين. إذا استخدمت ApplyCraft وساعدك في الحصول على مقابلة، فسنسعد حقاً بسماع ذلك — رأيك يوجّه ما سنبنيه لاحقاً.", share: "شاركنا تجربتك →" },
+    faq: { eyebrow: "الأسئلة الشائعة", title: "أسئلة شائعة",
+      items: [{ q: "هل ApplyCraft مجاني حقاً؟", a: "نعم. المحرر الأساسي والقوالب وخيارات اللغة والمعاينات وتنزيلات PDF أو DOCX متاحة دون مستوى مدفوع أو حساب أو بطاقة ائتمان." }, { q: "هل تخزّنون بياناتي أو تبيعونها؟", a: "لا يتطلب ApplyCraft حساباً لإنشاء سيرة ذاتية. التحرير والتصدير القياسيان يجريان في المتصفح؛ وقد يعالج مساعدو الذكاء الاصطناعي والترجمة الاختياريون النص الذي تختار إرساله." }, { q: "هل القوالب متوافقة مع ATS؟", a: "صُمّمت القوالب بطباعة واضحة وعناوين أقسام واضحة وتخطيطات متوافقة مع ATS لتحسين قابلية التحليل." }, { q: "هل يمكنني فعلاً استخدام {docs} لغة مستند؟", a: "نعم. اكتب مباشرةً بأي لغة، وبدّل التسميات وصيغ التواريخ عبر {docs} لغة، واستخدم زر الترجمة لتحويل سيرة موجودة إلى لغة أخرى دون إعادة البناء. لغات RTL مثل العربية مدعومة بالكامل." }, { q: "ما صيغ التنزيل المتاحة؟", a: "PDF و DOCX. PDF مثالي لمعظم الطلبات. DOCX متاح للمسؤولين عن التوظيف الذين يحتاجون ملفاً قابلاً للتعديل." }, { q: "هل أحتاج إلى إنشاء حساب؟", a: "لا. لا تسجيل ولا تسجيل دخول ولا حاجة لبريد إلكتروني. افتح التطبيق وابدأ فوراً." }] },
+    final: { title: "ابدأ مجاناً", sub: "لا حاجة لحساب. نزّل سيرتك الذاتية في ثوانٍ." },
+    toolkit: "حقيبة أدوات المهنة", searchFeatures: "ابحث في الميزات...",
+  },
+  de: {
+    mp: { eyebrow: "Master-Profil", t1: "Einmal erstellen.", t2: "Für alles anpassen.",
+      desc: "Erstelle dein vollständiges Karriereprofil ein einziges Mal — jede Stelle, jede Fähigkeit, jede Leistung. Füge eine Stellenbeschreibung ein und erhalte in Sekunden einen perfekt zugeschnittenen Lebenslauf. Nie wieder abtippen.",
+      btn: "Mein Master-Profil erstellen →", s1: "Fülle einmal deinen kompletten Werdegang aus", s2: "Füge eine beliebige Stellenbeschreibung ein", s3: "Die KI bewertet und wählt relevante Einträge aus", s4: "Maßgeschneiderter Lebenslauf per Klick, versandbereit" },
+    hiw: { eyebrow: "So funktioniert's", title: "Ein gepflegter Lebenslauf in drei Schritten",
+      s1t: "Vorlage wählen", s1d: "Wähle aus {n} professionellen Designs — von minimal bis auffällig. Die Vorlagen nutzen eine ATS-freundliche Struktur.",
+      s2t: "Daten eingeben", s2d: "Tippe direkt in das Live-Formular. Die Vorschau aktualisiert sich in Echtzeit.",
+      s3t: "Herunterladen & bewerben", s3d: "Exportiere als PDF oder DOCX in der gewählten Sprache. In unter 5 Minuten versandbereit.", browse: "Vorlagen ansehen" },
+    strip: { suffix: "professionelle Vorlagen", noMatch: "Keine Vorlagen passen zu", clearSearch: "Suche löschen", browseAllPre: "Alle", browseAllSuf: "Vorlagen ansehen →", templatesWord: "Vorlagen", showingPre: "6 von", foundSuf: "gefunden" },
+    pledge: { eyebrow: "Unser Versprechen", t1: "Kostenlos heißt", hi: "wirklich kostenlos.",
+      desc: "Die meisten Lebenslauf-Tools geben dir einen kostenlosen Lebenslauf und verlangen dann Geld für den zweiten oder zum Entfernen eines Wasserzeichens. Der ApplyCraft-Editor ist für immer kostenlos — unbegrenzte Lebensläufe und Anschreiben, KI-Leistungscoaching und unbegrenzte PDF- oder DOCX-Downloads, ohne Konto oder Kreditkarte. Für eine aktive Jobsuche gibt es optionale Power-ups (KI-Anpassung und geräteübergreifende Synchronisierung) als einmaligen 7-Tage-Pass — niemals ein Abo, und nichts, was heute kostenlos ist, wird je kostenpflichtig.",
+      chips: ["Unbegrenzte Lebensläufe & Anschreiben", "Keine Wasserzeichen", "Kein Konto", "Keine Kreditkarte", "Kostenloses KI-Coaching", "PDF- & DOCX-Downloads"] },
+    cmp: { eyebrow: "Im Vergleich", title: "Keine Bezahlschranke am Download-Button.",
+      desc: "Die meisten Tools lassen dich einen Lebenslauf gestalten und verlangen dann deine Karte, sobald du auf Download klickst. ApplyCraft tut das nie.", col2: "Typische Tools", included: "Enthalten",
+      rows: [["PDF & DOCX kostenlos herunterladen", "Kostenpflichtig"], ["Kein Konto erforderlich", "Erst Anmeldung"], ["Keine Karte beim Download", "Karte erforderlich"], ["Keine Wasserzeichen", "Mit Wasserzeichen"], ["Unbegrenzte Lebensläufe & Anschreiben", "1 gratis, dann zahlen"], ["Integrierter ATS-Prüfer", "Nur Premium"], ["Deine Daten bleiben im Browser", "Auf Servern gespeichert"], ["5 Oberflächensprachen inkl. Arabisch (RTL)", "Nur Englisch"]],
+      footnote: "„Typische Tools“ spiegelt gängige Praktiken beliebter kostenpflichtiger Lebenslauf-Tools wider. Optionale ApplyCraft-Power-ups (KI-Anpassung, Synchronisierung) sind ein einmaliger 7-Tage-Pass — niemals ein Abo." },
+    ml: { eyebrow: "Mehrsprachige Superkräfte", title: "Für den globalen Arbeitsmarkt gemacht",
+      desc: "Der einzige Lebenslauf-Generator, der von Grund auf für mehrsprachige Bewerber entwickelt wurde — schreibe in jeder Sprache, beschrifte neu über {docs} Dokumentsprachen und nutze die Oberfläche in {ui}, mit vollständiger Rechts-nach-links-Unterstützung.",
+      cards: [{ t: "Dokumentbeschriftungen in {docs} Sprachen", d: "Wechsle Abschnittsbeschriftungen und Datumsformate über {docs} Dokumentsprachen, ohne deinen Inhalt zu ändern." }, { t: "Vollständige Oberflächenübersetzung in {ui} Sprachen", d: "Nutze die Editor-Oberfläche auf Englisch, Französisch, Spanisch, Arabisch oder Deutsch, während die Lebenslaufsprache getrennt bleibt." }, { t: "Vollständige Rechts-nach-links-Unterstützung", d: "Arabisch, Hebräisch, Farsi und andere RTL-Sprachen werden mit korrekter Ausrichtung und Typografie dargestellt." }, { t: "Formatierung übersteht die Übersetzung", d: "Dein Layout, deine Vorlage und dein Design bleiben nach der Übersetzung stabil. Nur die Wörter ändern sich." }, { t: "Mehrsprachige Anschreiben", d: "Erstelle ein passendes Anschreiben mit demselben Formatierungsansatz wie dein Lebenslauf." }] },
+    priv: { eyebrow: "Datenschutz & Vertrauen", title: "Deine Lebenslaufdaten bleiben deine. Immer.",
+      desc: "Lebenslaufdaten sind persönlich. ApplyCraft ist auf browser-first Bearbeitung und Export ausgelegt, ohne Konto oder Cloud-Speicherung.",
+      cards: [{ t: "Kein Konto erforderlich", b: "ApplyCraft benötigt keine E-Mail, kein Passwort und kein Kontoprofil für den Kern-Editor." }, { t: "Optionale KI-Helfer", b: "Nutze KI- oder Übersetzungshelfer nur, wenn du damit einverstanden bist, dass der Anbieter den übermittelten Text verarbeitet." }, { t: "Datenschutzbewusstes Design", b: "Der Editor ist darauf ausgelegt, die Menge der vom Dienst verarbeiteten persönlichen Daten zu reduzieren." }, { t: "Lokale Daten löschen", b: "Entferne von ApplyCraft erstellte Master-Profil-, Job-Tracker- und ATS-Prüfer-Daten aus diesem Browser." }, { t: "Export im Browser", b: "Der Standard-PDF- und DOCX-Export läuft im Browser mit JavaScript." }, { t: "Kein Kontoprofil", b: "Keine E-Mail, kein Passwort und kein persönliches Dashboard nötig, um einen Lebenslauf zu erstellen und herunterzuladen." }],
+      del: "Lokale Daten löschen", read: "Vollständige Datenschutzerklärung lesen →" },
+    ea: { title: "Wir fangen gerade erst an",
+      p1: "ApplyCraft ist ein neues, unabhängiges Tool, gebaut von einer Person, die genug hatte von Lebenslauf-Tools, die Grundfunktionen hinter Bezahlschranken setzten, Wasserzeichen hinzufügten und persönliche Daten ohne Einwilligung speicherten.",
+      p2: "Keine gefälschten Bewertungen. Kein VC-Gerede. Wenn ApplyCraft dir hilft, ein Interview zu bekommen, würden wir uns wirklich freuen, davon zu hören — dein Feedback prägt, was als Nächstes gebaut wird.", share: "Teile deine Erfahrung →" },
+    faq: { eyebrow: "FAQ", title: "Häufige Fragen",
+      items: [{ q: "Ist ApplyCraft wirklich kostenlos?", a: "Ja. Der Kern-Editor, Vorlagen, Sprachoptionen, Vorschauen und PDF- oder DOCX-Downloads sind ohne Bezahlstufe, Konto oder Kreditkarte verfügbar." }, { q: "Speichert oder verkauft ihr meine Daten?", a: "ApplyCraft benötigt kein Kontoprofil, um einen Lebenslauf zu erstellen. Standard-Bearbeitung und -Export sind browser-first; optionale KI- und Übersetzungshelfer können den von dir übermittelten Text verarbeiten." }, { q: "Sind die Vorlagen ATS-kompatibel?", a: "Die Vorlagen sind mit lesbarer Typografie, klaren Abschnittsüberschriften und ATS-freundlichen Layouts gestaltet, um die Auslesbarkeit zu verbessern." }, { q: "Kann ich wirklich {docs} Dokumentsprachen nutzen?", a: "Ja. Schreibe direkt in jeder Sprache, wechsle Beschriftungen und Datumsformate über {docs} Sprachen und nutze die Übersetzen-Schaltfläche, um einen bestehenden Lebenslauf umzuwandeln, ohne neu zu beginnen. RTL-Sprachen wie Arabisch werden vollständig unterstützt." }, { q: "Welche Download-Formate gibt es?", a: "PDF und DOCX. PDF ist ideal für die meisten Bewerbungen. DOCX ist für Recruiter verfügbar, die eine bearbeitbare Datei benötigen." }, { q: "Muss ich ein Konto erstellen?", a: "Nein. Keine Anmeldung, kein Login, keine E-Mail erforderlich. Öffne die App und lege sofort los." }] },
+    final: { title: "Kostenlos loslegen", sub: "Kein Konto nötig. Lade deinen Lebenslauf in Sekunden herunter." },
+    toolkit: "Karriere-Toolkit", searchFeatures: "Funktionen suchen...",
+  },
+};
 
 // ── Templates ─────────────────────────────────────────────────────
 const TEMPLATES = [
@@ -3678,6 +3836,7 @@ export default function ResumeGenerator() {
   const tk = TRACKER_UI[lang] || TRACKER_UI.en; // job tracker strings
   const ms = MASTER_UI[lang] || MASTER_UI.en; // master profile strings
   const st = STATUS_UI[lang] || STATUS_UI.en; // toast / status messages
+  const l2 = LANDING2_UI[lang] || LANDING2_UI.en; // landing marketing body
   const rtl = selectedLang.rtl || false;
   const set = useCallback((k) => (e) => setForm(f => ({ ...f, [k]: e.target.value })), []);
   const setField = useCallback((k, v) => setForm(f => ({ ...f, [k]: v })), []);
@@ -7953,30 +8112,28 @@ Awards: ${form.awards}`;
               alignItems: "center" }}>
               <div style={{ flex: 1 }}>
                 <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-                  letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>Master Profile</p>
+                  letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>{l2.mp.eyebrow}</p>
                 <h2 style={{ fontSize: "clamp(24px, 3vw, 40px)", fontWeight: 800,
                   letterSpacing: "-0.8px", color: C.text1, margin: "0 0 16px", lineHeight: 1.2 }}>
-                  Build once.<br />Tailor for everything.
+                  {l2.mp.t1}<br />{l2.mp.t2}
                 </h2>
                 <p style={{ fontSize: 16, color: C.text2, lineHeight: 1.75, margin: "0 0 28px" }}>
-                  Create your complete career profile a single time — every job, every skill,
-                  every achievement. Paste a job description and get a perfectly tailored
-                  resume in seconds. No retyping, ever.
+                  {l2.mp.desc}
                 </p>
                 <button onClick={() => enter("master")}
                   style={{ padding: "12px 28px", background: C.grad, border: "none", borderRadius: 10,
                     color: "#fff", fontSize: 14.5, fontWeight: 700, cursor: "pointer",
                     fontFamily: "inherit", boxShadow: `0 4px 20px ${C.accent}44` }}>
-                  Build my Master Profile →
+                  {l2.mp.btn}
                 </button>
               </div>
               <div style={{ flex: "0 0 auto", display: "flex", flexDirection: "column", gap: 12,
                 width: isMobile ? "100%" : 280 }}>
                 {[
-                  { icon: "📋", step: "1", text: "Fill your complete career history once" },
-                  { icon: "📋", step: "2", text: "Paste any job description" },
-                  { icon: "⭐", step: "3", text: "AI scores and selects relevant items" },
-                  { icon: "📄", step: "4", text: "One-click tailored resume, ready to send" },
+                  { icon: "📋", step: "1", text: l2.mp.s1 },
+                  { icon: "📋", step: "2", text: l2.mp.s2 },
+                  { icon: "⭐", step: "3", text: l2.mp.s3 },
+                  { icon: "📄", step: "4", text: l2.mp.s4 },
                 ].map(({ icon, step, text }) => (
                   <div key={step} style={{ display: "flex", alignItems: "center", gap: 14,
                     padding: "12px 16px", background: C.elevated,
@@ -7999,17 +8156,17 @@ Awards: ${form.awards}`;
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center" }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-                letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>How it works</p>
+                letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>{l2.hiw.eyebrow}</p>
               <h2 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 800,
                 letterSpacing: "-0.8px", color: C.text1, margin: "0 0 52px" }}>
-                A polished CV in three steps
+                {l2.hiw.title}
               </h2>
             </FadeIn>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 0 }}>
               {[
-                { n: "1", title: "Pick a template", desc: `Choose from ${RESUME_TEMPLATE_COUNT} professional designs — from minimal to bold. Templates use ATS-conscious structure.` },
-                { n: "2", title: "Fill in your details", desc: "Type directly into the live form. The preview updates in real time as you write." },
-                { n: "3", title: "Download & apply", desc: "Export as PDF or DOCX in your chosen language. Ready to send in under 5 minutes." },
+                { n: "1", title: l2.hiw.s1t, desc: l2.hiw.s1d.replace("{n}", RESUME_TEMPLATE_COUNT) },
+                { n: "2", title: l2.hiw.s2t, desc: l2.hiw.s2d },
+                { n: "3", title: l2.hiw.s3t, desc: l2.hiw.s3d },
               ].map((s, i) => (
                 <FadeIn key={s.n} delay={i * 120} style={{ textAlign: "center", padding: "0 28px" }}>
                   <div style={{ width: 48, height: 48, borderRadius: "50%", background: C.grad,
@@ -8028,7 +8185,7 @@ Awards: ${form.awards}`;
                   transition: "opacity 0.2s, transform 0.2s" }}
                 onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; e.currentTarget.style.transform = "translateY(-1px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "none"; }}>
-                Browse templates
+                {l2.hiw.browse}
               </button>
             </FadeIn>
           </div>
@@ -8039,7 +8196,7 @@ Awards: ${form.awards}`;
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center" }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-                letterSpacing: "2px", color: C.text3, marginBottom: 40 }}>{RESUME_TEMPLATE_COUNT} professional templates</p>
+                letterSpacing: "2px", color: C.text3, marginBottom: 40 }}>{RESUME_TEMPLATE_COUNT} {l2.strip.suffix}</p>
             </FadeIn>
             {(() => {
               const q = tplSearch.trim().toLowerCase();
@@ -8050,11 +8207,11 @@ Awards: ${form.awards}`;
               if (visible.length === 0) return (
                 <div style={{ textAlign: "center", padding: "60px 0", color: C.text3 }}>
                   <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: C.text2 }}>No templates match "{tplSearch}"</div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: C.text2 }}>{l2.strip.noMatch} "{tplSearch}"</div>
                   <button onClick={() => setTplSearch("")}
                     style={{ marginTop: 12, fontSize: 13, color: C.accent2, background: "none",
                       border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
-                    Clear search
+                    {l2.strip.clearSearch}
                   </button>
                 </div>
               );
@@ -8090,10 +8247,10 @@ Awards: ${form.awards}`;
                   transition: "background 0.2s, border-color 0.2s" }}
                 onMouseEnter={e => { e.currentTarget.style.background = `${C.borderHi}18`; e.currentTarget.style.borderColor = C.accent2; }}
                 onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = C.borderHi; }}>
-                Browse all {RESUME_TEMPLATE_COUNT} templates →
+                {l2.strip.browseAllPre} {RESUME_TEMPLATE_COUNT} {l2.strip.browseAllSuf}
               </button>
               <div style={{ fontSize: 12, color: C.text3, marginTop: 10 }}>
-                {all.length > 6 ? `Showing 6 of ${all.length} templates` : `${all.length} template${all.length !== 1 ? "s" : ""} found`}
+                {all.length > 6 ? `${l2.strip.showingPre} ${all.length} ${l2.strip.templatesWord}` : `${all.length} ${l2.strip.templatesWord} ${l2.strip.foundSuf}`}
               </div>
             </FadeIn>
               </>);
@@ -8107,22 +8264,17 @@ Awards: ${form.awards}`;
             padding: "80px 24px", textAlign: "center" }}>
             <div style={{ maxWidth: 680, margin: "0 auto" }}>
               <div style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase",
-                letterSpacing: "2.5px", color: C.accent2, marginBottom: 16 }}>Our commitment</div>
+                letterSpacing: "2.5px", color: C.accent2, marginBottom: 16 }}>{l2.pledge.eyebrow}</div>
               <h2 style={{ fontSize: "clamp(26px, 3.5vw, 44px)", fontWeight: 800,
                 letterSpacing: "-1px", color: C.text1, margin: "0 0 16px", lineHeight: 1.15 }}>
-                Free means <span style={{ background: C.grad,
-                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>actually free.</span>
+                {l2.pledge.t1} <span style={{ background: C.grad,
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{l2.pledge.hi}</span>
               </h2>
               <p style={{ fontSize: 16, color: C.text2, lineHeight: 1.8, margin: "0 auto 36px", maxWidth: 560 }}>
-                Most resume builders give you one free resume, then charge for a second one or to remove a
-                watermark. The ApplyCraft builder is free forever — unlimited resumes and cover letters,
-                AI achievement coaching, and unlimited PDF or DOCX downloads, without an account or a credit
-                card. For an active job search, optional power-ups (AI tailoring and cross-device sync) are
-                available as a one-time 7-day pass — never a subscription, and nothing that's free today ever
-                becomes paid.
+                {l2.pledge.desc}
               </p>
               <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-                {["✓ Unlimited resumes & cover letters", "✓ No watermarks", "✓ No account", "✓ No credit card", "✓ Free AI coaching", "✓ PDF & DOCX downloads"].map(t => (
+                {l2.pledge.chips.map(c => `✓ ${c}`).map(t => (
                   <span key={t} style={{ fontSize: 12.5, fontWeight: 600, padding: "7px 16px",
                     borderRadius: 999, border: `1.5px solid ${C.accent}44`,
                     color: C.accent2, background: `${C.accent}12` }}>{t}</span>
@@ -8138,13 +8290,13 @@ Awards: ${form.awards}`;
             <div style={{ maxWidth: 820, margin: "0 auto" }}>
               <div style={{ textAlign: "center", marginBottom: 36 }}>
                 <div style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase",
-                  letterSpacing: "2.5px", color: C.accent2, marginBottom: 14 }}>How we compare</div>
+                  letterSpacing: "2.5px", color: C.accent2, marginBottom: 14 }}>{l2.cmp.eyebrow}</div>
                 <h2 style={{ fontSize: "clamp(24px, 3.2vw, 38px)", fontWeight: 800,
                   letterSpacing: "-0.8px", color: C.text1, margin: "0 0 12px", lineHeight: 1.15 }}>
-                  No paywall at the download button.
+                  {l2.cmp.title}
                 </h2>
                 <p style={{ fontSize: 15.5, color: C.text2, lineHeight: 1.7, margin: "0 auto", maxWidth: 560 }}>
-                  Most builders let you design a resume, then ask for your card the moment you click download. ApplyCraft never does.
+                  {l2.cmp.desc}
                 </p>
               </div>
               <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, overflow: "hidden" }}>
@@ -8153,29 +8305,20 @@ Awards: ${form.awards}`;
                   borderBottom: `1px solid ${C.border}`, gap: 8 }}>
                   <span />
                   <span style={{ textAlign: "center", fontSize: isMobile ? 12 : 13.5, fontWeight: 800, color: C.accent2 }}>ApplyCraft</span>
-                  <span style={{ textAlign: "center", fontSize: isMobile ? 11 : 12.5, fontWeight: 700, color: C.text3, lineHeight: 1.2 }}>Typical builders</span>
+                  <span style={{ textAlign: "center", fontSize: isMobile ? 11 : 12.5, fontWeight: 700, color: C.text3, lineHeight: 1.2 }}>{l2.cmp.col2}</span>
                 </div>
-                {[
-                  ["Download PDF & DOCX for free", "Paywalled"],
-                  ["No account required", "Sign-up first"],
-                  ["No credit card at download", "Card required"],
-                  ["No watermarks", "Watermarked"],
-                  ["Unlimited resumes & cover letters", "1 free, then pay"],
-                  ["Built-in ATS checker", "Premium only"],
-                  ["Your data stays in your browser", "Stored on servers"],
-                  ["5 interface languages incl. Arabic (RTL)", "English only"],
-                ].map(([label, other], i, arr) => (
+                {l2.cmp.rows.map(([label, other], i, arr) => (
                   <div key={label} style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 64px 64px" : "1fr 150px 170px",
                     alignItems: "center", padding: isMobile ? "11px 12px" : "13px 22px", gap: 8,
                     borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : "none" }}>
                     <span style={{ fontSize: isMobile ? 13 : 14.5, color: C.text1, fontWeight: 600 }}>{label}</span>
-                    <span style={{ textAlign: "center", color: SECTION_TOKENS.statusComplete, fontSize: 17, fontWeight: 800 }} aria-label="Included">✓</span>
+                    <span style={{ textAlign: "center", color: SECTION_TOKENS.statusComplete, fontSize: 17, fontWeight: 800 }} aria-label={l2.cmp.included}>✓</span>
                     <span style={{ textAlign: "center", color: C.text3, fontSize: isMobile ? 11 : 12.5 }}>{other}</span>
                   </div>
                 ))}
               </div>
               <p style={{ textAlign: "center", fontSize: 12.5, color: C.text3, margin: "16px auto 0", maxWidth: 560 }}>
-                “Typical builders” reflects common practices across popular paid resume tools. Optional ApplyCraft power-ups (AI tailoring, cross-device sync) are a one-time 7-day pass — never a subscription.
+                {l2.cmp.footnote}
               </p>
             </div>
           </div>
@@ -8186,21 +8329,18 @@ Awards: ${form.awards}`;
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 56 }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-                letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>Multilingual superpowers</p>
+                letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>{l2.ml.eyebrow}</p>
               <h2 style={{ fontSize: "clamp(24px, 3.5vw, 40px)", fontWeight: 800, letterSpacing: "-1px",
-                color: C.text1, margin: "0 0 16px" }}>Built for the global job market</h2>
+                color: C.text1, margin: "0 0 16px" }}>{l2.ml.title}</h2>
               <p style={{ fontSize: 15.5, color: C.text2, maxWidth: 560, margin: "0 auto", lineHeight: 1.7 }}>
-                The only resume builder designed from the ground up for multilingual job seekers — write in any language, relabel across {DOCUMENT_LANGUAGE_COUNT} document languages, and run the interface in {UI_LANGUAGE_COUNT}, including full right-to-left support.
+                {l2.ml.desc.replace("{docs}", DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT)}
               </p>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
-              {[
-                { icon: "globe", title: `Document labels in ${DOCUMENT_LANGUAGE_COUNT} languages`, desc: `Switch resume section labels and date formats across ${DOCUMENT_LANGUAGE_COUNT} document languages without changing your written content.` },
-                { icon: "document", title: `Full interface translation in ${UI_LANGUAGE_COUNT} languages`, desc: "Use the builder interface in English, French, Spanish, Arabic, or German while keeping the resume language separate." },
-                { icon: "arrowRight", title: "Full right-to-left support", desc: "Arabic, Hebrew, Farsi and other RTL languages render with correct alignment, mirroring, and typography." },
-                { icon: "check", title: "Formatting survives translation", desc: "Your layout, template, and design stay stable after translation. Only the words change." },
-                { icon: "document", title: "Multilingual cover letters", desc: "Create a matching cover letter with the same formatting approach as your resume." },
-              ].map((f, i) => (
+              {l2.ml.cards.map((c) => ({ icon: c.icon, title: c.t.replace("{docs}", DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT), desc: c.d.replace("{docs}", DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT) })).map((f, i) => {
+                const icons = ["globe", "document", "arrowRight", "check", "document"];
+                f.icon = icons[i] || "check";
+                return (
                 <FadeIn key={f.title} delay={i * 55}>
                   <div style={{ background: C.elevated,
                     borderRadius: 3, padding: "22px 20px",
@@ -8212,7 +8352,8 @@ Awards: ${form.awards}`;
                     <div style={{ fontSize: 13, color: C.text2, lineHeight: 1.65 }}>{f.desc}</div>
                   </div>
                 </FadeIn>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -8222,24 +8363,17 @@ Awards: ${form.awards}`;
           <div style={{ maxWidth: 1000, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center", marginBottom: 52 }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-                letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>Privacy &amp; trust</p>
+                letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>{l2.priv.eyebrow}</p>
               <h2 style={{ fontSize: "clamp(22px, 3vw, 38px)", fontWeight: 800,
                 letterSpacing: "-0.8px", color: C.text1, margin: "0 0 14px" }}>
-                Your resume data stays yours. Always.
+                {l2.priv.title}
               </h2>
               <p style={{ fontSize: 15, color: C.text2, maxWidth: 520, margin: "0 auto" }}>
-                Resume data is personal. ApplyCraft is designed around browser-first editing and export, without requiring an account or cloud resume storage.
+                {l2.priv.desc}
               </p>
             </FadeIn>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16, marginBottom: 40 }}>
-              {[
-                { icon: "lock", title: "No account required", body: "ApplyCraft does not require an email, password, or account profile to use the core resume builder." },
-                { icon: "spark", title: "Optional AI helpers", body: "Use AI or translation helpers only when you are comfortable with the relevant provider processing submitted text." },
-                { icon: "check", title: "Privacy-conscious design", body: "The builder is designed to reduce the amount of personal data handled by the service." },
-                { icon: "trash", title: "Delete local data", body: "Remove ApplyCraft-created master profile, job tracker, and ATS checker records from this browser." },
-                { icon: "document", title: "Browser-side export", body: "The standard PDF and DOCX export flow runs in the browser using JavaScript." },
-                { icon: "lock", title: "No account profile", body: "No email, password, or personal dashboard is required before creating and downloading a resume." },
-              ].map((f, i) => (
+              {l2.priv.cards.map((c, i) => ({ icon: ["lock","spark","check","trash","document","lock"][i], title: c.t, body: c.b })).map((f, i) => (
                 <FadeIn key={f.title} delay={i * 60}>
                   <div style={{ background: C.elevated,
                     borderRadius: 12, padding: "22px 20px" }}>
@@ -8265,13 +8399,13 @@ Awards: ${form.awards}`;
                 style={{ background: "transparent", color: C.text2, border: `1px solid ${C.borderHi}`,
                   borderRadius: 6, padding: "10px 18px", fontSize: 13, fontWeight: 700,
                   cursor: "pointer", fontFamily: "inherit" }}>
-                Delete local data
+                {l2.priv.del}
               </button>
             </div>
             <FadeIn style={{ textAlign: "center" }}>
               <a href="/privacy/" style={{ fontSize: 13.5, color: C.accent2, textDecoration: "none",
                 borderBottom: `1px solid ${C.accent}44`, paddingBottom: 2 }}>
-                Read our full Privacy Policy →
+                {l2.priv.read}
               </a>
             </FadeIn>
           </div>
@@ -8284,22 +8418,20 @@ Awards: ${form.awards}`;
               <LineIcon name="spark" size={32} color={C.accent2} style={{ margin: "0 auto 16px" }} />
               <h2 style={{ fontSize: "clamp(22px, 3vw, 34px)", fontWeight: 800,
                 letterSpacing: "-0.6px", color: C.text1, margin: "0 0 14px" }}>
-                We're just getting started
+                {l2.ea.title}
               </h2>
               <p style={{ fontSize: 15.5, color: C.text2, lineHeight: 1.7, margin: "0 0 12px" }}>
-                ApplyCraft is a new, independent tool built by one person who got tired of resume builders
-                that paywalled basic features, added watermarks, and stored personal data without consent.
+                {l2.ea.p1}
               </p>
               <p style={{ fontSize: 14.5, color: C.text3, lineHeight: 1.7, margin: "0 0 32px" }}>
-                No fake reviews. No VC spin. If you use ApplyCraft and it helps you land an interview,
-                we'd genuinely love to hear about it — your feedback shapes what gets built next.
+                {l2.ea.p2}
               </p>
               <button onClick={() => setFeedbackOpen(true)}
                 style={{ display: "inline-flex", alignItems: "center", gap: 8,
                   background: C.grad, color: "#fff", borderRadius: 8, border: "none",
                   padding: "12px 28px", fontSize: 14.5, fontWeight: 700,
                   cursor: "pointer", fontFamily: "inherit" }}>
-                Share your experience →
+                {l2.ea.share}
               </button>
             </FadeIn>
           </div>
@@ -8310,24 +8442,14 @@ Awards: ${form.awards}`;
           <div style={{ maxWidth: 760, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center", marginBottom: 52 }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
-                letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>FAQ</p>
+                letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>{l2.faq.eyebrow}</p>
               <h2 style={{ fontSize: "clamp(22px, 3vw, 38px)", fontWeight: 800,
-                letterSpacing: "-0.8px", color: C.text1, margin: 0 }}>Common questions</h2>
+                letterSpacing: "-0.8px", color: C.text1, margin: 0 }}>{l2.faq.title}</h2>
             </FadeIn>
-            {[
-              { q: "Is ApplyCraft really free?",
-                a: "Yes. The core builder, templates, language options, previews, and PDF or DOCX downloads are available without a paid tier, account, or credit card." },
-              { q: "Do you store or sell my data?",
-                a: "ApplyCraft does not require an account profile to build a resume. Standard editing and export are browser-first; optional AI and translation helpers may process the text you choose to submit." },
-              { q: "Are the templates ATS-compatible?",
-                a: "The templates are designed with readable typography, clear section headings, and ATS-conscious layouts to improve parsing compatibility." },
-              { q: `Can I really use ${DOCUMENT_LANGUAGE_COUNT} document languages?`,
-                a: `Yes. Type directly in any language, switch document labels and date formats across ${DOCUMENT_LANGUAGE_COUNT} document languages, and use the Translate button to convert an existing CV to a different language without rebuilding from scratch. RTL languages like Arabic are fully supported.` },
-              { q: "What download formats are available?",
-                a: "PDF and DOCX. PDF is ideal for most applications. DOCX is available for recruiters or employers who need an editable file." },
-              { q: "Do I need to create an account?",
-                a: "No. There is no sign-up, no login, no email address required. Open the app and start building immediately." },
-            ].map((item, i) => <FAQItem key={i} item={item} C={C} />)}
+            {l2.faq.items.map((raw, i) => {
+              const item = { q: raw.q.replace("{docs}", DOCUMENT_LANGUAGE_COUNT), a: raw.a.replace(/\{docs\}/g, DOCUMENT_LANGUAGE_COUNT) };
+              return <FAQItem key={i} item={item} C={C} />;
+            })}
           </div>
         </div>
 
@@ -8336,9 +8458,9 @@ Awards: ${form.awards}`;
           <div style={{ maxWidth: 600, margin: "0 auto" }}>
             <FadeIn>
               <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: "-1px",
-                margin: "0 0 16px", color: C.text1 }}>Start building for free</h2>
+                margin: "0 0 16px", color: C.text1 }}>{l2.final.title}</h2>
               <p style={{ fontSize: 16, color: C.text2, margin: "0 0 36px" }}>
-                No account needed. Download your resume in seconds.
+                {l2.final.sub}
               </p>
             </FadeIn>
             <FadeIn delay={120}>
@@ -8399,7 +8521,7 @@ Awards: ${form.awards}`;
                   background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                   ApplyCraft
                 </div>
-                <div style={{ fontSize: 12, color: C.text3, marginTop: 2 }}>Career toolkit</div>
+                <div style={{ fontSize: 12, color: C.text3, marginTop: 2 }}>{l2.toolkit}</div>
               </button>
             )}
             <button onClick={() => setSidebarOpen(o => !o)}
@@ -8424,7 +8546,7 @@ Awards: ${form.awards}`;
                   aria-label="Search features"
                   value={sideSearch}
                   onChange={e => setSideSearch(e.target.value)}
-                  placeholder="Search features..."
+                  placeholder={l2.searchFeatures}
                   style={{ width: "100%", background: C.elevated, border: `1px solid ${C.border}`,
                     borderRadius: 8, padding: "7px 28px 7px 32px", fontSize: 13.5, color: C.text1,
                     fontFamily: "inherit", outline: "none", boxSizing: "border-box",
