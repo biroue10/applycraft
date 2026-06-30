@@ -31,7 +31,7 @@
     "vite-react-ssg": "^0.9.1-beta.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.7.0",
+    "@vitejs/plugin-react": "^6.0.3",
     "axe-core": "^4.12.1",
     "jsdom": "^29.1.1",
     "rollup-plugin-visualizer": "^6.0.11",
