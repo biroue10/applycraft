@@ -549,6 +549,179 @@ const COVER_UI = {
   },
 };
 
+// ── ATS Checker / Job Tracker / Master Profile translations (phase 4) ──
+const ATS_UI = {
+  en: { toolName: "ATS Checker", freeTool: "Free tool", title: "ATS Resume Checker",
+    sub: "Paste your resume and get an instant ATS score, keyword gap analysis, and a prioritized fix list. Nothing is uploaded; the check runs in your browser.",
+    detected: "Resume text detected from the ATS Checker page.", loadCheck: "Load & check →",
+    yourResume: "Your resume", reading: "Reading…", uploadBtn: "Upload PDF/DOCX", jdLabel: "Job description", optional: "optional",
+    analysing: "Analysing…", checkBtn: "Check My Resume →", scoreDesc: "ATS Readiness Score — reflects structure, completeness, and content quality.",
+    critical: "Critical", warning: "Warning", info: "Info", allClear: "All clear", keywordMatch: "Keyword Match",
+    crossLangPre: "Cross-language matching —", resumeWord: "resume", jdWord: "job description", kwMatchJd: "keyword match with JD",
+    matchedWord: "matched", missingWord: "missing", matchedLabel: "Matched", missingLabel: "Missing", noMissing: "✓ No significant missing keywords!",
+    aiSuggestions: "AI suggestions", aiDesc1: "Sends your resume", aiDescJd: "+ job description",
+    aiDesc2: "to the AI helper to catch semantic & cross-language matches and suggest rewrites. Nothing is sent until you click.",
+    thinking: "Thinking…", getAi: "Get AI suggestions", noIssues: "✓ No significant issues — your resume is well-structured for ATS parsing.",
+    issues: "Issues", fixTitle: "Fix these issues in the builder",
+    fixDesc: "ApplyCraft shows your live ATS score as you type. Pick a template, fill in the gaps, and export a polished PDF or DOCX — free, no account needed.",
+    openBuilder: "Open in Resume Builder →" },
+  fr: { toolName: "Vérificateur ATS", freeTool: "Outil gratuit", title: "Vérificateur de CV ATS",
+    sub: "Collez votre CV et obtenez un score ATS instantané, une analyse des mots-clés manquants et une liste de corrections priorisée. Rien n'est téléversé ; l'analyse s'exécute dans votre navigateur.",
+    detected: "Texte de CV détecté depuis la page du vérificateur ATS.", loadCheck: "Charger et vérifier →",
+    yourResume: "Votre CV", reading: "Lecture…", uploadBtn: "Importer PDF/DOCX", jdLabel: "Description du poste", optional: "facultatif",
+    analysing: "Analyse…", checkBtn: "Vérifier mon CV →", scoreDesc: "Score de compatibilité ATS — reflète la structure, l'exhaustivité et la qualité du contenu.",
+    critical: "Critique", warning: "Avertissement", info: "Info", allClear: "Tout est bon", keywordMatch: "Correspondance des mots-clés",
+    crossLangPre: "Correspondance multilingue —", resumeWord: "CV", jdWord: "description du poste", kwMatchJd: "de correspondance avec l'offre",
+    matchedWord: "trouvés", missingWord: "manquants", matchedLabel: "Trouvés", missingLabel: "Manquants", noMissing: "✓ Aucun mot-clé important manquant !",
+    aiSuggestions: "Suggestions IA", aiDesc1: "Envoie votre CV", aiDescJd: "+ la description du poste",
+    aiDesc2: "à l'assistant IA pour détecter les correspondances sémantiques et multilingues et proposer des reformulations. Rien n'est envoyé avant votre clic.",
+    thinking: "Réflexion…", getAi: "Obtenir des suggestions IA", noIssues: "✓ Aucun problème majeur — votre CV est bien structuré pour l'analyse ATS.",
+    issues: "Problèmes", fixTitle: "Corrigez ces problèmes dans l'éditeur",
+    fixDesc: "ApplyCraft affiche votre score ATS en direct pendant la saisie. Choisissez un modèle, comblez les lacunes et exportez un PDF ou DOCX soigné — gratuit, sans compte.",
+    openBuilder: "Ouvrir dans l'éditeur de CV →" },
+  es: { toolName: "Verificador ATS", freeTool: "Herramienta gratis", title: "Verificador de CV para ATS",
+    sub: "Pega tu currículum y obtén una puntuación ATS al instante, un análisis de palabras clave y una lista de mejoras priorizada. No se sube nada; el análisis se ejecuta en tu navegador.",
+    detected: "Texto de currículum detectado desde la página del verificador ATS.", loadCheck: "Cargar y verificar →",
+    yourResume: "Tu currículum", reading: "Leyendo…", uploadBtn: "Subir PDF/DOCX", jdLabel: "Descripción del puesto", optional: "opcional",
+    analysing: "Analizando…", checkBtn: "Verificar mi currículum →", scoreDesc: "Puntuación de compatibilidad ATS — refleja estructura, integridad y calidad del contenido.",
+    critical: "Crítico", warning: "Advertencia", info: "Info", allClear: "Todo correcto", keywordMatch: "Coincidencia de palabras clave",
+    crossLangPre: "Coincidencia multilingüe —", resumeWord: "currículum", jdWord: "descripción del puesto", kwMatchJd: "de coincidencia con la oferta",
+    matchedWord: "encontradas", missingWord: "faltantes", matchedLabel: "Encontradas", missingLabel: "Faltantes", noMissing: "✓ ¡No faltan palabras clave importantes!",
+    aiSuggestions: "Sugerencias de IA", aiDesc1: "Envía tu currículum", aiDescJd: "+ la descripción del puesto",
+    aiDesc2: "al asistente de IA para detectar coincidencias semánticas y multilingües y sugerir mejoras. No se envía nada hasta que hagas clic.",
+    thinking: "Pensando…", getAi: "Obtener sugerencias de IA", noIssues: "✓ Sin problemas importantes — tu currículum está bien estructurado para el análisis ATS.",
+    issues: "Problemas", fixTitle: "Corrige estos problemas en el editor",
+    fixDesc: "ApplyCraft muestra tu puntuación ATS en vivo mientras escribes. Elige una plantilla, completa lo que falta y exporta un PDF o DOCX pulido — gratis, sin cuenta.",
+    openBuilder: "Abrir en el editor de currículum →" },
+  ar: { toolName: "فاحص ATS", freeTool: "أداة مجانية", title: "فاحص السيرة الذاتية ATS",
+    sub: "الصق سيرتك الذاتية واحصل على درجة ATS فورية، وتحليل لفجوة الكلمات المفتاحية، وقائمة إصلاحات مرتبة حسب الأولوية. لا يتم رفع أي شيء؛ يجري الفحص في متصفحك.",
+    detected: "تم اكتشاف نص السيرة الذاتية من صفحة فاحص ATS.", loadCheck: "تحميل وفحص →",
+    yourResume: "سيرتك الذاتية", reading: "جارٍ القراءة…", uploadBtn: "رفع PDF/DOCX", jdLabel: "وصف الوظيفة", optional: "اختياري",
+    analysing: "جارٍ التحليل…", checkBtn: "افحص سيرتي الذاتية →", scoreDesc: "درجة الجاهزية لأنظمة ATS — تعكس البنية والاكتمال وجودة المحتوى.",
+    critical: "حرِج", warning: "تحذير", info: "معلومة", allClear: "كل شيء سليم", keywordMatch: "تطابق الكلمات المفتاحية",
+    crossLangPre: "تطابق متعدد اللغات —", resumeWord: "السيرة الذاتية", jdWord: "وصف الوظيفة", kwMatchJd: "تطابق مع الوصف الوظيفي",
+    matchedWord: "متطابقة", missingWord: "مفقودة", matchedLabel: "متطابقة", missingLabel: "مفقودة", noMissing: "✓ لا توجد كلمات مفتاحية مهمة مفقودة!",
+    aiSuggestions: "اقتراحات الذكاء الاصطناعي", aiDesc1: "يُرسل سيرتك الذاتية", aiDescJd: "+ وصف الوظيفة",
+    aiDesc2: "إلى مساعد الذكاء الاصطناعي لاكتشاف التطابقات الدلالية ومتعددة اللغات واقتراح إعادة صياغة. لا يُرسل أي شيء حتى تنقر.",
+    thinking: "جارٍ التفكير…", getAi: "احصل على اقتراحات الذكاء الاصطناعي", noIssues: "✓ لا توجد مشكلات مهمة — سيرتك الذاتية جيدة البنية لتحليل ATS.",
+    issues: "المشكلات", fixTitle: "أصلح هذه المشكلات في المُحرِّر",
+    fixDesc: "يعرض ApplyCraft درجة ATS الخاصة بك مباشرةً أثناء الكتابة. اختر قالباً، واملأ الفراغات، وصدّر ملف PDF أو DOCX أنيقاً — مجاناً، دون حساب.",
+    openBuilder: "افتح في مُحرِّر السيرة الذاتية →" },
+  de: { toolName: "ATS-Prüfer", freeTool: "Kostenloses Tool", title: "ATS-Lebenslauf-Prüfer",
+    sub: "Füge deinen Lebenslauf ein und erhalte sofort einen ATS-Score, eine Keyword-Lückenanalyse und eine priorisierte Fehlerliste. Es wird nichts hochgeladen; die Prüfung läuft in deinem Browser.",
+    detected: "Lebenslauftext von der ATS-Prüfer-Seite erkannt.", loadCheck: "Laden & prüfen →",
+    yourResume: "Dein Lebenslauf", reading: "Wird gelesen…", uploadBtn: "PDF/DOCX hochladen", jdLabel: "Stellenbeschreibung", optional: "optional",
+    analysing: "Wird analysiert…", checkBtn: "Meinen Lebenslauf prüfen →", scoreDesc: "ATS-Bereitschaftsscore — spiegelt Struktur, Vollständigkeit und Inhaltsqualität wider.",
+    critical: "Kritisch", warning: "Warnung", info: "Info", allClear: "Alles in Ordnung", keywordMatch: "Keyword-Übereinstimmung",
+    crossLangPre: "Sprachübergreifender Abgleich —", resumeWord: "Lebenslauf", jdWord: "Stellenbeschreibung", kwMatchJd: "Übereinstimmung mit der Stelle",
+    matchedWord: "gefunden", missingWord: "fehlend", matchedLabel: "Gefunden", missingLabel: "Fehlend", noMissing: "✓ Keine wichtigen Keywords fehlen!",
+    aiSuggestions: "KI-Vorschläge", aiDesc1: "Sendet deinen Lebenslauf", aiDescJd: "+ die Stellenbeschreibung",
+    aiDesc2: "an den KI-Helfer, um semantische und sprachübergreifende Treffer zu erkennen und Umformulierungen vorzuschlagen. Es wird nichts gesendet, bis du klickst.",
+    thinking: "Denkt nach…", getAi: "KI-Vorschläge erhalten", noIssues: "✓ Keine wichtigen Probleme — dein Lebenslauf ist gut für die ATS-Analyse strukturiert.",
+    issues: "Probleme", fixTitle: "Behebe diese Probleme im Editor",
+    fixDesc: "ApplyCraft zeigt deinen ATS-Score live beim Tippen. Wähle eine Vorlage, fülle die Lücken und exportiere ein sauberes PDF oder DOCX — kostenlos, ohne Konto.",
+    openBuilder: "Im Lebenslauf-Editor öffnen →" },
+};
+const TRACKER_UI = {
+  en: { toolName: "Job Tracker", eyebrow: "Application pipeline", title: "Job Tracker",
+    sub: "Track every opportunity from saved role to offer without leaving your career workspace.", tracked: "applications tracked",
+    statApplied: "Applied", statInterviews: "Interviews", statOffers: "Offers",
+    colSaved: "Saved", colPreparing: "Preparing", colApplied: "Applied", colInterview: "Interview", colOffer: "Offer", colRejected: "Rejected",
+    dropHere: "Drop cards here", companyPh: "Company", positionPh: "Position",
+    emptyTitle: "Start tracking your applications", emptySub: "Click + in any column, or drag cards between stages as you progress.", addFirst: "Add first application",
+    newApplication: "New Application", application: "Application", stage: "Stage",
+    lblCompany: "Company *", lblPosition: "Position *", lblSalary: "Salary / Range", lblLink: "Job listing URL", lblRecruiter: "Recruiter contact",
+    lblResume: "Resume used", lblCover: "Cover letter used", lblInterviewDate: "Interview date", lblReminder: "Follow-up reminder",
+    lblJobDesc: "Job description / key requirements", phJobDesc: "Paste the job description or key points to tailor your resume...",
+    lblNotes: "Notes", phNotes: "Interview feedback, impressions, to-dos...",
+    addApp: "Add application", saveChanges: "Save changes", cancel: "Cancel", delete: "Delete" },
+  fr: { toolName: "Suivi des candidatures", eyebrow: "Pipeline de candidatures", title: "Suivi des candidatures",
+    sub: "Suivez chaque opportunité, du poste enregistré à l'offre, sans quitter votre espace carrière.", tracked: "candidatures suivies",
+    statApplied: "Postulé", statInterviews: "Entretiens", statOffers: "Offres",
+    colSaved: "Enregistré", colPreparing: "En préparation", colApplied: "Postulé", colInterview: "Entretien", colOffer: "Offre", colRejected: "Refusé",
+    dropHere: "Déposez les cartes ici", companyPh: "Entreprise", positionPh: "Poste",
+    emptyTitle: "Commencez à suivre vos candidatures", emptySub: "Cliquez sur + dans une colonne, ou faites glisser les cartes entre les étapes au fur et à mesure.", addFirst: "Ajouter une première candidature",
+    newApplication: "Nouvelle candidature", application: "Candidature", stage: "Étape",
+    lblCompany: "Entreprise *", lblPosition: "Poste *", lblSalary: "Salaire / Fourchette", lblLink: "URL de l'offre", lblRecruiter: "Contact du recruteur",
+    lblResume: "CV utilisé", lblCover: "Lettre utilisée", lblInterviewDate: "Date d'entretien", lblReminder: "Rappel de relance",
+    lblJobDesc: "Description du poste / exigences clés", phJobDesc: "Collez la description du poste ou les points clés pour adapter votre CV...",
+    lblNotes: "Notes", phNotes: "Retours d'entretien, impressions, tâches à faire...",
+    addApp: "Ajouter la candidature", saveChanges: "Enregistrer", cancel: "Annuler", delete: "Supprimer" },
+  es: { toolName: "Seguimiento de empleos", eyebrow: "Flujo de candidaturas", title: "Seguimiento de empleos",
+    sub: "Sigue cada oportunidad, desde el puesto guardado hasta la oferta, sin salir de tu espacio de carrera.", tracked: "candidaturas en seguimiento",
+    statApplied: "Postulado", statInterviews: "Entrevistas", statOffers: "Ofertas",
+    colSaved: "Guardado", colPreparing: "Preparando", colApplied: "Postulado", colInterview: "Entrevista", colOffer: "Oferta", colRejected: "Rechazado",
+    dropHere: "Suelta las tarjetas aquí", companyPh: "Empresa", positionPh: "Puesto",
+    emptyTitle: "Empieza a seguir tus candidaturas", emptySub: "Haz clic en + en cualquier columna, o arrastra las tarjetas entre etapas según avances.", addFirst: "Añadir primera candidatura",
+    newApplication: "Nueva candidatura", application: "Candidatura", stage: "Etapa",
+    lblCompany: "Empresa *", lblPosition: "Puesto *", lblSalary: "Salario / Rango", lblLink: "URL de la oferta", lblRecruiter: "Contacto del reclutador",
+    lblResume: "Currículum usado", lblCover: "Carta usada", lblInterviewDate: "Fecha de entrevista", lblReminder: "Recordatorio de seguimiento",
+    lblJobDesc: "Descripción del puesto / requisitos clave", phJobDesc: "Pega la descripción del puesto o los puntos clave para adaptar tu currículum...",
+    lblNotes: "Notas", phNotes: "Comentarios de entrevistas, impresiones, tareas...",
+    addApp: "Añadir candidatura", saveChanges: "Guardar cambios", cancel: "Cancelar", delete: "Eliminar" },
+  ar: { toolName: "متابعة الوظائف", eyebrow: "مسار التقديمات", title: "متابعة الوظائف",
+    sub: "تابع كل فرصة من الوظيفة المحفوظة حتى العرض دون مغادرة مساحة عملك المهنية.", tracked: "تقديمات متابَعة",
+    statApplied: "تم التقديم", statInterviews: "المقابلات", statOffers: "العروض",
+    colSaved: "محفوظة", colPreparing: "قيد الإعداد", colApplied: "تم التقديم", colInterview: "مقابلة", colOffer: "عرض", colRejected: "مرفوضة",
+    dropHere: "أفلِت البطاقات هنا", companyPh: "الشركة", positionPh: "المنصب",
+    emptyTitle: "ابدأ بمتابعة تقديماتك", emptySub: "انقر على + في أي عمود، أو اسحب البطاقات بين المراحل أثناء تقدمك.", addFirst: "أضف أول تقديم",
+    newApplication: "تقديم جديد", application: "تقديم", stage: "المرحلة",
+    lblCompany: "الشركة *", lblPosition: "المنصب *", lblSalary: "الراتب / النطاق", lblLink: "رابط الوظيفة", lblRecruiter: "جهة اتصال المُوظِّف",
+    lblResume: "السيرة الذاتية المستخدمة", lblCover: "خطاب التقديم المستخدم", lblInterviewDate: "تاريخ المقابلة", lblReminder: "تذكير بالمتابعة",
+    lblJobDesc: "وصف الوظيفة / المتطلبات الأساسية", phJobDesc: "الصق وصف الوظيفة أو النقاط الأساسية لتخصيص سيرتك الذاتية...",
+    lblNotes: "ملاحظات", phNotes: "ملاحظات المقابلة، الانطباعات، المهام...",
+    addApp: "أضف التقديم", saveChanges: "حفظ التغييرات", cancel: "إلغاء", delete: "حذف" },
+  de: { toolName: "Bewerbungs-Tracker", eyebrow: "Bewerbungs-Pipeline", title: "Bewerbungs-Tracker",
+    sub: "Verfolge jede Gelegenheit von der gespeicherten Stelle bis zum Angebot, ohne deinen Karriere-Arbeitsbereich zu verlassen.", tracked: "Bewerbungen verfolgt",
+    statApplied: "Beworben", statInterviews: "Interviews", statOffers: "Angebote",
+    colSaved: "Gespeichert", colPreparing: "In Vorbereitung", colApplied: "Beworben", colInterview: "Interview", colOffer: "Angebot", colRejected: "Abgelehnt",
+    dropHere: "Karten hier ablegen", companyPh: "Unternehmen", positionPh: "Position",
+    emptyTitle: "Beginne, deine Bewerbungen zu verfolgen", emptySub: "Klicke auf + in einer Spalte oder ziehe Karten zwischen den Phasen, während du Fortschritte machst.", addFirst: "Erste Bewerbung hinzufügen",
+    newApplication: "Neue Bewerbung", application: "Bewerbung", stage: "Phase",
+    lblCompany: "Unternehmen *", lblPosition: "Position *", lblSalary: "Gehalt / Spanne", lblLink: "Stellen-URL", lblRecruiter: "Recruiter-Kontakt",
+    lblResume: "Verwendeter Lebenslauf", lblCover: "Verwendetes Anschreiben", lblInterviewDate: "Interviewtermin", lblReminder: "Nachfass-Erinnerung",
+    lblJobDesc: "Stellenbeschreibung / Kernanforderungen", phJobDesc: "Füge die Stellenbeschreibung oder Kernpunkte ein, um deinen Lebenslauf anzupassen...",
+    lblNotes: "Notizen", phNotes: "Interview-Feedback, Eindrücke, To-dos...",
+    addApp: "Bewerbung hinzufügen", saveChanges: "Änderungen speichern", cancel: "Abbrechen", delete: "Löschen" },
+};
+const MASTER_UI = {
+  en: { title: "Master Profile", subEmpty: "Build your complete career profile once. Generate any tailored resume from it.",
+    subItems: "career items · generates any tailored resume in seconds", tailorBtn: "Tailor for a Job",
+    tabPersonal: "Personal", tabExperience: "Experience", tabEducation: "Education", tabSkills: "Skills", tabMore: "More",
+    tailorTitle: "Tailor for a Specific Job", tailorDesc: "Paste the job description — we'll score your profile against it and let you select exactly what to include.",
+    tailorPh: "Paste the full job description here...", analyze: "Analyze →", kwExtracted: "keywords extracted",
+    selectInclude: "Select what to include in your tailored resume:", workExperience: "Work Experience", education: "Education", skills: "Skills",
+    projects: "Projects", certifications: "Certifications", languages: "Languages", generateTailored: "Generate Tailored Resume →", cancel: "Cancel" },
+  fr: { title: "Profil principal", subEmpty: "Créez une fois votre profil de carrière complet. Générez-en n'importe quel CV personnalisé.",
+    subItems: "éléments de carrière · génère un CV personnalisé en quelques secondes", tailorBtn: "Adapter à une offre",
+    tabPersonal: "Personnel", tabExperience: "Expérience", tabEducation: "Formation", tabSkills: "Compétences", tabMore: "Plus",
+    tailorTitle: "Adapter à une offre précise", tailorDesc: "Collez la description du poste — nous évaluerons votre profil et vous laisserons choisir exactement quoi inclure.",
+    tailorPh: "Collez la description complète du poste ici...", analyze: "Analyser →", kwExtracted: "mots-clés extraits",
+    selectInclude: "Sélectionnez ce qu'il faut inclure dans votre CV personnalisé :", workExperience: "Expérience professionnelle", education: "Formation", skills: "Compétences",
+    projects: "Projets", certifications: "Certifications", languages: "Langues", generateTailored: "Générer le CV personnalisé →", cancel: "Annuler" },
+  es: { title: "Perfil maestro", subEmpty: "Crea una vez tu perfil de carrera completo. Genera desde él cualquier currículum personalizado.",
+    subItems: "elementos de carrera · genera cualquier currículum personalizado en segundos", tailorBtn: "Adaptar a un empleo",
+    tabPersonal: "Personal", tabExperience: "Experiencia", tabEducation: "Educación", tabSkills: "Habilidades", tabMore: "Más",
+    tailorTitle: "Adaptar a un empleo concreto", tailorDesc: "Pega la descripción del puesto — puntuaremos tu perfil y te dejaremos elegir exactamente qué incluir.",
+    tailorPh: "Pega aquí la descripción completa del puesto...", analyze: "Analizar →", kwExtracted: "palabras clave extraídas",
+    selectInclude: "Selecciona qué incluir en tu currículum personalizado:", workExperience: "Experiencia laboral", education: "Educación", skills: "Habilidades",
+    projects: "Proyectos", certifications: "Certificaciones", languages: "Idiomas", generateTailored: "Generar currículum personalizado →", cancel: "Cancelar" },
+  ar: { title: "الملف الرئيسي", subEmpty: "أنشئ ملفك المهني الكامل مرة واحدة. ووَلِّد منه أي سيرة ذاتية مخصصة.",
+    subItems: "عنصراً مهنياً · يولّد أي سيرة ذاتية مخصصة في ثوانٍ", tailorBtn: "خصّص لوظيفة",
+    tabPersonal: "شخصي", tabExperience: "الخبرة", tabEducation: "التعليم", tabSkills: "المهارات", tabMore: "المزيد",
+    tailorTitle: "خصّص لوظيفة محددة", tailorDesc: "الصق وصف الوظيفة — سنقيّم ملفك مقابله وندعك تختار بالضبط ما يُدرَج.",
+    tailorPh: "الصق وصف الوظيفة الكامل هنا...", analyze: "تحليل →", kwExtracted: "كلمة مفتاحية مُستخرَجة",
+    selectInclude: "اختر ما يُدرَج في سيرتك الذاتية المخصصة:", workExperience: "الخبرة العملية", education: "التعليم", skills: "المهارات",
+    projects: "المشاريع", certifications: "الشهادات", languages: "اللغات", generateTailored: "ولّد السيرة الذاتية المخصصة →", cancel: "إلغاء" },
+  de: { title: "Master-Profil", subEmpty: "Erstelle einmal dein vollständiges Karriereprofil. Generiere daraus jeden maßgeschneiderten Lebenslauf.",
+    subItems: "Karriere-Einträge · generiert jeden maßgeschneiderten Lebenslauf in Sekunden", tailorBtn: "An eine Stelle anpassen",
+    tabPersonal: "Persönlich", tabExperience: "Erfahrung", tabEducation: "Ausbildung", tabSkills: "Fähigkeiten", tabMore: "Mehr",
+    tailorTitle: "An eine bestimmte Stelle anpassen", tailorDesc: "Füge die Stellenbeschreibung ein — wir bewerten dein Profil dagegen und lassen dich genau auswählen, was aufgenommen wird.",
+    tailorPh: "Füge hier die vollständige Stellenbeschreibung ein...", analyze: "Analysieren →", kwExtracted: "Keywords extrahiert",
+    selectInclude: "Wähle aus, was in deinen maßgeschneiderten Lebenslauf aufgenommen wird:", workExperience: "Berufserfahrung", education: "Ausbildung", skills: "Fähigkeiten",
+    projects: "Projekte", certifications: "Zertifizierungen", languages: "Sprachen", generateTailored: "Maßgeschneiderten Lebenslauf erstellen →", cancel: "Abbrechen" },
+};
+
 // ── Templates ─────────────────────────────────────────────────────
 const TEMPLATES = [
   { id: "blank",     name: "Blank",     tag: "No styling — plain text output",        accent: "#374151", font: "'Inter', system-ui, sans-serif", blank: true },
@@ -3400,6 +3573,9 @@ export default function ResumeGenerator() {
   const lx = LANDING_UI[lang] || LANDING_UI.en; // landing / site-chrome strings
   const bu = BUILDER_UI[lang] || BUILDER_UI.en; // resume-builder chrome strings
   const cu = COVER_UI[lang] || COVER_UI.en; // cover-letter-builder chrome strings
+  const ats = ATS_UI[lang] || ATS_UI.en; // ATS checker strings
+  const tk = TRACKER_UI[lang] || TRACKER_UI.en; // job tracker strings
+  const ms = MASTER_UI[lang] || MASTER_UI.en; // master profile strings
   const rtl = selectedLang.rtl || false;
   const set = useCallback((k) => (e) => setForm(f => ({ ...f, [k]: e.target.value })), []);
   const setField = useCallback((k, v) => setForm(f => ({ ...f, [k]: v })), []);
@@ -6281,21 +6457,21 @@ Awards: ${form.awards}`;
 
     return (
       <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
-        <AppToolHeader toolName="ATS Checker" />
+        <AppToolHeader toolName={ats.toolName} />
         <section aria-labelledby="ats-checker-title" style={{ maxWidth: 960, margin: "0 auto", padding: isMobile ? "24px 4px 0" : "42px 28px 0" }}>
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999,
             background: `${C.accent}12`, border: `1px solid ${C.accent}2E`,
             color: C.accent2, padding: "5px 12px", fontSize: 11, fontWeight: 900,
             letterSpacing: "1.4px", textTransform: "uppercase", marginBottom: 14 }}>
-            Free tool
+            {ats.freeTool}
           </div>
           <h1 id="ats-checker-title" style={{ margin: "0 0 12px", color: C.text1,
             fontSize: isMobile ? 30 : 40, lineHeight: 1.08, letterSpacing: "-0.8px", fontWeight: 900 }}>
-            ATS Resume Checker
+            {ats.title}
           </h1>
           <p style={{ margin: 0, maxWidth: 720, color: C.text2, fontSize: isMobile ? 15 : 16.5, lineHeight: 1.65 }}>
-            Paste your resume and get an instant ATS score, keyword gap analysis, and a prioritized fix list. Nothing is uploaded; the check runs in your browser.
+            {ats.sub}
           </p>
         </div>
 
@@ -6304,11 +6480,11 @@ Awards: ${form.awards}`;
             borderRadius: 10, padding: "12px 16px", marginBottom: 20,
             display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
             <span style={{ fontSize: 14 }}>📋</span>
-            <span style={{ fontSize: 13.5, color: C.text1, flex: 1 }}>Resume text detected from the ATS Checker page.</span>
+            <span style={{ fontSize: 13.5, color: C.text1, flex: 1 }}>{ats.detected}</span>
             <button onClick={() => { setLocalText(atsFromChecker); setTimeout(check, 50); }}
               style={{ fontSize: 12.5, fontWeight: 700, color: C.accent2, background: "none",
                 border: `1px solid ${C.accent}40`, borderRadius: 6, padding: "4px 12px", cursor: "pointer", fontFamily: "inherit" }}>
-              Load & check →
+              {ats.loadCheck}
             </button>
           </div>
         )}
@@ -6316,12 +6492,12 @@ Awards: ${form.awards}`;
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 16 }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8 }}>
-              <span style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, textTransform: "uppercase", letterSpacing: "1px" }}>Your resume{langBadge(resumeLang)}</span>
+              <span style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, textTransform: "uppercase", letterSpacing: "1px" }}>{ats.yourResume}{langBadge(resumeLang)}</span>
               <button type="button" onClick={() => fileRef.current && fileRef.current.click()} disabled={reading}
                 style={{ display: "inline-flex", alignItems: "center", gap: 5, background: `${C.accent}14`,
                   border: `1px solid ${C.accent}40`, borderRadius: 7, padding: "4px 10px", fontSize: 11.5, fontWeight: 700,
                   color: C.accent2, cursor: reading ? "wait" : "pointer", fontFamily: "inherit" }}>
-                {reading ? "Reading…" : "📎 Upload PDF/DOCX"}
+                {reading ? ats.reading : `📎 ${ats.uploadBtn}`}
               </button>
               <input ref={fileRef} type="file" accept=".pdf,.docx,.txt" onChange={onUploadFile} style={{ display: "none" }} />
             </div>
@@ -6334,7 +6510,7 @@ Awards: ${form.awards}`;
           </div>
           <div>
             <div style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, textTransform: "uppercase",
-              letterSpacing: "1px", marginBottom: 8 }}>Job description <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— optional</span>{langBadge(jdLang)}</div>
+              letterSpacing: "1px", marginBottom: 8 }}>{ats.jdLabel} <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— {ats.optional}</span>{langBadge(jdLang)}</div>
             <textarea value={localJd} onChange={e => setLocalJd(e.target.value)}
               placeholder={"Paste the job description here to get a keyword gap analysis.\n\nWith it, you'll see:\n  • Which keywords you match ✓\n  • Which are missing ✗\n  • Your keyword match %\n\nWithout it, you still get a full ATS readiness score."}
               style={{ width: "100%", height: 240, resize: "vertical", background: C.elevated,
@@ -6349,7 +6525,7 @@ Awards: ${form.awards}`;
             borderRadius: 10, color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer",
             fontFamily: "inherit", opacity: (running || localText.trim().length < 40) ? 0.5 : 1,
             marginBottom: 32 }}>
-          {running ? "Analysing…" : "Check My Resume →"}
+          {running ? ats.analysing : ats.checkBtn}
         </button>
 
         {result && (<>
@@ -6361,30 +6537,30 @@ Awards: ${form.awards}`;
             </div>
             <div style={{ fontSize: 15, fontWeight: 700, color: scoreColor, marginTop: 6 }}>{scoreLabel}</div>
             <div style={{ fontSize: 12.5, color: C.text3, marginTop: 8, maxWidth: 400, margin: "8px auto 0" }}>
-              ATS Readiness Score — reflects structure, completeness, and content quality.
+              {ats.scoreDesc}
             </div>
             <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", marginTop: 16 }}>
               {result.issues.filter(i => i.level === "critical").length > 0 && (
                 <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 999,
                   background: "#450a0a44", color: "#f87171", border: "1px solid #7f1d1d44" }}>
-                  {result.issues.filter(i => i.level === "critical").length} Critical
+                  {result.issues.filter(i => i.level === "critical").length} {ats.critical}
                 </span>
               )}
               {result.issues.filter(i => i.level === "warning").length > 0 && (
                 <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 999,
                   background: "#43140744", color: "#fbbf24", border: "1px solid #92400e44" }}>
-                  {result.issues.filter(i => i.level === "warning").length} Warning
+                  {result.issues.filter(i => i.level === "warning").length} {ats.warning}
                 </span>
               )}
               {result.issues.filter(i => i.level === "info").length > 0 && (
                 <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 999,
                   background: "#1e3a5f44", color: "#60a5fa", border: "1px solid #1d4ed844" }}>
-                  {result.issues.filter(i => i.level === "info").length} Info
+                  {result.issues.filter(i => i.level === "info").length} {ats.info}
                 </span>
               )}
               {result.issues.length === 0 && (
                 <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 999,
-                  background: "#14532d44", color: "#4ade80", border: "1px solid #16a34a44" }}>All clear</span>
+                  background: "#14532d44", color: "#4ade80", border: "1px solid #16a34a44" }}>{ats.allClear}</span>
               )}
             </div>
           </div>
@@ -6392,35 +6568,35 @@ Awards: ${form.awards}`;
           {/* Keyword gap */}
           {result.kwGap && (
             <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 14, padding: "22px 24px", marginBottom: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>Keyword Match</div>
+              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>{ats.keywordMatch}</div>
               {result.kwGap.crossLanguage && (
                 <div style={{ fontSize: 11.5, color: C.accent2, marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
-                  🌍 Cross-language matching — {LANG_LABEL[result.kwGap.langResume]} resume vs {LANG_LABEL[result.kwGap.langJd]} job description
+                  🌍 {ats.crossLangPre} {LANG_LABEL[result.kwGap.langResume]} {ats.resumeWord} vs {LANG_LABEL[result.kwGap.langJd]} {ats.jdWord}
                 </div>
               )}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
                 <div>
                   <span style={{ fontSize: 28, fontWeight: 800, color: C.text1 }}>{result.kwGap.pct}%</span>
-                  <span style={{ fontSize: 13, color: C.text2, marginLeft: 8 }}>keyword match with JD</span>
+                  <span style={{ fontSize: 13, color: C.text2, marginLeft: 8 }}>{ats.kwMatchJd}</span>
                 </div>
                 <div style={{ fontSize: 12, color: C.text3 }}>
-                  {result.kwGap.present.length} matched · {result.kwGap.missing.length} missing
+                  {result.kwGap.present.length} {ats.matchedWord} · {result.kwGap.missing.length} {ats.missingWord}
                 </div>
               </div>
               <div style={{ height: 6, background: C.border, borderRadius: 999, overflow: "hidden", marginBottom: 16 }}>
                 <div style={{ height: "100%", width: `${result.kwGap.pct}%`, background: C.grad, borderRadius: 999, transition: "width .6s cubic-bezier(0.22,1,0.36,1)" }} />
               </div>
-              <div style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, marginBottom: 8, textTransform: "uppercase", letterSpacing: "1px" }}>Matched</div>
+              <div style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, marginBottom: 8, textTransform: "uppercase", letterSpacing: "1px" }}>{ats.matchedLabel}</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
                 {result.kwGap.present.map(w => (
                   <span key={w} style={{ fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: "#14532d44", color: "#4ade80", border: "1px solid #16a34a44" }}>✓ {w}</span>
                 ))}
               </div>
-              <div style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, marginBottom: 8, textTransform: "uppercase", letterSpacing: "1px" }}>Missing</div>
+              <div style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, marginBottom: 8, textTransform: "uppercase", letterSpacing: "1px" }}>{ats.missingLabel}</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                 {result.kwGap.missing.length > 0
                   ? result.kwGap.missing.map(w => <span key={w} style={{ fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: "#450a0a44", color: "#f87171", border: "1px solid #7f1d1d44" }}>✗ {w}</span>)
-                  : <span style={{ fontSize: 13, color: "#4ade80" }}>✓ No significant missing keywords!</span>
+                  : <span style={{ fontSize: 13, color: "#4ade80" }}>{ats.noMissing}</span>
                 }
               </div>
             </div>
@@ -6430,9 +6606,9 @@ Awards: ${form.awards}`;
           <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 14, padding: "20px 24px", marginBottom: 24 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 13.5, fontWeight: 800, color: C.text1 }}>✨ AI suggestions <span style={{ fontSize: 11, fontWeight: 600, color: C.text3 }}>· optional</span></div>
+                <div style={{ fontSize: 13.5, fontWeight: 800, color: C.text1 }}>✨ {ats.aiSuggestions} <span style={{ fontSize: 11, fontWeight: 600, color: C.text3 }}>· {ats.optional}</span></div>
                 <div style={{ fontSize: 12.5, color: C.text3, marginTop: 3, maxWidth: 460 }}>
-                  Sends your resume{localJd.trim() ? " + job description" : ""} to the AI helper to catch semantic & cross-language matches and suggest rewrites. Nothing is sent until you click.
+                  {ats.aiDesc1}{localJd.trim() ? ` ${ats.aiDescJd}` : ""} {ats.aiDesc2}
                 </div>
               </div>
               <button onClick={getAiSuggestions} disabled={aiBusy || localText.trim().length < 40}
@@ -6440,7 +6616,7 @@ Awards: ${form.awards}`;
                   border: aiBusy ? `1px solid ${C.border}` : "none", borderRadius: 10, padding: "10px 18px",
                   fontSize: 13.5, fontWeight: 700, cursor: (aiBusy || localText.trim().length < 40) ? "not-allowed" : "pointer",
                   fontFamily: "inherit", opacity: localText.trim().length < 40 ? 0.5 : 1 }}>
-                {aiBusy ? "Thinking…" : "✨ Get AI suggestions"}
+                {aiBusy ? ats.thinking : `✨ ${ats.getAi}`}
               </button>
             </div>
             {aiOut && (
@@ -6454,25 +6630,25 @@ Awards: ${form.awards}`;
           {/* Issues */}
           {result.issues.length === 0
             ? <div style={{ background: "#14532d22", border: "1px solid #16a34a44", borderRadius: 12, padding: "20px 24px", color: "#4ade80", fontWeight: 600, textAlign: "center", marginBottom: 24 }}>
-                ✓ No significant issues — your resume is well-structured for ATS parsing.
+                {ats.noIssues}
               </div>
             : <>
-                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>Issues</div>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>{ats.issues}</div>
                 {result.issues.map((issue, i) => <IssueRow key={i} issue={issue} />)}
               </>
           }
 
           {/* Fix CTA */}
           <div style={{ background: `${C.accent}0E`, border: `1.5px solid ${C.accent}28`, borderRadius: 14, padding: "24px", textAlign: "center", marginTop: 28 }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: C.text1, marginBottom: 8 }}>Fix these issues in the builder</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: C.text1, marginBottom: 8 }}>{ats.fixTitle}</div>
             <div style={{ fontSize: 14, color: C.text2, marginBottom: 20, lineHeight: 1.6 }}>
-              ApplyCraft shows your live ATS score as you type. Pick a template, fill in the gaps, and export a polished PDF or DOCX — free, no account needed.
+              {ats.fixDesc}
             </div>
             <button onClick={importToBuilder}
               style={{ padding: "12px 28px", background: C.grad, border: "none", borderRadius: 9,
                 color: "#fff", fontSize: 14.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
                 boxShadow: `0 4px 20px ${C.accent}44` }}>
-              Open in Resume Builder →
+              {ats.openBuilder}
             </button>
           </div>
         </>)}
@@ -6592,12 +6768,12 @@ Awards: ${form.awards}`;
 
   // ── Job Tracker ─────────────────────────────────────────────────────
   const TRACKER_COLS = [
-    { id: "saved",      label: "Saved",      icon: "🔖", color: "#64748B" },
-    { id: "preparing",  label: "Preparing",  icon: "✏️",  color: "#6366F1" },
-    { id: "applied",    label: "Applied",    icon: "📤", color: "#3B82F6" },
-    { id: "interview",  label: "Interview",  icon: "🎤", color: "#F59E0B" },
-    { id: "offer",      label: "Offer",      icon: "🎉", color: "#10B981" },
-    { id: "rejected",   label: "Rejected",   icon: "✕",  color: "#EF4444" },
+    { id: "saved",      label: tk.colSaved,     icon: "🔖", color: "#64748B" },
+    { id: "preparing",  label: tk.colPreparing, icon: "✏️",  color: "#6366F1" },
+    { id: "applied",    label: tk.colApplied,   icon: "📤", color: "#3B82F6" },
+    { id: "interview",  label: tk.colInterview, icon: "🎤", color: "#F59E0B" },
+    { id: "offer",      label: tk.colOffer,     icon: "🎉", color: "#10B981" },
+    { id: "rejected",   label: tk.colRejected,  icon: "✕",  color: "#EF4444" },
   ];
 
   const newCard = (col) => ({
@@ -6632,7 +6808,7 @@ Awards: ${form.awards}`;
 
     return (
       <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
-        <AppToolHeader toolName="Job Tracker" />
+        <AppToolHeader toolName={tk.toolName} />
         <section aria-labelledby="job-tracker-title" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "24px 4px 0" : "34px 28px 0" }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -6642,25 +6818,25 @@ Awards: ${form.awards}`;
               background: `${C.accent}12`, border: `1px solid ${C.accent}2E`,
               color: C.accent2, padding: "5px 12px", fontSize: 11, fontWeight: 900,
               letterSpacing: "1.4px", textTransform: "uppercase", marginBottom: 14 }}>
-              Application pipeline
+              {tk.eyebrow}
             </div>
             <h1 id="job-tracker-title" style={{ margin: 0, fontSize: isMobile ? 30 : 40, lineHeight: 1.08,
-              fontWeight: 900, color: C.text1, letterSpacing: "-0.8px" }}>Job Tracker</h1>
+              fontWeight: 900, color: C.text1, letterSpacing: "-0.8px" }}>{tk.title}</h1>
             <p style={{ margin: "8px 0 0", fontSize: isMobile ? 14.5 : 16, color: C.text2, lineHeight: 1.6 }}>
-              Track every opportunity from saved role to offer without leaving your career workspace.
+              {tk.sub}
             </p>
             <p style={{ margin: "6px 0 0", fontSize: 13, color: C.text3 }}>
-              {trackerCards.length} application{trackerCards.length !== 1 ? "s" : ""} tracked
+              {trackerCards.length} {tk.tracked}
             </p>
             <h2 style={{ display: "none", margin: 0, fontSize: isMobile ? 20 : 26, fontWeight: 800,
-              color: C.text1, letterSpacing: "-0.5px" }}>Job Tracker</h2>
+              color: C.text1, letterSpacing: "-0.5px" }}>{tk.title}</h2>
           </div>
           {/* Stats chips */}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             {[
-              { label: "Applied", count: trackerCards.filter(c => ["applied","interview","offer"].includes(c.column)).length, color: "#3B82F6" },
-              { label: "Interviews", count: trackerCards.filter(c => c.column === "interview").length, color: "#F59E0B" },
-              { label: "Offers", count: trackerCards.filter(c => c.column === "offer").length, color: "#10B981" },
+              { label: tk.statApplied, count: trackerCards.filter(c => ["applied","interview","offer"].includes(c.column)).length, color: "#3B82F6" },
+              { label: tk.statInterviews, count: trackerCards.filter(c => c.column === "interview").length, color: "#F59E0B" },
+              { label: tk.statOffers, count: trackerCards.filter(c => c.column === "offer").length, color: "#10B981" },
             ].map(s => (
               <div key={s.label} style={{ background: `${s.color}18`, border: `1px solid ${s.color}30`,
                 borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 700, color: s.color }}>
@@ -6726,11 +6902,11 @@ Awards: ${form.awards}`;
                       onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}>
                       <div style={{ fontSize: 13, fontWeight: 700, color: C.text1, marginBottom: 3,
                         whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {card.company || <span style={{ color: C.text3 }}>Company</span>}
+                        {card.company || <span style={{ color: C.text3 }}>{tk.companyPh}</span>}
                       </div>
                       <div style={{ fontSize: 11.5, color: C.text2, marginBottom: 6,
                         whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {card.position || <span style={{ color: C.text3 }}>Position</span>}
+                        {card.position || <span style={{ color: C.text3 }}>{tk.positionPh}</span>}
                       </div>
                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                         {card.salary && (
@@ -6753,7 +6929,7 @@ Awards: ${form.awards}`;
                 {/* Empty state */}
                 {cards.length === 0 && (
                   <div style={{ textAlign: "center", padding: "24px 8px", color: C.text3, fontSize: 12 }}>
-                    Drop cards here
+                    {tk.dropHere}
                   </div>
                 )}
               </div>
@@ -6768,15 +6944,15 @@ Awards: ${form.awards}`;
             background: C.surface, border: `1px dashed ${C.border}`, borderRadius: 14 }}>
             <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
             <div style={{ fontSize: 15, fontWeight: 700, color: C.text1, marginBottom: 8 }}>
-              Start tracking your applications
+              {tk.emptyTitle}
             </div>
             <div style={{ fontSize: 13, color: C.text2, marginBottom: 20 }}>
-              Click + in any column, or drag cards between stages as you progress.
+              {tk.emptySub}
             </div>
             <button onClick={() => setTrackerModal({ open: true, card: { ...newCard("saved") } })}
               style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
                 padding: "10px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
-              Add first application
+              {tk.addFirst}
             </button>
           </div>
         )}
@@ -6805,7 +6981,7 @@ Awards: ${form.awards}`;
                     <span style={{ fontSize: 18 }}>{tcol.icon}</span>
                     <div>
                       <div style={{ fontSize: 15, fontWeight: 800, color: C.text1 }}>
-                        {isNew ? "New Application" : (editCard.company || "Application")}
+                        {isNew ? tk.newApplication : (editCard.company || tk.application)}
                       </div>
                       <div style={{ fontSize: 12, color: tcol.color, fontWeight: 600 }}>{tcol.label}</div>
                     </div>
@@ -6820,7 +6996,7 @@ Awards: ${form.awards}`;
                   {/* Move to column */}
                   <div style={{ marginBottom: 20 }}>
                     <label style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-                      letterSpacing: "1px", color: C.text3, display: "block", marginBottom: 8 }}>Stage</label>
+                      letterSpacing: "1px", color: C.text3, display: "block", marginBottom: 8 }}>{tk.stage}</label>
                     <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                       {TRACKER_COLS.map(tc => (
                         <button key={tc.id}
@@ -6838,15 +7014,15 @@ Awards: ${form.awards}`;
 
                   {/* Core fields */}
                   {[
-                    { k: "company",   label: "Company *",       ph: "e.g. Stripe" },
-                    { k: "position",  label: "Position *",      ph: "e.g. Senior Engineer" },
-                    { k: "salary",    label: "Salary / Range",  ph: "e.g. $120k–$140k" },
-                    { k: "link",      label: "Job listing URL", ph: "https://..." },
-                    { k: "recruiter", label: "Recruiter contact", ph: "Name · email · LinkedIn" },
-                    { k: "resume",    label: "Resume used",     ph: "e.g. Atlas template — tech variant" },
-                    { k: "coverLetter", label: "Cover letter used", ph: "e.g. Modern template" },
-                    { k: "interviewDate", label: "Interview date", ph: "e.g. 2026-07-15 at 14:00" },
-                    { k: "reminder",  label: "Follow-up reminder", ph: "e.g. Follow up if no reply by July 10" },
+                    { k: "company",   label: tk.lblCompany,       ph: "e.g. Stripe" },
+                    { k: "position",  label: tk.lblPosition,      ph: "e.g. Senior Engineer" },
+                    { k: "salary",    label: tk.lblSalary,  ph: "e.g. $120k–$140k" },
+                    { k: "link",      label: tk.lblLink, ph: "https://..." },
+                    { k: "recruiter", label: tk.lblRecruiter, ph: "Name · email · LinkedIn" },
+                    { k: "resume",    label: tk.lblResume,     ph: "e.g. Atlas template — tech variant" },
+                    { k: "coverLetter", label: tk.lblCover, ph: "e.g. Modern template" },
+                    { k: "interviewDate", label: tk.lblInterviewDate, ph: "e.g. 2026-07-15 at 14:00" },
+                    { k: "reminder",  label: tk.lblReminder, ph: "e.g. Follow up if no reply by July 10" },
                   ].map(({ k, label, ph }) => (
                     <div key={k} style={{ marginBottom: 14 }}>
                       <label style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
@@ -6861,9 +7037,9 @@ Awards: ${form.awards}`;
                   {/* Job description */}
                   <div style={{ marginBottom: 14 }}>
                     <label style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
-                      display: "block", marginBottom: 5 }}>Job description / key requirements</label>
+                      display: "block", marginBottom: 5 }}>{tk.lblJobDesc}</label>
                     <textarea value={editCard.jobDescription || ""} onChange={setField("jobDescription")}
-                      placeholder="Paste the job description or key points to tailor your resume..."
+                      placeholder={tk.phJobDesc}
                       rows={4} style={{ ...mInput, resize: "vertical", lineHeight: 1.6 }}
                       onFocus={e => { e.target.style.borderColor = tcol.color; e.target.style.boxShadow = `0 0 0 3px ${tcol.color}22`; }}
                       onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = "none"; }} />
@@ -6872,9 +7048,9 @@ Awards: ${form.awards}`;
                   {/* Notes */}
                   <div style={{ marginBottom: 20 }}>
                     <label style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
-                      display: "block", marginBottom: 5 }}>Notes</label>
+                      display: "block", marginBottom: 5 }}>{tk.lblNotes}</label>
                     <textarea value={editCard.notes || ""} onChange={setField("notes")}
-                      placeholder="Interview feedback, impressions, to-dos..."
+                      placeholder={tk.phNotes}
                       rows={3} style={{ ...mInput, resize: "vertical", lineHeight: 1.6 }}
                       onFocus={e => { e.target.style.borderColor = tcol.color; e.target.style.boxShadow = `0 0 0 3px ${tcol.color}22`; }}
                       onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = "none"; }} />
@@ -6886,19 +7062,19 @@ Awards: ${form.awards}`;
                       <button onClick={() => saveCard(editCard)}
                         style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
                           padding: "10px 22px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
-                        {isNew ? "Add application" : "Save changes"}
+                        {isNew ? tk.addApp : tk.saveChanges}
                       </button>
                       <button onClick={() => setTrackerModal({ open: false, card: null })}
                         style={{ background: "transparent", color: C.text2, border: `1px solid ${C.border}`,
                           borderRadius: 8, padding: "10px 16px", fontSize: 13.5, cursor: "pointer", fontFamily: "inherit" }}>
-                        Cancel
+                        {tk.cancel}
                       </button>
                     </div>
                     {!isNew && (
                       <button onClick={() => deleteCard(editCard.id)}
                         style={{ background: "transparent", color: "#EF4444", border: "1px solid #EF444430",
                           borderRadius: 8, padding: "10px 16px", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
-                        Delete
+                        {tk.delete}
                       </button>
                     )}
                   </div>
@@ -7018,11 +7194,11 @@ Awards: ${form.awards}`;
     const totalItems = master.jobs.length + master.education.length + master.skills.length + master.certifications.length + master.projects.length + master.languages.length + master.achievements.length + master.volunteer.length;
 
     const TABS = [
-      {id:"personal", label:"Personal"},
-      {id:"experience", label:"Experience", count:master.jobs.length},
-      {id:"education", label:"Education", count:master.education.length},
-      {id:"skills", label:"Skills", count:master.skills.length},
-      {id:"more", label:"More", count:master.certifications.length+master.projects.length+master.languages.length+master.achievements.length+master.volunteer.length},
+      {id:"personal", label:ms.tabPersonal},
+      {id:"experience", label:ms.tabExperience, count:master.jobs.length},
+      {id:"education", label:ms.tabEducation, count:master.education.length},
+      {id:"skills", label:ms.tabSkills, count:master.skills.length},
+      {id:"more", label:ms.tabMore, count:master.certifications.length+master.projects.length+master.languages.length+master.achievements.length+master.volunteer.length},
     ];
 
     // Inline selectable item row for tailor panel (avoid nested component)
@@ -7043,12 +7219,12 @@ Awards: ${form.awards}`;
         {/* Header */}
         <div style={{display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:24, gap:16, flexWrap:"wrap"}}>
           <div>
-            <h2 style={{margin:"0 0 4px", fontSize: isMobile ? 20 : 26, fontWeight:800, color:C.text1, letterSpacing:"-0.5px"}}>Master Profile</h2>
-            <p style={{margin:0, fontSize:13.5, color:C.text2}}>{totalItems > 0 ? `${totalItems} career items · generates any tailored resume in seconds` : "Build your complete career profile once. Generate any tailored resume from it."}</p>
+            <h2 style={{margin:"0 0 4px", fontSize: isMobile ? 20 : 26, fontWeight:800, color:C.text1, letterSpacing:"-0.5px"}}>{ms.title}</h2>
+            <p style={{margin:0, fontSize:13.5, color:C.text2}}>{totalItems > 0 ? `${totalItems} ${ms.subItems}` : ms.subEmpty}</p>
           </div>
           <button onClick={() => setTailorOpen(o => !o)} disabled={totalItems === 0}
             style={{background:C.grad, color:"#fff", border:"none", borderRadius:9, padding:"10px 20px", fontSize:14, fontWeight:700, cursor: totalItems===0 ? "not-allowed" : "pointer", fontFamily:"inherit", whiteSpace:"nowrap", opacity: totalItems===0 ? 0.45 : 1}}>
-            ✨ Tailor for a Job →
+            ✨ {ms.tailorBtn} →
           </button>
         </div>
 
@@ -7076,15 +7252,15 @@ Awards: ${form.awards}`;
         {/* Tailor Panel */}
         {tailorOpen && (
           <div style={{background:`${C.accent}08`, border:`1.5px solid ${C.accent}40`, borderRadius:14, padding:"20px 22px", marginBottom:24}}>
-            <div style={{fontSize:15, fontWeight:800, color:C.text1, marginBottom:4}}>Tailor for a Specific Job</div>
-            <div style={{fontSize:13, color:C.text2, marginBottom:14}}>Paste the job description — we'll score your profile against it and let you select exactly what to include.</div>
+            <div style={{fontSize:15, fontWeight:800, color:C.text1, marginBottom:4}}>{ms.tailorTitle}</div>
+            <div style={{fontSize:13, color:C.text2, marginBottom:14}}>{ms.tailorDesc}</div>
             <textarea value={jdText} onChange={e => { setJdText(e.target.value); setJdKws(null); setTailorSel(null); }}
-              placeholder="Paste the full job description here..." rows={6}
+              placeholder={ms.tailorPh} rows={6}
               style={{...mi, resize:"vertical", lineHeight:1.6, marginBottom:12}} />
             <div style={{display:"flex", gap:10, alignItems:"center", marginBottom: jdKws ? 20 : 0}}>
               <button onClick={analyzeJD} disabled={!jdText.trim()}
                 style={{background:C.grad, color:"#fff", border:"none", borderRadius:8, padding:"9px 20px", fontSize:13.5, fontWeight:700, cursor: jdText.trim() ? "pointer" : "not-allowed", fontFamily:"inherit", opacity: jdText.trim() ? 1 : 0.5}}>
-                Analyze →
+                {ms.analyze}
               </button>
               {ACCOUNTS_ENABLED && (
                 <button onClick={handleAiTailor} disabled={!jdText.trim() || aiTailoring}
@@ -7093,26 +7269,26 @@ Awards: ${form.awards}`;
                   {aiTailoring ? at.tailoring : at.aiTailor}{!hasPass ? " 🔒" : ""}
                 </button>
               )}
-              {jdKws && <span style={{fontSize:12.5, color:C.text2}}>{jdKws.size} keywords extracted</span>}
+              {jdKws && <span style={{fontSize:12.5, color:C.text2}}>{jdKws.size} {ms.kwExtracted}</span>}
             </div>
 
             {tailorSel && jdKws && (
               <div style={{borderTop:`1px solid ${C.border}`, paddingTop:20}}>
-                <div style={{fontSize:14, fontWeight:700, color:C.text1, marginBottom:14}}>Select what to include in your tailored resume:</div>
-                {master.jobs.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, marginBottom:8}}>Work Experience</div>{master.jobs.map(j => renderSelRow(j, "jobs", scoreText(j.title+" "+j.company+" "+j.bullets.join(" "), jdKws), `${j.title}${j.company ? " · "+j.company : ""}${j.startDate ? " ("+j.startDate+" – "+(j.current?"Present":j.endDate||"?")+")" : ""}`))}</>)}
-                {master.education.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>Education</div>{master.education.map(e => renderSelRow(e, "education", scoreText(e.degree+" "+e.field+" "+e.school, jdKws), `${e.degree}${e.field ? " in "+e.field : ""} — ${e.school}`))}</>)}
-                {master.skills.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>Skills</div><div style={{display:"flex", flexWrap:"wrap", gap:6, marginBottom:4}}>{master.skills.map(sk => { const sc = scoreText(sk.name, jdKws); const bd = badge(sc); const checked = tailorSel.skills?.[sk.id] !== false; return (<button key={sk.id} onClick={() => toggleSel("skills", sk.id)} style={{padding:"5px 12px", borderRadius:999, fontSize:12.5, fontWeight:600, border:`1.5px solid ${checked ? bd.color : C.border}`, background: checked ? `${bd.color}18` : "transparent", color: checked ? bd.color : C.text3, cursor:"pointer", fontFamily:"inherit", transition:"all 0.12s"}}>{sk.name}</button>); })}</div></>)}
-                {master.projects.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>Projects</div>{master.projects.map(p => renderSelRow(p, "projects", scoreText(p.name+" "+p.tech+" "+p.description, jdKws), `${p.name}${p.tech ? " · "+p.tech : ""}`))}</>)}
-                {master.certifications.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>Certifications</div>{master.certifications.map(c => renderSelRow(c, "certifications", scoreText(c.name+" "+c.issuer, jdKws), `${c.name}${c.issuer ? " · "+c.issuer : ""}`))}</>)}
-                {master.languages.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>Languages</div>{master.languages.map(l => renderSelRow(l, "languages", scoreText(l.name, jdKws), `${l.name}${l.level ? " ("+l.level+")" : ""}`))}</>)}
+                <div style={{fontSize:14, fontWeight:700, color:C.text1, marginBottom:14}}>{ms.selectInclude}</div>
+                {master.jobs.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, marginBottom:8}}>{ms.workExperience}</div>{master.jobs.map(j => renderSelRow(j, "jobs", scoreText(j.title+" "+j.company+" "+j.bullets.join(" "), jdKws), `${j.title}${j.company ? " · "+j.company : ""}${j.startDate ? " ("+j.startDate+" – "+(j.current?"Present":j.endDate||"?")+")" : ""}`))}</>)}
+                {master.education.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>{ms.education}</div>{master.education.map(e => renderSelRow(e, "education", scoreText(e.degree+" "+e.field+" "+e.school, jdKws), `${e.degree}${e.field ? " in "+e.field : ""} — ${e.school}`))}</>)}
+                {master.skills.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>{ms.skills}</div><div style={{display:"flex", flexWrap:"wrap", gap:6, marginBottom:4}}>{master.skills.map(sk => { const sc = scoreText(sk.name, jdKws); const bd = badge(sc); const checked = tailorSel.skills?.[sk.id] !== false; return (<button key={sk.id} onClick={() => toggleSel("skills", sk.id)} style={{padding:"5px 12px", borderRadius:999, fontSize:12.5, fontWeight:600, border:`1.5px solid ${checked ? bd.color : C.border}`, background: checked ? `${bd.color}18` : "transparent", color: checked ? bd.color : C.text3, cursor:"pointer", fontFamily:"inherit", transition:"all 0.12s"}}>{sk.name}</button>); })}</div></>)}
+                {master.projects.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>{ms.projects}</div>{master.projects.map(p => renderSelRow(p, "projects", scoreText(p.name+" "+p.tech+" "+p.description, jdKws), `${p.name}${p.tech ? " · "+p.tech : ""}`))}</>)}
+                {master.certifications.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>{ms.certifications}</div>{master.certifications.map(c => renderSelRow(c, "certifications", scoreText(c.name+" "+c.issuer, jdKws), `${c.name}${c.issuer ? " · "+c.issuer : ""}`))}</>)}
+                {master.languages.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>{ms.languages}</div>{master.languages.map(l => renderSelRow(l, "languages", scoreText(l.name, jdKws), `${l.name}${l.level ? " ("+l.level+")" : ""}`))}</>)}
                 <div style={{display:"flex", gap:10, marginTop:20, flexWrap:"wrap"}}>
                   <button onClick={generateTailored}
                     style={{background:C.grad, color:"#fff", border:"none", borderRadius:8, padding:"11px 24px", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"inherit"}}>
-                    Generate Tailored Resume →
+                    {ms.generateTailored}
                   </button>
                   <button onClick={() => { setTailorOpen(false); setJdKws(null); setTailorSel(null); setJdText(""); }}
                     style={{background:"transparent", color:C.text2, border:`1px solid ${C.border}`, borderRadius:8, padding:"11px 16px", fontSize:13.5, cursor:"pointer", fontFamily:"inherit"}}>
-                    Cancel
+                    {ms.cancel}
                   </button>
                 </div>
               </div>
