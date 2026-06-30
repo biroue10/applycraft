@@ -388,7 +388,7 @@ const BUILDER_UI = {
     improvementsRemain: "recommended improvements remain.", pdfHint: "Recommended for applications", docxHint: "Editable Word document",
     edit: "Edit", addSection: "Add section", livePreview: "Live preview", aiPolished: "AI-polished",
     selected: "Selected", recommended: "Recommended", clear: "Clear", clearFilters: "Clear filters",
-    noTemplatesTitle: "No templates found", noTemplatesSub: "Try removing a filter or searching with a broader term.",
+    noTemplatesTitle: "No templates found", noTemplatesSub: "Try removing a filter or searching with a broader term.", fit: "Fit",
   },
   fr: {
     toolName: "Créateur de CV", savedLocally: "Enregistré localement", unsavedChanges: "Modifications non enregistrées",
@@ -405,7 +405,7 @@ const BUILDER_UI = {
     improvementsRemain: "améliorations recommandées restantes.", pdfHint: "Recommandé pour les candidatures", docxHint: "Document Word modifiable",
     edit: "Modifier", addSection: "Ajouter une section", livePreview: "Aperçu en direct", aiPolished: "Optimisé par IA",
     selected: "Sélectionné", recommended: "Recommandé", clear: "Effacer", clearFilters: "Effacer les filtres",
-    noTemplatesTitle: "Aucun modèle trouvé", noTemplatesSub: "Essayez de retirer un filtre ou d'élargir votre recherche.",
+    noTemplatesTitle: "Aucun modèle trouvé", noTemplatesSub: "Essayez de retirer un filtre ou d'élargir votre recherche.", fit: "Ajuster",
   },
   es: {
     toolName: "Creador de currículums", savedLocally: "Guardado localmente", unsavedChanges: "Cambios sin guardar",
@@ -422,7 +422,7 @@ const BUILDER_UI = {
     improvementsRemain: "mejoras recomendadas pendientes.", pdfHint: "Recomendado para candidaturas", docxHint: "Documento de Word editable",
     edit: "Editar", addSection: "Añadir sección", livePreview: "Vista previa en vivo", aiPolished: "Pulido por IA",
     selected: "Seleccionada", recommended: "Recomendada", clear: "Borrar", clearFilters: "Borrar filtros",
-    noTemplatesTitle: "No se encontraron plantillas", noTemplatesSub: "Prueba a quitar un filtro o buscar con un término más amplio.",
+    noTemplatesTitle: "No se encontraron plantillas", noTemplatesSub: "Prueba a quitar un filtro o buscar con un término más amplio.", fit: "Ajustar",
   },
   ar: {
     toolName: "منشئ السيرة الذاتية", savedLocally: "محفوظ محلياً", unsavedChanges: "تغييرات غير محفوظة",
@@ -439,7 +439,7 @@ const BUILDER_UI = {
     improvementsRemain: "تحسينات موصى بها متبقية.", pdfHint: "موصى به للتقديم على الوظائف", docxHint: "مستند Word قابل للتعديل",
     edit: "تحرير", addSection: "إضافة قسم", livePreview: "معاينة مباشرة", aiPolished: "محسّن بالذكاء الاصطناعي",
     selected: "محدد", recommended: "موصى به", clear: "مسح", clearFilters: "مسح عوامل التصفية",
-    noTemplatesTitle: "لم يتم العثور على قوالب", noTemplatesSub: "حاول إزالة أحد عوامل التصفية أو البحث بمصطلح أوسع.",
+    noTemplatesTitle: "لم يتم العثور على قوالب", noTemplatesSub: "حاول إزالة أحد عوامل التصفية أو البحث بمصطلح أوسع.", fit: "ملاءمة",
   },
   de: {
     toolName: "Lebenslauf-Generator", savedLocally: "Lokal gespeichert", unsavedChanges: "Nicht gespeicherte Änderungen",
@@ -456,7 +456,96 @@ const BUILDER_UI = {
     improvementsRemain: "empfohlene Verbesserungen verbleiben.", pdfHint: "Empfohlen für Bewerbungen", docxHint: "Bearbeitbares Word-Dokument",
     edit: "Bearbeiten", addSection: "Abschnitt hinzufügen", livePreview: "Live-Vorschau", aiPolished: "KI-optimiert",
     selected: "Ausgewählt", recommended: "Empfohlen", clear: "Zurücksetzen", clearFilters: "Filter zurücksetzen",
-    noTemplatesTitle: "Keine Vorlagen gefunden", noTemplatesSub: "Entferne einen Filter oder suche mit einem allgemeineren Begriff.",
+    noTemplatesTitle: "Keine Vorlagen gefunden", noTemplatesSub: "Entferne einen Filter oder suche mit einem allgemeineren Begriff.", fit: "Anpassen",
+  },
+};
+
+// ── Cover-letter-builder chrome translations (full-site i18n, phase 3) ──
+const COVER_UI = {
+  en: {
+    toolName: "Cover Letter Builder", eyebrow: "Cover letter templates", galleryTitle: "Choose a cover letter style that matches your resume",
+    gallerySub: "Start with a professional letter layout, then edit the content beside a live preview. You can download as PDF when ready.",
+    stylesAvailable: "letter styles available.", resumeMatching: "Resume matching",
+    heading: "Cover Letter", draft: "Draft", essentials: "essentials complete", exportPdf: "Export PDF",
+    notStarted: "Not started", complete: "Complete", missing: "Missing",
+    cardRecipient: "Recipient & company", cardYourInfo: "Your info", cardLetterContent: "Letter content",
+    cardOpening: "Opening", cardBody: "Body", cardClosing: "Closing & signature",
+    lblDate: "Date", lblCompany: "Company", lblRecipientName: "Recipient Name", lblRecipientTitle: "Recipient Title",
+    lblCompanyAddress: "Company Address", lblFullName: "Full Name *", lblJobTitle: "Job Title", lblEmail: "Email",
+    lblPhone: "Phone", lblLocation: "Location", lblSubject: "Subject / Re:", lblSalutation: "Salutation", dear: "Dear",
+    lblBodyParas: "Opening & Body Paragraphs", lblClosingPara: "Closing Paragraph", lblSignoff: "Sign-off",
+    phBody: "Write your paragraphs here.\n\nSeparate paragraphs with a blank line.", phOpening: "Mr. Chen / Hiring Manager",
+    phClosing: "Thank you for your time and consideration. I look forward to speaking with you.", phSignoff: "Sincerely",
+    nextStep: "Next recommended step", nextStepBody: "Add your name to unlock cover letter export.",
+    comingSoon: "Custom cover-letter sections are coming soon.",
+  },
+  fr: {
+    toolName: "Créateur de lettre de motivation", eyebrow: "Modèles de lettre de motivation", galleryTitle: "Choisissez un style de lettre assorti à votre CV",
+    gallerySub: "Commencez avec une mise en page de lettre professionnelle, puis modifiez le contenu à côté d'un aperçu en direct. Vous pourrez télécharger en PDF lorsque vous serez prêt.",
+    stylesAvailable: "styles de lettre disponibles.", resumeMatching: "Assorti au CV",
+    heading: "Lettre de motivation", draft: "Brouillon", essentials: "éléments essentiels complétés", exportPdf: "Exporter en PDF",
+    notStarted: "Non commencé", complete: "Complet", missing: "Incomplet",
+    cardRecipient: "Destinataire et entreprise", cardYourInfo: "Vos informations", cardLetterContent: "Contenu de la lettre",
+    cardOpening: "Introduction", cardBody: "Corps", cardClosing: "Conclusion et signature",
+    lblDate: "Date", lblCompany: "Entreprise", lblRecipientName: "Nom du destinataire", lblRecipientTitle: "Fonction du destinataire",
+    lblCompanyAddress: "Adresse de l'entreprise", lblFullName: "Nom complet *", lblJobTitle: "Intitulé du poste", lblEmail: "E-mail",
+    lblPhone: "Téléphone", lblLocation: "Localisation", lblSubject: "Objet / Concerne :", lblSalutation: "Formule d'appel", dear: "Cher/Chère",
+    lblBodyParas: "Paragraphes d'introduction et de corps", lblClosingPara: "Paragraphe de conclusion", lblSignoff: "Formule de politesse",
+    phBody: "Rédigez vos paragraphes ici.\n\nSéparez les paragraphes par une ligne vide.", phOpening: "M. Chen / Responsable du recrutement",
+    phClosing: "Je vous remercie de votre temps et de votre considération. Dans l'attente de votre réponse.", phSignoff: "Cordialement",
+    nextStep: "Prochaine étape recommandée", nextStepBody: "Ajoutez votre nom pour débloquer l'export de la lettre.",
+    comingSoon: "Les sections personnalisées de lettre arrivent bientôt.",
+  },
+  es: {
+    toolName: "Creador de carta de presentación", eyebrow: "Plantillas de carta de presentación", galleryTitle: "Elige un estilo de carta que combine con tu currículum",
+    gallerySub: "Empieza con un diseño de carta profesional y luego edita el contenido junto a una vista previa en vivo. Puedes descargar en PDF cuando esté listo.",
+    stylesAvailable: "estilos de carta disponibles.", resumeMatching: "A juego con el CV",
+    heading: "Carta de presentación", draft: "Borrador", essentials: "elementos esenciales completados", exportPdf: "Exportar PDF",
+    notStarted: "Sin empezar", complete: "Completo", missing: "Incompleto",
+    cardRecipient: "Destinatario y empresa", cardYourInfo: "Tu información", cardLetterContent: "Contenido de la carta",
+    cardOpening: "Apertura", cardBody: "Cuerpo", cardClosing: "Cierre y firma",
+    lblDate: "Fecha", lblCompany: "Empresa", lblRecipientName: "Nombre del destinatario", lblRecipientTitle: "Cargo del destinatario",
+    lblCompanyAddress: "Dirección de la empresa", lblFullName: "Nombre completo *", lblJobTitle: "Puesto", lblEmail: "Correo",
+    lblPhone: "Teléfono", lblLocation: "Ubicación", lblSubject: "Asunto / Ref.:", lblSalutation: "Saludo", dear: "Estimado/a",
+    lblBodyParas: "Párrafos de apertura y cuerpo", lblClosingPara: "Párrafo de cierre", lblSignoff: "Despedida",
+    phBody: "Escribe tus párrafos aquí.\n\nSepara los párrafos con una línea en blanco.", phOpening: "Sr. Chen / Responsable de contratación",
+    phClosing: "Gracias por su tiempo y consideración. Espero poder conversar con usted.", phSignoff: "Atentamente",
+    nextStep: "Siguiente paso recomendado", nextStepBody: "Añade tu nombre para desbloquear la exportación de la carta.",
+    comingSoon: "Las secciones personalizadas de la carta llegarán pronto.",
+  },
+  ar: {
+    toolName: "منشئ خطاب التقديم", eyebrow: "قوالب خطاب التقديم", galleryTitle: "اختر أسلوب خطاب يتناسب مع سيرتك الذاتية",
+    gallerySub: "ابدأ بتنسيق خطاب احترافي، ثم حرّر المحتوى بجانب معاينة مباشرة. يمكنك التنزيل بصيغة PDF عند الجاهزية.",
+    stylesAvailable: "أنماط خطابات متاحة.", resumeMatching: "متطابق مع السيرة",
+    heading: "خطاب التقديم", draft: "مسودة", essentials: "عناصر أساسية مكتملة", exportPdf: "تصدير PDF",
+    notStarted: "لم يبدأ", complete: "مكتمل", missing: "ناقص",
+    cardRecipient: "المُستلِم والشركة", cardYourInfo: "معلوماتك", cardLetterContent: "محتوى الخطاب",
+    cardOpening: "الافتتاحية", cardBody: "المتن", cardClosing: "الخاتمة والتوقيع",
+    lblDate: "التاريخ", lblCompany: "الشركة", lblRecipientName: "اسم المُستلِم", lblRecipientTitle: "منصب المُستلِم",
+    lblCompanyAddress: "عنوان الشركة", lblFullName: "الاسم الكامل *", lblJobTitle: "المسمى الوظيفي", lblEmail: "البريد الإلكتروني",
+    lblPhone: "الهاتف", lblLocation: "الموقع", lblSubject: "الموضوع / بخصوص:", lblSalutation: "التحية", dear: "عزيزي/عزيزتي",
+    lblBodyParas: "فقرات الافتتاحية والمتن", lblClosingPara: "فقرة الخاتمة", lblSignoff: "خاتمة التوقيع",
+    phBody: "اكتب فقراتك هنا.\n\nافصل بين الفقرات بسطر فارغ.", phOpening: "السيد تشين / مدير التوظيف",
+    phClosing: "شكراً لوقتك واهتمامك. أتطلع إلى التحدث معك.", phSignoff: "مع خالص التقدير",
+    nextStep: "الخطوة التالية الموصى بها", nextStepBody: "أضف اسمك لتفعيل تصدير خطاب التقديم.",
+    comingSoon: "أقسام خطاب التقديم المخصصة قادمة قريباً.",
+  },
+  de: {
+    toolName: "Anschreiben-Generator", eyebrow: "Anschreiben-Vorlagen", galleryTitle: "Wähle einen Anschreiben-Stil, der zu deinem Lebenslauf passt",
+    gallerySub: "Beginne mit einem professionellen Brieflayout und bearbeite dann den Inhalt neben einer Live-Vorschau. Du kannst bei Fertigstellung als PDF herunterladen.",
+    stylesAvailable: "Briefstile verfügbar.", resumeMatching: "Passend zum Lebenslauf",
+    heading: "Anschreiben", draft: "Entwurf", essentials: "wesentliche Felder ausgefüllt", exportPdf: "PDF exportieren",
+    notStarted: "Nicht begonnen", complete: "Vollständig", missing: "Unvollständig",
+    cardRecipient: "Empfänger & Unternehmen", cardYourInfo: "Deine Angaben", cardLetterContent: "Briefinhalt",
+    cardOpening: "Einleitung", cardBody: "Hauptteil", cardClosing: "Abschluss & Unterschrift",
+    lblDate: "Datum", lblCompany: "Unternehmen", lblRecipientName: "Name des Empfängers", lblRecipientTitle: "Position des Empfängers",
+    lblCompanyAddress: "Firmenadresse", lblFullName: "Vollständiger Name *", lblJobTitle: "Berufsbezeichnung", lblEmail: "E-Mail",
+    lblPhone: "Telefon", lblLocation: "Standort", lblSubject: "Betreff / Betr.:", lblSalutation: "Anrede", dear: "Sehr geehrte(r)",
+    lblBodyParas: "Einleitungs- und Hauptabsätze", lblClosingPara: "Schlussabsatz", lblSignoff: "Grußformel",
+    phBody: "Schreibe hier deine Absätze.\n\nTrenne Absätze durch eine Leerzeile.", phOpening: "Herr Chen / Personalverantwortliche(r)",
+    phClosing: "Vielen Dank für Ihre Zeit und Ihr Interesse. Ich freue mich auf ein Gespräch mit Ihnen.", phSignoff: "Mit freundlichen Grüßen",
+    nextStep: "Nächster empfohlener Schritt", nextStepBody: "Füge deinen Namen hinzu, um den Export des Anschreibens freizuschalten.",
+    comingSoon: "Benutzerdefinierte Anschreiben-Abschnitte folgen bald.",
   },
 };
 
@@ -3310,6 +3399,7 @@ export default function ResumeGenerator() {
   const eui = ENTRY_UI[lang] || ENTRY_UI.en; // structured-entry editor strings
   const lx = LANDING_UI[lang] || LANDING_UI.en; // landing / site-chrome strings
   const bu = BUILDER_UI[lang] || BUILDER_UI.en; // resume-builder chrome strings
+  const cu = COVER_UI[lang] || COVER_UI.en; // cover-letter-builder chrome strings
   const rtl = selectedLang.rtl || false;
   const set = useCallback((k) => (e) => setForm(f => ({ ...f, [k]: e.target.value })), []);
   const setField = useCallback((k, v) => setForm(f => ({ ...f, [k]: v })), []);
@@ -5694,7 +5784,7 @@ Awards: ${form.awards}`;
 
   const coverTemplatesContent = (
     <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
-      <AppToolHeader toolName="Cover Letter Builder" />
+      <AppToolHeader toolName={cu.toolName} />
       <section aria-labelledby="cover-gallery-title" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "24px 4px 0" : "42px 28px 0" }}>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 0.95fr) minmax(280px, 0.42fr)",
           gap: isMobile ? 18 : 40, alignItems: "end", marginBottom: isMobile ? 22 : 30 }}>
@@ -5703,24 +5793,24 @@ Awards: ${form.awards}`;
               background: `${C.accent}12`, border: `1px solid ${C.accent}2E`,
               color: C.accent2, padding: "5px 12px", fontSize: 11, fontWeight: 900,
               letterSpacing: "1.4px", textTransform: "uppercase", marginBottom: 14 }}>
-              Cover letter templates
+              {cu.eyebrow}
             </div>
             <h1 id="cover-gallery-title" style={{ margin: "0 0 12px", color: C.text1,
               fontSize: isMobile ? 30 : 40, lineHeight: 1.08, letterSpacing: "-0.8px", fontWeight: 900 }}>
-              Choose a cover letter style that matches your resume
+              {cu.galleryTitle}
             </h1>
             <p style={{ margin: 0, maxWidth: 650, color: C.text2, fontSize: isMobile ? 15 : 16.5, lineHeight: 1.65 }}>
-              Start with a professional letter layout, then edit the content beside a live preview. You can download as PDF when ready.
+              {cu.gallerySub}
             </p>
           </div>
           <div style={{ display: "grid", gap: 10, justifyContent: isMobile ? "stretch" : "end" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: isMobile ? "flex-start" : "flex-end",
               color: C.text2, fontSize: 13.5 }}>
               <LineIcon name="document" size={16} color={C.accent2} />
-              <span>{COVER_TEMPLATE_COUNT} letter styles available.</span>
+              <span>{COVER_TEMPLATE_COUNT} {cu.stylesAvailable}</span>
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: isMobile ? "flex-start" : "flex-end" }}>
-              {["Live preview", "PDF export", "Resume matching"].map((item) => (
+              {[bu.livePreview, bu.badgePdf, cu.resumeMatching].map((item) => (
                 <span key={item} style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text3,
                   borderRadius: 999, padding: "6px 10px", fontSize: 12.5, fontWeight: 700 }}>
                   {item}
@@ -5838,8 +5928,8 @@ Awards: ${form.awards}`;
     // 3-state status (Not started / Missing / Complete) from whether fields are filled.
     const coverStatus = (fields, required) => {
       const anyFilled = fields.some(k => (coverForm[k] || "").trim());
-      if (!anyFilled) return "Not started";
-      return required.every(k => (coverForm[k] || "").trim()) ? "Complete" : "Missing";
+      if (!anyFilled) return cu.notStarted;
+      return required.every(k => (coverForm[k] || "").trim()) ? cu.complete : cu.missing;
     };
     const cov = (key) => ({ collapsed: !!coverCollapsed[key], onToggleCollapse: () => toggleCoverCollapse(key), eui, rtl });
 
@@ -5849,38 +5939,38 @@ Awards: ${form.awards}`;
         <div style={{ position: "sticky", top: 0, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
           padding: isMobile ? "10px 12px" : "11px 18px", background: `${C.bg}f4`, backdropFilter: "blur(14px)",
           boxShadow: "0 10px 28px rgba(0,0,0,0.14)", display: "flex", alignItems: "center", gap: 10, flexWrap: isMobile ? "wrap" : "nowrap" }}>
-          <button onClick={() => setCoverStep("templates")} aria-label="Back to cover letter templates"
+          <button onClick={() => setCoverStep("templates")} aria-label={bu.backToTemplates}
             style={{ ...ghostIconBtn, margin: 0, fontSize: 18 }}>←</button>
           <div style={{ minWidth: 0, flex: "1 1 220px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
               <h1 style={{ margin: 0, color: C.text1, fontSize: isMobile ? 16 : 18, lineHeight: 1.15,
                 fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                Cover Letter
+                {cu.heading}
               </h1>
-              <span style={{ color: C.text3, fontSize: 11.5, whiteSpace: "nowrap" }}>· Draft</span>
+              <span style={{ color: C.text3, fontSize: 11.5, whiteSpace: "nowrap" }}>· {cu.draft}</span>
             </div>
             {!isMobile && (
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 3, color: C.text3, fontSize: 12 }}>
                 <span style={{ width: 8, height: 8, borderRadius: "50%", background: coverTpl.accent, flexShrink: 0 }} />
                 <span>{coverTpl.name}</span>
                 <span>·</span>
-                <span>{filledCoverFields}/4 essentials complete</span>
+                <span>{filledCoverFields}/4 {cu.essentials}</span>
               </div>
             )}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            <button type="button" onClick={() => setCoverStep("templates")} style={{ ...softBtn }}>Customize</button>
+            <button type="button" onClick={() => setCoverStep("templates")} style={{ ...softBtn }}>{bu.customize}</button>
             {isMobile && (
               <button onClick={() => setMobileCoverMode(mobileCoverMode === "edit" ? "preview" : "edit")}
                 style={{ ...softBtn }}>
-                {mobileCoverMode === "edit" ? "Preview" : "Edit"}
+                {mobileCoverMode === "edit" ? bu.preview : bu.edit}
               </button>
             )}
             <button onClick={downloadCoverPDF} disabled={!coverReady}
               style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 9, minHeight: 38,
                 padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: coverReady ? "pointer" : "not-allowed",
                 fontFamily: "inherit", opacity: coverReady ? 1 : 0.55 }}>
-              Export PDF
+              {cu.exportPdf}
             </button>
             {renderMoreMenu(coverMoreOpen, setCoverMoreOpen, coverSharePayload, `${coverForm.name || "My"} cover letter`)}
           </div>
@@ -5890,8 +5980,8 @@ Awards: ${form.awards}`;
           <div style={{ background: C.surface, borderLeft: `3px solid ${C.accent}`, borderRadius: 12,
             padding: "10px 13px", marginBottom: 14, display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 900, color: C.text1 }}>Next recommended step</div>
-              <div style={{ fontSize: 12.5, color: C.text2, marginTop: 3 }}>Add your name to unlock cover letter export.</div>
+              <div style={{ fontSize: 13, fontWeight: 900, color: C.text1 }}>{cu.nextStep}</div>
+              <div style={{ fontSize: 12.5, color: C.text2, marginTop: 3 }}>{cu.nextStepBody}</div>
             </div>
           </div>
         )}
@@ -5900,76 +5990,76 @@ Awards: ${form.awards}`;
           gap: 18, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
           <div className="ac-panel-noscroll" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileCoverMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
             padding: "12px 14px 28px" }) }}>
-            <FieldCard icon="🏢" title="Recipient & company" {...cov("recipient")}
+            <FieldCard icon="🏢" title={cu.cardRecipient} {...cov("recipient")}
               status={coverStatus(["company", "recipientName", "recipientTitle", "companyAddress", "date"], ["company"])}>
               <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
                 <div style={{ flex: 1 }}>
-                  <label htmlFor="cover-field-date" style={lbl}>Date</label>{coverField("date", false, "June 26, 2026", "📅")}
+                  <label htmlFor="cover-field-date" style={lbl}>{cu.lblDate}</label>{coverField("date", false, "June 26, 2026", "📅")}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label htmlFor="cover-field-company" style={lbl}>Company</label>{coverField("company", false, "Stripe", "🏢")}
+                  <label htmlFor="cover-field-company" style={lbl}>{cu.lblCompany}</label>{coverField("company", false, "Stripe", "🏢")}
                 </div>
               </div>
-              <label htmlFor="cover-field-recipientName" style={lbl}>Recipient Name</label>{coverField("recipientName", false, "Mr. David Chen", "👤")}
-              <label htmlFor="cover-field-recipientTitle" style={lbl}>Recipient Title</label>{coverField("recipientTitle", false, "Head of Design", "💼")}
-              <label htmlFor="cover-field-companyAddress" style={lbl}>Company Address</label>{coverField("companyAddress", false, "123 Main St, City", "📍")}
+              <label htmlFor="cover-field-recipientName" style={lbl}>{cu.lblRecipientName}</label>{coverField("recipientName", false, "Mr. David Chen", "👤")}
+              <label htmlFor="cover-field-recipientTitle" style={lbl}>{cu.lblRecipientTitle}</label>{coverField("recipientTitle", false, "Head of Design", "💼")}
+              <label htmlFor="cover-field-companyAddress" style={lbl}>{cu.lblCompanyAddress}</label>{coverField("companyAddress", false, "123 Main St, City", "📍")}
             </FieldCard>
 
-            <FieldCard icon="👤" title="Your info" {...cov("sender")}
+            <FieldCard icon="👤" title={cu.cardYourInfo} {...cov("sender")}
               status={coverStatus(["name", "jobTitle", "email", "phone", "location"], ["name"])}>
-              <label htmlFor="cover-field-name" style={lbl}>Full Name *</label>{coverField("name", false, "Alexandra Johnson", "✏️")}
-              <label htmlFor="cover-field-jobTitle" style={lbl}>Job Title</label>{coverField("jobTitle", false, "Senior Product Designer", "💼")}
+              <label htmlFor="cover-field-name" style={lbl}>{cu.lblFullName}</label>{coverField("name", false, "Alexandra Johnson", "✏️")}
+              <label htmlFor="cover-field-jobTitle" style={lbl}>{cu.lblJobTitle}</label>{coverField("jobTitle", false, "Senior Product Designer", "💼")}
               <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
                 <div style={{ flex: 1 }}>
-                  <label htmlFor="cover-field-email" style={lbl}>Email</label>{coverField("email", false, "you@email.com", "✉️")}
+                  <label htmlFor="cover-field-email" style={lbl}>{cu.lblEmail}</label>{coverField("email", false, "you@email.com", "✉️")}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label htmlFor="cover-field-phone" style={lbl}>Phone</label>{coverField("phone", false, "+1 415 555 0000", "☎️")}
+                  <label htmlFor="cover-field-phone" style={lbl}>{cu.lblPhone}</label>{coverField("phone", false, "+1 415 555 0000", "☎️")}
                 </div>
               </div>
-              <label htmlFor="cover-field-location" style={lbl}>Location</label>{coverField("location", false, "City, Country", "📍")}
+              <label htmlFor="cover-field-location" style={lbl}>{cu.lblLocation}</label>{coverField("location", false, "City, Country", "📍")}
             </FieldCard>
 
-            <SectionHeader icon="✍️" title="Letter content" filled={!!(coverForm.opening || coverForm.body || coverForm.closing)} />
+            <SectionHeader icon="✍️" title={cu.cardLetterContent} filled={!!(coverForm.opening || coverForm.body || coverForm.closing)} />
 
-            <FieldCard icon="📌" title="Opening" {...cov("opening")}
+            <FieldCard icon="📌" title={cu.cardOpening} {...cov("opening")}
               status={coverStatus(["subject", "opening"], ["opening"])}>
-              <label htmlFor="cover-field-subject" style={lbl}>Subject / Re:</label>{coverField("subject", false, "Senior Product Designer Position", "📌")}
-              <label htmlFor="cover-field-opening" style={lbl}>Salutation</label>
+              <label htmlFor="cover-field-subject" style={lbl}>{cu.lblSubject}</label>{coverField("subject", false, "Senior Product Designer Position", "📌")}
+              <label htmlFor="cover-field-opening" style={lbl}>{cu.lblSalutation}</label>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                <span style={{ fontSize: 13.5, color: C.text2, whiteSpace: "nowrap" }} aria-hidden="true">Dear</span>
+                <span style={{ fontSize: 13.5, color: C.text2, whiteSpace: "nowrap" }} aria-hidden="true">{cu.dear}</span>
                 <div style={{ flex: 1 }}>
                   <IconInput icon="👤">
                     <input id="cover-field-opening" value={coverForm.opening} onChange={e => setCoverForm(f => ({ ...f, opening: e.target.value }))}
-                      placeholder="Mr. Chen / Hiring Manager" style={inputStyle} />
+                      placeholder={cu.phOpening} style={inputStyle} />
                   </IconInput>
                 </div>
                 <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
               </div>
             </FieldCard>
 
-            <FieldCard icon="📝" title="Body" {...cov("body")}
+            <FieldCard icon="📝" title={cu.cardBody} {...cov("body")}
               status={coverStatus(["body"], ["body"])}>
-              <label htmlFor="cover-field-body" style={lbl}>Opening &amp; Body Paragraphs</label>
+              <label htmlFor="cover-field-body" style={lbl}>{cu.lblBodyParas}</label>
               <CoverFormattingBar fieldKey="body" />
               <textarea id="cover-field-body" value={coverForm.body} onChange={e => setCoverForm(f => ({ ...f, body: e.target.value }))}
-                placeholder={"Write your paragraphs here.\n\nSeparate paragraphs with a blank line."}
+                placeholder={cu.phBody}
                 rows={8} style={{ ...inputStyle, resize: "vertical", minHeight: 160 }} />
             </FieldCard>
 
-            <FieldCard icon="✅" title="Closing & signature" {...cov("closing")}
+            <FieldCard icon="✅" title={cu.cardClosing} {...cov("closing")}
               status={coverStatus(["closing", "signoff"], ["closing"])}>
-              <label htmlFor="cover-field-closing" style={lbl}>Closing Paragraph</label>
+              <label htmlFor="cover-field-closing" style={lbl}>{cu.lblClosingPara}</label>
               <CoverFormattingBar fieldKey="closing" />
               <textarea id="cover-field-closing" value={coverForm.closing} onChange={e => setCoverForm(f => ({ ...f, closing: e.target.value }))}
-                placeholder="Thank you for your time and consideration. I look forward to speaking with you."
+                placeholder={cu.phClosing}
                 rows={3} style={{ ...inputStyle, resize: "vertical", minHeight: 80 }} />
-              <label htmlFor="cover-field-signoff" style={lbl}>Sign-off</label>
+              <label htmlFor="cover-field-signoff" style={lbl}>{cu.lblSignoff}</label>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <div style={{ flex: 1 }}>
                   <IconInput icon="✍️">
                     <input id="cover-field-signoff" value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
-                      placeholder="Sincerely" style={inputStyle} />
+                      placeholder={cu.phSignoff} style={inputStyle} />
                   </IconInput>
                 </div>
                 <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
@@ -5981,11 +6071,11 @@ Awards: ${form.awards}`;
                 editor + preview + PDF/DOCX wiring (left for a follow-up). */}
             <div style={{ display: "flex", justifyContent: rtl ? "flex-start" : "flex-end", marginTop: 16 }}>
               <button type="button"
-                onClick={() => { setStatusMsg("Custom cover-letter sections are coming soon."); setTimeout(() => setStatusMsg(""), 2500); }}
+                onClick={() => { setStatusMsg(cu.comingSoon); setTimeout(() => setStatusMsg(""), 2500); }}
                 style={{ display: "inline-flex", alignItems: "center", gap: 6, background: `${C.accent}18`,
                   border: "none", borderRadius: 999, padding: "8px 18px", fontSize: 13, fontWeight: 700,
                   color: C.accent2, cursor: "pointer", fontFamily: "inherit" }}>
-                <span aria-hidden style={{ fontSize: 15, fontWeight: 800 }}>+</span> Add section
+                <span aria-hidden style={{ fontSize: 15, fontWeight: 800 }}>+</span> {bu.addSection}
               </button>
             </div>
           </div>
@@ -5994,7 +6084,7 @@ Awards: ${form.awards}`;
             padding: "12px 14px 28px" }) }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12,
               marginTop: isMobile ? 8 : 0, flexWrap: "wrap" }}>
-              <span style={{ ...badge, ...badgeLive, background: C.elevated, color: C.text2 }}>● Live preview</span>
+              <span style={{ ...badge, ...badgeLive, background: C.elevated, color: C.text2 }}>● {bu.livePreview}</span>
               <div aria-label="Preview controls" style={{ display: "flex", alignItems: "center", gap: 4,
                 background: C.surface, borderRadius: 10, padding: 3 }}>
                 <button type="button" onClick={() => setPreviewZoom(z => Math.max(60, z - 10))}
@@ -6003,7 +6093,7 @@ Awards: ${form.awards}`;
                 <button type="button" onClick={() => setPreviewZoom(z => Math.min(120, z + 10))}
                   aria-label="Zoom preview in" style={{ ...previewToolBtn }}>+</button>
                 <button type="button" onClick={() => setPreviewZoom(86)}
-                  style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>Fit</button>
+                  style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>{bu.fit}</button>
               </div>
             </div>
             <div style={{ overflowX: "auto" }}>
@@ -6024,14 +6114,14 @@ Awards: ${form.awards}`;
               style={{ border: "none", background: C.surface, color: C.text1,
                 borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
                 cursor: "pointer", fontFamily: "inherit" }}>
-              {mobileCoverMode === "edit" ? "Preview" : "Edit"}
+              {mobileCoverMode === "edit" ? bu.preview : bu.edit}
             </button>
             <button onClick={downloadCoverPDF} disabled={!coverReady}
               style={{ border: "none", background: C.grad, color: "#fff",
                 borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
                 cursor: coverReady ? "pointer" : "not-allowed", fontFamily: "inherit",
                 opacity: coverReady ? 1 : 0.55 }}>
-              Export PDF
+              {cu.exportPdf}
             </button>
           </div>
         )}
