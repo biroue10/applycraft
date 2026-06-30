@@ -3299,7 +3299,9 @@ export default function ResumeGenerator() {
   }, [currentResumeId]);
   const refreshResumes = useCallback(() => setSavedResumes(resumes.listResumes()), []);
 
-  const saveCurrentResume = useCallback(() => {
+  const pendingSaveRef = useRef(false);
+  // Persist the saved resume (assumes the user is already signed in).
+  const doSaveResume = useCallback(() => {
     // Updating an existing resume is always allowed; a brand-new save counts
     // against the free limit.
     if (!currentResumeId && !resumes.canCreateNew()) { setSubModalOpen(true); return; }
@@ -3312,6 +3314,19 @@ export default function ResumeGenerator() {
     setStatusMsg("Resume saved.");
     setTimeout(() => setStatusMsg(""), 2000);
   }, [form, currentResumeId, refreshResumes]);
+
+  // Saving requires an account — prompt sign-in/sign-up first, then save.
+  const saveCurrentResume = useCallback(() => {
+    if (!currentUser) {
+      pendingSaveRef.current = true;
+      setAuthModalTab("signup");
+      setAuthModal(true);
+      setStatusMsg("Create a free account to save your resume.");
+      setTimeout(() => setStatusMsg(""), 3000);
+      return;
+    }
+    doSaveResume();
+  }, [currentUser, doSaveResume]);
 
   const newResume = useCallback(() => {
     if (!resumes.canCreateNew()) { setSubModalOpen(true); return; }
@@ -7146,7 +7161,11 @@ Awards: ${form.awards}`;
           )}
         </nav>
         <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)}
-          onLogin={user => { setCurrentUser(user); setAuthModal(false); }} />
+          onLogin={user => {
+            try { localStorage.setItem("ac_account", JSON.stringify(user)); } catch { /* noop */ }
+            setCurrentUser(user); setAuthModal(false);
+            if (pendingSaveRef.current) { pendingSaveRef.current = false; doSaveResume(); }
+          }} />
         {ACCOUNTS_ENABLED && <SaveProfileModal open={saveProfileOpen} onClose={() => setSaveProfileOpen(false)} at={at} rtl={rtl} C={C} lang={lang} />}
         {ACCOUNTS_ENABLED && <UpsellModal feature={upsell} onClose={() => setUpsell(null)} onGetPass={handleStartCheckout} at={at} rtl={rtl} C={C} />}
         <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
@@ -7934,7 +7953,11 @@ Awards: ${form.awards}`;
           )}
         </div>
         <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)}
-          onLogin={user => { setCurrentUser(user); setAuthModal(false); }} />
+          onLogin={user => {
+            try { localStorage.setItem("ac_account", JSON.stringify(user)); } catch { /* noop */ }
+            setCurrentUser(user); setAuthModal(false);
+            if (pendingSaveRef.current) { pendingSaveRef.current = false; doSaveResume(); }
+          }} />
         {ACCOUNTS_ENABLED && <SaveProfileModal open={saveProfileOpen} onClose={() => setSaveProfileOpen(false)} at={at} rtl={rtl} C={C} lang={lang} />}
         {ACCOUNTS_ENABLED && <UpsellModal feature={upsell} onClose={() => setUpsell(null)} onGetPass={handleStartCheckout} at={at} rtl={rtl} C={C} />}
 
