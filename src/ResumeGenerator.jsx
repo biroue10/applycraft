@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { ACCOUNTS_ENABLED, PAYMENTS_ENABLED, ACTIVE_SEARCH_PASS } from "./config.js";
 import { initAnalytics, track, EVENTS } from "./analytics.js";
 import * as account from "./account.js";
+import { analyzeKeywords, detectLanguage, LANG_LABEL } from "./ats/engine.js";
 
 // ── UI translation codes (languages with full UI translation) ──────
 const UI_LANGS = new Set(["en", "fr", "es", "ar", "de"]);
@@ -4557,15 +4558,14 @@ Awards: ${form.awards}`;
 
     let kwGap = null;
     if (jdText && jdText.trim().length > 30) {
-      const jdWords = new Set(atsTokenize(jdText));
-      const cvWords = new Set(atsTokenize(text));
-      if (jdWords.size > 3) {
-        const present = [...jdWords].filter(w => cvWords.has(w));
-        const missing = [...jdWords].filter(w => !cvWords.has(w));
-        const pct = Math.round((present.length / jdWords.size) * 100);
-        kwGap = { present: present.slice(0, 20), missing: missing.slice(0, 20), pct, total: jdWords.size };
-        if (pct < 30) issues.unshift({ level:"critical", icon:"🎯", title:`Low keyword match: ${pct}% vs. job description`, detail:`Only ${pct}% of the JD's keywords appear in your resume. Target 40%+ for strong ATS ranking.` });
-        else if (pct < 45) issues.unshift({ level:"warning", icon:"🎯", title:`Keyword match: ${pct}%`, detail:`You match ${pct}% of the JD's keywords. Strong candidates typically hit 45–70% for targeted roles.` });
+      const a = analyzeKeywords(text, jdText); // stopword-filtered, normalized, cross-language
+      if (a.total > 3) {
+        const pct = a.pct;
+        kwGap = { present: a.present, missing: a.missing, pct, total: a.total,
+          crossLanguage: a.crossLanguage, langResume: a.langResume, langJd: a.langJd };
+        const xl = a.crossLanguage ? ` (cross-language: ${LANG_LABEL[a.langResume]} resume vs ${LANG_LABEL[a.langJd]} job)` : "";
+        if (pct < 30) issues.unshift({ level:"critical", icon:"🎯", title:`Low keyword match: ${pct}% vs. job description${xl}`, detail:`Only ${pct}% of the JD's meaningful keywords appear in your resume. Target 40%+ for strong ATS ranking.` });
+        else if (pct < 45) issues.unshift({ level:"warning", icon:"🎯", title:`Keyword match: ${pct}%${xl}`, detail:`You match ${pct}% of the JD's keywords. Strong candidates typically hit 45–70% for targeted roles.` });
       }
     }
 
@@ -5712,6 +5712,33 @@ Awards: ${form.awards}`;
     const [localJd, setLocalJd] = useState(atsJd || "");
     const [result, setResult] = useState(atsResult);
     const [running, setRunning] = useState(false);
+    const [aiOut, setAiOut] = useState("");
+    const [aiBusy, setAiBusy] = useState(false);
+    const lastAiRef = useRef(0);
+
+    // Detected languages for the badges (client-side, cheap).
+    const resumeLang = localText.trim().length > 20 ? detectLanguage(localText) : null;
+    const jdLang = localJd.trim().length > 20 ? detectLanguage(localJd) : null;
+    const langBadge = (lang) => lang
+      ? <span style={{ marginInlineStart: 8, fontSize: 10, fontWeight: 800, padding: "2px 7px", borderRadius: 999,
+          background: `${C.accent}1f`, color: C.accent2, letterSpacing: "0.5px", verticalAlign: "middle" }}>{LANG_LABEL[lang] || lang.toUpperCase()}</span>
+      : null;
+
+    // OPT-IN AI layer — only fires on explicit click, with a rapid-call guard.
+    const getAiSuggestions = async () => {
+      const now = Date.now();
+      if (aiBusy || now - lastAiRef.current < 8000 || localText.trim().length < 40) return;
+      lastAiRef.current = now;
+      setAiBusy(true); setAiOut("");
+      try {
+        const payload = `RESUME:\n${localText.slice(0, 6000)}\n\nJOB DESCRIPTION:\n${(localJd || "").slice(0, 3500)}`;
+        const text = await callAi("ats-suggestions", payload, selectedLang?.code || "en");
+        setAiOut(text);
+        track(EVENTS.AI_TAILORING_USED, { surface: "ats" });
+      } catch {
+        setAiOut("Could not reach the AI helper right now. Your local score is unaffected — try again in a moment.");
+      } finally { setAiBusy(false); }
+    };
 
     const check = () => {
       if (localText.trim().length < 40) return;
@@ -5804,7 +5831,7 @@ Awards: ${form.awards}`;
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 16 }}>
           <div>
             <div style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, textTransform: "uppercase",
-              letterSpacing: "1px", marginBottom: 8 }}>Your resume</div>
+              letterSpacing: "1px", marginBottom: 8 }}>Your resume{langBadge(resumeLang)}</div>
             <textarea value={localText} onChange={e => setLocalText(e.target.value)}
               placeholder={"Paste your full resume here...\n\nJane Smith\njane@email.com | +1 555 000 0000\n\nEXPERIENCE\nSenior Engineer — Acme (2021–Present)\n• Led migration cutting deploy time 60%\n\nSKILLS\nPython, React, AWS"}
               style={{ width: "100%", height: 240, resize: "vertical", background: C.elevated,
@@ -5814,7 +5841,7 @@ Awards: ${form.awards}`;
           </div>
           <div>
             <div style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, textTransform: "uppercase",
-              letterSpacing: "1px", marginBottom: 8 }}>Job description <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— optional</span></div>
+              letterSpacing: "1px", marginBottom: 8 }}>Job description <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— optional</span>{langBadge(jdLang)}</div>
             <textarea value={localJd} onChange={e => setLocalJd(e.target.value)}
               placeholder={"Paste the job description here to get a keyword gap analysis.\n\nWith it, you'll see:\n  • Which keywords you match ✓\n  • Which are missing ✗\n  • Your keyword match %\n\nWithout it, you still get a full ATS readiness score."}
               style={{ width: "100%", height: 240, resize: "vertical", background: C.elevated,
@@ -5873,6 +5900,11 @@ Awards: ${form.awards}`;
           {result.kwGap && (
             <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 14, padding: "22px 24px", marginBottom: 24 }}>
               <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>Keyword Match</div>
+              {result.kwGap.crossLanguage && (
+                <div style={{ fontSize: 11.5, color: C.accent2, marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
+                  🌍 Cross-language matching — {LANG_LABEL[result.kwGap.langResume]} resume vs {LANG_LABEL[result.kwGap.langJd]} job description
+                </div>
+              )}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
                 <div>
                   <span style={{ fontSize: 28, fontWeight: 800, color: C.text1 }}>{result.kwGap.pct}%</span>
@@ -5900,6 +5932,31 @@ Awards: ${form.awards}`;
               </div>
             </div>
           )}
+
+          {/* Opt-in AI layer — explicit, consent-based; never auto-fires */}
+          <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 14, padding: "20px 24px", marginBottom: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 13.5, fontWeight: 800, color: C.text1 }}>✨ AI suggestions <span style={{ fontSize: 11, fontWeight: 600, color: C.text3 }}>· optional</span></div>
+                <div style={{ fontSize: 12.5, color: C.text3, marginTop: 3, maxWidth: 460 }}>
+                  Sends your resume{localJd.trim() ? " + job description" : ""} to the AI helper to catch semantic & cross-language matches and suggest rewrites. Nothing is sent until you click.
+                </div>
+              </div>
+              <button onClick={getAiSuggestions} disabled={aiBusy || localText.trim().length < 40}
+                style={{ flexShrink: 0, background: aiBusy ? C.surface : C.grad, color: aiBusy ? C.text3 : "#fff",
+                  border: aiBusy ? `1px solid ${C.border}` : "none", borderRadius: 10, padding: "10px 18px",
+                  fontSize: 13.5, fontWeight: 700, cursor: (aiBusy || localText.trim().length < 40) ? "not-allowed" : "pointer",
+                  fontFamily: "inherit", opacity: localText.trim().length < 40 ? 0.5 : 1 }}>
+                {aiBusy ? "Thinking…" : "✨ Get AI suggestions"}
+              </button>
+            </div>
+            {aiOut && (
+              <div style={{ marginTop: 16, padding: "14px 16px", background: C.surface, border: `1px solid ${C.border}`,
+                borderRadius: 10, color: C.text1, fontSize: 13, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
+                {aiOut}
+              </div>
+            )}
+          </div>
 
           {/* Issues */}
           {result.issues.length === 0
