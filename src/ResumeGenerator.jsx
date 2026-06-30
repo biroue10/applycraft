@@ -4,6 +4,7 @@ import { ACCOUNTS_ENABLED, PAYMENTS_ENABLED, ACTIVE_SEARCH_PASS } from "./config
 import { initAnalytics, track, EVENTS } from "./analytics.js";
 import * as account from "./account.js";
 import { analyzeKeywords, detectLanguage, LANG_LABEL } from "./ats/engine.js";
+import { parseResume } from "./ats/parseResume.js";
 
 // ── UI translation codes (languages with full UI translation) ──────
 const UI_LANGS = new Set(["en", "fr", "es", "ar", "de"]);
@@ -3185,6 +3186,34 @@ export default function ResumeGenerator() {
   const setSectionTitle = useCallback((key, title) => {
     setForm((f) => ({ ...f, sectionTitles: { ...(f.sectionTitles || {}), [key]: title } }));
   }, []);
+
+  // Hydrate the whole builder form from a parsed resume object (ATS handoff).
+  // Replaces the form with clean structured fields — no raw text dumps.
+  const hydrateFromParsed = useCallback((p) => {
+    const entry = (fields) => ({ id: uid(), visible: true, ...fields });
+    const next = migrateForm({
+      name: p.name || "", title: p.title || "", email: p.email || "", phone: p.phone || "",
+      location: p.location || "", linkedin: p.linkedin || "", website: p.website || "",
+      summary: p.summary || "", sectionTitles: {},
+      experienceEntries: (p.experience || []).map((e) => entry({
+        title: e.title || "", company: [e.company, e.location].filter(Boolean).join(" · "),
+        startDate: e.startDate || "", endDate: e.endDate || "",
+        description: (e.bullets || []).map((b) => (/^[•\-*]/.test(b) ? b : `• ${b}`)).join("\n"),
+      })),
+      educationEntries: (p.education || []).map((e) => entry({
+        title: e.school || "", titleUrl: "", subtitle: e.degree || "",
+        startDate: e.startDate || "", endDate: e.endDate || "", location: e.location || "", description: e.description || "",
+      })),
+      skillsEntries: (p.skills || []).map((name) => entry({ name })),
+      languagesEntries: (p.languages || []).map((name) => entry({ name })),
+      certificationsEntries: (p.certifications || []).map((it) => entry(it)),
+      projectsEntries: (p.projects || []).map((it) => entry(it)),
+      awardsEntries: (p.awards || []).map((it) => entry(it)),
+      volunteerEntries: (p.volunteer || []).map((it) => entry(it)),
+      extracurricularEntries: (p.extracurricular || []).map((it) => entry(it)),
+    });
+    setForm(next);
+  }, []);
   // Per-section entry handlers shared by every SectionCard.
   const addSectionEntry = useCallback((key) => {
     const e = blankEntry(key);
@@ -5758,10 +5787,12 @@ Awards: ${form.awards}`;
     };
 
     const importToBuilder = () => {
-      if (!localText.trim()) return;
-      setSectionFromText("experience", localText);
+      if (localText.trim().length < 20) return;
+      hydrateFromParsed(parseResume(localText)); // structured parse → correct fields, no dumps
       setNavPage("resume");
-      setStep("templates");
+      setStep(tpl ? "form" : "templates");
+      setStatusMsg("Resume imported into the builder.");
+      setTimeout(() => setStatusMsg(""), 2500);
     };
 
     const scoreColor = !result ? C.accent2
