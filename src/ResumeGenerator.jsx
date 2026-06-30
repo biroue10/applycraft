@@ -7291,84 +7291,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* Footer */}
-        <div style={{ padding: "56px 24px 32px" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 40, marginBottom: 48 }}>
-              {/* Brand */}
-              <div style={{ maxWidth: 280 }}>
-                <button onClick={() => setAppView("landing")}
-                  style={{ background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                    fontSize: 20, fontWeight: 800, border: "none", cursor: "pointer", padding: 0,
-                    fontFamily: "inherit", display: "block", marginBottom: 12, letterSpacing: "-0.5px" }}>ApplyCraft</button>
-                <p style={{ fontSize: 13, color: C.text3, lineHeight: 1.75, margin: "0 0 16px" }}>
-                  Free resume and cover letter builder for the global job market. {DOCUMENT_LANGUAGE_COUNT} document languages, {UI_LANGUAGE_COUNT} interface languages, {RESUME_TEMPLATE_COUNT} templates, no sign-up required.
-                </p>
-                <a href={`mailto:${AUTHOR.email}`}
-                  style={{ fontSize: 13, color: C.text2, textDecoration: "none" }}>
-                  {AUTHOR.email}
-                </a>
-              </div>
-              {/* Links */}
-              <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-                    letterSpacing: "1.5px", color: C.text3, marginBottom: 16 }}>Product</div>
-                  {[
-                    ["Resume Builder", () => enter("resume")],
-                    ["Cover Letter", () => enter("cover")],
-                  ].map(([label, fn]) => (
-                    <button key={label} onClick={fn}
-                      style={{ display: "block", fontSize: 13.5, color: C.text2, background: "none",
-                        border: "none", cursor: "pointer", padding: "4px 0", fontFamily: "inherit",
-                        textAlign: "left" }}>{label}</button>
-                  ))}
-                  <a href="/ats-checker/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>ATS Checker</a>
-                  <a href="/changelog/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Changelog</a>
-                  <a href="/roadmap/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Roadmap</a>
-                  <a href="/status/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Status</a>
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-                    letterSpacing: "1.5px", color: C.text3, marginBottom: 16 }}>Company</div>
-                  <a href="/about/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>About &amp; Founder</a>
-                  <a href="/contact/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Contact</a>
-                  {AUTHOR.github && (
-                    <a href={AUTHOR.github} target="_blank" rel="noopener noreferrer"
-                      style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>GitHub</a>
-                  )}
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-                    letterSpacing: "1.5px", color: C.text3, marginBottom: 16 }}>Resources</div>
-                  <a href="/help/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Help Center</a>
-                  <a href="/resume-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Resume Guide</a>
-                  <a href="/ats-resume-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>ATS Guide</a>
-                  <a href="/cover-letter-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Cover Letter Guide</a>
-                  <a href="/free-resume-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Free Resume Builder</a>
-                  <a href="/student-resume-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Student Resume Builder</a>
-                  <a href="/canadian-resume-builder/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Canadian Resume Builder</a>
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-                    letterSpacing: "1.5px", color: C.text3, marginBottom: 16 }}>Legal</div>
-                  <a href="/privacy/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Privacy Policy</a>
-                  <a href="/privacy/#gdpr" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>GDPR</a>
-                  <a href="/privacy/#cookies" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Cookies</a>
-                  <a href="/accessibility/" style={{ display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" }}>Accessibility</a>
-                </div>
-              </div>
-            </div>
-            <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 20,
-              display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-              <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft by Biroue Digital Ltd · applycraft.io</div>
-              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
-                <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="lock" size={13} color={C.text3} /> No account required</span>
-                <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="spark" size={13} color={C.text3} /> Optional AI helpers</span>
-                <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="globe" size={13} color={C.text3} /> Browser-first editing</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SiteFooter />
       </div>
     );
   }
@@ -7660,6 +7583,7 @@ Awards: ${form.awards}`;
           : (navPage === "tracker" || navPage === "master" || navPage === "ats")
             ? <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>{pageBody}</div>
             : pageBody}
+        {!isFormView && <SiteFooter />}
         </div>
       </main>
     </div>
@@ -10029,6 +9953,74 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
             ))}
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// Shared site footer, used on the landing page and every scrollable app page.
+// Self-contained (anchor links only) so it works in any render scope.
+function SiteFooter() {
+  const col = { fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px", color: C.text3, marginBottom: 16 };
+  const lk = { display: "block", fontSize: 13.5, color: C.text2, textDecoration: "none", padding: "4px 0" };
+  return (
+    <div style={{ padding: "56px 24px 32px" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 40, marginBottom: 48 }}>
+          {/* Brand */}
+          <div style={{ maxWidth: 280 }}>
+            <a href="/" style={{ background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+              fontSize: 20, fontWeight: 800, textDecoration: "none", display: "block", marginBottom: 12, letterSpacing: "-0.5px" }}>ApplyCraft</a>
+            <p style={{ fontSize: 13, color: C.text3, lineHeight: 1.75, margin: "0 0 16px" }}>
+              Free resume and cover letter builder for the global job market. {DOCUMENT_LANGUAGE_COUNT} document languages, {UI_LANGUAGE_COUNT} interface languages, {RESUME_TEMPLATE_COUNT} templates, no sign-up required.
+            </p>
+            <a href={`mailto:${AUTHOR.email}`} style={{ fontSize: 13, color: C.text2, textDecoration: "none" }}>{AUTHOR.email}</a>
+          </div>
+          {/* Links */}
+          <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
+            <div>
+              <div style={col}>Product</div>
+              <a href="/resume/templates" style={lk}>Resume Builder</a>
+              <a href="/cover-letter/templates" style={lk}>Cover Letter</a>
+              <a href="/ats-checker/" style={lk}>ATS Checker</a>
+              <a href="/changelog/" style={lk}>Changelog</a>
+              <a href="/roadmap/" style={lk}>Roadmap</a>
+              <a href="/status/" style={lk}>Status</a>
+            </div>
+            <div>
+              <div style={col}>Company</div>
+              <a href="/about/" style={lk}>About &amp; Founder</a>
+              <a href="/contact/" style={lk}>Contact</a>
+              {AUTHOR.github && <a href={AUTHOR.github} target="_blank" rel="noopener noreferrer" style={lk}>GitHub</a>}
+            </div>
+            <div>
+              <div style={col}>Resources</div>
+              <a href="/help/" style={lk}>Help Center</a>
+              <a href="/resume-builder/" style={lk}>Resume Guide</a>
+              <a href="/ats-resume-builder/" style={lk}>ATS Guide</a>
+              <a href="/cover-letter-builder/" style={lk}>Cover Letter Guide</a>
+              <a href="/free-resume-builder/" style={lk}>Free Resume Builder</a>
+              <a href="/student-resume-builder/" style={lk}>Student Resume Builder</a>
+              <a href="/canadian-resume-builder/" style={lk}>Canadian Resume Builder</a>
+            </div>
+            <div>
+              <div style={col}>Legal</div>
+              <a href="/privacy/" style={lk}>Privacy Policy</a>
+              <a href="/privacy/#gdpr" style={lk}>GDPR</a>
+              <a href="/privacy/#cookies" style={lk}>Cookies</a>
+              <a href="/accessibility/" style={lk}>Accessibility</a>
+            </div>
+          </div>
+        </div>
+        <div style={{ borderTop: `1px solid ${C.border}`, paddingTop: 20,
+          display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+          <div style={{ fontSize: 12.5, color: C.text3 }}>© {new Date().getFullYear()} ApplyCraft by Biroue Digital Ltd · applycraft.io</div>
+          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
+            <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="lock" size={13} color={C.text3} /> No account required</span>
+            <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="spark" size={13} color={C.text3} /> Optional AI helpers</span>
+            <span style={{ fontSize: 12, color: C.text3, display: "inline-flex", alignItems: "center", gap: 5 }}><LineIcon name="globe" size={13} color={C.text3} /> Browser-first editing</span>
+          </div>
+        </div>
       </div>
     </div>
   );
