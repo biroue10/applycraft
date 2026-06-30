@@ -6,6 +6,7 @@ import * as account from "./account.js";
 import { analyzeKeywords, detectLanguage, LANG_LABEL } from "./ats/engine.js";
 import { parseResume } from "./ats/parseResume.js";
 import * as resumes from "./resumes.js";
+import { buildShareUrl } from "./share.js";
 
 // ── UI translation codes (languages with full UI translation) ──────
 const UI_LANGS = new Set(["en", "fr", "es", "ar", "de"]);
@@ -3354,6 +3355,71 @@ export default function ResumeGenerator() {
     setCurrentResumeId((cur) => (cur === id ? null : cur));
   }, [refreshResumes]);
 
+  // ── Share / email document (⋮ menu on the resume + cover editors) ─────────
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [coverMoreOpen, setCoverMoreOpen] = useState(false);
+  const [shareUrl, setShareUrl] = useState("");
+  const shareLink = useCallback((getPayload) => {
+    const url = buildShareUrl(getPayload());
+    setShareUrl(url);
+    try { navigator.clipboard && navigator.clipboard.writeText(url); } catch { /* noop */ }
+    setStatusMsg("Shareable link copied to clipboard.");
+    setTimeout(() => setStatusMsg(""), 2500);
+  }, []);
+  const emailLink = useCallback((getPayload, subject) => {
+    const url = buildShareUrl(getPayload());
+    const body = encodeURIComponent(`Here's my document, viewable in any browser:\n\n${url}\n\nMade free with ApplyCraft — applycraft.io`);
+    if (typeof window !== "undefined") window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${body}`;
+  }, []);
+  const resumeSharePayload = useCallback(() => ({
+    k: "resume", t: tpl?.id || "",
+    d: { name: liveData.name, title: liveData.title, contact: liveData.contact, summary: liveData.summary, sections: liveData.sections },
+  }), [tpl, liveData]);
+  const coverSharePayload = useCallback(() => {
+    const f = coverForm;
+    return { k: "cover", t: coverTpl?.id || "",
+      d: { name: f.name, jobTitle: f.jobTitle, email: f.email, phone: f.phone, location: f.location, date: f.date,
+        recipientName: f.recipientName, recipientTitle: f.recipientTitle, company: f.company, companyAddress: f.companyAddress,
+        subject: f.subject, opening: f.opening, body: f.body, closing: f.closing, signoff: f.signoff } };
+  }, [coverForm, coverTpl]);
+  // Reusable ⋮ menu (email + shareable link) for either editor.
+  const renderMoreMenu = (open, setOpen, getPayload, subject) => (
+    <div style={{ position: "relative" }}>
+      <button type="button" aria-label="More options" aria-expanded={open}
+        onClick={() => { setOpen((o) => !o); setShareUrl(""); }}
+        style={{ ...softBtn, padding: "7px 11px", fontWeight: 800 }}>⋮</button>
+      {open && (
+        <div style={{ position: "absolute", top: "calc(100% + 8px)", insetInlineEnd: 0, zIndex: 120, width: 290,
+          background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, boxShadow: "0 18px 54px rgba(0,0,0,0.5)", padding: 10 }}>
+          <button type="button" onClick={() => { emailLink(getPayload, subject); setOpen(false); }}
+            style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none",
+              color: C.text1, padding: "10px 10px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", borderRadius: 8 }}>
+            📧 Email this document
+          </button>
+          <button type="button" onClick={() => shareLink(getPayload)}
+            style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none",
+              color: C.text1, padding: "10px 10px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", borderRadius: 8 }}>
+            🔗 Get shareable link
+          </button>
+          {shareUrl && (
+            <div style={{ marginTop: 8, padding: "9px 10px", background: C.elevated, borderRadius: 8 }}>
+              <div style={{ fontSize: 11, color: C.text3, marginBottom: 6 }}>Anyone with this link can view it in their browser:</div>
+              <input readOnly value={shareUrl} onFocus={(e) => e.target.select()}
+                style={{ width: "100%", boxSizing: "border-box", fontSize: 11.5, padding: "6px 8px", background: C.surface,
+                  border: `1px solid ${C.border}`, borderRadius: 6, color: C.text2, fontFamily: "inherit" }} />
+              <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+                <button type="button" onClick={() => { try { navigator.clipboard && navigator.clipboard.writeText(shareUrl); } catch { /* noop */ } setStatusMsg("Copied."); setTimeout(() => setStatusMsg(""), 1500); }}
+                  style={{ flex: 1, background: `${C.accent}18`, border: `1px solid ${C.accent}40`, borderRadius: 7, padding: "6px", fontSize: 12, fontWeight: 700, color: C.accent2, cursor: "pointer", fontFamily: "inherit" }}>Copy</button>
+                <a href={shareUrl} target="_blank" rel="noreferrer"
+                  style={{ flex: 1, textAlign: "center", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 7, padding: "6px", fontSize: 12, fontWeight: 700, color: C.text2, textDecoration: "none", fontFamily: "inherit" }}>Open ↗</a>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   const handleSubscribe = useCallback(async () => {
     track(EVENTS.CHECKOUT_STARTED, { plan: "monthly" });
     try {
@@ -4780,6 +4846,7 @@ Awards: ${form.awards}`;
             style={{ ...softBtn, fontWeight: 700 }}>
             💾 {currentResumeId ? "Save" : "Save resume"}
           </button>
+          {renderMoreMenu(moreMenuOpen, setMoreMenuOpen, resumeSharePayload, `${form.name || "My"} resume`)}
           <div style={{ position: "relative" }}>
             <button type="button" onClick={() => setCustomizeOpen(o => !o)}
               aria-expanded={customizeOpen}
@@ -5660,6 +5727,7 @@ Awards: ${form.awards}`;
                 fontFamily: "inherit", opacity: coverReady ? 1 : 0.55 }}>
               Export PDF
             </button>
+            {renderMoreMenu(coverMoreOpen, setCoverMoreOpen, coverSharePayload, `${coverForm.name || "My"} cover letter`)}
           </div>
         </div>
 
