@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
+import { canonicalFor, hreflangFor } from "./src/seo/alternates.js";
 
 // Per-route language metadata. Drives both the <html> attributes and hreflang
 // injection for every React route vite-react-ssg prebuilds. Static pages in
@@ -11,13 +12,11 @@ const ROUTE_LANG = {
   "/resume-in-french/": { lang: "fr" },
 };
 
-// Reciprocal hreflang set — every language variant points to all siblings.
-const HREFLANG_LINKS = [
-  `<link rel="alternate" hreflang="en" href="https://applycraft.io/" />`,
-  `<link rel="alternate" hreflang="ar" href="https://applycraft.io/resume-in-arabic/" />`,
-  `<link rel="alternate" hreflang="fr" href="https://applycraft.io/resume-in-french/" />`,
-  `<link rel="alternate" hreflang="x-default" href="https://applycraft.io/" />`,
-].join("\n    ");
+// NOTE: canonical + hreflang are emitted PER ROUTE by src/seo/RouteHead.jsx
+// (via vite-react-ssg's <Head>), so each prerendered page gets its own correct
+// canonical and hreflang only where a genuine translated equivalent exists.
+// We no longer inject a blanket hreflang set here — that put the homepage's
+// alternates onto every route.
 
 const isAnalyze = process.env.ANALYZE === "true";
 
@@ -71,9 +70,17 @@ export default defineConfig({
       const htmlTag = dir
         ? `<html lang="${lang}" dir="${dir}">`
         : `<html lang="${lang}">`;
+
+      // Per-route canonical + hreflang (genuine clusters only) + noindex for the
+      // user-shared viewer. Build-time only — no client JS.
+      const tags = [`<link rel="canonical" href="${canonicalFor(path)}" />`];
+      if (path === "/r") tags.push(`<meta name="robots" content="noindex,follow" />`);
+      for (const a of hreflangFor(path)) {
+        tags.push(`<link rel="alternate" hreflang="${a.hreflang}" href="${a.href}" />`);
+      }
       return html
         .replace(/<html[^>]*>/, htmlTag)
-        .replace("</head>", `    ${HREFLANG_LINKS}\n  </head>`);
+        .replace("</head>", `    ${tags.join("\n    ")}\n  </head>`);
     },
   },
 });

@@ -12,15 +12,12 @@
 
     <!-- Primary SEO -->
     <title>Free Resume Builder &amp; Cover Letter Maker | ApplyCraft</title>
-    <meta name="description" content="Create an ATS-friendly resume or cover letter for free. Choose from 22 templates, edit with live preview, and download as PDF or DOCX—no signup required." />
+    <meta name="description" content="Create an ATS-friendly resume or cover letter for free. Choose from 46 templates, edit with live preview, and download as PDF or DOCX—no signup required." />
     <meta name="author" content="ApplyCraft" />
-    <link rel="canonical" href="https://applycraft.io/" />
-
-    <!-- Hreflang: resume builder language group -->
-    <link rel="alternate" hreflang="en" href="https://applycraft.io/" />
-    <link rel="alternate" hreflang="fr" href="https://applycraft.io/resume-in-french/" />
-    <link rel="alternate" hreflang="ar" href="https://applycraft.io/resume-in-arabic/" />
-    <link rel="alternate" hreflang="x-default" href="https://applycraft.io/" />
+    <!-- Canonical + hreflang are emitted PER ROUTE by src/seo/RouteHead.jsx so
+         each prerendered page gets its own correct canonical (and hreflang only
+         where a genuine translated equivalent exists). Do not hard-code them
+         here — that copied the homepage's tags onto every route. -->
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />

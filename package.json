@@ -17,6 +17,7 @@
     "test:product": "node scripts/product-tests.mjs",
     "test:ats": "node scripts/ats-tests.mjs",
     "test:pdf": "node scripts/pdf-tests.mjs",
+    "test:seo:hreflang": "node scripts/seo-hreflang-tests.mjs",
     "test:a11y": "node scripts/a11y-check.mjs",
     "test:security": "node scripts/security-tests.mjs",
     "test:ux": "node scripts/ux-tests.mjs",

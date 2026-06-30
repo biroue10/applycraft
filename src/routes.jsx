@@ -2,6 +2,9 @@ import React from "react";
 import ResumeGenerator from "./ResumeGenerator.jsx";
 import SharedResume from "./SharedResume.jsx";
 
+// Canonical + hreflang are injected per route at BUILD TIME by the
+// onBeforePageRender hook in vite.config.js (zero client JS), using the
+// genuine-cluster map in src/seo/alternates.js.
 export const routes = [
   { path: "/", element: <ResumeGenerator /> },
   { path: "/r", element: <SharedResume /> },
