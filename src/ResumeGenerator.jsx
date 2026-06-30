@@ -1172,7 +1172,9 @@ function uid() {
 // "tag" (comma list), "generic" (title/subtitle + description).
 const ENTRY_SCHEMAS = {
   experience:     { type: "role",    icon: "💼", fields: ["title", "company", "startDate", "endDate", "description"], primary: "title",  secondary: "company" },
-  education:      { type: "line",    icon: "🎓", fields: ["degree", "institution", "year"],                          primary: "degree", secondary: "institution" },
+  education:      { type: "edu",     icon: "🎓", fields: ["title", "titleUrl", "subtitle", "startDate", "endDate", "location", "description"], primary: "title", secondary: "subtitle",
+                    fieldTypes: { startDate: "month", endDate: "month" }, linkFor: { title: "titleUrl" },
+                    labelKeys: { title: "school", subtitle: "degree", location: "location" } },
   skills:         { type: "tag",     icon: "⚡", fields: ["name"],                                                   primary: "name", labelKeys: { name: "skill" } },
   languages:      { type: "tag",     icon: "🌐", fields: ["name"],                                                   primary: "name", labelKeys: { name: "language" } },
   certifications: { type: "generic", icon: "📜", fields: ["title", "subtitle", "description"],                       primary: "title",  secondary: "subtitle", labelKeys: { title: "certification", subtitle: "issuer", description: "details" } },
@@ -1225,6 +1227,18 @@ function entryToLines(key, e) {
   const s = ENTRY_SCHEMAS[key];
   if (s.type === "tag") return [(e.name || "").trim()].filter(Boolean);
   if (s.type === "line") return [entryHeader(key, e)].filter(Boolean);
+  if (s.type === "edu") {
+    // Conditional layout: "Title | Start – End" / Subtitle / Location / Description.
+    // Separators are only added around present values (no stray "—"/"|").
+    const out = [];
+    const dates = [e.startDate, e.endDate].map((x) => (x || "").trim()).filter(Boolean).join(" – ");
+    const head = [(e.title || "").trim(), dates].filter(Boolean).join("  |  ");
+    if (head) out.push(head);
+    const sub = (e.subtitle || "").trim(); if (sub) out.push(sub);
+    const loc = (e.location || "").trim(); if (loc) out.push(loc);
+    (e.description || "").split("\n").forEach((l) => { if (l.trim()) out.push(l); });
+    return out;
+  }
   const out = [];
   const h = entryHeader(key, e);
   if (h) out.push(h);
@@ -1269,6 +1283,28 @@ function parseEntries(key, text) {
       return e;
     });
   }
+  if (s.type === "edu") {
+    // Reverse of entryToLines: blocks separated by blank lines; per block →
+    // "Title | Start – End" / Subtitle / Location / Description.
+    return text.split(/\n{2,}/).map((block) => {
+      const lines = block.split("\n").map((l) => l.replace(/\s+$/, "")).filter((l) => l.trim());
+      const e = blankEntry(key);
+      if (lines.length) {
+        let head = lines[0], datePart = "";
+        const pipe = head.indexOf("|");
+        if (pipe !== -1) { datePart = head.slice(pipe + 1).trim(); head = head.slice(0, pipe).trim(); }
+        e.title = head.trim();
+        if (datePart) { const dd = datePart.split(/\s*[–-]\s*/); e.startDate = (dd[0] || "").trim(); e.endDate = (dd[1] || "").trim(); }
+        const rest = lines.slice(1);
+        if (rest[0] && !/^[•\-*]/.test(rest[0])) e.subtitle = rest[0];
+        const afterSub = e.subtitle ? rest.slice(1) : rest;
+        if (afterSub[0] && !/^[•\-*]/.test(afterSub[0])) e.location = afterSub[0];
+        const desc = e.location ? afterSub.slice(1) : afterSub;
+        if (desc.length) e.description = desc.join("\n");
+      }
+      return e;
+    }).filter((e) => e.title || e.subtitle || e.location || e.description);
+  }
   // role / generic: group header + following body lines into one entry.
   const entries = [];
   let cur = null;
@@ -1309,6 +1345,17 @@ function migrateForm(form) {
     const arrKey = key + "Entries";
     let entries = Array.isArray(out[arrKey]) ? out[arrKey] : null;
     if (!entries) entries = parseEntries(key, typeof out[key] === "string" ? out[key] : "");
+    // Migrate legacy Education entries (degree/institution/year) into the new shape
+    // without dropping data.
+    if (key === "education") {
+      entries = entries.map((e) => {
+        const n = { ...e };
+        if (!n.title && n.institution) n.title = n.institution;
+        if (!n.subtitle && n.degree) n.subtitle = n.degree;
+        if (!n.endDate && n.year) n.endDate = n.year;
+        return n;
+      });
+    }
     // Guarantee shape (id + visible) on every entry.
     entries = entries.map((e) => ({ ...e, id: e.id || uid(), visible: e.visible !== false }));
     out[arrKey] = entries;
@@ -1358,15 +1405,15 @@ function buildLiveData(form, t) {
 // ── Entry-editor microcopy (5 languages, RTL-aware via caller) ─────────────
 const ENTRY_UI = {
   en: { editHeading: "Edit heading", addEntry: "Add entry", remove: "Remove", show: "Show in resume", hide: "Hide from resume", untitled: "Untitled entry", collapse: "Collapse", expand: "Expand", reorder: "Drag to reorder",
-        labels: { title: "Job title", company: "Company", startDate: "Start date", endDate: "End date", description: "Description", degree: "Degree", institution: "Institution", year: "Year", subtitle: "Subtitle", skill: "Skill", language: "Language", certification: "Certification", issuer: "Issuer", project: "Project", tech: "Tools / role", role: "Role", organization: "Organization", award: "Award", details: "Details", pubTitle: "Title", publisher: "Publisher / venue", refName: "Name", refRelation: "Relationship", contact: "Contact details", activity: "Activity" }, addContent: "Add content", addContentSub: "Choose a section to add to your resume", alreadyAdded: "Already added", close: "Close" },
+        labels: { title: "Job title", company: "Company", startDate: "Start date", endDate: "End date", description: "Description", degree: "Degree", institution: "Institution", year: "Year", subtitle: "Subtitle", skill: "Skill", language: "Language", certification: "Certification", issuer: "Issuer", project: "Project", tech: "Tools / role", role: "Role", organization: "Organization", award: "Award", details: "Details", pubTitle: "Title", publisher: "Publisher / venue", refName: "Name", refRelation: "Relationship", contact: "Contact details", activity: "Activity", school: "School / university", location: "Location", link: "Link" }, addContent: "Add content", addContentSub: "Choose a section to add to your resume", alreadyAdded: "Already added", close: "Close" },
   fr: { editHeading: "Modifier le titre", addEntry: "Ajouter", remove: "Supprimer", show: "Afficher dans le CV", hide: "Masquer du CV", untitled: "Entrée sans titre", collapse: "Réduire", expand: "Développer", reorder: "Glisser pour réordonner",
-        labels: { title: "Intitulé du poste", company: "Entreprise", startDate: "Date de début", endDate: "Date de fin", description: "Description", degree: "Diplôme", institution: "Établissement", year: "Année", subtitle: "Sous-titre", skill: "Compétence", language: "Langue", certification: "Certification", issuer: "Émetteur", project: "Projet", tech: "Outils / rôle", role: "Rôle", organization: "Organisation", award: "Récompense", details: "Détails", pubTitle: "Titre", publisher: "Éditeur / lieu", refName: "Nom", refRelation: "Relation", contact: "Coordonnées", activity: "Activité" }, addContent: "Ajouter du contenu", addContentSub: "Choisissez une section à ajouter à votre CV", alreadyAdded: "Déjà ajouté", close: "Fermer" },
+        labels: { title: "Intitulé du poste", company: "Entreprise", startDate: "Date de début", endDate: "Date de fin", description: "Description", degree: "Diplôme", institution: "Établissement", year: "Année", subtitle: "Sous-titre", skill: "Compétence", language: "Langue", certification: "Certification", issuer: "Émetteur", project: "Projet", tech: "Outils / rôle", role: "Rôle", organization: "Organisation", award: "Récompense", details: "Détails", pubTitle: "Titre", publisher: "Éditeur / lieu", refName: "Nom", refRelation: "Relation", contact: "Coordonnées", activity: "Activité", school: "École / université", location: "Localisation", link: "Lien" }, addContent: "Ajouter du contenu", addContentSub: "Choisissez une section à ajouter à votre CV", alreadyAdded: "Déjà ajouté", close: "Fermer" },
   es: { editHeading: "Editar título", addEntry: "Añadir", remove: "Eliminar", show: "Mostrar en el CV", hide: "Ocultar del CV", untitled: "Entrada sin título", collapse: "Contraer", expand: "Expandir", reorder: "Arrastra para reordenar",
-        labels: { title: "Puesto", company: "Empresa", startDate: "Fecha de inicio", endDate: "Fecha de fin", description: "Descripción", degree: "Título", institution: "Institución", year: "Año", subtitle: "Subtítulo", skill: "Habilidad", language: "Idioma", certification: "Certificación", issuer: "Emisor", project: "Proyecto", tech: "Herramientas / rol", role: "Rol", organization: "Organización", award: "Premio", details: "Detalles", pubTitle: "Título", publisher: "Editorial / lugar", refName: "Nombre", refRelation: "Relación", contact: "Datos de contacto", activity: "Actividad" }, addContent: "Añadir contenido", addContentSub: "Elige una sección para añadir a tu CV", alreadyAdded: "Ya añadido", close: "Cerrar" },
+        labels: { title: "Puesto", company: "Empresa", startDate: "Fecha de inicio", endDate: "Fecha de fin", description: "Descripción", degree: "Título", institution: "Institución", year: "Año", subtitle: "Subtítulo", skill: "Habilidad", language: "Idioma", certification: "Certificación", issuer: "Emisor", project: "Proyecto", tech: "Herramientas / rol", role: "Rol", organization: "Organización", award: "Premio", details: "Detalles", pubTitle: "Título", publisher: "Editorial / lugar", refName: "Nombre", refRelation: "Relación", contact: "Datos de contacto", activity: "Actividad", school: "Escuela / universidad", location: "Ubicación", link: "Enlace" }, addContent: "Añadir contenido", addContentSub: "Elige una sección para añadir a tu CV", alreadyAdded: "Ya añadido", close: "Cerrar" },
   ar: { editHeading: "تعديل العنوان", addEntry: "إضافة", remove: "حذف", show: "إظهار في السيرة", hide: "إخفاء من السيرة", untitled: "إدخال بدون عنوان", collapse: "طي", expand: "توسيع", reorder: "اسحب لإعادة الترتيب",
-        labels: { title: "المسمى الوظيفي", company: "الشركة", startDate: "تاريخ البدء", endDate: "تاريخ الانتهاء", description: "الوصف", degree: "الشهادة", institution: "المؤسسة", year: "السنة", subtitle: "عنوان فرعي", skill: "مهارة", language: "لغة", certification: "الشهادة", issuer: "الجهة المانحة", project: "المشروع", tech: "الأدوات / الدور", role: "الدور", organization: "المنظمة", award: "الجائزة", details: "التفاصيل", pubTitle: "العنوان", publisher: "الناشر / المكان", refName: "الاسم", refRelation: "العلاقة", contact: "بيانات الاتصال", activity: "النشاط" }, addContent: "إضافة محتوى", addContentSub: "اختر قسمًا لإضافته إلى سيرتك الذاتية", alreadyAdded: "مضاف بالفعل", close: "إغلاق" },
+        labels: { title: "المسمى الوظيفي", company: "الشركة", startDate: "تاريخ البدء", endDate: "تاريخ الانتهاء", description: "الوصف", degree: "الشهادة", institution: "المؤسسة", year: "السنة", subtitle: "عنوان فرعي", skill: "مهارة", language: "لغة", certification: "الشهادة", issuer: "الجهة المانحة", project: "المشروع", tech: "الأدوات / الدور", role: "الدور", organization: "المنظمة", award: "الجائزة", details: "التفاصيل", pubTitle: "العنوان", publisher: "الناشر / المكان", refName: "الاسم", refRelation: "العلاقة", contact: "بيانات الاتصال", activity: "النشاط", school: "المدرسة / الجامعة", location: "الموقع", link: "رابط" }, addContent: "إضافة محتوى", addContentSub: "اختر قسمًا لإضافته إلى سيرتك الذاتية", alreadyAdded: "مضاف بالفعل", close: "إغلاق" },
   de: { editHeading: "Überschrift bearbeiten", addEntry: "Eintrag hinzufügen", remove: "Entfernen", show: "Im Lebenslauf anzeigen", hide: "Im Lebenslauf ausblenden", untitled: "Eintrag ohne Titel", collapse: "Einklappen", expand: "Ausklappen", reorder: "Zum Umordnen ziehen",
-        labels: { title: "Position", company: "Unternehmen", startDate: "Startdatum", endDate: "Enddatum", description: "Beschreibung", degree: "Abschluss", institution: "Institution", year: "Jahr", subtitle: "Untertitel", skill: "Fähigkeit", language: "Sprache", certification: "Zertifizierung", issuer: "Aussteller", project: "Projekt", tech: "Tools / Rolle", role: "Rolle", organization: "Organisation", award: "Auszeichnung", details: "Details", pubTitle: "Titel", publisher: "Verlag / Ort", refName: "Name", refRelation: "Beziehung", contact: "Kontaktdaten", activity: "Aktivität" }, addContent: "Inhalt hinzufügen", addContentSub: "Wählen Sie einen Abschnitt für Ihren Lebenslauf", alreadyAdded: "Bereits hinzugefügt", close: "Schließen" },
+        labels: { title: "Position", company: "Unternehmen", startDate: "Startdatum", endDate: "Enddatum", description: "Beschreibung", degree: "Abschluss", institution: "Institution", year: "Jahr", subtitle: "Untertitel", skill: "Fähigkeit", language: "Sprache", certification: "Zertifizierung", issuer: "Aussteller", project: "Projekt", tech: "Tools / Rolle", role: "Rolle", organization: "Organisation", award: "Auszeichnung", details: "Details", pubTitle: "Titel", publisher: "Verlag / Ort", refName: "Name", refRelation: "Beziehung", contact: "Kontaktdaten", activity: "Aktivität", school: "Schule / Universität", location: "Standort", link: "Link" }, addContent: "Inhalt hinzufügen", addContentSub: "Wählen Sie einen Abschnitt für Ihren Lebenslauf", alreadyAdded: "Bereits hinzugefügt", close: "Schließen" },
 };
 
 // Inline rich-text editor for an entry description. Reuses the markdown-marker
@@ -1454,7 +1501,10 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
       {content}
     </button>
   );
-  const nonDesc = schema.fields.filter((f) => f !== "description");
+  const [linkOpen, setLinkOpen] = useState({});
+  const urlFields = new Set(Object.values(schema.linkFor || {}));
+  const nonDesc = schema.fields.filter((f) => f !== "description" && !urlFields.has(f));
+  const fieldType = (f) => (schema.fieldTypes && schema.fieldTypes[f]) || "text";
   return (
     <div
       onDragOver={(e) => {
@@ -1486,15 +1536,43 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
         <div style={{ padding: `0 ${SECTION_TOKENS.gap1}px ${SECTION_TOKENS.gap3}px`, display: "flex", flexDirection: "column", gap: SECTION_TOKENS.gap2 }}>
           {nonDesc.length > 0 && (
             <div style={{ display: "grid", gridTemplateColumns: nonDesc.length === 1 ? "1fr" : "1fr 1fr", gap: SECTION_TOKENS.gap2 }}>
-              {nonDesc.map((f) => (
-                <div key={f}>
-                  <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: C.text3, marginBottom: 4 }}>{labelFor(f)}</label>
-                  <input value={entry[f] || ""} onChange={(e) => onChange({ [f]: e.target.value })} placeholder={labelFor(f)}
-                    dir={rtl ? "rtl" : "ltr"}
-                    style={{ width: "100%", boxSizing: "border-box", padding: "9px 12px", background: C.elevated,
-                      border: `1px solid ${SECTION_TOKENS.inputEdge}`, borderRadius: 8, color: C.text1, fontSize: 14, outline: "none", fontFamily: "inherit" }} />
-                </div>
-              ))}
+              {nonDesc.map((f) => {
+                const urlKey = schema.linkFor && schema.linkFor[f];
+                const showUrl = !!(urlKey && (linkOpen[f] || (entry[urlKey] || "").trim()));
+                const isDate = fieldType(f) === "month";
+                const hasVal = (entry[f] || "").trim();
+                return (
+                  <div key={f}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4, minHeight: 16 }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: C.text3 }}>{labelFor(f)}</label>
+                      {urlKey && (
+                        <button type="button" onClick={() => setLinkOpen((s) => ({ ...s, [f]: !showUrl }))}
+                          aria-expanded={showUrl}
+                          style={{ background: "none", border: "none", color: C.accent2, fontSize: 11, fontWeight: 700,
+                            cursor: "pointer", fontFamily: "inherit", padding: 0 }}>🔗 {eui.labels.link}</button>
+                      )}
+                    </div>
+                    <div style={{ position: "relative" }}>
+                      <input value={entry[f] || ""} onChange={(e) => onChange({ [f]: e.target.value })}
+                        placeholder={isDate ? "MM/YYYY" : labelFor(f)} dir={rtl ? "rtl" : "ltr"}
+                        style={{ width: "100%", boxSizing: "border-box",
+                          padding: isDate && hasVal ? "9px 30px 9px 12px" : "9px 12px", background: C.elevated,
+                          border: `1px solid ${SECTION_TOKENS.inputEdge}`, borderRadius: 8, color: C.text1, fontSize: 14, outline: "none", fontFamily: "inherit" }} />
+                      {isDate && hasVal && (
+                        <button type="button" aria-label={`Clear ${labelFor(f)}`} onClick={() => onChange({ [f]: "" })}
+                          style={{ position: "absolute", top: "50%", insetInlineEnd: 8, transform: "translateY(-50%)",
+                            background: "none", border: "none", color: C.text3, cursor: "pointer", fontSize: 16, lineHeight: 1, padding: 0 }}>×</button>
+                      )}
+                    </div>
+                    {showUrl && (
+                      <input value={entry[urlKey] || ""} onChange={(e) => onChange({ [urlKey]: e.target.value })}
+                        placeholder="https://…" dir="ltr" type="url"
+                        style={{ width: "100%", boxSizing: "border-box", padding: "8px 12px", marginTop: 6, background: C.elevated,
+                          border: `1px solid ${SECTION_TOKENS.inputEdge}`, borderRadius: 8, color: C.text1, fontSize: 13, outline: "none", fontFamily: "inherit" }} />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
           {schema.fields.includes("description") && (
@@ -6339,7 +6417,13 @@ Awards: ${form.awards}`;
       const s = tailorSel || {};
       const selJobs = master.jobs.filter(j => s.jobs?.[j.id] !== false);
       const experience = selJobs.map(j => [`${j.title}${j.company ? ` | ${j.company}` : ""}${j.location ? ` | ${j.location}` : ""}${j.startDate ? ` | ${j.startDate} – ${j.current ? "Present" : j.endDate||""}` : ""}`, ...j.bullets.filter(Boolean).map(b => `• ${b}`)].join("\n")).join("\n\n");
-      const education = master.education.filter(e => s.education?.[e.id] !== false).map(e => `${e.degree}${e.field ? ` in ${e.field}` : ""} — ${e.school}${e.endDate ? ` (${e.endDate})` : ""}${e.gpa ? ` · GPA ${e.gpa}` : ""}`).join("\n");
+      const education = master.education.filter(e => s.education?.[e.id] !== false).map(e => {
+        const dates = [e.startDate, e.endDate].filter(Boolean).join(" – ");
+        const head = [e.school, dates].filter(Boolean).join("  |  ");
+        const subtitle = `${e.degree || ""}${e.field ? ` in ${e.field}` : ""}`.trim();
+        const gpa = e.gpa ? `• GPA ${e.gpa}` : "";
+        return [head, subtitle, gpa].filter(Boolean).join("\n");
+      }).join("\n\n");
       const skills = master.skills.filter(sk => s.skills?.[sk.id] !== false).map(sk => sk.name).join(", ");
       const certifications = master.certifications.filter(c => s.certifications?.[c.id] !== false).map(c => `${c.name}${c.issuer ? ` — ${c.issuer}` : ""}${c.date ? ` (${c.date})` : ""}`).join("\n");
       const projects = master.projects.filter(p => s.projects?.[p.id] !== false).map(p => `${p.name}${p.tech ? ` | ${p.tech}` : ""}${p.url ? ` | ${p.url}` : ""}${p.description ? `\n${p.description}` : ""}`).join("\n\n");
