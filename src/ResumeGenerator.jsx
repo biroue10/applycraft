@@ -371,6 +371,95 @@ const LANDING_UI = {
   },
 };
 
+// ── Resume-builder chrome translations (full-site i18n, phase 2) ──
+const BUILDER_UI = {
+  en: {
+    toolName: "Resume Builder", savedLocally: "Saved locally", unsavedChanges: "Unsaved changes",
+    myResumes: "My resumes", unlimited: "Unlimited", free: "free", newResume: "New resume",
+    untitledResume: "Untitled resume", updated: "Updated", open: "Open",
+    templatesEyebrow: "Resume templates", galleryTitle: "Choose a resume that fits your career",
+    gallerySub: "Start with a professionally designed, ATS-friendly template. You can change colors, sections, and layout at any time.",
+    allFree: "All templates are free to customize.", badgePdf: "PDF export", badgeDocx: "DOCX export", badgeRtl: "RTL support",
+    searchTemplates: "Search templates", filters: "Filters", preview: "Preview", useTemplate: "Use template",
+    backToTemplates: "Back to templates", complete: "complete", save: "Save", saveResume: "Save resume",
+    customize: "Customize", documentSettings: "Document settings", templateLabel: "Template", atsConscious: "ATS-conscious",
+    languageLabel: "Language", customizeNote: "Typography, spacing, colors, and page size remain controlled by the selected template.",
+    exportingBtn: "Exporting...", exportBtn: "Export", exportTitle: "Export your resume", readyToExport: "Ready to export.",
+    improvementsRemain: "recommended improvements remain.", pdfHint: "Recommended for applications", docxHint: "Editable Word document",
+    edit: "Edit", addSection: "Add section", livePreview: "Live preview", aiPolished: "AI-polished",
+    selected: "Selected", recommended: "Recommended", clear: "Clear", clearFilters: "Clear filters",
+    noTemplatesTitle: "No templates found", noTemplatesSub: "Try removing a filter or searching with a broader term.",
+  },
+  fr: {
+    toolName: "Créateur de CV", savedLocally: "Enregistré localement", unsavedChanges: "Modifications non enregistrées",
+    myResumes: "Mes CV", unlimited: "Illimité", free: "gratuits", newResume: "Nouveau CV",
+    untitledResume: "CV sans titre", updated: "Mis à jour", open: "Ouvrir",
+    templatesEyebrow: "Modèles de CV", galleryTitle: "Choisissez un CV adapté à votre carrière",
+    gallerySub: "Commencez avec un modèle professionnel et compatible ATS. Vous pouvez changer les couleurs, les sections et la mise en page à tout moment.",
+    allFree: "Tous les modèles sont gratuits à personnaliser.", badgePdf: "Export PDF", badgeDocx: "Export DOCX", badgeRtl: "Prise en charge RTL",
+    searchTemplates: "Rechercher des modèles", filters: "Filtres", preview: "Aperçu", useTemplate: "Utiliser le modèle",
+    backToTemplates: "Retour aux modèles", complete: "complété", save: "Enregistrer", saveResume: "Enregistrer le CV",
+    customize: "Personnaliser", documentSettings: "Paramètres du document", templateLabel: "Modèle", atsConscious: "Optimisé ATS",
+    languageLabel: "Langue", customizeNote: "La typographie, l'espacement, les couleurs et le format de page restent contrôlés par le modèle sélectionné.",
+    exportingBtn: "Export en cours...", exportBtn: "Exporter", exportTitle: "Exporter votre CV", readyToExport: "Prêt à exporter.",
+    improvementsRemain: "améliorations recommandées restantes.", pdfHint: "Recommandé pour les candidatures", docxHint: "Document Word modifiable",
+    edit: "Modifier", addSection: "Ajouter une section", livePreview: "Aperçu en direct", aiPolished: "Optimisé par IA",
+    selected: "Sélectionné", recommended: "Recommandé", clear: "Effacer", clearFilters: "Effacer les filtres",
+    noTemplatesTitle: "Aucun modèle trouvé", noTemplatesSub: "Essayez de retirer un filtre ou d'élargir votre recherche.",
+  },
+  es: {
+    toolName: "Creador de currículums", savedLocally: "Guardado localmente", unsavedChanges: "Cambios sin guardar",
+    myResumes: "Mis currículums", unlimited: "Ilimitado", free: "gratis", newResume: "Nuevo currículum",
+    untitledResume: "Currículum sin título", updated: "Actualizado", open: "Abrir",
+    templatesEyebrow: "Plantillas de currículum", galleryTitle: "Elige un currículum que se adapte a tu carrera",
+    gallerySub: "Empieza con una plantilla profesional y compatible con ATS. Puedes cambiar colores, secciones y diseño en cualquier momento.",
+    allFree: "Todas las plantillas son gratis para personalizar.", badgePdf: "Exportar PDF", badgeDocx: "Exportar DOCX", badgeRtl: "Compatible con RTL",
+    searchTemplates: "Buscar plantillas", filters: "Filtros", preview: "Vista previa", useTemplate: "Usar plantilla",
+    backToTemplates: "Volver a las plantillas", complete: "completado", save: "Guardar", saveResume: "Guardar currículum",
+    customize: "Personalizar", documentSettings: "Configuración del documento", templateLabel: "Plantilla", atsConscious: "Optimizado para ATS",
+    languageLabel: "Idioma", customizeNote: "La tipografía, el espaciado, los colores y el tamaño de página los controla la plantilla seleccionada.",
+    exportingBtn: "Exportando...", exportBtn: "Exportar", exportTitle: "Exporta tu currículum", readyToExport: "Listo para exportar.",
+    improvementsRemain: "mejoras recomendadas pendientes.", pdfHint: "Recomendado para candidaturas", docxHint: "Documento de Word editable",
+    edit: "Editar", addSection: "Añadir sección", livePreview: "Vista previa en vivo", aiPolished: "Pulido por IA",
+    selected: "Seleccionada", recommended: "Recomendada", clear: "Borrar", clearFilters: "Borrar filtros",
+    noTemplatesTitle: "No se encontraron plantillas", noTemplatesSub: "Prueba a quitar un filtro o buscar con un término más amplio.",
+  },
+  ar: {
+    toolName: "منشئ السيرة الذاتية", savedLocally: "محفوظ محلياً", unsavedChanges: "تغييرات غير محفوظة",
+    myResumes: "سيري الذاتية", unlimited: "غير محدود", free: "مجانية", newResume: "سيرة ذاتية جديدة",
+    untitledResume: "سيرة ذاتية بدون عنوان", updated: "آخر تحديث", open: "فتح",
+    templatesEyebrow: "قوالب السيرة الذاتية", galleryTitle: "اختر سيرة ذاتية تناسب مسيرتك المهنية",
+    gallerySub: "ابدأ بقالب احترافي متوافق مع أنظمة تتبع المتقدمين (ATS). يمكنك تغيير الألوان والأقسام والتخطيط في أي وقت.",
+    allFree: "جميع القوالب مجانية للتخصيص.", badgePdf: "تصدير PDF", badgeDocx: "تصدير DOCX", badgeRtl: "دعم الكتابة من اليمين",
+    searchTemplates: "ابحث في القوالب", filters: "عوامل التصفية", preview: "معاينة", useTemplate: "استخدم القالب",
+    backToTemplates: "العودة إلى القوالب", complete: "مكتمل", save: "حفظ", saveResume: "حفظ السيرة الذاتية",
+    customize: "تخصيص", documentSettings: "إعدادات المستند", templateLabel: "القالب", atsConscious: "متوافق مع ATS",
+    languageLabel: "اللغة", customizeNote: "يظل الخط والتباعد والألوان وحجم الصفحة متحكَّماً بها من خلال القالب المحدد.",
+    exportingBtn: "جارٍ التصدير...", exportBtn: "تصدير", exportTitle: "صدّر سيرتك الذاتية", readyToExport: "جاهزة للتصدير.",
+    improvementsRemain: "تحسينات موصى بها متبقية.", pdfHint: "موصى به للتقديم على الوظائف", docxHint: "مستند Word قابل للتعديل",
+    edit: "تحرير", addSection: "إضافة قسم", livePreview: "معاينة مباشرة", aiPolished: "محسّن بالذكاء الاصطناعي",
+    selected: "محدد", recommended: "موصى به", clear: "مسح", clearFilters: "مسح عوامل التصفية",
+    noTemplatesTitle: "لم يتم العثور على قوالب", noTemplatesSub: "حاول إزالة أحد عوامل التصفية أو البحث بمصطلح أوسع.",
+  },
+  de: {
+    toolName: "Lebenslauf-Generator", savedLocally: "Lokal gespeichert", unsavedChanges: "Nicht gespeicherte Änderungen",
+    myResumes: "Meine Lebensläufe", unlimited: "Unbegrenzt", free: "kostenlos", newResume: "Neuer Lebenslauf",
+    untitledResume: "Unbenannter Lebenslauf", updated: "Aktualisiert", open: "Öffnen",
+    templatesEyebrow: "Lebenslauf-Vorlagen", galleryTitle: "Wähle einen Lebenslauf, der zu deiner Karriere passt",
+    gallerySub: "Beginne mit einer professionell gestalteten, ATS-freundlichen Vorlage. Farben, Abschnitte und Layout kannst du jederzeit ändern.",
+    allFree: "Alle Vorlagen sind kostenlos anpassbar.", badgePdf: "PDF-Export", badgeDocx: "DOCX-Export", badgeRtl: "RTL-Unterstützung",
+    searchTemplates: "Vorlagen suchen", filters: "Filter", preview: "Vorschau", useTemplate: "Vorlage verwenden",
+    backToTemplates: "Zurück zu den Vorlagen", complete: "abgeschlossen", save: "Speichern", saveResume: "Lebenslauf speichern",
+    customize: "Anpassen", documentSettings: "Dokumenteinstellungen", templateLabel: "Vorlage", atsConscious: "ATS-optimiert",
+    languageLabel: "Sprache", customizeNote: "Typografie, Abstände, Farben und Seitengröße werden weiterhin von der gewählten Vorlage gesteuert.",
+    exportingBtn: "Wird exportiert...", exportBtn: "Exportieren", exportTitle: "Lebenslauf exportieren", readyToExport: "Bereit zum Export.",
+    improvementsRemain: "empfohlene Verbesserungen verbleiben.", pdfHint: "Empfohlen für Bewerbungen", docxHint: "Bearbeitbares Word-Dokument",
+    edit: "Bearbeiten", addSection: "Abschnitt hinzufügen", livePreview: "Live-Vorschau", aiPolished: "KI-optimiert",
+    selected: "Ausgewählt", recommended: "Empfohlen", clear: "Zurücksetzen", clearFilters: "Filter zurücksetzen",
+    noTemplatesTitle: "Keine Vorlagen gefunden", noTemplatesSub: "Entferne einen Filter oder suche mit einem allgemeineren Begriff.",
+  },
+};
+
 // ── Templates ─────────────────────────────────────────────────────
 const TEMPLATES = [
   { id: "blank",     name: "Blank",     tag: "No styling — plain text output",        accent: "#374151", font: "'Inter', system-ui, sans-serif", blank: true },
@@ -3220,6 +3309,7 @@ export default function ResumeGenerator() {
   const at = ACCT_UI[lang]; // account / sync / pass strings
   const eui = ENTRY_UI[lang] || ENTRY_UI.en; // structured-entry editor strings
   const lx = LANDING_UI[lang] || LANDING_UI.en; // landing / site-chrome strings
+  const bu = BUILDER_UI[lang] || BUILDER_UI.en; // resume-builder chrome strings
   const rtl = selectedLang.rtl || false;
   const set = useCallback((k) => (e) => setForm(f => ({ ...f, [k]: e.target.value })), []);
   const setField = useCallback((k, v) => setForm(f => ({ ...f, [k]: v })), []);
@@ -3985,7 +4075,7 @@ Awards: ${form.awards}`;
     { id: "ats", label: lx.navAts },
   ];
 
-  const AppToolHeader = ({ toolName = "Resume Builder" }) => (
+  const AppToolHeader = ({ toolName = bu.toolName }) => (
     <header style={{ position: "sticky", top: 0, zIndex: 50,
       background: `linear-gradient(180deg, ${C.bg}f7 0%, ${C.bg}e8 100%)`,
       backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)" }}>
@@ -4020,7 +4110,7 @@ Awards: ${form.awards}`;
         {!isMobile && (
           <span title="Saved locally in this browser and not backed up to the cloud."
             style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
-            <LineIcon name="check" size={14} color={C.text3} /> Saved locally
+            <LineIcon name="check" size={14} color={C.text3} /> {bu.savedLocally}
           </span>
         )}
         <LanguageDropdown
@@ -4052,7 +4142,7 @@ Awards: ${form.awards}`;
               display: "flex", flexDirection: "column", alignItems: rtl ? "flex-end" : "flex-start", fontFamily: "inherit" }}>
             <span style={{ fontSize: isMobile ? 18 : 21, fontWeight: 900, letterSpacing: "-0.5px",
               background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ApplyCraft</span>
-            {!isMobile && <span style={{ fontSize: 11.5, color: C.text3, marginTop: 1 }}>Resume Builder</span>}
+            {!isMobile && <span style={{ fontSize: 11.5, color: C.text3, marginTop: 1 }}>{bu.toolName}</span>}
           </button>
           {!isMobile && (
             <nav aria-label="Primary tools" style={{ display: "flex", gap: 4, marginLeft: rtl ? 0 : 18, marginRight: rtl ? 18 : 0 }}>
@@ -4076,7 +4166,7 @@ Awards: ${form.awards}`;
           {!isMobile && (
             <span title="Saved locally in this browser and not backed up to the cloud."
               style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
-              <LineIcon name="check" size={14} color={C.text3} /> Saved locally
+              <LineIcon name="check" size={14} color={C.text3} /> {bu.savedLocally}
             </span>
           )}
           <LanguageDropdown
@@ -4099,16 +4189,16 @@ Awards: ${form.awards}`;
         <section aria-label="My resumes" style={{ maxWidth: 1180, margin: "0 auto 6px", padding: isMobile ? "0 4px" : "0 28px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
             <h2 style={{ margin: 0, fontSize: isMobile ? 18 : 22, fontWeight: 900, color: C.text1 }}>
-              My resumes
+              {bu.myResumes}
               <span style={{ fontSize: 12.5, fontWeight: 700, color: C.text3, marginInlineStart: 10 }}>
-                {resumes.isSubscribed() ? "Unlimited" : `${savedResumes.length} / ${resumes.FREE_RESUME_LIMIT} free`}
+                {resumes.isSubscribed() ? bu.unlimited : `${savedResumes.length} / ${resumes.FREE_RESUME_LIMIT} ${bu.free}`}
               </span>
             </h2>
             <button type="button" onClick={newResume}
               style={{ display: "inline-flex", alignItems: "center", gap: 6, background: C.grad, color: "#fff",
                 border: "none", borderRadius: 999, padding: "9px 18px", fontSize: 13.5, fontWeight: 700,
                 cursor: "pointer", fontFamily: "inherit" }}>
-              <span aria-hidden style={{ fontSize: 16, fontWeight: 800 }}>+</span> New resume
+              <span aria-hidden style={{ fontSize: 16, fontWeight: 800 }}>+</span> {bu.newResume}
             </button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(240px, 1fr))", gap: 12, marginBottom: 30 }}>
@@ -4117,13 +4207,13 @@ Awards: ${form.awards}`;
                 borderRadius: 12, padding: "14px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
                 <button type="button" onClick={() => openResume(r.id)}
                   style={{ background: "none", border: "none", textAlign: rtl ? "right" : "left", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
-                  <div style={{ fontSize: 14.5, fontWeight: 800, color: C.text1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title || "Untitled resume"}</div>
-                  <div style={{ fontSize: 11.5, color: C.text3, marginTop: 3 }}>Updated {new Date(r.updatedAt || Date.now()).toLocaleDateString()}</div>
+                  <div style={{ fontSize: 14.5, fontWeight: 800, color: C.text1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title || bu.untitledResume}</div>
+                  <div style={{ fontSize: 11.5, color: C.text3, marginTop: 3 }}>{bu.updated} {new Date(r.updatedAt || Date.now()).toLocaleDateString()}</div>
                 </button>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <button type="button" onClick={() => openResume(r.id)}
                     style={{ flex: 1, background: `${C.accent}14`, border: `1px solid ${C.accent}40`, borderRadius: 8,
-                      padding: "6px 10px", fontSize: 12.5, fontWeight: 700, color: C.accent2, cursor: "pointer", fontFamily: "inherit" }}>Open</button>
+                      padding: "6px 10px", fontSize: 12.5, fontWeight: 700, color: C.accent2, cursor: "pointer", fontFamily: "inherit" }}>{bu.open}</button>
                   <button type="button" onClick={() => removeResume(r.id)} aria-label={`Delete ${r.title || "resume"}`}
                     style={{ background: "transparent", border: `1px solid ${C.border}`, borderRadius: 8, padding: "6px 9px",
                       fontSize: 13, color: C.text3, cursor: "pointer", fontFamily: "inherit" }}>🗑</button>
@@ -4142,24 +4232,24 @@ Awards: ${form.awards}`;
               background: `${C.accent}12`, border: `1px solid ${C.accent}2E`,
               color: C.accent2, padding: "5px 12px", fontSize: 11, fontWeight: 900,
               letterSpacing: "1.4px", textTransform: "uppercase", marginBottom: 14 }}>
-              Resume templates
+              {bu.templatesEyebrow}
             </div>
             <h1 id="template-gallery-title" style={{ margin: "0 0 12px", color: C.text1,
               fontSize: isMobile ? 30 : 40, lineHeight: 1.08, letterSpacing: "-0.8px", fontWeight: 900 }}>
-              Choose a resume that fits your career
+              {bu.galleryTitle}
             </h1>
             <p style={{ margin: 0, maxWidth: 650, color: C.text2, fontSize: isMobile ? 15 : 16.5, lineHeight: 1.65 }}>
-              Start with a professionally designed, ATS-friendly template. You can change colors, sections, and layout at any time.
+              {bu.gallerySub}
             </p>
           </div>
           <div style={{ display: "grid", gap: 10, justifyContent: isMobile ? "stretch" : "end" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: isMobile ? "flex-start" : "flex-end",
               color: C.text2, fontSize: 13.5 }}>
               <LineIcon name="lock" size={16} color={C.accent2} />
-              <span>All templates are free to customize.</span>
+              <span>{bu.allFree}</span>
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: isMobile ? "flex-start" : "flex-end" }}>
-              {["PDF export", "DOCX export", "RTL support"].map((item) => (
+              {[bu.badgePdf, bu.badgeDocx, bu.badgeRtl].map((item) => (
                 <span key={item} style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text3,
                   borderRadius: 999, padding: "6px 10px", fontSize: 12.5, fontWeight: 700 }}>
                   {item}
@@ -4173,9 +4263,9 @@ Awards: ${form.awards}`;
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "minmax(260px, 360px) 1fr",
             gap: 12, alignItems: "center" }}>
             <label style={{ display: "block" }}>
-              <span className="sr-only">Search templates</span>
+              <span className="sr-only">{bu.searchTemplates}</span>
               <input value={tplSearch} onChange={(e) => setTplSearch(e.target.value)}
-                placeholder="Search templates"
+                placeholder={bu.searchTemplates}
                 style={{ width: "100%", minHeight: 46, boxSizing: "border-box", borderRadius: 10,
                   border: `1px solid ${C.border}`, background: C.surface, color: C.text1,
                   padding: "0 14px", fontSize: 14, fontFamily: "inherit", outline: "none" }}
@@ -4206,7 +4296,7 @@ Awards: ${form.awards}`;
                     background: TEMPLATE_MORE_FILTERS.some(f => f.id === tplFilter) ? `${C.accent}1F` : C.surface,
                     color: C.text2, borderRadius: 999, padding: "0 13px", fontSize: 12.8,
                     fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
-                  Filters
+                  {bu.filters}
                 </button>
                 {templateFiltersOpen && (
                   <div role="menu" aria-label="More template filters"
@@ -4234,7 +4324,7 @@ Awards: ${form.awards}`;
                 <button type="button" onClick={() => { setTplSearch(""); setTplFilter("all"); }}
                   style={{ minHeight: 38, border: "none", background: "transparent", color: C.text3,
                     padding: "0 8px", fontSize: 12.8, fontWeight: 750, cursor: "pointer", fontFamily: "inherit" }}>
-                  Clear
+                  {bu.clear}
                 </button>
               )}
             </div>
@@ -4244,12 +4334,12 @@ Awards: ${form.awards}`;
         {visibleTemplates.length === 0 ? (
           <div style={{ border: `1px solid ${C.border}`, background: C.surface, borderRadius: 16,
             padding: isMobile ? "28px 18px" : "42px", textAlign: "center", color: C.text2 }}>
-            <h2 style={{ margin: "0 0 8px", color: C.text1, fontSize: 20 }}>No templates found</h2>
-            <p style={{ margin: "0 0 18px", fontSize: 14 }}>Try removing a filter or searching with a broader term.</p>
+            <h2 style={{ margin: "0 0 8px", color: C.text1, fontSize: 20 }}>{bu.noTemplatesTitle}</h2>
+            <p style={{ margin: "0 0 18px", fontSize: 14 }}>{bu.noTemplatesSub}</p>
             <button type="button" onClick={() => { setTplSearch(""); setTplFilter("all"); }}
               style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
                 padding: "11px 18px", fontSize: 13.5, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
-              Clear filters
+              {bu.clearFilters}
             </button>
           </div>
         ) : (
@@ -4283,7 +4373,7 @@ Awards: ${form.awards}`;
                           borderRadius: 999, padding: "5px 9px", fontSize: 11, fontWeight: 900,
                           boxShadow: "0 10px 24px rgba(0,0,0,0.25)" }}>
                           <LineIcon name="check" size={12} color={selected ? "#fff" : C.accent2} />
-                          {selected ? "Selected" : "Recommended"}
+                          {selected ? bu.selected : bu.recommended}
                         </span>
                       )}
                       <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center",
@@ -4296,14 +4386,14 @@ Awards: ${form.awards}`;
                           style={{ minHeight: 40, padding: "0 14px", background: "rgba(15,23,42,0.82)",
                             color: "#fff", border: "1px solid rgba(255,255,255,0.28)", borderRadius: 9,
                             fontSize: 13, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
-                          Preview
+                          {bu.preview}
                         </button>
                         <button type="button" aria-label={recommended ? "Use recommended template" : `Use ${tp.name} template`}
                           onClick={() => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery")}
                           style={{ minHeight: 40, padding: "0 15px", background: C.grad, color: "#fff",
                             border: "none", borderRadius: 9, fontSize: 13, fontWeight: 900,
                             cursor: "pointer", fontFamily: "inherit" }}>
-                          Use template
+                          {bu.useTemplate}
                         </button>
                       </div>
                     </div>
@@ -4316,7 +4406,7 @@ Awards: ${form.awards}`;
                       {recommended && !selected && (
                         <span style={{ color: C.accent2, background: `${C.accent}14`,
                           borderRadius: 999, padding: "2px 7px", fontSize: 10.5, fontWeight: 900 }}>
-                          Recommended
+                          {bu.recommended}
                         </span>
                       )}
                     </div>
@@ -4330,14 +4420,14 @@ Awards: ${form.awards}`;
                         style={{ flex: 1, minHeight: 44, padding: "0 13px", background: "transparent",
                           color: C.text2, border: `1px solid ${C.border}`, borderRadius: 9,
                           fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
-                        Preview
+                        {bu.preview}
                       </button>
                       <button type="button" aria-label={recommended ? "Use recommended template" : `Use ${tp.name} template`}
                         onClick={() => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery")}
                         style={{ flex: 1, minHeight: 44, background: C.grad,
                           color: "#fff", border: "none",
                           borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
-                        Use template
+                        {bu.useTemplate}
                       </button>
                     </div>
                     )}
@@ -4878,7 +4968,7 @@ Awards: ${form.awards}`;
   const resumeTitle = form.name.trim()
     ? `${form.name.trim().split(/\s+/)[0]}'s Resume`
     : "Untitled Resume";
-  const savedLabel = draftSavedAt ? "Saved locally" : "Unsaved changes";
+  const savedLabel = draftSavedAt ? bu.savedLocally : bu.unsavedChanges;
 
   const formContent = tpl ? (
     <div style={{ display: "flex", flexDirection: "column", height: "100%",
@@ -4888,7 +4978,7 @@ Awards: ${form.awards}`;
       <div style={{ position: "sticky", top: 0, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
         padding: isMobile ? "10px 12px" : "11px 18px", background: `${C.bg}f4`, backdropFilter: "blur(14px)",
         boxShadow: "0 10px 28px rgba(0,0,0,0.14)", display: "flex", alignItems: "center", gap: 10, flexWrap: isMobile ? "wrap" : "nowrap" }}>
-        <button onClick={() => setStep("templates")} aria-label="Back to templates"
+        <button onClick={() => setStep("templates")} aria-label={bu.backToTemplates}
           style={{ ...ghostIconBtn, margin: 0, fontSize: 18 }}>←</button>
         <div style={{ minWidth: 0, flex: "1 1 220px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
@@ -4902,32 +4992,32 @@ Awards: ${form.awards}`;
               <span style={{ width: 8, height: 8, borderRadius: "50%", background: tpl.accent, flexShrink: 0 }} />
               <span>{tpl.name}</span>
               <span>·</span>
-              <span>{completedChecklist}/{resumeChecklist.length} complete</span>
+              <span>{completedChecklist}/{resumeChecklist.length} {bu.complete}</span>
             </div>
           )}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
           <button type="button" onClick={saveCurrentResume} title="Save this resume to My Resumes"
             style={{ ...softBtn, fontWeight: 700 }}>
-            💾 {currentResumeId ? "Save" : "Save resume"}
+            💾 {currentResumeId ? bu.save : bu.saveResume}
           </button>
           {renderMoreMenu(moreMenuOpen, setMoreMenuOpen, resumeSharePayload, `${form.name || "My"} resume`)}
           <div style={{ position: "relative" }}>
             <button type="button" onClick={() => setCustomizeOpen(o => !o)}
               aria-expanded={customizeOpen}
-              style={{ ...softBtn }}>Customize</button>
+              style={{ ...softBtn }}>{bu.customize}</button>
             {customizeOpen && (
               <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
                 width: 300, maxWidth: "calc(100vw - 24px)", background: C.surface, border: "none",
                 borderRadius: 12, boxShadow: "0 18px 54px rgba(0,0,0,0.5)", padding: 14 }}>
-                <div style={{ fontSize: 13, fontWeight: 900, color: C.text1, marginBottom: 8 }}>Document settings</div>
+                <div style={{ fontSize: 13, fontWeight: 900, color: C.text1, marginBottom: 8 }}>{bu.documentSettings}</div>
                 <button onClick={() => { setCustomizeOpen(false); setStep("templates"); }}
                   style={{ width: "100%", textAlign: "left", background: C.elevated, border: "none",
                     color: C.text1, borderRadius: 9, padding: "10px 12px", cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
-                  <strong style={{ display: "block", fontSize: 13 }}>Template</strong>
-                  <span style={{ color: C.text3, fontSize: 12 }}>{tpl.name} · ATS-conscious</span>
+                  <strong style={{ display: "block", fontSize: 13 }}>{bu.templateLabel}</strong>
+                  <span style={{ color: C.text3, fontSize: 12 }}>{tpl.name} · {bu.atsConscious}</span>
                 </button>
-                <div style={{ fontSize: 12, fontWeight: 800, color: C.text3, marginBottom: 7 }}>Language</div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: C.text3, marginBottom: 7 }}>{bu.languageLabel}</div>
                 <LanguageDropdown
                   selected={selectedLang}
                   onSelect={(l) => {
@@ -4937,7 +5027,7 @@ Awards: ${form.awards}`;
                   siteOnly
                 />
                 <p style={{ margin: "10px 0 0", fontSize: 11.5, color: C.text3, lineHeight: 1.5 }}>
-                  Typography, spacing, colors, and page size remain controlled by the selected template.
+                  {bu.customizeNote}
                 </p>
               </div>
             )}
@@ -4949,7 +5039,7 @@ Awards: ${form.awards}`;
           {isMobile && (
             <button onClick={() => setMobileResumeMode(mobileResumeMode === "edit" ? "preview" : "edit")}
               style={{ ...softBtn }}>
-              {mobileResumeMode === "edit" ? "Preview" : "Edit"}
+              {mobileResumeMode === "edit" ? bu.preview : bu.edit}
             </button>
           )}
           <div style={{ position: "relative" }}>
@@ -4957,28 +5047,28 @@ Awards: ${form.awards}`;
               style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 9, minHeight: 38,
                 padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: exporting ? "not-allowed" : "pointer",
                 fontFamily: "inherit", opacity: exporting ? 0.72 : 1 }}>
-              {exporting ? "Exporting..." : "Export"}
+              {exporting ? bu.exportingBtn : bu.exportBtn}
             </button>
             {exportMenuOpen && (
               <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
                 minWidth: 230, background: C.surface, border: "none", borderRadius: 12,
                 boxShadow: "0 18px 54px rgba(0,0,0,0.5)", overflow: "hidden" }}>
                 <div style={{ padding: "12px 14px", boxShadow: `inset 0 -1px 0 ${SECTION_TOKENS.rowDivider}` }}>
-                  <div style={{ color: C.text1, fontSize: 13.5, fontWeight: 900 }}>Export your resume</div>
+                  <div style={{ color: C.text1, fontSize: 13.5, fontWeight: 900 }}>{bu.exportTitle}</div>
                   <div style={{ color: C.text3, fontSize: 11.5, marginTop: 3 }}>
-                    {readyForReview ? "Ready to export." : `${resumeChecklist.length - completedChecklist} recommended improvements remain.`}
+                    {readyForReview ? bu.readyToExport : `${resumeChecklist.length - completedChecklist} ${bu.improvementsRemain}`}
                   </div>
                 </div>
                 <button onClick={() => { setExportMenuOpen(false); downloadPDF(); }}
                   style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px",
                     background: "none", border: "none", color: C.text1, cursor: "pointer", fontFamily: "inherit" }}>
-                  <strong>Download PDF</strong><br /><span style={{ color: C.text3, fontSize: 12 }}>Recommended for applications</span>
+                  <strong>{t.dlPdf}</strong><br /><span style={{ color: C.text3, fontSize: 12 }}>{bu.pdfHint}</span>
                 </button>
                 <button onClick={() => { setExportMenuOpen(false); downloadDOCX(); }}
                   style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px",
                     background: "none", border: "none", color: C.text1, cursor: "pointer", fontFamily: "inherit",
                     boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}` }}>
-                  <strong>Download DOCX</strong><br /><span style={{ color: C.text3, fontSize: 12 }}>Editable Word document</span>
+                  <strong>{t.dlDocx}</strong><br /><span style={{ color: C.text3, fontSize: 12 }}>{bu.docxHint}</span>
                 </button>
               </div>
             )}
@@ -5303,7 +5393,7 @@ Awards: ${form.awards}`;
               style={{ display: "inline-flex", alignItems: "center", gap: 8, background: C.surface, color: C.text1,
                 border: "none", borderRadius: 10, padding: "10px 14px", fontSize: 13, fontWeight: 800,
                 cursor: "pointer", fontFamily: "inherit" }}>
-              <span aria-hidden style={{ fontSize: 16, lineHeight: 1, fontWeight: 800 }}>+</span> Add section
+              <span aria-hidden style={{ fontSize: 16, lineHeight: 1, fontWeight: 800 }}>+</span> {bu.addSection}
             </button>
           </div>
           <AddContentModal open={addContentOpen} onClose={() => setAddContentOpen(false)}
@@ -5444,7 +5534,7 @@ Awards: ${form.awards}`;
             <span style={{ ...badge, ...(aiPolished ? badgePolished : badgeLive),
               background: aiPolished ? `${tpl.accent}22` : C.elevated,
               color: aiPolished ? tpl.accent : C.text2 }}>
-              {aiPolished ? "✦ AI-polished" : "● Live preview"}
+              {aiPolished ? `✦ ${bu.aiPolished}` : `● ${bu.livePreview}`}
             </span>
             <div aria-label="Preview controls" style={{ display: "flex", alignItems: "center", gap: 4,
               background: C.surface, borderRadius: 10, padding: 3 }}>
@@ -5670,7 +5760,7 @@ Awards: ${form.awards}`;
                           borderRadius: 999, padding: "5px 9px", fontSize: 11, fontWeight: 900,
                           boxShadow: "0 10px 24px rgba(0,0,0,0.25)" }}>
                           <LineIcon name="check" size={12} color={selected ? "#fff" : C.accent2} />
-                          {selected ? "Selected" : "Recommended"}
+                          {selected ? bu.selected : bu.recommended}
                         </span>
                       )}
                       <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center",
@@ -5683,14 +5773,14 @@ Awards: ${form.awards}`;
                           style={{ minHeight: 40, padding: "0 14px", background: "rgba(15,23,42,0.82)",
                             color: "#fff", border: "1px solid rgba(255,255,255,0.28)", borderRadius: 9,
                             fontSize: 13, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
-                          Preview
+                          {bu.preview}
                         </button>
                         <button type="button" aria-label={recommended ? "Use recommended cover letter template" : `Use ${tp.name} cover letter template`}
                           onClick={() => { setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); }}
                           style={{ minHeight: 40, padding: "0 15px", background: C.grad, color: "#fff",
                             border: "none", borderRadius: 9, fontSize: 13, fontWeight: 900,
                             cursor: "pointer", fontFamily: "inherit" }}>
-                          Use template
+                          {bu.useTemplate}
                         </button>
                       </div>
                     </div>
@@ -5701,7 +5791,7 @@ Awards: ${form.awards}`;
                       {recommended && !selected && (
                         <span style={{ color: C.accent2, background: `${C.accent}14`,
                           borderRadius: 999, padding: "2px 7px", fontSize: 10.5, fontWeight: 900 }}>
-                          Recommended
+                          {bu.recommended}
                         </span>
                       )}
                     </div>
@@ -5713,13 +5803,13 @@ Awards: ${form.awards}`;
                           style={{ flex: 1, minHeight: 44, padding: "0 13px", background: "transparent",
                             color: C.text2, border: `1px solid ${C.border}`, borderRadius: 9,
                             fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
-                          Preview
+                          {bu.preview}
                         </button>
                         <button type="button" aria-label={recommended ? "Use recommended cover letter template" : `Use ${tp.name} cover letter template`}
                           onClick={() => { setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); }}
                           style={{ flex: 1, minHeight: 44, background: C.grad, color: "#fff", border: "none",
                             borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
-                          Use template
+                          {bu.useTemplate}
                         </button>
                       </div>
                     )}
@@ -8081,7 +8171,7 @@ Awards: ${form.awards}`;
             <span style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 11px",
               background: C.surface, border: `1px solid ${C.border}`, borderRadius: 9,
               color: C.text2, fontSize: 12.5, fontWeight: 700 }}>
-              Saved locally
+              {bu.savedLocally}
             </span>
           )}
         </div>
