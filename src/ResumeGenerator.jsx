@@ -1561,7 +1561,7 @@ function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onTogg
         ) : (
           <div style={{ flex: 1, minWidth: 0 }}>
             <h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 800, color: C.text1, lineHeight: 1.25 }}>{heading}</h3>
-            <div style={{ marginTop: 2, color: visibleCount ? C.text3 : "#fbbf24", fontSize: 12 }}>{countLabel}</div>
+            <div style={{ marginTop: 2, color: statusTone(status), fontSize: 12 }}>{countLabel}</div>
           </div>
         )}
         <div style={{ position: "relative" }}>
@@ -1622,14 +1622,16 @@ function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onTogg
 
 // Same card chrome as SectionCard, but for fixed-field sections (Personal Info,
 // Summary) that aren't entry lists. Collapsible, no add/reorder/edit-heading.
-function FieldCard({ icon, title, children, collapsed, onToggleCollapse, rtl, eui }) {
+function FieldCard({ icon, title, status, children, collapsed, onToggleCollapse, rtl, eui, menu }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const statusLabel = status || (collapsed ? "Not started" : "In progress");
   return (
     <section style={{ background: collapsed ? SECTION_TOKENS.rowBg : SECTION_TOKENS.expandedBg, border: "none",
       borderRadius: 12, boxShadow: collapsed ? "none" : SECTION_TOKENS.expandedShadow,
-      padding: 0, overflow: "hidden", marginTop: 10 }}>
+      padding: 0, overflow: "visible", marginTop: 10 }}>
       <header role="button" tabIndex={0} aria-expanded={!collapsed}
         aria-label={collapsed ? eui.expand : eui.collapse}
-        onClick={onToggleCollapse}
+        onClick={() => { if (!menuOpen) onToggleCollapse(); }}
         onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggleCollapse(); } }}
         style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", userSelect: "none",
           padding: collapsed ? "12px 14px" : "14px 16px",
@@ -1637,8 +1639,28 @@ function FieldCard({ icon, title, children, collapsed, onToggleCollapse, rtl, eu
         <span aria-hidden style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
         <div style={{ flex: 1, minWidth: 0 }}>
           <h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 800, color: C.text1, textAlign: rtl ? "right" : "left", lineHeight: 1.25 }}>{title}</h3>
-          <div style={{ marginTop: 2, color: C.text3, fontSize: 12 }}>{collapsed ? "Not started" : "In progress"}</div>
+          <div style={{ marginTop: 2, color: statusTone(statusLabel), fontSize: 12, textAlign: rtl ? "right" : "left" }}>{statusLabel}</div>
         </div>
+        {menu && menu.length > 0 && (
+          <div style={{ position: "relative" }}>
+            <button type="button" aria-label={`${title} options`} aria-expanded={menuOpen}
+              onClick={(e) => { e.stopPropagation(); setMenuOpen(o => !o); }}
+              style={{ width: 40, height: 40, borderRadius: 10, border: "none", background: "transparent",
+                color: C.text2, cursor: "pointer", fontFamily: "inherit", fontSize: 18, lineHeight: 1 }}>…</button>
+            {menuOpen && (
+              <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, minWidth: 170, zIndex: 20,
+                background: C.surface, border: "none", borderRadius: 10, boxShadow: "0 12px 36px rgba(0,0,0,0.45)", overflow: "hidden" }}>
+                {menu.map((m, i) => (
+                  <button key={i} type="button" onClick={(e) => { e.stopPropagation(); setMenuOpen(false); m.onClick(); }}
+                    style={{ display: "block", width: "100%", padding: "10px 12px", textAlign: "left", background: "none",
+                      border: "none", color: m.danger ? "#f87171" : C.text1, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         <span aria-hidden style={{ color: C.text2, fontSize: 22, lineHeight: 1, padding: "0 2px", flexShrink: 0 }}>
           {collapsed ? "▸" : "▾"}
         </span>
@@ -3017,6 +3039,9 @@ export default function ResumeGenerator() {
     recipientName: "", recipientTitle: "", company: "", companyAddress: "",
     subject: "", opening: "", body: "", closing: "", signoff: "Sincerely",
   });
+  // Collapse state for the cover-letter section cards (collapsed by default, like the resume builder).
+  const [coverCollapsed, setCoverCollapsed] = useState({ recipient: true, sender: true, opening: true, body: true, closing: true });
+  const toggleCoverCollapse = useCallback((k) => setCoverCollapsed(c => ({ ...c, [k]: !c[k] })), []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -5341,21 +5366,13 @@ Awards: ${form.awards}`;
   const coverFormContent = coverTpl ? (() => {
     const coverReady = !!coverForm.name.trim();
     const filledCoverFields = ["name", "email", "company", "body"].filter((key) => coverForm[key]?.trim()).length;
-    const coverSection = (icon, title, children, status) => (
-      <section style={{ background: SECTION_TOKENS.expandedBg, border: "none",
-        borderRadius: 12, boxShadow: SECTION_TOKENS.expandedShadow, padding: 0,
-        overflow: "hidden", marginTop: 10 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 16px",
-          borderBottom: `1px solid ${SECTION_TOKENS.rowDivider}` }}>
-          <span aria-hidden style={{ fontSize: 16 }}>{icon}</span>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <h3 style={{ margin: 0, color: C.text1, fontSize: 15.5, fontWeight: 800 }}>{title}</h3>
-            {status && <div style={{ marginTop: 2, color: C.text3, fontSize: 12 }}>{status}</div>}
-          </div>
-        </div>
-        <div style={{ padding: "8px 16px 16px" }}>{children}</div>
-      </section>
-    );
+    // 3-state status (Not started / Missing / Complete) from whether fields are filled.
+    const coverStatus = (fields, required) => {
+      const anyFilled = fields.some(k => (coverForm[k] || "").trim());
+      if (!anyFilled) return "Not started";
+      return required.every(k => (coverForm[k] || "").trim()) ? "Complete" : "Missing";
+    };
+    const cov = (key) => ({ collapsed: !!coverCollapsed[key], onToggleCollapse: () => toggleCoverCollapse(key), eui, rtl });
 
     return (
       <div style={{ display: "flex", flexDirection: "column", height: "100%",
@@ -5413,74 +5430,94 @@ Awards: ${form.awards}`;
           gap: 18, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
           <div className="ac-panel-noscroll" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileCoverMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
             padding: "12px 14px 28px" }) }}>
-            {coverSection("👤", "Your details", (
-              <>
-                <label htmlFor="cover-field-name" style={lbl}>Full Name *</label>{coverField("name", false, "Alexandra Johnson", "✏️")}
-                <label htmlFor="cover-field-jobTitle" style={lbl}>Job Title</label>{coverField("jobTitle", false, "Senior Product Designer", "💼")}
-                <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
-                  <div style={{ flex: 1 }}>
-                    <label htmlFor="cover-field-email" style={lbl}>Email</label>{coverField("email", false, "you@email.com", "✉️")}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label htmlFor="cover-field-phone" style={lbl}>Phone</label>{coverField("phone", false, "+1 415 555 0000", "☎️")}
-                  </div>
+            <FieldCard icon="🏢" title="Recipient & company" {...cov("recipient")}
+              status={coverStatus(["company", "recipientName", "recipientTitle", "companyAddress", "date"], ["company"])}>
+              <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
+                <div style={{ flex: 1 }}>
+                  <label htmlFor="cover-field-date" style={lbl}>Date</label>{coverField("date", false, "June 26, 2026", "📅")}
                 </div>
-                <label htmlFor="cover-field-location" style={lbl}>Location</label>{coverField("location", false, "City, Country", "📍")}
-              </>
-            ), coverForm.name ? "In progress" : "Missing")}
+                <div style={{ flex: 1 }}>
+                  <label htmlFor="cover-field-company" style={lbl}>Company</label>{coverField("company", false, "Stripe", "🏢")}
+                </div>
+              </div>
+              <label htmlFor="cover-field-recipientName" style={lbl}>Recipient Name</label>{coverField("recipientName", false, "Mr. David Chen", "👤")}
+              <label htmlFor="cover-field-recipientTitle" style={lbl}>Recipient Title</label>{coverField("recipientTitle", false, "Head of Design", "💼")}
+              <label htmlFor="cover-field-companyAddress" style={lbl}>Company Address</label>{coverField("companyAddress", false, "123 Main St, City", "📍")}
+            </FieldCard>
 
-            {coverSection("🏢", "Recipient and company", (
-              <>
-                <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
-                  <div style={{ flex: 1 }}>
-                    <label htmlFor="cover-field-date" style={lbl}>Date</label>{coverField("date", false, "June 26, 2026", "📅")}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label htmlFor="cover-field-company" style={lbl}>Company</label>{coverField("company", false, "Stripe", "🏢")}
-                  </div>
+            <FieldCard icon="👤" title="Your info" {...cov("sender")}
+              status={coverStatus(["name", "jobTitle", "email", "phone", "location"], ["name"])}>
+              <label htmlFor="cover-field-name" style={lbl}>Full Name *</label>{coverField("name", false, "Alexandra Johnson", "✏️")}
+              <label htmlFor="cover-field-jobTitle" style={lbl}>Job Title</label>{coverField("jobTitle", false, "Senior Product Designer", "💼")}
+              <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
+                <div style={{ flex: 1 }}>
+                  <label htmlFor="cover-field-email" style={lbl}>Email</label>{coverField("email", false, "you@email.com", "✉️")}
                 </div>
-                <label htmlFor="cover-field-recipientName" style={lbl}>Recipient Name</label>{coverField("recipientName", false, "Mr. David Chen", "👤")}
-                <label htmlFor="cover-field-recipientTitle" style={lbl}>Recipient Title</label>{coverField("recipientTitle", false, "Head of Design", "💼")}
-                <label htmlFor="cover-field-companyAddress" style={lbl}>Company Address</label>{coverField("companyAddress", false, "123 Main St, City", "📍")}
-              </>
-            ), coverForm.company ? "In progress" : "Optional")}
+                <div style={{ flex: 1 }}>
+                  <label htmlFor="cover-field-phone" style={lbl}>Phone</label>{coverField("phone", false, "+1 415 555 0000", "☎️")}
+                </div>
+              </div>
+              <label htmlFor="cover-field-location" style={lbl}>Location</label>{coverField("location", false, "City, Country", "📍")}
+            </FieldCard>
 
-            {coverSection("✍️", "Letter content", (
-              <>
-                <label htmlFor="cover-field-subject" style={lbl}>Subject / Re:</label>{coverField("subject", false, "Senior Product Designer Position", "📌")}
-                <label htmlFor="cover-field-opening" style={lbl}>Salutation</label>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <span style={{ fontSize: 13.5, color: C.text2, whiteSpace: "nowrap" }} aria-hidden="true">Dear</span>
-                  <div style={{ flex: 1 }}>
-                    <IconInput icon="👤">
-                      <input id="cover-field-opening" value={coverForm.opening} onChange={e => setCoverForm(f => ({ ...f, opening: e.target.value }))}
-                        placeholder="Mr. Chen / Hiring Manager" style={inputStyle} />
-                    </IconInput>
-                  </div>
-                  <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
+            <SectionHeader icon="✍️" title="Letter content" filled={!!(coverForm.opening || coverForm.body || coverForm.closing)} />
+
+            <FieldCard icon="📌" title="Opening" {...cov("opening")}
+              status={coverStatus(["subject", "opening"], ["opening"])}>
+              <label htmlFor="cover-field-subject" style={lbl}>Subject / Re:</label>{coverField("subject", false, "Senior Product Designer Position", "📌")}
+              <label htmlFor="cover-field-opening" style={lbl}>Salutation</label>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <span style={{ fontSize: 13.5, color: C.text2, whiteSpace: "nowrap" }} aria-hidden="true">Dear</span>
+                <div style={{ flex: 1 }}>
+                  <IconInput icon="👤">
+                    <input id="cover-field-opening" value={coverForm.opening} onChange={e => setCoverForm(f => ({ ...f, opening: e.target.value }))}
+                      placeholder="Mr. Chen / Hiring Manager" style={inputStyle} />
+                  </IconInput>
                 </div>
-                <label htmlFor="cover-field-body" style={lbl}>Opening &amp; Body Paragraphs</label>
-                <CoverFormattingBar fieldKey="body" />
-                <textarea id="cover-field-body" value={coverForm.body} onChange={e => setCoverForm(f => ({ ...f, body: e.target.value }))}
-                  placeholder={"Write your paragraphs here.\n\nSeparate paragraphs with a blank line."}
-                  rows={8} style={{ ...inputStyle, resize: "vertical", minHeight: 160 }} />
-                <label htmlFor="cover-field-closing" style={lbl}>Closing Paragraph</label>
-                <CoverFormattingBar fieldKey="closing" />
-                <textarea id="cover-field-closing" value={coverForm.closing} onChange={e => setCoverForm(f => ({ ...f, closing: e.target.value }))}
-                  placeholder="Thank you for your time and consideration. I look forward to speaking with you."
-                  rows={3} style={{ ...inputStyle, resize: "vertical", minHeight: 80 }} />
-                <label htmlFor="cover-field-signoff" style={lbl}>Sign-off</label>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div style={{ flex: 1 }}>
-                    <IconInput icon="✍️">
-                      <input id="cover-field-signoff" value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
-                        placeholder="Sincerely" style={inputStyle} />
-                    </IconInput>
-                  </div>
-                  <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
+                <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
+              </div>
+            </FieldCard>
+
+            <FieldCard icon="📝" title="Body" {...cov("body")}
+              status={coverStatus(["body"], ["body"])}>
+              <label htmlFor="cover-field-body" style={lbl}>Opening &amp; Body Paragraphs</label>
+              <CoverFormattingBar fieldKey="body" />
+              <textarea id="cover-field-body" value={coverForm.body} onChange={e => setCoverForm(f => ({ ...f, body: e.target.value }))}
+                placeholder={"Write your paragraphs here.\n\nSeparate paragraphs with a blank line."}
+                rows={8} style={{ ...inputStyle, resize: "vertical", minHeight: 160 }} />
+            </FieldCard>
+
+            <FieldCard icon="✅" title="Closing & signature" {...cov("closing")}
+              status={coverStatus(["closing", "signoff"], ["closing"])}>
+              <label htmlFor="cover-field-closing" style={lbl}>Closing Paragraph</label>
+              <CoverFormattingBar fieldKey="closing" />
+              <textarea id="cover-field-closing" value={coverForm.closing} onChange={e => setCoverForm(f => ({ ...f, closing: e.target.value }))}
+                placeholder="Thank you for your time and consideration. I look forward to speaking with you."
+                rows={3} style={{ ...inputStyle, resize: "vertical", minHeight: 80 }} />
+              <label htmlFor="cover-field-signoff" style={lbl}>Sign-off</label>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ flex: 1 }}>
+                  <IconInput icon="✍️">
+                    <input id="cover-field-signoff" value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
+                      placeholder="Sincerely" style={inputStyle} />
+                  </IconInput>
                 </div>
-              </>
-            ), coverForm.body ? "In progress" : "Missing")}
+                <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
+              </div>
+            </FieldCard>
+
+            {/* TODO: custom cover-letter blocks. Pill present for parity with the
+                resume builder's "+ Add content"; full custom-section support needs
+                editor + preview + PDF/DOCX wiring (left for a follow-up). */}
+            <div style={{ display: "flex", justifyContent: rtl ? "flex-start" : "flex-end", marginTop: 16 }}>
+              <button type="button"
+                onClick={() => { setStatusMsg("Custom cover-letter sections are coming soon."); setTimeout(() => setStatusMsg(""), 2500); }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6, background: `${C.accent}18`,
+                  border: "none", borderRadius: 999, padding: "8px 18px", fontSize: 13, fontWeight: 700,
+                  color: C.accent2, cursor: "pointer", fontFamily: "inherit" }}>
+                <span aria-hidden style={{ fontSize: 15, fontWeight: 800 }}>+</span> Add section
+              </button>
+            </div>
           </div>
 
           <div className="ac-panel-noscroll" style={{ minWidth: 0, ...(isMobile ? { padding: "10px 8px 84px", marginTop: 0, display: mobileCoverMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
@@ -10090,7 +10127,18 @@ const SECTION_TOKENS = {
   iconBtnBg: "transparent",
   iconBtnRadius: 8,
   accent: C.accent,
+  // Section status label colors (shared by both builders).
+  statusComplete: "#4ade80", // green
+  statusMissing: "#fbbf24",  // amber
+  statusNeutral: C.text3,    // muted grey ("Not started" / "Optional" / "In progress")
 };
+
+// Color for a section status label, shared across the resume + cover builders.
+function statusTone(status) {
+  if (status === "Complete") return SECTION_TOKENS.statusComplete;
+  if (status === "Missing") return SECTION_TOKENS.statusMissing;
+  return SECTION_TOKENS.statusNeutral;
+}
 // Matching CSS custom properties for the builder root (single source of truth).
 const SECTION_CSS_VARS = {
   "--ac-radius": `${SECTION_TOKENS.radius}px`,
