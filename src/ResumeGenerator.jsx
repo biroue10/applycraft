@@ -311,6 +311,66 @@ const UI = {
     phoneError: "Ungültige Nummer", phoneDigits: "Ziffern erforderlich" },
 };
 
+// ── Landing-page / site-chrome translations (full-site i18n, phase 1) ──
+// Keyed by interface language (en/fr/es/ar/de). Access via LANDING_UI[lang].
+const LANDING_UI = {
+  en: {
+    navResume: "Resume", navCover: "Cover Letter", navTracker: "Job Tracker", navAts: "ATS Checker",
+    createResume: "Create my resume", checkResume: "Check my existing resume",
+    heroEyebrow: "Free resume builder",
+    heroH1: "Create a job-ready resume without signing up.",
+    heroSub: "Build unlimited resumes with no signup, no watermark, and unlimited PDF or DOCX downloads — the builder is free forever. Editing and export happen in your browser unless you deliberately use an AI helper.",
+    trustBrowser: "Browser-first editing", trustNoSignup: "No signup", trustNoCard: "No credit card", trustFormats: "PDF & DOCX",
+    orImprove: "or improve an existing one", uploadResume: "Upload your resume", uploadHint: "PDF or DOCX · drag & drop or click",
+    statTemplates: "Templates", statCover: "Cover letter styles", statDocLangs: "Document languages", statFormats: "Export formats", statDownloads: "Free downloads",
+    comingSoonBody: "This feature is not yet available. We're working on it and it will be ready soon.", gotIt: "Got it",
+  },
+  fr: {
+    navResume: "CV", navCover: "Lettre de motivation", navTracker: "Suivi des candidatures", navAts: "Vérificateur ATS",
+    createResume: "Créer mon CV", checkResume: "Vérifier mon CV existant",
+    heroEyebrow: "Créateur de CV gratuit",
+    heroH1: "Créez un CV prêt à l'emploi sans inscription.",
+    heroSub: "Créez des CV illimités sans inscription, sans filigrane, avec des téléchargements PDF ou DOCX illimités — l'outil est gratuit pour toujours. L'édition et l'export se font dans votre navigateur, sauf si vous utilisez délibérément un assistant IA.",
+    trustBrowser: "Édition dans le navigateur", trustNoSignup: "Sans inscription", trustNoCard: "Sans carte bancaire", trustFormats: "PDF et DOCX",
+    orImprove: "ou améliorez un CV existant", uploadResume: "Importer votre CV", uploadHint: "PDF ou DOCX · glisser-déposer ou cliquer",
+    statTemplates: "Modèles", statCover: "Styles de lettre", statDocLangs: "Langues de document", statFormats: "Formats d'export", statDownloads: "Téléchargements gratuits",
+    comingSoonBody: "Cette fonctionnalité n'est pas encore disponible. Nous y travaillons et elle sera bientôt prête.", gotIt: "Compris",
+  },
+  es: {
+    navResume: "Currículum", navCover: "Carta de presentación", navTracker: "Seguimiento de empleos", navAts: "Verificador ATS",
+    createResume: "Crear mi currículum", checkResume: "Revisar mi currículum actual",
+    heroEyebrow: "Creador de currículums gratis",
+    heroH1: "Crea un currículum listo para enviar sin registrarte.",
+    heroSub: "Crea currículums ilimitados sin registro, sin marca de agua y con descargas ilimitadas en PDF o DOCX: la herramienta es gratis para siempre. La edición y la exportación ocurren en tu navegador, salvo que uses deliberadamente un asistente de IA.",
+    trustBrowser: "Edición en el navegador", trustNoSignup: "Sin registro", trustNoCard: "Sin tarjeta", trustFormats: "PDF y DOCX",
+    orImprove: "o mejora uno existente", uploadResume: "Sube tu currículum", uploadHint: "PDF o DOCX · arrastra y suelta o haz clic",
+    statTemplates: "Plantillas", statCover: "Estilos de carta", statDocLangs: "Idiomas de documento", statFormats: "Formatos de exportación", statDownloads: "Descargas gratis",
+    comingSoonBody: "Esta función aún no está disponible. Estamos trabajando en ella y estará lista pronto.", gotIt: "Entendido",
+  },
+  ar: {
+    navResume: "السيرة الذاتية", navCover: "خطاب التقديم", navTracker: "متابعة الوظائف", navAts: "فاحص ATS",
+    createResume: "أنشئ سيرتي الذاتية", checkResume: "افحص سيرتي الذاتية الحالية",
+    heroEyebrow: "منشئ سير ذاتية مجاني",
+    heroH1: "أنشئ سيرة ذاتية جاهزة للتقديم دون تسجيل.",
+    heroSub: "أنشئ عدداً غير محدود من السير الذاتية دون تسجيل، وبدون علامة مائية، مع تنزيلات غير محدودة بصيغة PDF أو DOCX — الأداة مجانية للأبد. يتم التحرير والتصدير في متصفحك ما لم تستخدم مساعد الذكاء الاصطناعي عمداً.",
+    trustBrowser: "التحرير في المتصفح", trustNoSignup: "بدون تسجيل", trustNoCard: "بدون بطاقة ائتمان", trustFormats: "PDF و DOCX",
+    orImprove: "أو حسّن سيرة ذاتية موجودة", uploadResume: "ارفع سيرتك الذاتية", uploadHint: "PDF أو DOCX · اسحب وأفلت أو انقر",
+    statTemplates: "القوالب", statCover: "أنماط الخطابات", statDocLangs: "لغات المستند", statFormats: "صيغ التصدير", statDownloads: "تنزيلات مجانية",
+    comingSoonBody: "هذه الميزة غير متاحة بعد. نحن نعمل عليها وستكون جاهزة قريباً.", gotIt: "حسناً",
+  },
+  de: {
+    navResume: "Lebenslauf", navCover: "Anschreiben", navTracker: "Bewerbungs-Tracker", navAts: "ATS-Prüfer",
+    createResume: "Lebenslauf erstellen", checkResume: "Meinen bestehenden Lebenslauf prüfen",
+    heroEyebrow: "Kostenloser Lebenslauf-Generator",
+    heroH1: "Erstelle einen bewerbungsfertigen Lebenslauf ohne Anmeldung.",
+    heroSub: "Erstelle unbegrenzt Lebensläufe ohne Anmeldung, ohne Wasserzeichen und mit unbegrenzten PDF- oder DOCX-Downloads — das Tool ist für immer kostenlos. Bearbeitung und Export erfolgen in deinem Browser, sofern du nicht bewusst einen KI-Assistenten nutzt.",
+    trustBrowser: "Bearbeitung im Browser", trustNoSignup: "Keine Anmeldung", trustNoCard: "Keine Kreditkarte", trustFormats: "PDF & DOCX",
+    orImprove: "oder einen bestehenden verbessern", uploadResume: "Lebenslauf hochladen", uploadHint: "PDF oder DOCX · ziehen & ablegen oder klicken",
+    statTemplates: "Vorlagen", statCover: "Anschreiben-Stile", statDocLangs: "Dokumentsprachen", statFormats: "Exportformate", statDownloads: "Kostenlose Downloads",
+    comingSoonBody: "Diese Funktion ist noch nicht verfügbar. Wir arbeiten daran und sie wird bald bereit sein.", gotIt: "Verstanden",
+  },
+};
+
 // ── Templates ─────────────────────────────────────────────────────
 const TEMPLATES = [
   { id: "blank",     name: "Blank",     tag: "No styling — plain text output",        accent: "#374151", font: "'Inter', system-ui, sans-serif", blank: true },
@@ -3159,6 +3219,7 @@ export default function ResumeGenerator() {
   const t = UI[lang];
   const at = ACCT_UI[lang]; // account / sync / pass strings
   const eui = ENTRY_UI[lang] || ENTRY_UI.en; // structured-entry editor strings
+  const lx = LANDING_UI[lang] || LANDING_UI.en; // landing / site-chrome strings
   const rtl = selectedLang.rtl || false;
   const set = useCallback((k) => (e) => setForm(f => ({ ...f, [k]: e.target.value })), []);
   const setField = useCallback((k, v) => setForm(f => ({ ...f, [k]: v })), []);
@@ -3918,10 +3979,10 @@ Awards: ${form.awards}`;
 
   const isTemplateGalleryView = navPage === "resume" && step === "templates";
   const primaryToolNav = [
-    { id: "resume", label: "Resume" },
-    { id: "cover", label: "Cover Letter" },
-    { id: "tracker", label: "Job Tracker" },
-    { id: "ats", label: "ATS Checker" },
+    { id: "resume", label: lx.navResume },
+    { id: "cover", label: lx.navCover },
+    { id: "tracker", label: lx.navTracker },
+    { id: "ats", label: lx.navAts },
   ];
 
   const AppToolHeader = ({ toolName = "Resume Builder" }) => (
@@ -7196,7 +7257,7 @@ Awards: ${form.awards}`;
             style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
               padding: isMobile ? "8px 14px" : "10px 24px", fontSize: isMobile ? 13 : 14, fontWeight: 700,
               cursor: "pointer", flexShrink: 0, fontFamily: "inherit" }}>
-            Create my resume
+            {lx.createResume}
           </button>
 
           {isMobile && (
@@ -7278,13 +7339,13 @@ Awards: ${form.awards}`;
                 {comingSoonFeature}
               </h3>
               <p style={{ margin: "0 0 24px", fontSize: 14, color: C.text2, lineHeight: 1.6 }}>
-                This feature is not yet available. We're working on it and it will be ready soon.
+                {lx.comingSoonBody}
               </p>
               <button onClick={() => setComingSoonFeature(null)}
                 style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 10,
                   padding: "10px 28px", fontSize: 14, fontWeight: 700, cursor: "pointer",
                   fontFamily: "inherit" }}>
-                Got it
+                {lx.gotIt}
               </button>
             </div>
           </div>
@@ -7300,19 +7361,19 @@ Awards: ${form.awards}`;
                 fontSize: 12, fontWeight: 600, letterSpacing: "2px",
                 textTransform: "uppercase", color: C.accent2, background: `${C.accent}18`,
                 border: `1px solid ${C.accent}44`, borderRadius: 999, padding: "4px 14px", marginBottom: 24 }}>
-                Free resume builder
+                {lx.heroEyebrow}
               </div>
               <h1 style={{ animation: isMobile ? "none" : "acFadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.18s both",
                 fontSize: "clamp(34px, 5vw, 58px)", fontWeight: 800, lineHeight: 1.08,
                 letterSpacing: "-0.8px", margin: "0 0 22px",
                 background: "linear-gradient(135deg, #EEF2FF 0%, #94A3B8 100%)",
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                Create a job-ready resume without signing up.
+                {lx.heroH1}
               </h1>
               <p style={{ animation: isMobile ? "none" : "acFadeUp 0.65s ease 0.34s both",
                 fontSize: "clamp(16px, 2vw, 19px)", color: C.text2, maxWidth: 590,
                 margin: isMobile ? "0 auto 34px" : "0 0 34px", lineHeight: 1.65 }}>
-                Build unlimited resumes with no signup, no watermark, and unlimited PDF or DOCX downloads — the builder is free forever. Editing and export happen in your browser unless you deliberately use an AI helper.
+                {lx.heroSub}
               </p>
               <div style={{ animation: isMobile ? "none" : "acFadeUp 0.65s ease 0.5s both",
                 display: "flex", gap: 12, justifyContent: isMobile ? "center" : "flex-start", flexWrap: "wrap" }}>
@@ -7321,7 +7382,7 @@ Awards: ${form.awards}`;
                   padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer",
                   animation: isMobile ? "none" : "acPulse 2.8s ease-in-out 1.4s infinite",
                   transition: "opacity 0.2s", fontFamily: "inherit" }}>
-                Create my resume
+                {lx.createResume}
               </button>
               <button onClick={() => enter("ats")}
                 style={{ background: "transparent", color: C.text2, border: `1.5px solid ${C.border}`,
@@ -7329,14 +7390,14 @@ Awards: ${form.awards}`;
                   transition: "border-color 0.2s, color 0.2s", fontFamily: "inherit" }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent2; e.currentTarget.style.color = C.accent2; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.text2; }}>
-                Check my existing resume
+                {lx.checkResume}
               </button>
               </div>
               {/* Trust row */}
               <div style={{ animation: isMobile ? "none" : "acFadeUp 0.5s ease 0.65s both",
                 display: "flex", gap: 16, justifyContent: isMobile ? "center" : "flex-start",
                 flexWrap: "wrap", marginTop: 24 }}>
-                {["Browser-first editing", "No signup", "No credit card", "PDF & DOCX"].map(t => (
+                {[lx.trustBrowser, lx.trustNoSignup, lx.trustNoCard, lx.trustFormats].map(t => (
                   <span key={t} style={{ fontSize: 12.5, color: C.text3 }}>{t}</span>
                 ))}
               </div>
@@ -7347,7 +7408,7 @@ Awards: ${form.awards}`;
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
                 <div style={{ flex: 1, height: 1, background: C.border }} />
                 <span style={{ fontSize: 11, fontWeight: 700, color: C.text3, letterSpacing: "1px",
-                  textTransform: "uppercase", whiteSpace: "nowrap" }}>or improve an existing one</span>
+                  textTransform: "uppercase", whiteSpace: "nowrap" }}>{lx.orImprove}</span>
                 <div style={{ flex: 1, height: 1, background: C.border }} />
               </div>
               <button onClick={() => setUploadModalOpen(true)}
@@ -7365,10 +7426,10 @@ Awards: ${form.awards}`;
                 </div>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 700, color: C.text1, marginBottom: 3 }}>
-                    Upload your resume
+                    {lx.uploadResume}
                   </div>
                   <div style={{ fontSize: 12, color: C.text3 }}>
-                    PDF or DOCX · drag & drop or click
+                    {lx.uploadHint}
                   </div>
                 </div>
                 <LineIcon name="upload" size={18} color={C.text3} style={{ marginLeft: "auto" }} />
@@ -7387,11 +7448,11 @@ Awards: ${form.awards}`;
             display: "flex", justifyContent: "space-around", alignItems: "center",
             flexWrap: "wrap", gap: "16px 32px" }}>
             {[
-              { n: `${RESUME_TEMPLATE_COUNT}`, label: "Templates" },
-              { n: `${COVER_TEMPLATE_COUNT}`, label: "Cover letter styles" },
-              { n: DOCUMENT_LANGUAGE_COUNT, label: "Document languages" },
-              { n: "2", label: "Export formats" },
-              { n: "∞", label: "Free downloads" },
+              { n: `${RESUME_TEMPLATE_COUNT}`, label: lx.statTemplates },
+              { n: `${COVER_TEMPLATE_COUNT}`, label: lx.statCover },
+              { n: DOCUMENT_LANGUAGE_COUNT, label: lx.statDocLangs },
+              { n: "2", label: lx.statFormats },
+              { n: "∞", label: lx.statDownloads },
             ].map(s => (
               <div key={s.label} style={{ textAlign: "center", minWidth: 80 }}>
                 <div style={{ fontSize: "clamp(22px, 3vw, 32px)", fontWeight: 800, lineHeight: 1,
@@ -7829,7 +7890,7 @@ Awards: ${form.awards}`;
                   transition: "opacity 0.2s, transform 0.2s" }}
                 onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; e.currentTarget.style.transform = "translateY(-2px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "none"; }}>
-                Create my resume
+                {lx.createResume}
               </button>
             </FadeIn>
           </div>
