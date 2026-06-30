@@ -1669,8 +1669,8 @@ function HeroResumePreview({ isMobile }) {
   return (
     <section aria-label="Interactive resume customization preview"
       className="ac-hero-preview"
-      style={{ position: "relative", width: "100%", maxWidth: compact ? 390 : 520,
-        margin: compact ? "0 auto" : 0, padding: compact ? "24px 18px 18px" : "30px 34px 24px",
+      style={{ position: "relative", width: "100%", maxWidth: compact ? 360 : 440,
+        margin: compact ? "0 auto" : 0, padding: compact ? "24px 18px 18px" : "28px 30px 22px",
         overflow: "visible" }}>
       <div aria-hidden style={{ position: "absolute", inset: compact ? "18px 0 0" : "10px 4px 0",
         borderRadius: 28, background: `linear-gradient(135deg, ${accent}1f, #e8f1ff 46%, #ffffff 100%)`,
@@ -1708,7 +1708,7 @@ function HeroResumePreview({ isMobile }) {
           ))}
         </div>
 
-        <div style={{ position: "relative", justifySelf: "center", width: "100%", maxWidth: compact ? 330 : 392 }}>
+        <div style={{ position: "relative", justifySelf: "center", width: "100%", maxWidth: compact ? 330 : 364 }}>
           <div aria-hidden style={{ position: "absolute", inset: "-14px -18px", borderRadius: 24,
             background: "linear-gradient(145deg, rgba(255,255,255,0.38), rgba(148,163,184,0.10))",
             filter: "blur(1px)" }} />
@@ -1750,7 +1750,7 @@ function HeroResumePreview({ isMobile }) {
             </header>
 
             <div style={{ display: "grid", gridTemplateColumns: compact ? "1fr" : "0.82fr 1.28fr",
-              minHeight: compact ? 390 : 452 }}>
+              minHeight: compact ? 360 : 396 }}>
               <aside style={{ background: "#f5f8fc", padding: compact ? "14px 16px" : "16px 18px",
                 borderRight: compact ? "none" : `1px solid ${text.line}` }}>
                 <ResumeMiniSection accent={accent} title="Profile">
@@ -1788,7 +1788,7 @@ function HeroResumePreview({ isMobile }) {
             </div>
           </article>
 
-          <div style={{ position: "absolute", top: compact ? 10 : 18, right: compact ? 4 : -48,
+          <div style={{ position: "absolute", top: compact ? 10 : 18, right: compact ? 4 : -40,
             display: "flex", gap: 8 }}>
             {["PDF", "DOCX"].map(label => (
               <button key={label} type="button" aria-label={`${label} export preview button`}
@@ -1804,7 +1804,7 @@ function HeroResumePreview({ isMobile }) {
           </div>
 
           <div aria-label="ATS Friendly" style={{ ...panel, position: "absolute", top: compact ? 62 : 84,
-            left: compact ? 4 : -32, borderRadius: 999, padding: compact ? "7px 10px" : "9px 13px",
+            left: compact ? 4 : -28, borderRadius: 999, padding: compact ? "7px 10px" : "9px 13px",
             display: "inline-flex", alignItems: "center", gap: 6, color: "#166534",
             fontSize: compact ? 10.5 : 12, fontWeight: 800 }}>
             <span style={{ width: 18, height: 18, borderRadius: "50%", background: "#dcfce7",
@@ -1814,8 +1814,8 @@ function HeroResumePreview({ isMobile }) {
             ATS Friendly
           </div>
 
-          <div style={{ ...panel, position: "absolute", right: compact ? 4 : -54,
-            bottom: compact ? 14 : 28, width: compact ? 205 : 238, borderRadius: 14,
+          <div style={{ ...panel, position: "absolute", right: compact ? 4 : -44,
+            bottom: compact ? 14 : 28, width: compact ? 205 : 224, borderRadius: 14,
             padding: compact ? "10px 11px" : "12px 13px", color: text.ink }}>
             <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7,
               fontSize: compact ? 11.5 : 12.5, fontWeight: 900 }}>
@@ -3627,8 +3627,7 @@ Awards: ${form.awards}`;
   const AppToolHeader = ({ toolName = "Resume Builder" }) => (
     <header style={{ position: "sticky", top: 0, zIndex: 50,
       background: `linear-gradient(180deg, ${C.bg}f7 0%, ${C.bg}e8 100%)`,
-      backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)",
-      borderBottom: `1px solid ${C.border}` }}>
+      backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)" }}>
       <div style={{ maxWidth: 1180, margin: "0 auto", minHeight: isMobile ? 64 : 72,
         padding: isMobile ? "0 12px" : "0 28px", display: "flex", alignItems: "center", gap: 14 }}>
         <button type="button" onClick={() => setAppView("landing")}
@@ -3684,8 +3683,7 @@ Awards: ${form.awards}`;
     <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
       <header style={{ position: "sticky", top: 0, zIndex: 50, margin: isMobile ? "0 -4px 24px" : "0 0 42px",
         background: `linear-gradient(180deg, ${C.bg}f7 0%, ${C.bg}e8 100%)`,
-        backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)",
-        borderBottom: `1px solid ${C.border}` }}>
+        backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)" }}>
         <div style={{ maxWidth: 1180, margin: "0 auto", minHeight: isMobile ? 64 : 72,
           padding: isMobile ? "0 12px" : "0 28px", display: "flex", alignItems: "center", gap: 14 }}>
           <button type="button" onClick={() => setAppView("landing")}
