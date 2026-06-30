@@ -721,6 +721,107 @@ const MASTER_UI = {
     selectInclude: "Wähle aus, was in deinen maßgeschneiderten Lebenslauf aufgenommen wird:", workExperience: "Berufserfahrung", education: "Ausbildung", skills: "Fähigkeiten",
     projects: "Projekte", certifications: "Zertifizierungen", languages: "Sprachen", generateTailored: "Maßgeschneiderten Lebenslauf erstellen →", cancel: "Abbrechen" },
 };
+// ── Toast / status-message translations (phase 5) ──
+const STATUS_UI = {
+  en: { photoType: "Profile photo must be JPG, PNG, or WebP and under 2 MB.", photoRead: "Could not read the selected image.",
+    draftFail: "Could not save this draft in your browser.", resumeSaved: "Resume saved.", accountToSave: "Create a free account to save your resume.",
+    newStarted: "Started a new resume.", linkCopied: "Shareable link copied to clipboard.", copied: "Copied.", resumeTextCopied: "Resume text copied to clipboard",
+    incompleteDownload: "Downloaded resume may be incomplete. Add name, experience, and skills when ready.",
+    pdfDownloaded: "PDF downloaded.", pdfSuccess: "PDF downloaded. You can keep editing or create a matching cover letter.", pdfFail: "PDF download failed. Your resume is still saved in this browser.",
+    docxDownloaded: "DOCX downloaded.", docxSuccess: "DOCX downloaded. You can keep editing or create a matching cover letter.", docxFail: "DOCX download failed. Your resume is still saved in this browser.",
+    noReadableText: "That file had no readable text (it may be a scanned image). Paste the text instead.", couldntReadFile: "Couldn't read that file. Paste your resume text instead.",
+    resumeImported: "Resume imported into the builder.", readingResume: "Reading your resume…", importedReview: "Resume imported — review your details below.",
+    couldntReadAuto: "Couldn't read that file automatically — you can paste your text in the ATS Checker instead.", localDataDeleted: "ApplyCraft local data deleted from this browser." },
+  fr: { photoType: "La photo de profil doit être au format JPG, PNG ou WebP et faire moins de 2 Mo.", photoRead: "Impossible de lire l'image sélectionnée.",
+    draftFail: "Impossible d'enregistrer ce brouillon dans votre navigateur.", resumeSaved: "CV enregistré.", accountToSave: "Créez un compte gratuit pour enregistrer votre CV.",
+    newStarted: "Nouveau CV commencé.", linkCopied: "Lien de partage copié dans le presse-papiers.", copied: "Copié.", resumeTextCopied: "Texte du CV copié dans le presse-papiers",
+    incompleteDownload: "Le CV téléchargé est peut-être incomplet. Ajoutez le nom, l'expérience et les compétences quand vous serez prêt.",
+    pdfDownloaded: "PDF téléchargé.", pdfSuccess: "PDF téléchargé. Vous pouvez continuer à modifier ou créer une lettre de motivation assortie.", pdfFail: "Échec du téléchargement du PDF. Votre CV reste enregistré dans ce navigateur.",
+    docxDownloaded: "DOCX téléchargé.", docxSuccess: "DOCX téléchargé. Vous pouvez continuer à modifier ou créer une lettre de motivation assortie.", docxFail: "Échec du téléchargement du DOCX. Votre CV reste enregistré dans ce navigateur.",
+    noReadableText: "Ce fichier ne contenait aucun texte lisible (il s'agit peut-être d'une image scannée). Collez plutôt le texte.", couldntReadFile: "Impossible de lire ce fichier. Collez plutôt le texte de votre CV.",
+    resumeImported: "CV importé dans l'éditeur.", readingResume: "Lecture de votre CV…", importedReview: "CV importé — vérifiez vos informations ci-dessous.",
+    couldntReadAuto: "Impossible de lire ce fichier automatiquement — vous pouvez coller votre texte dans le vérificateur ATS.", localDataDeleted: "Données locales d'ApplyCraft supprimées de ce navigateur." },
+  es: { photoType: "La foto de perfil debe ser JPG, PNG o WebP y pesar menos de 2 MB.", photoRead: "No se pudo leer la imagen seleccionada.",
+    draftFail: "No se pudo guardar este borrador en tu navegador.", resumeSaved: "Currículum guardado.", accountToSave: "Crea una cuenta gratis para guardar tu currículum.",
+    newStarted: "Has empezado un nuevo currículum.", linkCopied: "Enlace para compartir copiado al portapapeles.", copied: "Copiado.", resumeTextCopied: "Texto del currículum copiado al portapapeles",
+    incompleteDownload: "El currículum descargado puede estar incompleto. Añade nombre, experiencia y habilidades cuando estés listo.",
+    pdfDownloaded: "PDF descargado.", pdfSuccess: "PDF descargado. Puedes seguir editando o crear una carta de presentación a juego.", pdfFail: "Error al descargar el PDF. Tu currículum sigue guardado en este navegador.",
+    docxDownloaded: "DOCX descargado.", docxSuccess: "DOCX descargado. Puedes seguir editando o crear una carta de presentación a juego.", docxFail: "Error al descargar el DOCX. Tu currículum sigue guardado en este navegador.",
+    noReadableText: "Ese archivo no tenía texto legible (puede ser una imagen escaneada). Pega el texto en su lugar.", couldntReadFile: "No se pudo leer ese archivo. Pega el texto de tu currículum en su lugar.",
+    resumeImported: "Currículum importado al editor.", readingResume: "Leyendo tu currículum…", importedReview: "Currículum importado — revisa tus datos abajo.",
+    couldntReadAuto: "No se pudo leer ese archivo automáticamente — puedes pegar el texto en el verificador ATS.", localDataDeleted: "Datos locales de ApplyCraft eliminados de este navegador." },
+  ar: { photoType: "يجب أن تكون صورة الملف الشخصي بصيغة JPG أو PNG أو WebP وأقل من 2 ميغابايت.", photoRead: "تعذّرت قراءة الصورة المحددة.",
+    draftFail: "تعذّر حفظ هذه المسودة في متصفحك.", resumeSaved: "تم حفظ السيرة الذاتية.", accountToSave: "أنشئ حساباً مجانياً لحفظ سيرتك الذاتية.",
+    newStarted: "تم بدء سيرة ذاتية جديدة.", linkCopied: "تم نسخ رابط المشاركة إلى الحافظة.", copied: "تم النسخ.", resumeTextCopied: "تم نسخ نص السيرة الذاتية إلى الحافظة",
+    incompleteDownload: "قد تكون السيرة الذاتية المُنزَّلة غير مكتملة. أضف الاسم والخبرة والمهارات عند الجاهزية.",
+    pdfDownloaded: "تم تنزيل PDF.", pdfSuccess: "تم تنزيل PDF. يمكنك متابعة التحرير أو إنشاء خطاب تقديم مطابق.", pdfFail: "فشل تنزيل PDF. سيرتك الذاتية لا تزال محفوظة في هذا المتصفح.",
+    docxDownloaded: "تم تنزيل DOCX.", docxSuccess: "تم تنزيل DOCX. يمكنك متابعة التحرير أو إنشاء خطاب تقديم مطابق.", docxFail: "فشل تنزيل DOCX. سيرتك الذاتية لا تزال محفوظة في هذا المتصفح.",
+    noReadableText: "لم يحتوِ هذا الملف على نص قابل للقراءة (قد يكون صورة ممسوحة ضوئياً). الصق النص بدلاً من ذلك.", couldntReadFile: "تعذّرت قراءة هذا الملف. الصق نص سيرتك الذاتية بدلاً من ذلك.",
+    resumeImported: "تم استيراد السيرة الذاتية إلى المُحرِّر.", readingResume: "جارٍ قراءة سيرتك الذاتية…", importedReview: "تم استيراد السيرة الذاتية — راجع بياناتك أدناه.",
+    couldntReadAuto: "تعذّرت قراءة هذا الملف تلقائياً — يمكنك لصق النص في فاحص ATS.", localDataDeleted: "تم حذف بيانات ApplyCraft المحلية من هذا المتصفح." },
+  de: { photoType: "Das Profilfoto muss JPG, PNG oder WebP sein und unter 2 MB liegen.", photoRead: "Das ausgewählte Bild konnte nicht gelesen werden.",
+    draftFail: "Dieser Entwurf konnte in deinem Browser nicht gespeichert werden.", resumeSaved: "Lebenslauf gespeichert.", accountToSave: "Erstelle ein kostenloses Konto, um deinen Lebenslauf zu speichern.",
+    newStarted: "Neuen Lebenslauf begonnen.", linkCopied: "Freigabelink in die Zwischenablage kopiert.", copied: "Kopiert.", resumeTextCopied: "Lebenslauftext in die Zwischenablage kopiert",
+    incompleteDownload: "Der heruntergeladene Lebenslauf ist möglicherweise unvollständig. Ergänze Name, Erfahrung und Fähigkeiten, wenn du bereit bist.",
+    pdfDownloaded: "PDF heruntergeladen.", pdfSuccess: "PDF heruntergeladen. Du kannst weiter bearbeiten oder ein passendes Anschreiben erstellen.", pdfFail: "PDF-Download fehlgeschlagen. Dein Lebenslauf ist weiterhin in diesem Browser gespeichert.",
+    docxDownloaded: "DOCX heruntergeladen.", docxSuccess: "DOCX heruntergeladen. Du kannst weiter bearbeiten oder ein passendes Anschreiben erstellen.", docxFail: "DOCX-Download fehlgeschlagen. Dein Lebenslauf ist weiterhin in diesem Browser gespeichert.",
+    noReadableText: "Diese Datei enthielt keinen lesbaren Text (möglicherweise ein gescanntes Bild). Füge stattdessen den Text ein.", couldntReadFile: "Diese Datei konnte nicht gelesen werden. Füge stattdessen deinen Lebenslauftext ein.",
+    resumeImported: "Lebenslauf in den Editor importiert.", readingResume: "Dein Lebenslauf wird gelesen…", importedReview: "Lebenslauf importiert — überprüfe deine Angaben unten.",
+    couldntReadAuto: "Diese Datei konnte nicht automatisch gelesen werden — du kannst den Text in den ATS-Prüfer einfügen.", localDataDeleted: "Lokale ApplyCraft-Daten aus diesem Browser gelöscht." },
+};
+// ── Modal translations (upload-resume + feedback) (phase 5) ──
+const MODAL_UI = {
+  en: {
+    upload: { fileErr: "Please upload a PDF or DOCX file under 8 MB.", emailReq: "Email address is required.", emailInvalid: "Enter a valid email address.",
+      selectFirst: "Please select a resume file first.", title: "Upload resume", desc: "Upload your existing resume and we'll pre-fill the editor so you can improve it.",
+      dragDrop: "Drag & drop or click to browse", pdfMax: "PDF or DOCX · max 8 MB", clickChange: "click to change", emailLabel: "Email address", improveBtn: "Improve my resume →", close: "Close" },
+    feedback: { r1: "Not helpful", r2: "Okay", r3: "Helpful", r4: "Really good", r5: "Love it!", thankYou: "Thank you!",
+      thankDesc: "Your feedback means a lot and directly shapes what gets built next.", done: "Done", title: "Share your experience",
+      desc: "How has ApplyCraft helped you? Your honest feedback shapes what gets built next.", rateQ: "How would you rate it?", diffQ: "What made the difference?",
+      msgPh: "Tell us what helped, what could be better, or share your win...", emailLabel: "Email", emailOptional: "(optional — only if you'd like a reply)",
+      errGeneric: "Something went wrong — please try again.", sending: "Sending…", send: "Send feedback →" },
+  },
+  fr: {
+    upload: { fileErr: "Veuillez importer un fichier PDF ou DOCX de moins de 8 Mo.", emailReq: "L'adresse e-mail est requise.", emailInvalid: "Saisissez une adresse e-mail valide.",
+      selectFirst: "Veuillez d'abord sélectionner un fichier de CV.", title: "Importer un CV", desc: "Importez votre CV existant et nous pré-remplirons l'éditeur pour que vous puissiez l'améliorer.",
+      dragDrop: "Glissez-déposez ou cliquez pour parcourir", pdfMax: "PDF ou DOCX · max 8 Mo", clickChange: "cliquer pour changer", emailLabel: "Adresse e-mail", improveBtn: "Améliorer mon CV →", close: "Fermer" },
+    feedback: { r1: "Pas utile", r2: "Correct", r3: "Utile", r4: "Très bien", r5: "J'adore !", thankYou: "Merci !",
+      thankDesc: "Votre avis compte beaucoup et oriente directement les prochaines fonctionnalités.", done: "Terminé", title: "Partagez votre expérience",
+      desc: "Comment ApplyCraft vous a-t-il aidé ? Votre avis sincère oriente les prochaines fonctionnalités.", rateQ: "Quelle note lui donneriez-vous ?", diffQ: "Qu'est-ce qui a fait la différence ?",
+      msgPh: "Dites-nous ce qui a aidé, ce qui pourrait être amélioré, ou partagez votre réussite...", emailLabel: "E-mail", emailOptional: "(facultatif — uniquement si vous souhaitez une réponse)",
+      errGeneric: "Une erreur s'est produite — veuillez réessayer.", sending: "Envoi…", send: "Envoyer l'avis →" },
+  },
+  es: {
+    upload: { fileErr: "Sube un archivo PDF o DOCX de menos de 8 MB.", emailReq: "La dirección de correo es obligatoria.", emailInvalid: "Introduce una dirección de correo válida.",
+      selectFirst: "Primero selecciona un archivo de currículum.", title: "Subir currículum", desc: "Sube tu currículum actual y rellenaremos el editor para que puedas mejorarlo.",
+      dragDrop: "Arrastra y suelta o haz clic para explorar", pdfMax: "PDF o DOCX · máx. 8 MB", clickChange: "haz clic para cambiar", emailLabel: "Dirección de correo", improveBtn: "Mejorar mi currículum →", close: "Cerrar" },
+    feedback: { r1: "Nada útil", r2: "Regular", r3: "Útil", r4: "Muy bueno", r5: "¡Me encanta!", thankYou: "¡Gracias!",
+      thankDesc: "Tu opinión significa mucho y define directamente lo próximo que construiremos.", done: "Listo", title: "Comparte tu experiencia",
+      desc: "¿Cómo te ha ayudado ApplyCraft? Tu opinión sincera define lo próximo que construiremos.", rateQ: "¿Cómo lo valorarías?", diffQ: "¿Qué marcó la diferencia?",
+      msgPh: "Cuéntanos qué te ayudó, qué se podría mejorar o comparte tu logro...", emailLabel: "Correo", emailOptional: "(opcional — solo si quieres una respuesta)",
+      errGeneric: "Algo salió mal — inténtalo de nuevo.", sending: "Enviando…", send: "Enviar opinión →" },
+  },
+  ar: {
+    upload: { fileErr: "يرجى رفع ملف PDF أو DOCX أقل من 8 ميغابايت.", emailReq: "عنوان البريد الإلكتروني مطلوب.", emailInvalid: "أدخل عنوان بريد إلكتروني صالحاً.",
+      selectFirst: "يرجى اختيار ملف السيرة الذاتية أولاً.", title: "رفع سيرة ذاتية", desc: "ارفع سيرتك الذاتية الحالية وسنملأ المحرر مسبقاً لتتمكن من تحسينها.",
+      dragDrop: "اسحب وأفلت أو انقر للتصفح", pdfMax: "PDF أو DOCX · بحد أقصى 8 ميغابايت", clickChange: "انقر للتغيير", emailLabel: "عنوان البريد الإلكتروني", improveBtn: "حسّن سيرتي الذاتية →", close: "إغلاق" },
+    feedback: { r1: "غير مفيد", r2: "مقبول", r3: "مفيد", r4: "جيد جداً", r5: "أحببته!", thankYou: "شكراً لك!",
+      thankDesc: "رأيك يعني لنا الكثير ويوجّه مباشرةً ما سنبنيه لاحقاً.", done: "تم", title: "شاركنا تجربتك",
+      desc: "كيف ساعدك ApplyCraft؟ رأيك الصادق يوجّه ما سنبنيه لاحقاً.", rateQ: "كيف تقيّمه؟", diffQ: "ما الذي أحدث الفرق؟",
+      msgPh: "أخبرنا بما ساعدك، وما يمكن تحسينه، أو شاركنا إنجازك...", emailLabel: "البريد الإلكتروني", emailOptional: "(اختياري — فقط إذا كنت ترغب في رد)",
+      errGeneric: "حدث خطأ ما — يرجى المحاولة مرة أخرى.", sending: "جارٍ الإرسال…", send: "إرسال الرأي →" },
+  },
+  de: {
+    upload: { fileErr: "Bitte lade eine PDF- oder DOCX-Datei unter 8 MB hoch.", emailReq: "E-Mail-Adresse ist erforderlich.", emailInvalid: "Gib eine gültige E-Mail-Adresse ein.",
+      selectFirst: "Bitte wähle zuerst eine Lebenslaufdatei aus.", title: "Lebenslauf hochladen", desc: "Lade deinen bestehenden Lebenslauf hoch und wir füllen den Editor vor, damit du ihn verbessern kannst.",
+      dragDrop: "Ziehen & ablegen oder zum Durchsuchen klicken", pdfMax: "PDF oder DOCX · max. 8 MB", clickChange: "zum Ändern klicken", emailLabel: "E-Mail-Adresse", improveBtn: "Meinen Lebenslauf verbessern →", close: "Schließen" },
+    feedback: { r1: "Nicht hilfreich", r2: "Okay", r3: "Hilfreich", r4: "Richtig gut", r5: "Liebe es!", thankYou: "Danke!",
+      thankDesc: "Dein Feedback bedeutet uns viel und prägt direkt, was als Nächstes gebaut wird.", done: "Fertig", title: "Teile deine Erfahrung",
+      desc: "Wie hat ApplyCraft dir geholfen? Dein ehrliches Feedback prägt, was als Nächstes gebaut wird.", rateQ: "Wie würdest du es bewerten?", diffQ: "Was hat den Unterschied gemacht?",
+      msgPh: "Sag uns, was geholfen hat, was besser sein könnte, oder teile deinen Erfolg...", emailLabel: "E-Mail", emailOptional: "(optional — nur wenn du eine Antwort möchtest)",
+      errGeneric: "Etwas ist schiefgelaufen — bitte versuche es erneut.", sending: "Wird gesendet…", send: "Feedback senden →" },
+  },
+};
 
 // ── Templates ─────────────────────────────────────────────────────
 const TEMPLATES = [
@@ -3438,14 +3539,14 @@ export default function ResumeGenerator() {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!validateProfilePhoto(file)) {
-      setStatusMsg("Profile photo must be JPG, PNG, or WebP and under 2 MB.");
+      setStatusMsg(st.photoType);
       e.target.value = "";
       setTimeout(() => setStatusMsg(""), 2500);
       return;
     }
     const reader = new FileReader();
     reader.onload = (ev) => setPhotoUrl(ev.target.result);
-    reader.onerror = () => setStatusMsg("Could not read the selected image.");
+    reader.onerror = () => setStatusMsg(st.photoRead);
     reader.readAsDataURL(file);
   };
   const [uploadedResume, setUploadedResume] = useState(null);
@@ -3501,7 +3602,7 @@ export default function ResumeGenerator() {
         localStorage.setItem("ac_resume_draft_saved_at", stamp);
         setDraftSavedAt(stamp);
       } catch {
-        setStatusMsg("Could not save this draft in your browser.");
+        setStatusMsg(st.draftFail);
       }
     }, 700);
     return () => clearTimeout(id);
@@ -3576,6 +3677,7 @@ export default function ResumeGenerator() {
   const ats = ATS_UI[lang] || ATS_UI.en; // ATS checker strings
   const tk = TRACKER_UI[lang] || TRACKER_UI.en; // job tracker strings
   const ms = MASTER_UI[lang] || MASTER_UI.en; // master profile strings
+  const st = STATUS_UI[lang] || STATUS_UI.en; // toast / status messages
   const rtl = selectedLang.rtl || false;
   const set = useCallback((k) => (e) => setForm(f => ({ ...f, [k]: e.target.value })), []);
   const setField = useCallback((k, v) => setForm(f => ({ ...f, [k]: v })), []);
@@ -3729,7 +3831,7 @@ export default function ResumeGenerator() {
     const id = resumes.upsertResume({ id: currentResumeId, title, data: form });
     setCurrentResumeId(id);
     refreshResumes();
-    setStatusMsg("Resume saved.");
+    setStatusMsg(st.resumeSaved);
     setTimeout(() => setStatusMsg(""), 2000);
   }, [form, currentResumeId, refreshResumes]);
 
@@ -3739,7 +3841,7 @@ export default function ResumeGenerator() {
       pendingSaveRef.current = true;
       setAuthModalTab("signup");
       setAuthModal(true);
-      setStatusMsg("Create a free account to save your resume.");
+      setStatusMsg(st.accountToSave);
       setTimeout(() => setStatusMsg(""), 3000);
       return;
     }
@@ -3753,7 +3855,7 @@ export default function ResumeGenerator() {
     setTpl(null);
     setNavPage("resume");
     setStep("templates");
-    setStatusMsg("Started a new resume.");
+    setStatusMsg(st.newStarted);
     setTimeout(() => setStatusMsg(""), 2000);
   }, [emptyResumeForm]);
 
@@ -3780,7 +3882,7 @@ export default function ResumeGenerator() {
     const url = buildShareUrl(getPayload());
     setShareUrl(url);
     try { navigator.clipboard && navigator.clipboard.writeText(url); } catch { /* noop */ }
-    setStatusMsg("Shareable link copied to clipboard.");
+    setStatusMsg(st.linkCopied);
     setTimeout(() => setStatusMsg(""), 2500);
   }, []);
   const emailLink = useCallback((getPayload, subject) => {
@@ -3829,7 +3931,7 @@ export default function ResumeGenerator() {
                 style={{ width: "100%", boxSizing: "border-box", fontSize: 11.5, padding: "6px 8px", background: C.surface,
                   border: `1px solid ${C.border}`, borderRadius: 6, color: C.text2, fontFamily: "inherit" }} />
               <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-                <button type="button" onClick={() => { try { navigator.clipboard && navigator.clipboard.writeText(shareUrl); } catch { /* noop */ } setStatusMsg("Copied."); setTimeout(() => setStatusMsg(""), 1500); }}
+                <button type="button" onClick={() => { try { navigator.clipboard && navigator.clipboard.writeText(shareUrl); } catch { /* noop */ } setStatusMsg(st.copied); setTimeout(() => setStatusMsg(""), 1500); }}
                   style={{ flex: 1, background: `${C.accent}18`, border: `1px solid ${C.accent}40`, borderRadius: 7, padding: "6px", fontSize: 12, fontWeight: 700, color: C.accent2, cursor: "pointer", fontFamily: "inherit" }}>Copy</button>
                 <a href={shareUrl} target="_blank" rel="noreferrer"
                   style={{ flex: 1, textAlign: "center", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 7, padding: "6px", fontSize: 12, fontWeight: 700, color: C.text2, textDecoration: "none", fontFamily: "inherit" }}>Open ↗</a>
@@ -4056,7 +4158,7 @@ Awards: ${form.awards}`;
       ...(src.sections || []).flatMap((s) => [s.heading, ...s.items, ""])].join("\n");
     navigator.clipboard.writeText(flat);
     setCopied(true);
-    setStatusMsg("Resume text copied to clipboard");
+    setStatusMsg(st.resumeTextCopied);
     setTimeout(() => { setCopied(false); setStatusMsg(""); }, 1500);
   }
 
@@ -4065,7 +4167,7 @@ Awards: ${form.awards}`;
     const src = result || liveData;
     if (!src) return;
     if (!form.name.trim() || !form.experience.trim() || !form.skills.trim()) {
-      setStatusMsg("Downloaded resume may be incomplete. Add name, experience, and skills when ready.");
+      setStatusMsg(st.incompleteDownload);
       setTimeout(() => setStatusMsg(""), 3500);
     }
     setExporting("pdf");
@@ -4198,13 +4300,13 @@ Awards: ${form.awards}`;
 
     const fname = sanitizeFilename(safe(src.name || "resume"), "resume");
     doc.save(`${fname}.pdf`);
-    setExportSuccess("PDF downloaded. You can keep editing or create a matching cover letter.");
-    setStatusMsg("PDF downloaded.");
+    setExportSuccess(st.pdfSuccess);
+    setStatusMsg(st.pdfDownloaded);
     trackUxEvent("pdf_export_completed");
     track(EVENTS.RESUME_EXPORTED, { format: "pdf", template: tpl?.id || "" });
     setTimeout(() => { setExportSuccess(""); setStatusMsg(""); }, 4500);
     } catch {
-      setStatusMsg("PDF download failed. Your resume is still saved in this browser.");
+      setStatusMsg(st.pdfFail);
       setTimeout(() => setStatusMsg(""), 3500);
     } finally {
       setExporting("");
@@ -4216,7 +4318,7 @@ Awards: ${form.awards}`;
     const src = result || liveData;
     if (!src) return;
     if (!form.name.trim() || !form.experience.trim() || !form.skills.trim()) {
-      setStatusMsg("Downloaded resume may be incomplete. Add name, experience, and skills when ready.");
+      setStatusMsg(st.incompleteDownload);
       setTimeout(() => setStatusMsg(""), 3500);
     }
     setExporting("docx");
@@ -4287,13 +4389,13 @@ Awards: ${form.awards}`;
     a.download = `${sanitizeFilename(src.name, "resume")}.docx`;
     a.click();
     URL.revokeObjectURL(url);
-    setExportSuccess("DOCX downloaded. You can keep editing or create a matching cover letter.");
-    setStatusMsg("DOCX downloaded.");
+    setExportSuccess(st.docxSuccess);
+    setStatusMsg(st.docxDownloaded);
     trackUxEvent("docx_export_completed");
     track(EVENTS.RESUME_EXPORTED, { format: "docx", template: tpl?.id || "" });
     setTimeout(() => { setExportSuccess(""); setStatusMsg(""); }, 4500);
     } catch {
-      setStatusMsg("DOCX download failed. Your resume is still saved in this browser.");
+      setStatusMsg(st.docxFail);
       setTimeout(() => setStatusMsg(""), 3500);
     } finally {
       setExporting("");
@@ -6368,9 +6470,9 @@ Awards: ${form.awards}`;
         const { extractResumeText } = await import("./ats/extractText.js");
         const text = await extractResumeText(file);
         if (text && text.trim()) setLocalText(text.trim());
-        else { setStatusMsg("That file had no readable text (it may be a scanned image). Paste the text instead."); setTimeout(() => setStatusMsg(""), 3500); }
+        else { setStatusMsg(st.noReadableText); setTimeout(() => setStatusMsg(""), 3500); }
       } catch {
-        setStatusMsg("Couldn't read that file. Paste your resume text instead.");
+        setStatusMsg(st.couldntReadFile);
         setTimeout(() => setStatusMsg(""), 3500);
       } finally { setReading(false); }
     };
@@ -6421,7 +6523,7 @@ Awards: ${form.awards}`;
       hydrateFromParsed(parseResume(localText)); // structured parse → correct fields, no dumps
       setNavPage("resume");
       setStep(tpl ? "form" : "templates");
-      setStatusMsg("Resume imported into the builder.");
+      setStatusMsg(st.resumeImported);
       setTimeout(() => setStatusMsg(""), 2500);
     };
 
@@ -7657,24 +7759,25 @@ Awards: ${form.awards}`;
           }} />
         {ACCOUNTS_ENABLED && <SaveProfileModal open={saveProfileOpen} onClose={() => setSaveProfileOpen(false)} at={at} rtl={rtl} C={C} lang={lang} />}
         {ACCOUNTS_ENABLED && <UpsellModal feature={upsell} onClose={() => setUpsell(null)} onGetPass={handleStartCheckout} at={at} rtl={rtl} C={C} />}
-        <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+        <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} lang={lang} />
         <UploadResumeModal
+          lang={lang}
           open={uploadModalOpen}
           onClose={() => setUploadModalOpen(false)}
           onImprove={async (file, email) => {
             setUploadedResume(file);
             setUploadModalOpen(false);
-            setStatusMsg("Reading your resume…");
+            setStatusMsg(st.readingResume);
             try {
               const { extractResumeText } = await import("./ats/extractText.js");
               const text = await extractResumeText(file);
               const parsed = parseResume(text);
               if (email) parsed.email = parsed.email || email;
               hydrateFromParsed(parsed);
-              setStatusMsg("Resume imported — review your details below.");
+              setStatusMsg(st.importedReview);
             } catch {
               if (email) setForm(f => ({ ...f, email: email || f.email }));
-              setStatusMsg("Couldn't read that file automatically — you can paste your text in the ATS Checker instead.");
+              setStatusMsg(st.couldntReadAuto);
             }
             startResume("resume_upload");
             setTimeout(() => setStatusMsg(""), 3500);
@@ -8156,7 +8259,7 @@ Awards: ${form.awards}`;
                   setTrackerCards([]);
                   setAtsFromChecker("");
                   setDraftSavedAt("");
-                  setStatusMsg("ApplyCraft local data deleted from this browser.");
+                  setStatusMsg(st.localDataDeleted);
                   setTimeout(() => setStatusMsg(""), 2500);
                 }}
                 style={{ background: "transparent", color: C.text2, border: `1px solid ${C.borderHi}`,
@@ -8585,7 +8688,8 @@ Awards: ${form.awards}`;
 }
 
 // ── UploadResumeModal ─────────────────────────────────────────────
-function UploadResumeModal({ open, onClose, onImprove }) {
+function UploadResumeModal({ open, onClose, onImprove, lang }) {
+  const m = (MODAL_UI[lang] || MODAL_UI.en).upload;
   const [file, setFile] = useState(null);
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -8611,7 +8715,7 @@ function UploadResumeModal({ open, onClose, onImprove }) {
   function acceptFile(f) {
     if (!f) return;
     if (!validateResumeImport(f)) {
-      setFileError("Please upload a PDF or DOCX file under 8 MB.");
+      setFileError(m.fileErr);
       return;
     }
     setFileError("");
@@ -8619,15 +8723,15 @@ function UploadResumeModal({ open, onClose, onImprove }) {
   }
 
   function validateEmailLocal(val) {
-    if (!val.trim()) return "Email address is required.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())) return "Enter a valid email address.";
+    if (!val.trim()) return m.emailReq;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim())) return m.emailInvalid;
     return "";
   }
 
   function handleImprove() {
     const err = validateEmailLocal(email);
     if (err) { setEmailError(err); return; }
-    if (!file) { setFileError("Please select a resume file first."); return; }
+    if (!file) { setFileError(m.selectFirst); return; }
     onImprove(file, email.trim());
   }
 
@@ -8646,7 +8750,7 @@ function UploadResumeModal({ open, onClose, onImprove }) {
           boxShadow: "0 24px 64px rgba(0,0,0,0.55)", position: "relative" }}>
 
         {/* Close */}
-        <button onClick={onClose} aria-label="Close"
+        <button onClick={onClose} aria-label={m.close}
           style={{ position: "absolute", top: 14, right: 14, width: 28, height: 28,
             borderRadius: "50%", background: C.elevated, border: `1px solid ${C.border}`,
             color: C.text2, cursor: "pointer", display: "flex", alignItems: "center",
@@ -8654,10 +8758,10 @@ function UploadResumeModal({ open, onClose, onImprove }) {
 
         <h2 id="upload-modal-title"
           style={{ fontSize: 20, fontWeight: 800, color: C.text1, margin: "0 0 6px", paddingRight: 32 }}>
-          Upload resume
+          {m.title}
         </h2>
         <p style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.6, margin: "0 0 24px" }}>
-          Upload your existing resume and we'll pre-fill the editor so you can improve it.
+          {m.desc}
         </p>
 
         {/* Drop zone */}
@@ -8676,7 +8780,7 @@ function UploadResumeModal({ open, onClose, onImprove }) {
               <div style={{ textAlign: "left" }}>
                 <div style={{ fontSize: 13.5, fontWeight: 700, color: C.text1 }}>{file.name}</div>
                 <div style={{ fontSize: 11.5, color: C.text3, marginTop: 2 }}>
-                  {(file.size / 1024).toFixed(0)} KB · click to change
+                  {(file.size / 1024).toFixed(0)} KB · {m.clickChange}
                 </div>
               </div>
               <span style={{ fontSize: 18, color: "#4ade80", marginLeft: "auto" }}>✓</span>
@@ -8685,9 +8789,9 @@ function UploadResumeModal({ open, onClose, onImprove }) {
             <>
               <div style={{ fontSize: 28, marginBottom: 8 }}>⬆️</div>
               <div style={{ fontSize: 13.5, fontWeight: 700, color: C.text1, marginBottom: 4 }}>
-                Drag & drop or click to browse
+                {m.dragDrop}
               </div>
-              <div style={{ fontSize: 12, color: C.text3 }}>PDF or DOCX · max 8 MB</div>
+              <div style={{ fontSize: 12, color: C.text3 }}>{m.pdfMax}</div>
             </>
           )}
           <input ref={fileInputRef} type="file" accept=".pdf,.docx" style={{ display: "none" }}
@@ -8703,7 +8807,7 @@ function UploadResumeModal({ open, onClose, onImprove }) {
           <label htmlFor="upload-modal-email"
             style={{ display: "block", fontSize: 12, fontWeight: 700, color: C.text2,
               marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.8px" }}>
-            Email address
+            {m.emailLabel}
           </label>
           <input id="upload-modal-email" type="email" value={email}
             onChange={e => { setEmail(e.target.value); if (emailError) setEmailError(""); }}
@@ -8726,7 +8830,7 @@ function UploadResumeModal({ open, onClose, onImprove }) {
             borderRadius: 8, padding: "13px 0", fontSize: 14.5, fontWeight: 700,
             cursor: canImprove ? "pointer" : "not-allowed", fontFamily: "inherit",
             opacity: canImprove ? 1 : 0.45, transition: "opacity 0.15s" }}>
-          Improve my resume →
+          {m.improveBtn}
         </button>
       </div>
     </div>
@@ -8734,13 +8838,14 @@ function UploadResumeModal({ open, onClose, onImprove }) {
 }
 
 // ── FeedbackModal ─────────────────────────────────────────────────
-function FeedbackModal({ open, onClose }) {
+function FeedbackModal({ open, onClose, lang }) {
+  const m = (MODAL_UI[lang] || MODAL_UI.en).feedback;
   const RATINGS = [
-    { value: 1, emoji: "😕", label: "Not helpful" },
-    { value: 2, emoji: "😐", label: "Okay" },
-    { value: 3, emoji: "😊", label: "Helpful" },
-    { value: 4, emoji: "😍", label: "Really good" },
-    { value: 5, emoji: "🚀", label: "Love it!" },
+    { value: 1, emoji: "😕", label: m.r1 },
+    { value: 2, emoji: "😐", label: m.r2 },
+    { value: 3, emoji: "😊", label: m.r3 },
+    { value: 4, emoji: "😍", label: m.r4 },
+    { value: 5, emoji: "🚀", label: m.r5 },
   ];
   const [rating, setRating] = useState(null);
   const [message, setMessage] = useState("");
@@ -8805,7 +8910,7 @@ function FeedbackModal({ open, onClose }) {
           boxShadow: "0 24px 64px rgba(0,0,0,0.55)", position: "relative",
           maxHeight: "90vh", overflowY: "auto" }}>
 
-        <button onClick={onClose} aria-label="Close"
+        <button onClick={onClose} aria-label={m.done}
           style={{ position: "absolute", top: 14, right: 14, width: 28, height: 28,
             borderRadius: "50%", background: C.elevated, border: `1px solid ${C.border}`,
             color: C.text2, cursor: "pointer", display: "flex", alignItems: "center",
@@ -8815,31 +8920,31 @@ function FeedbackModal({ open, onClose }) {
           <div style={{ textAlign: "center", padding: "20px 0" }}>
             <div style={{ fontSize: 52, marginBottom: 16 }}>🙏</div>
             <h2 style={{ fontSize: 22, fontWeight: 800, color: C.text1, margin: "0 0 10px" }}>
-              Thank you!
+              {m.thankYou}
             </h2>
             <p style={{ fontSize: 14.5, color: C.text2, lineHeight: 1.65, margin: "0 0 28px" }}>
-              Your feedback means a lot and directly shapes what gets built next.
+              {m.thankDesc}
             </p>
             <button onClick={onClose}
               style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
                 padding: "11px 32px", fontSize: 14, fontWeight: 700,
                 cursor: "pointer", fontFamily: "inherit" }}>
-              Done
+              {m.done}
             </button>
           </div>
         ) : (
           <>
             <div id="fb-modal-title"
               style={{ fontSize: 20, fontWeight: 800, color: C.text1, marginBottom: 6, paddingRight: 32 }}>
-              Share your experience
+              {m.title}
             </div>
             <p style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.6, margin: "0 0 24px" }}>
-              How has ApplyCraft helped you? Your honest feedback shapes what gets built next.
+              {m.desc}
             </p>
 
             {/* Rating */}
             <div style={{ marginBottom: 20 }}>
-              <div style={fieldLbl}>How would you rate it?</div>
+              <div style={fieldLbl}>{m.rateQ}</div>
               <div style={{ display: "flex", gap: 6 }}>
                 {RATINGS.map(r => (
                   <button key={r.value} onClick={() => setRating(r.value)}
@@ -8860,10 +8965,10 @@ function FeedbackModal({ open, onClose }) {
             {/* Message */}
             <div style={{ marginBottom: 16 }}>
               <label htmlFor="fb-message" style={fieldLbl}>
-                What made the difference?
+                {m.diffQ}
               </label>
               <textarea id="fb-message" value={message} onChange={e => setMessage(e.target.value)} rows={4}
-                placeholder="Tell us what helped, what could be better, or share your win..."
+                placeholder={m.msgPh}
                 style={{ ...inp, resize: "vertical", lineHeight: 1.6, minHeight: 100 }}
                 onFocus={e => { e.target.style.borderColor = C.accent; }}
                 onBlur={e => { e.target.style.borderColor = C.border; }} />
@@ -8872,9 +8977,9 @@ function FeedbackModal({ open, onClose }) {
             {/* Optional email */}
             <div style={{ marginBottom: 24 }}>
               <label htmlFor="fb-email" style={fieldLbl}>
-                Email{" "}
+                {m.emailLabel}{" "}
                 <span style={{ textTransform: "none", fontWeight: 400, color: C.text3, letterSpacing: 0 }}>
-                  (optional — only if you'd like a reply)
+                  {m.emailOptional}
                 </span>
               </label>
               <input id="fb-email" type="email" value={email} onChange={e => setEmail(e.target.value)}
@@ -8886,7 +8991,7 @@ function FeedbackModal({ open, onClose }) {
 
             {status === "error" && (
               <p role="alert" style={{ color: "#f87171", fontSize: 12.5, margin: "0 0 12px" }}>
-                Something went wrong — please try again.
+                {m.errGeneric}
               </p>
             )}
 
@@ -8898,7 +9003,7 @@ function FeedbackModal({ open, onClose }) {
                 fontFamily: "inherit",
                 opacity: (!rating || !message.trim()) ? 0.5 : 1,
                 transition: "opacity 0.15s" }}>
-              {status === "sending" ? "Sending…" : "Send feedback →"}
+              {status === "sending" ? m.sending : m.send}
             </button>
           </>
         )}
