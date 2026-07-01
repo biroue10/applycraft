@@ -180,6 +180,36 @@ function checkRateLimit(request, now = Date.now()) {
   return { allowed: true, reason: "ok" };
 }
 
+// Centralized rate limit across isolates. Cloudflare Workers give each isolate
+// its own memory, so the in-memory Map above is only a per-isolate guard and is
+// easily bypassed under load/distribution. When a KV namespace is bound as
+// RATE_LIMIT_KV, enforce the same per-minute / per-hour limits there so the
+// count is shared. Falls back to the in-memory limiter when KV is not bound.
+// (For strict, atomic limits, a Durable Object or Cloudflare Rate Limiting Rule
+// is stronger — see docs/SECURITY.md.)
+async function checkRateLimitKV(env, request, now = Date.now()) {
+  const kv = env && env.RATE_LIMIT_KV;
+  if (!kv) return checkRateLimit(request, now);
+  try {
+    const key = clientKey(request);
+    const mKey = `rl:m:${key}:${Math.floor(now / RATE_WINDOW_MS)}`;
+    const hKey = `rl:h:${key}:${Math.floor(now / HOURLY_WINDOW_MS)}`;
+    const [mRaw, hRaw] = await Promise.all([kv.get(mKey), kv.get(hKey)]);
+    const m = Number(mRaw || 0);
+    const h = Number(hRaw || 0);
+    if (m >= RATE_MAX_PER_WINDOW) return { allowed: false, retryAfter: Math.ceil(RATE_WINDOW_MS / 1000), reason: "minute" };
+    if (h >= RATE_MAX_PER_HOUR) return { allowed: false, retryAfter: 300, reason: "hour" };
+    await Promise.all([
+      kv.put(mKey, String(m + 1), { expirationTtl: 120 }),
+      kv.put(hKey, String(h + 1), { expirationTtl: 3660 }),
+    ]);
+    return { allowed: true, reason: "ok" };
+  } catch {
+    // KV hiccup must never take the endpoint down — fall back to in-memory.
+    return checkRateLimit(request, now);
+  }
+}
+
 async function readLimitedBody(request) {
   const contentLength = request.headers.get("Content-Length");
   if (contentLength && Number(contentLength) > MAX_BODY_BYTES) return { tooLarge: true };
@@ -291,7 +321,7 @@ async function handleAi(request, env) {
     return errorResponse("UNSUPPORTED_MEDIA_TYPE", "Content-Type must be application/json.", 415, cors.headers);
   }
 
-  const rate = checkRateLimit(request);
+  const rate = await checkRateLimitKV(env, request);
   if (!rate.allowed) {
     return errorResponse("RATE_LIMITED", "Too many requests. Please try again later.", 429, cors.headers, {
       "Retry-After": String(Math.max(1, rate.retryAfter || 60)),
