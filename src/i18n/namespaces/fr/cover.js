@@ -2,7 +2,7 @@ const cover = {
   "toolName": "Créateur de lettre de motivation",
   "eyebrow": "Modèles de lettre de motivation",
   "galleryTitle": "Choisissez un style de lettre assorti à votre CV",
-  "gallerySub": "Commencez avec une mise en page de lettre professionnelle, puis modifiez le contenu à côté d'un aperçu en direct. Vous pourrez télécharger en PDF lorsque vous serez prêt.",
+  "gallerySub": "Commencez avec une mise en page de lettre professionnelle, puis modifiez le contenu à côté d'un aperçu en direct. Vous pourrez télécharger en PDF ou DOCX lorsque vous serez prêt.",
   "stylesAvailable": "styles de lettre disponibles.",
   "resumeMatching": "Assorti au CV",
   "heading": "Lettre de motivation",
@@ -39,7 +39,7 @@ const cover = {
   "phClosing": "Je vous remercie de votre temps et de votre considération. Dans l'attente de votre réponse.",
   "phSignoff": "Cordialement",
   "nextStep": "Prochaine étape recommandée",
-  "nextStepBody": "Ajoutez votre nom pour débloquer l'export de la lettre.",
+  "nextStepBody": "Ajoutez votre nom avant d'exporter la lettre.",
   "comingSoon": "Les sections personnalisées de lettre arrivent bientôt."
 };
 

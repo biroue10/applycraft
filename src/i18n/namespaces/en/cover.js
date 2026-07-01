@@ -2,7 +2,7 @@ const cover = {
   "toolName": "Cover Letter Builder",
   "eyebrow": "Cover letter templates",
   "galleryTitle": "Choose a cover letter style that matches your resume",
-  "gallerySub": "Start with a professional letter layout, then edit the content beside a live preview. You can download as PDF when ready.",
+  "gallerySub": "Start with a professional letter layout, then edit the content beside a live preview. You can download as PDF or DOCX when ready.",
   "stylesAvailable": "letter styles available.",
   "resumeMatching": "Resume matching",
   "heading": "Cover Letter",
@@ -39,7 +39,7 @@ const cover = {
   "phClosing": "Thank you for your time and consideration. I look forward to speaking with you.",
   "phSignoff": "Sincerely",
   "nextStep": "Next recommended step",
-  "nextStepBody": "Add your name to unlock cover letter export.",
+  "nextStepBody": "Add your name before exporting the letter.",
   "comingSoon": "Custom cover-letter sections are coming soon."
 };
 

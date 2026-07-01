@@ -10,7 +10,9 @@ import { useFocusTrap } from "./a11y/useFocusTrap.js";
 import { parseResume } from "./ats/parseResume.js";
 import * as resumes from "./resumes.js";
 import { buildPrivateShareUrl } from "./share.js";
+import { linkifyText, normalizeLinkHref } from "./utils/linkify.js";
 import { ResumePaper, CoverLetterPaper, structureSectionItems } from "./documents/DocumentPapers.jsx";
+import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
 import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter } from "./siteChrome.jsx";
@@ -3705,7 +3707,9 @@ Awards: ${form.awards}`;
       doc.setTextColor(90, 90, 90);
       const contactLine = contactItems.join("  |  ");
       const contactWrapped = doc.splitTextToSize(contactLine, colW);
-      doc.text(contactWrapped, pageW / 2, y, { align: "center" }); // centered contact (incl. email)
+      const contactHref = contactItems.map(normalizeLinkHref).find(Boolean);
+      if (contactHref && contactWrapped.length === 1) doc.textWithLink(contactWrapped[0], pageW / 2, y, { align: "center", url: contactHref });
+      else doc.text(contactWrapped, pageW / 2, y, { align: "center" }); // centered contact (incl. email)
       y += contactWrapped.length * 4.5 + 2;
     }
 
@@ -3751,9 +3755,10 @@ Awards: ${form.awards}`;
         const lines = doc.splitTextToSize(`- ${safe(item)}`, colW - 3);
         checkY(lines.length * 5 + 2);
         const link = eduLinks.find((l) => item.startsWith(l.title));
-        if (link) {
+        const itemHref = normalizeLinkHref(String(item).split(/\s+/).find((token) => normalizeLinkHref(token)) || "");
+        if (link || itemHref) {
           doc.setTextColor(ar, ag, ab);
-          doc.textWithLink(lines[0], margin, y, { url: link.url });
+          doc.textWithLink(lines[0], margin, y, { url: link?.url || itemHref });
           if (lines.length > 1) { doc.setTextColor(55, 55, 55); doc.text(lines.slice(1), margin, y + 5); }
           doc.setTextColor(55, 55, 55);
         } else {
@@ -3809,7 +3814,7 @@ Awards: ${form.awards}`;
     setExportSuccess("");
     try {
     track(EVENTS.DOCX_EXPORT_STARTED, { document_type: "resume", language: docLang, template: tpl?.id || "" });
-    const { Document, Packer, Paragraph, TextRun, BorderStyle, AlignmentType } = await import("docx");
+    const { Document, Packer, Paragraph, TextRun, BorderStyle, AlignmentType, ExternalHyperlink } = await import("docx");
 
     const accent = tpl.accent.replace("#", "").toUpperCase();
     const docxRtl = isRtlLang(docLang);
@@ -3819,6 +3824,18 @@ Awards: ${form.awards}`;
       font: docxFont,
       rightToLeft: docxRtl,
       ...options,
+    });
+    const makeLinkedRuns = (text, options = {}) => linkifyText(text).map((part) => {
+      if (part.type !== "link") return makeRun({ text: part.text, ...options });
+      return new ExternalHyperlink({
+        link: part.href,
+        children: [makeRun({
+          text: part.text,
+          color: accent,
+          underline: {},
+          ...options,
+        })],
+      });
     });
     const makeParagraph = (options = {}) => new Paragraph({
       alignment: options.alignment || docxAlignment,
@@ -3830,14 +3847,14 @@ Awards: ${form.awards}`;
 
     // Name
     children.push(makeParagraph({
-      children: [makeRun({ text: src.name || "", bold: true, size: 44, color: "111111" })],
+      children: makeLinkedRuns(src.name || "", { bold: true, size: 44, color: "111111" }),
       spacing: { after: 60 },
     }));
 
     // Title
     if (src.title) {
       children.push(makeParagraph({
-        children: [makeRun({ text: src.title, size: 26, color: accent })],
+        children: makeLinkedRuns(src.title, { size: 26, color: accent }),
         spacing: { after: 60 },
       }));
     }
@@ -3846,7 +3863,7 @@ Awards: ${form.awards}`;
     const contact = (src.contact || []).filter(Boolean).join("   •   ");
     if (contact) {
       children.push(makeParagraph({
-        children: [makeRun({ text: contact, size: 20, color: "666666" })],
+        children: makeLinkedRuns(contact, { size: 20, color: "666666" }),
         spacing: { after: 120 },
       }));
     }
@@ -3860,7 +3877,7 @@ Awards: ${form.awards}`;
     // Summary
     if (src.summary) {
       children.push(makeParagraph({
-        children: [makeRun({ text: src.summary, size: 21 })],
+        children: makeLinkedRuns(src.summary, { size: 21 }),
         spacing: { after: 240 },
       }));
     }
@@ -3874,7 +3891,7 @@ Awards: ${form.awards}`;
       }));
       if (isDocxTagSection(section)) {
         children.push(makeParagraph({
-          children: [makeRun({ text: (section.items || []).filter(Boolean).join("   •   "), size: 20 })],
+          children: makeLinkedRuns((section.items || []).filter(Boolean).join("   •   "), { size: 20 }),
           spacing: { after: 100 },
         }));
         continue;
@@ -3882,19 +3899,19 @@ Awards: ${form.awards}`;
       for (const entry of structureSectionItems(section)) {
         if (entry.title) {
           children.push(makeParagraph({
-            children: [makeRun({ text: entry.title, bold: true, size: 21, color: "111111" })],
+            children: makeLinkedRuns(entry.title, { bold: true, size: 21, color: "111111" }),
             spacing: { before: 80, after: 20 },
           }));
         }
         if (entry.meta?.length) {
           children.push(makeParagraph({
-            children: [makeRun({ text: entry.meta.join("   •   "), size: 18, color: "666666" })],
+            children: makeLinkedRuns(entry.meta.join("   •   "), { size: 18, color: "666666" }),
             spacing: { after: entry.bullets?.length ? 45 : 95 },
           }));
         }
         for (const bullet of (entry.bullets || [])) {
           children.push(makeParagraph({
-            children: [makeRun({ text: bullet, size: 20 })],
+            children: makeLinkedRuns(bullet, { size: 20 }),
             bullet: { level: 0 },
             spacing: { after: 60 },
             indent: docxRtl ? { right: 260 } : { left: 260 },
@@ -5549,7 +5566,9 @@ Awards: ${form.awards}`;
 
   async function downloadCoverPDF() {
     if (!coverTpl) return;
+    if (exporting) return;
     if (documentRtl) {
+      setExporting("pdf");
       track(EVENTS.PDF_EXPORT_STARTED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", document_direction: "rtl" });
       const opened = printDocumentPreview(coverPrintRef, "cover");
       setStatusMsg(opened
@@ -5557,70 +5576,212 @@ Awards: ${form.awards}`;
         : st.pdfFail);
       track(opened ? EVENTS.PDF_EXPORT_COMPLETED : EVENTS.PDF_EXPORT_FAILED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", export_type: "html_print" });
       if (opened && docLang !== lang) track(EVENTS.MULTILINGUAL_COVER_LETTER_EXPORTED, { language: docLang, interface_language: lang, export_type: "pdf", template: coverTpl?.id || "" });
-      setTimeout(() => setStatusMsg(""), opened ? 4500 : 3500);
+      setTimeout(() => { setExporting(""); setStatusMsg(""); }, opened ? 4500 : 3500);
       return;
     }
-    track(EVENTS.PDF_EXPORT_STARTED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", document_direction: "ltr" });
-    const { default: jsPDF } = await import("jspdf");
-    const d = coverForm;
-    const doc = new jsPDF({ unit: "mm", format: "a4" });
-    const pageW = 210; const margin = 20; const colW = pageW - 2 * margin;
-    let y = margin;
-    const safe = pdfSafe;
-    if (containsNonLatin1([d.name, d.jobTitle, d.body, d.opening, d.closing].join(" "))) {
-      setStatusMsg(st.pdfNonLatin);
-      setTimeout(() => setStatusMsg(""), 6000);
-    }
-    const checkY = (h = 10) => { if (y + h > 277) { doc.addPage(); y = margin; } };
-    const [ar, ag, ab] = [
-      parseInt(coverTpl.accent.slice(1,3),16),
-      parseInt(coverTpl.accent.slice(3,5),16),
-      parseInt(coverTpl.accent.slice(5,7),16),
-    ];
-    doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.setTextColor(17,17,17);
-    doc.text(safe(d.name), margin, y); y += 7;
-    if (d.jobTitle) { doc.setFont("helvetica","italic"); doc.setFontSize(11); doc.setTextColor(ar,ag,ab); doc.text(safe(d.jobTitle), margin, y); y += 5; }
-    const contact = [d.email, d.phone, d.location].filter(Boolean).join("   ·   ");
-    if (contact) { doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(120,120,120); doc.text(safe(contact), pageW / 2, y, { align: "center" }); y += 5; }
-    doc.setDrawColor(ar,ag,ab); doc.setLineWidth(0.4); doc.line(margin, y, pageW-margin, y); y += 7;
-    if (d.date) { doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(100,100,100); doc.text(safe(d.date), margin, y); y += 6; }
-    if (d.recipientName) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(30,30,30); doc.text(safe(d.recipientName), margin, y); y += 5; }
-    if (d.recipientTitle) { doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.text(safe(d.recipientTitle), margin, y); y += 5; }
-    if (d.company) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(ar,ag,ab); doc.text(safe(d.company), margin, y); y += 5; }
-    if (d.companyAddress) { doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(120,120,120); doc.text(safe(d.companyAddress), margin, y); y += 6; }
-    y += 2;
-    if (d.subject) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(30,30,30); doc.text(`Re: ${safe(d.subject)}`, margin, y); y += 6; }
-    if (d.opening) { doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(50,50,50); doc.text(`Dear ${safe(d.opening)},`, margin, y); y += 8; }
-    for (const para of [d.body, d.closing].filter(Boolean)) {
-      for (const block of para.split("\n\n").filter(Boolean)) {
-        checkY(10); doc.setFont("helvetica","normal"); doc.setFontSize(10.5); doc.setTextColor(55,55,55);
-        const lines = doc.splitTextToSize(safe(block), colW);
-        checkY(lines.length * 5 + 4); doc.text(lines, margin, y); y += lines.length * 5 + 5;
+    setExporting("pdf");
+    try {
+      track(EVENTS.PDF_EXPORT_STARTED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", document_direction: "ltr" });
+      const { default: jsPDF } = await import("jspdf");
+      const d = coverForm;
+      const doc = new jsPDF({ unit: "mm", format: "a4" });
+      const pageW = 210; const margin = 20; const colW = pageW - 2 * margin;
+      let y = margin;
+      const safe = pdfSafe;
+      if (containsNonLatin1([d.name, d.jobTitle, d.body, d.opening, d.closing].join(" "))) {
+        setStatusMsg(st.pdfNonLatin);
+        setTimeout(() => setStatusMsg(""), 6000);
       }
-    }
-    y += 4;
-    doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(50,50,50);
-    doc.text(`${safe(d.signoff || "Sincerely")},`, margin, y); y += 14;
-    doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(17,17,17);
-    doc.text(safe(d.name), margin, y);
-    // Footer on every page: name (left) | page X / Y (right)
-    const pageW2 = 210;
-    const totalPages2 = doc.getNumberOfPages();
-    for (let i = 1; i <= totalPages2; i++) {
-      doc.setPage(i);
-      doc.setDrawColor(210, 210, 210);
-      doc.setLineWidth(0.3);
-      doc.line(margin, 286, pageW2 - margin, 286);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(8);
-      doc.setTextColor(160, 160, 160);
-      doc.text(safe(d.name || ""), margin, 291);
-      doc.text(`${i} / ${totalPages2}`, pageW2 - margin, 291, { align: "right" });
-    }
+      const checkY = (h = 10) => { if (y + h > 277) { doc.addPage(); y = margin; } };
+      const [ar, ag, ab] = [
+        parseInt(coverTpl.accent.slice(1,3),16),
+        parseInt(coverTpl.accent.slice(3,5),16),
+        parseInt(coverTpl.accent.slice(5,7),16),
+      ];
+      doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.setTextColor(17,17,17);
+      doc.text(safe(d.name), margin, y); y += 7;
+      if (d.jobTitle) { doc.setFont("helvetica","italic"); doc.setFontSize(11); doc.setTextColor(ar,ag,ab); doc.text(safe(d.jobTitle), margin, y); y += 5; }
+      const contact = [d.email, d.phone, d.location].filter(Boolean).join("   ·   ");
+      if (contact) {
+        doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(120,120,120);
+        const contactHref = [d.email, d.phone, d.location].filter(Boolean).map(normalizeLinkHref).find(Boolean);
+        if (contactHref) doc.textWithLink(safe(contact), pageW / 2, y, { align: "center", url: contactHref });
+        else doc.text(safe(contact), pageW / 2, y, { align: "center" });
+        y += 5;
+      }
+      doc.setDrawColor(ar,ag,ab); doc.setLineWidth(0.4); doc.line(margin, y, pageW-margin, y); y += 7;
+      if (d.date) { doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(100,100,100); doc.text(safe(d.date), margin, y); y += 6; }
+      if (d.recipientName) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(30,30,30); doc.text(safe(d.recipientName), margin, y); y += 5; }
+      if (d.recipientTitle) { doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.text(safe(d.recipientTitle), margin, y); y += 5; }
+      if (d.company) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(ar,ag,ab); doc.text(safe(d.company), margin, y); y += 5; }
+      if (d.companyAddress) { doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(120,120,120); doc.text(safe(d.companyAddress), margin, y); y += 6; }
+      y += 2;
+      if (d.subject) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(30,30,30); doc.text(`Re: ${safe(d.subject)}`, margin, y); y += 6; }
+      if (d.opening) { doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(50,50,50); doc.text(`Dear ${safe(d.opening)},`, margin, y); y += 8; }
+      for (const para of [d.body, d.closing].filter(Boolean)) {
+        for (const block of para.split("\n\n").filter(Boolean)) {
+          checkY(10); doc.setFont("helvetica","normal"); doc.setFontSize(10.5); doc.setTextColor(55,55,55);
+          const lines = doc.splitTextToSize(safe(block), colW);
+          checkY(lines.length * 5 + 4); doc.text(lines, margin, y); y += lines.length * 5 + 5;
+        }
+      }
+      y += 4;
+      doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(50,50,50);
+      doc.text(`${safe(d.signoff || "Sincerely")},`, margin, y); y += 14;
+      doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(17,17,17);
+      doc.text(safe(d.name), margin, y);
+      // Footer on every page: name (left) | page X / Y (right)
+      const pageW2 = 210;
+      const totalPages2 = doc.getNumberOfPages();
+      for (let i = 1; i <= totalPages2; i++) {
+        doc.setPage(i);
+        doc.setDrawColor(210, 210, 210);
+        doc.setLineWidth(0.3);
+        doc.line(margin, 286, pageW2 - margin, 286);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(160, 160, 160);
+        doc.text(safe(d.name || ""), margin, 291);
+        doc.text(`${i} / ${totalPages2}`, pageW2 - margin, 291, { align: "right" });
+      }
 
-    doc.save(`${sanitizeFilename(safe(d.name || "cover-letter"), "cover-letter")}-cover-letter.pdf`);
-    track(EVENTS.PDF_EXPORT_COMPLETED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", export_type: "jspdf" });
-    if (docLang !== lang) track(EVENTS.MULTILINGUAL_COVER_LETTER_EXPORTED, { language: docLang, interface_language: lang, export_type: "pdf", template: coverTpl?.id || "" });
+      doc.save(`${sanitizeFilename(safe(d.name || "cover-letter"), "cover-letter")}-cover-letter.pdf`);
+      setExportSuccess(st.pdfSuccess);
+      setStatusMsg(st.pdfDownloaded);
+      track(EVENTS.PDF_EXPORT_COMPLETED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", export_type: "jspdf" });
+      if (docLang !== lang) track(EVENTS.MULTILINGUAL_COVER_LETTER_EXPORTED, { language: docLang, interface_language: lang, export_type: "pdf", template: coverTpl?.id || "" });
+      setTimeout(() => { setExportSuccess(""); setStatusMsg(""); }, 4500);
+    } catch {
+      setStatusMsg(st.pdfFail);
+      track(EVENTS.PDF_EXPORT_FAILED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", export_type: "jspdf" });
+      setTimeout(() => setStatusMsg(""), 3500);
+    } finally {
+      setExporting("");
+    }
+  }
+
+  async function downloadCoverDOCX() {
+    if (!coverTpl || exporting) return;
+    const d = coverForm;
+    setExporting("docx");
+    setExportSuccess("");
+    try {
+      track(EVENTS.DOCX_EXPORT_STARTED, { document_type: "cover", language: docLang, template: coverTpl?.id || "" });
+      const { Document, Packer, Paragraph, TextRun, BorderStyle, AlignmentType, ExternalHyperlink } = await import("docx");
+      const accent = coverTpl.accent.replace("#", "").toUpperCase();
+      const docxRtl = isRtlLang(docLang);
+      const docxAlignment = docxRtl ? AlignmentType.RIGHT : AlignmentType.LEFT;
+      const docxFont = docxRtl ? "Noto Sans Arabic" : "Aptos";
+      const makeRun = (options = {}) => new TextRun({
+        font: docxFont,
+        rightToLeft: docxRtl,
+        ...options,
+      });
+      const makeLinkedRuns = (text, options = {}) => linkifyText(text).map((part) => {
+        if (part.type !== "link") return makeRun({ text: part.text, ...options });
+        return new ExternalHyperlink({
+          link: part.href,
+          children: [makeRun({
+            text: part.text,
+            color: accent,
+            underline: {},
+            ...options,
+          })],
+        });
+      });
+      const makeParagraph = (options = {}) => new Paragraph({
+        alignment: options.alignment || docxAlignment,
+        bidirectional: docxRtl,
+        ...options,
+      });
+      const addTextParagraph = (children, text, options = {}) => {
+        if (!String(text || "").trim()) return;
+        children.push(makeParagraph({
+          children: makeLinkedRuns(String(text), options.run || {}),
+          spacing: options.spacing || { after: 100 },
+          ...options.paragraph,
+        }));
+      };
+
+      const children = [];
+      addTextParagraph(children, d.name || "Cover Letter", {
+        run: { bold: true, size: 34, color: "111111" },
+        spacing: { after: 60 },
+      });
+      addTextParagraph(children, d.jobTitle, {
+        run: { size: 22, color: accent },
+        spacing: { after: 60 },
+      });
+      addTextParagraph(children, [d.email, d.phone, d.location].filter(Boolean).join("   •   "), {
+        run: { size: 18, color: "666666" },
+        spacing: { after: 120 },
+      });
+      children.push(makeParagraph({
+        border: { bottom: { color: accent, space: 1, style: BorderStyle.SINGLE, size: 6 } },
+        spacing: { after: 180 },
+      }));
+      addTextParagraph(children, d.date, { run: { size: 20, color: "666666" } });
+      addTextParagraph(children, d.recipientName, { run: { bold: true, size: 20, color: "111111" }, spacing: { after: 40 } });
+      addTextParagraph(children, d.recipientTitle, { run: { size: 20 }, spacing: { after: 40 } });
+      addTextParagraph(children, d.company, { run: { bold: true, size: 20, color: accent }, spacing: { after: 40 } });
+      addTextParagraph(children, d.companyAddress, { run: { size: 18, color: "666666" }, spacing: { after: 140 } });
+      addTextParagraph(children, d.subject ? `Re: ${d.subject}` : "", {
+        run: { bold: true, size: 20, color: "111111" },
+        spacing: { after: 120 },
+      });
+      addTextParagraph(children, d.opening ? `Dear ${d.opening},` : "", {
+        run: { size: 21, color: "333333" },
+        spacing: { after: 140 },
+      });
+      for (const para of [d.body, d.closing].filter(Boolean)) {
+        for (const block of String(para).split(/\n\s*\n/).filter(Boolean)) {
+          addTextParagraph(children, block, {
+            run: { size: 21, color: "333333" },
+            spacing: { after: 180 },
+          });
+        }
+      }
+      addTextParagraph(children, `${d.signoff || "Sincerely"},`, {
+        run: { size: 21, color: "333333" },
+        spacing: { before: 120, after: 220 },
+      });
+      addTextParagraph(children, d.name, {
+        run: { bold: true, size: 21, color: "111111" },
+        spacing: { after: 60 },
+      });
+
+      const docFile = new Document({
+        creator: "ApplyCraft",
+        description: `${docLang || "en"} cover letter export`,
+        fonts: [{ name: "Noto Sans Arabic" }, { name: "Arial" }, { name: "Aptos" }],
+        sections: [{
+          properties: {
+            page: {
+              margin: { top: 720, right: 720, bottom: 720, left: 720 },
+            },
+          },
+          children,
+        }],
+      });
+      const blob = await Packer.toBlob(docFile);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${sanitizeFilename(d.name || "cover-letter", "cover-letter")}-cover-letter.docx`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setExportSuccess(st.docxSuccess);
+      setStatusMsg(st.docxDownloaded);
+      track(EVENTS.DOCX_EXPORT_COMPLETED, { document_type: "cover", language: docLang, template: coverTpl?.id || "" });
+      if (docLang !== lang) track(EVENTS.MULTILINGUAL_COVER_LETTER_EXPORTED, { language: docLang, interface_language: lang, export_type: "docx", template: coverTpl?.id || "" });
+      setTimeout(() => { setExportSuccess(""); setStatusMsg(""); }, 4500);
+    } catch {
+      setStatusMsg(st.docxFail);
+      track(EVENTS.DOCX_EXPORT_FAILED, { document_type: "cover", language: docLang, template: coverTpl?.id || "" });
+      setTimeout(() => setStatusMsg(""), 3500);
+    } finally {
+      setExporting("");
+    }
   }
 
   const getCoverTemplateMeta = (template) => {
@@ -5827,11 +5988,17 @@ Awards: ${form.awards}`;
                 {mobileCoverMode === "edit" ? bu.preview : bu.edit}
               </button>
             )}
-            <button onClick={downloadCoverPDF} disabled={!coverReady}
+            <button onClick={downloadCoverPDF} disabled={!coverReady || !!exporting}
               style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 9, minHeight: 38,
-                padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: coverReady ? "pointer" : "not-allowed",
-                fontFamily: "inherit", opacity: coverReady ? 1 : 0.55 }}>
-              {cu.exportPdf}
+                padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: coverReady && !exporting ? "pointer" : "not-allowed",
+                fontFamily: "inherit", opacity: coverReady && !exporting ? 1 : 0.55 }}>
+              {t.dlPdf}
+            </button>
+            <button onClick={downloadCoverDOCX} disabled={!coverReady || !!exporting}
+              style={{ background: C.surface, color: C.text1, border: `1px solid ${C.border}`, borderRadius: 9, minHeight: 38,
+                padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: coverReady && !exporting ? "pointer" : "not-allowed",
+                fontFamily: "inherit", opacity: coverReady && !exporting ? 1 : 0.55 }}>
+              {t.dlDocx}
             </button>
             {renderMoreMenu(coverMoreOpen, setCoverMoreOpen, coverSharePayload, `${coverForm.name || "My"} cover letter`)}
           </div>
@@ -5969,7 +6136,7 @@ Awards: ${form.awards}`;
         {isMobile && (
           <div style={{ position: "sticky", bottom: 0, zIndex: 20, margin: "12px -4px -8px",
             padding: "10px 12px", background: `${C.bg}f2`, backdropFilter: "blur(10px)",
-            boxShadow: "0 -12px 28px rgba(0,0,0,0.18)", display: "grid", gridTemplateColumns: "1fr 1fr",
+            boxShadow: "0 -12px 28px rgba(0,0,0,0.18)", display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
             gap: 8 }}>
             <button onClick={() => setMobileCoverMode(mobileCoverMode === "edit" ? "preview" : "edit")}
               style={{ border: "none", background: C.surface, color: C.text1,
@@ -5977,12 +6144,19 @@ Awards: ${form.awards}`;
                 cursor: "pointer", fontFamily: "inherit" }}>
               {mobileCoverMode === "edit" ? bu.preview : bu.edit}
             </button>
-            <button onClick={downloadCoverPDF} disabled={!coverReady}
+            <button onClick={downloadCoverPDF} disabled={!coverReady || !!exporting}
               style={{ border: "none", background: C.grad, color: "#fff",
                 borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
-                cursor: coverReady ? "pointer" : "not-allowed", fontFamily: "inherit",
-                opacity: coverReady ? 1 : 0.55 }}>
-              {cu.exportPdf}
+                cursor: coverReady && !exporting ? "pointer" : "not-allowed", fontFamily: "inherit",
+                opacity: coverReady && !exporting ? 1 : 0.55 }}>
+              {t.dlPdf}
+            </button>
+            <button onClick={downloadCoverDOCX} disabled={!coverReady || !!exporting}
+              style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text1,
+                borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
+                cursor: coverReady && !exporting ? "pointer" : "not-allowed", fontFamily: "inherit",
+                opacity: coverReady && !exporting ? 1 : 0.55 }}>
+              {t.dlDocx}
             </button>
           </div>
         )}
@@ -9551,15 +9725,17 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
           borderRadius: 6, border: "1px solid rgba(148,163,184,0.24)",
           boxShadow: "0 18px 40px rgba(0,0,0,0.22)", overflow: "hidden" }}>
         <div ref={contentRef} style={{ width: "100%", minHeight: "100%" }}>
-          {type === "cover" ? (
-            <CoverLetterPaper tpl={template} data={COVER_THUMB_SAMPLES[template.id] || SAMPLE_COVER} preview />
-          ) : (
-            <ResumePaper tpl={template}
-              result={THUMB_SAMPLES[template.id]?.result || SAMPLE_RESUME}
-              rtl={rtl}
-              placeholder={false}
-              preview />
-          )}
+          <LinkifyLinksProvider enabled={false}>
+            {type === "cover" ? (
+              <CoverLetterPaper tpl={template} data={COVER_THUMB_SAMPLES[template.id] || SAMPLE_COVER} preview />
+            ) : (
+              <ResumePaper tpl={template}
+                result={THUMB_SAMPLES[template.id]?.result || SAMPLE_RESUME}
+                rtl={rtl}
+                placeholder={false}
+                preview />
+            )}
+          </LinkifyLinksProvider>
         </div>
       </div>
       {fit.pageCount > 1 && (

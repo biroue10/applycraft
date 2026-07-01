@@ -2,7 +2,7 @@ const cover = {
   "toolName": "Creador de carta de presentación",
   "eyebrow": "Plantillas de carta de presentación",
   "galleryTitle": "Elige un estilo de carta que combine con tu currículum",
-  "gallerySub": "Empieza con un diseño de carta profesional y luego edita el contenido junto a una vista previa en vivo. Puedes descargar en PDF cuando esté listo.",
+  "gallerySub": "Empieza con un diseño de carta profesional y luego edita el contenido junto a una vista previa en vivo. Puedes descargar en PDF o DOCX cuando esté listo.",
   "stylesAvailable": "estilos de carta disponibles.",
   "resumeMatching": "A juego con el CV",
   "heading": "Carta de presentación",
@@ -39,7 +39,7 @@ const cover = {
   "phClosing": "Gracias por su tiempo y consideración. Espero poder conversar con usted.",
   "phSignoff": "Atentamente",
   "nextStep": "Siguiente paso recomendado",
-  "nextStepBody": "Añade tu nombre para desbloquear la exportación de la carta.",
+  "nextStepBody": "Añade tu nombre antes de exportar la carta.",
   "comingSoon": "Las secciones personalizadas de la carta llegarán pronto."
 };
 

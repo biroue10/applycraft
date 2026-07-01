@@ -1,4 +1,5 @@
 import React from "react";
+import LinkifiedText, { LinkifyLinksProvider } from "../components/LinkifiedText.jsx";
 
 function ContactLine({ items, separator = " · ", style }) {
   const values = (Array.isArray(items) ? items : []).filter(Boolean);
@@ -8,7 +9,9 @@ function ContactLine({ items, separator = " · ", style }) {
       {values.map((item, index) => (
         <React.Fragment key={index}>
           {index > 0 && <span aria-hidden="true">{separator}</span>}
-          <bdi dir="auto" style={{ unicodeBidi: "isolate", overflowWrap: "anywhere", wordBreak: "normal" }}>{item}</bdi>
+          <bdi dir="auto" style={{ unicodeBidi: "isolate", overflowWrap: "anywhere", wordBreak: "normal" }}>
+            <LinkifiedText text={item} />
+          </bdi>
         </React.Fragment>
       ))}
     </span>
@@ -22,7 +25,7 @@ function ContactStack({ items, style, itemStyle }) {
     <div className="resume-contact-block" style={{ display: "flex", flexDirection: "column", gap: "0.18rem", lineHeight: 1.38, ...style }}>
       {values.map((item, index) => (
         <bdi key={index} dir="auto" className="contact-item" style={{ unicodeBidi: "isolate", overflowWrap: "anywhere", wordBreak: "normal", ...itemStyle }}>
-          {item}
+          <LinkifiedText text={item} />
         </bdi>
       ))}
     </div>
@@ -30,7 +33,7 @@ function ContactStack({ items, style, itemStyle }) {
 }
 
 function BidiText({ children, style }) {
-  return <span dir="auto" style={{ unicodeBidi: "plaintext", overflowWrap: "anywhere", ...style }}>{children}</span>;
+  return <span dir="auto" style={{ unicodeBidi: "plaintext", overflowWrap: "anywhere", ...style }}><LinkifiedText text={children} /></span>;
 }
 
 const LEADING_BULLET_RE = /^\s*(?:[•·▪▫‣◦-]|\d+[.)])\s+/;
@@ -115,7 +118,7 @@ function TagList({ items, style, tagStyle }) {
           overflowWrap: "anywhere",
           unicodeBidi: "isolate",
           ...tagStyle,
-        }}>{item}</span>
+        }}><LinkifiedText text={item} /></span>
       ))}
     </div>
   );
@@ -142,14 +145,14 @@ function ResumeSectionBody({ section, sidebar = false, accent = "#2563eb", tagSt
               unicodeBidi: "plaintext",
               overflowWrap: "anywhere",
               ...titleStyle,
-            }}>{entry.title}</div>
+            }}><LinkifiedText text={entry.title} /></div>
           )}
           {entry.meta.length > 0 && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.12rem 0.38rem", marginTop: 2, fontSize: 10.8, lineHeight: 1.35, color: "#5f6b7a", ...metaStyle }}>
               {entry.meta.map((meta, metaIndex) => (
                 <React.Fragment key={metaIndex}>
                   {metaIndex > 0 && <span aria-hidden="true" style={{ color: "#9ca3af" }}>·</span>}
-                  <bdi dir="auto" style={{ unicodeBidi: "isolate", overflowWrap: "anywhere" }}>{meta}</bdi>
+                  <bdi dir="auto" style={{ unicodeBidi: "isolate", overflowWrap: "anywhere" }}><LinkifiedText text={meta} /></bdi>
                 </React.Fragment>
               ))}
             </div>
@@ -169,7 +172,7 @@ function ResumeSectionBody({ section, sidebar = false, accent = "#2563eb", tagSt
                   unicodeBidi: "plaintext",
                   overflowWrap: "anywhere",
                   ...bulletStyle,
-                }}>{bullet}</li>
+                }}><LinkifiedText text={bullet} /></li>
               ))}
             </ul>
           )}
@@ -208,8 +211,14 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
     </div>;
   }
 
+  const withLinkPolicy = (node) => (
+    <LinkifyLinksProvider enabled={!preview}>
+      {node}
+    </LinkifyLinksProvider>
+  );
+
   if (tpl.id === "blank") {
-    return (
+    return withLinkPolicy(
       <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={{ ...paper, fontFamily: rtl ? "'Noto Sans Arabic', 'Tahoma', 'Arial', sans-serif" : "'Inter', system-ui, sans-serif" }}>
         <div style={{ padding: "28px 32px" }}>
           <div style={{ marginBottom: 14 }}>
@@ -223,7 +232,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           </div>
           <div style={{ height: 1, background: "#d1d5db", margin: "14px 0" }} />
           {data.summary && (
-            <p style={{ fontSize: 13, lineHeight: 1.65, color: "#333", margin: "0 0 14px" }}>{data.summary}</p>
+            <p style={{ fontSize: 13, lineHeight: 1.65, color: "#333", margin: "0 0 14px" }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 14 }}>
@@ -269,7 +278,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           </div>
           {data.summary && (
             <p style={{ fontSize: 12.5, lineHeight: 1.72, color: "#555", textAlign: "center",
-              margin: "16px 0 0", fontStyle: "italic" }}>{data.summary}</p>
+              margin: "16px 0 0", fontStyle: "italic" }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i}>
@@ -323,7 +332,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           <div style={{ flex: 1, padding: "28px 22px" }}>
             {data.summary && (
               <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#555", margin: "0 0 18px",
-                paddingBottom: 16, borderBottom: "1px solid #e5e7eb" }}>{data.summary}</p>
+                paddingBottom: 16, borderBottom: "1px solid #e5e7eb" }}><LinkifiedText text={data.summary} /></p>
             )}
             {mainS.map((s, i) => (
               <div key={i} style={{ marginBottom: 18 }}>
@@ -360,7 +369,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
             <div style={{ height: 2, background: tpl.accent, width: 36, marginTop: 14 }} />
           </div>
           {data.summary && (
-            <p style={{ fontSize: 12.5, lineHeight: 1.72, color: "#555", margin: "0 0 22px" }}>{data.summary}</p>
+            <p style={{ fontSize: 12.5, lineHeight: 1.72, color: "#555", margin: "0 0 22px" }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 20 }}>
@@ -397,7 +406,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
         <div style={{ padding: "22px 28px" }}>
           {data.summary && (
             <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#444", margin: "0 0 18px",
-              borderLeft: `3px solid ${tpl.accent}`, paddingLeft: 12 }}>{data.summary}</p>
+              borderLeft: `3px solid ${tpl.accent}`, paddingLeft: 12 }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 18 }}>
@@ -452,7 +461,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           <div style={{ flex: 1, padding: "28px 22px" }}>
             {data.summary && (
               <p style={{ fontSize: 12.5, lineHeight: 1.72, color: "#555", margin: "0 0 18px",
-                fontStyle: "italic" }}>{data.summary}</p>
+                fontStyle: "italic" }}><LinkifiedText text={data.summary} /></p>
             )}
             {mainS.map((s, i) => (
               <div key={i} style={{ marginBottom: 18 }}>
@@ -491,7 +500,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           <div style={{ height: 3, background: tpl.accent, marginBottom: 18 }} />
           {data.summary && (
             <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#555", margin: "0 0 18px",
-              fontStyle: "italic" }}>{data.summary}</p>
+              fontStyle: "italic" }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 18 }}>
@@ -552,7 +561,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           </div>
           <div style={{ flex: 1, padding: "28px 20px" }}>
             {data.summary && (
-              <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#444", margin: "0 0 18px" }}>{data.summary}</p>
+              <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#444", margin: "0 0 18px" }}><LinkifiedText text={data.summary} /></p>
             )}
             {mainS.map((s, i) => (
               <div key={i} style={{ marginBottom: 18 }}>
@@ -587,7 +596,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           </div>
           {data.summary && (
             <div style={{ fontSize: 12, lineHeight: 1.65, marginBottom: 18, color: "#c9d1d9",
-              borderLeft: `2px solid ${tpl.accent}`, paddingLeft: 10 }}>{data.summary}</div>
+              borderLeft: `2px solid ${tpl.accent}`, paddingLeft: 10 }}><LinkifiedText text={data.summary} /></div>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 18 }}>
@@ -624,7 +633,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
             </div>
           </div>
           {data.summary && (
-            <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#333", margin: "0 0 18px" }}>{data.summary}</p>
+            <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#333", margin: "0 0 18px" }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 18 }}>
@@ -682,7 +691,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           <div style={{ flex: 1, padding: "28px 22px" }}>
             {data.summary && (
               <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#444", margin: "0 0 18px",
-                paddingBottom: 16, borderBottom: "1px solid #e5e7eb" }}>{data.summary}</p>
+                paddingBottom: 16, borderBottom: "1px solid #e5e7eb" }}><LinkifiedText text={data.summary} /></p>
             )}
             {mainS.map((s, i) => (
               <div key={i} style={{ marginBottom: 18 }}>
@@ -719,7 +728,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
         <div style={{ height: 4, background: `linear-gradient(90deg, ${tpl.accent}, #3B82F6, transparent)` }} />
         <div style={{ padding: "20px 30px" }}>
           {data.summary && (
-            <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#444", margin: "0 0 16px" }}>{data.summary}</p>
+            <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#444", margin: "0 0 16px" }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 16 }}>
@@ -769,7 +778,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           <div style={{ width: "57%", padding: "0 20px 0 26px", borderRight: `1px solid #e5e7eb` }}>
             {data.summary && (
               <p style={{ fontSize: 12, lineHeight: 1.65, color: "#444", margin: "0 0 14px",
-                paddingBottom: 12, borderBottom: "1px solid #f0f0f0" }}>{data.summary}</p>
+                paddingBottom: 12, borderBottom: "1px solid #f0f0f0" }}><LinkifiedText text={data.summary} /></p>
             )}
             {expSection && (
               <div>
@@ -831,7 +840,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
         <div style={{ padding: "20px 32px" }}>
           {data.summary && (
             <p style={{ fontSize: 12.5, lineHeight: 1.7, color: "#444", margin: "0 0 18px",
-              textAlign: "center", borderBottom: `1px solid ${tpl.accent}33`, paddingBottom: 16 }}>{data.summary}</p>
+              textAlign: "center", borderBottom: `1px solid ${tpl.accent}33`, paddingBottom: 16 }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 16 }}>
@@ -872,7 +881,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           </div>
           {data.summary && (
             <p style={{ fontSize: 12.5, lineHeight: 1.85, color: "#444", margin: "0 0 26px",
-              borderLeft: `3px solid ${tpl.accent}`, paddingLeft: 14 }}>{data.summary}</p>
+              borderLeft: `3px solid ${tpl.accent}`, paddingLeft: 14 }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 22 }}>
@@ -910,7 +919,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
             <div style={{ height: 1, background: tpl.accent + "55", marginTop: 16 }} />
           </div>
           {data.summary && (
-            <p style={{ fontSize: 12, lineHeight: 1.7, color: "#c4b89a", margin: "0 0 18px" }}>{data.summary}</p>
+            <p style={{ fontSize: 12, lineHeight: 1.7, color: "#c4b89a", margin: "0 0 18px" }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 17 }}>
@@ -959,7 +968,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
             </div>
             {data.summary && (
               <p style={{ fontSize: 12, lineHeight: 1.7, color: "#555", margin: "0 0 18px",
-                paddingBottom: 14, borderBottom: `1px solid ${tpl.accent}22` }}>{data.summary}</p>
+                paddingBottom: 14, borderBottom: `1px solid ${tpl.accent}22` }}><LinkifiedText text={data.summary} /></p>
             )}
             {mainS.map((s, i) => (
               <div key={i} style={{ marginBottom: 16 }}>
@@ -1011,7 +1020,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           </div>
           {data.summary && (
             <p style={{ fontSize: 12, lineHeight: 1.8, color: "#444", margin: "0 0 20px",
-              fontStyle: "italic", textAlign: "center" }}>{data.summary}</p>
+              fontStyle: "italic", textAlign: "center" }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 18 }}>
@@ -1046,7 +1055,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
         {data.summary && (
           <div style={{ margin: "0 28px 18px", fontSize: 12.5, lineHeight: 1.65, color: "#444",
             background: tpl.accent + "0c", borderRadius: 6, padding: "10px 14px",
-            borderLeft: `3px solid ${tpl.accent}` }}>{data.summary}</div>
+            borderLeft: `3px solid ${tpl.accent}` }}><LinkifiedText text={data.summary} /></div>
         )}
         {data.sections.map((s, i) => (
           <div key={i} style={{ marginBottom: 0 }}>
@@ -1086,7 +1095,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
         <div style={{ padding: "22px 32px" }}>
           {data.summary && (
             <p style={{ fontSize: 12.5, lineHeight: 1.75, color: "#4a4039", margin: "0 0 20px",
-              fontStyle: "italic" }}>{data.summary}</p>
+              fontStyle: "italic" }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 18 }}>
@@ -1127,7 +1136,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           <div style={{ height: 2, background: tpl.accent, marginBottom: 2 }} />
           <div style={{ height: 1, background: tpl.accent + "66", marginBottom: 18 }} />
           {data.summary && (
-            <p style={{ fontSize: 12.5, lineHeight: 1.75, color: "#444", margin: "0 0 18px" }}>{data.summary}</p>
+            <p style={{ fontSize: 12.5, lineHeight: 1.75, color: "#444", margin: "0 0 18px" }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 18 }}>
@@ -1183,7 +1192,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           <div style={{ flex: 1, padding: "28px 22px" }}>
             {data.summary && (
               <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#444", margin: "0 0 18px",
-                paddingBottom: 16, borderBottom: "1px solid #e5e7eb" }}>{data.summary}</p>
+                paddingBottom: 16, borderBottom: "1px solid #e5e7eb" }}><LinkifiedText text={data.summary} /></p>
             )}
             {mainS.map((s, i) => (
               <div key={i} style={{ marginBottom: 18 }}>
@@ -1223,7 +1232,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           </div>
           {data.summary && (
             <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "#444", margin: "0 0 18px",
-              borderLeft: `3px solid ${tpl.accent}55`, paddingLeft: 12 }}>{data.summary}</p>
+              borderLeft: `3px solid ${tpl.accent}55`, paddingLeft: 12 }}><LinkifiedText text={data.summary} /></p>
           )}
           {data.sections.map((s, i) => (
             <div key={i} style={{ marginBottom: 16 }}>
@@ -1259,7 +1268,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
         {data.title && <div style={{ fontSize: 13, color: tpl.accent, marginTop: 4 }}>{data.title}</div>}
         <div style={{ fontSize: 11, color: "#777", marginTop: 7 }}><ContactLine items={data.contact} separator="  ·  " /></div>
         <div style={{ height: 2, width: 44, background: tpl.accent, margin: "12px auto 16px" }} />
-        {data.summary && <p style={{ fontSize: 12.5, lineHeight: 1.7, color: "#555", margin: "0 0 14px" }}>{data.summary}</p>}
+        {data.summary && <p style={{ fontSize: 12.5, lineHeight: 1.7, color: "#555", margin: "0 0 14px" }}><LinkifiedText text={data.summary} /></p>}
         {data.sections.map((s, i) => (
           <div key={i} style={{ marginBottom: 14, textAlign: "left" }}>
             <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px",
@@ -1296,33 +1305,40 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
 
   const Paras = ({ text, style = {} }) =>
     text ? text.split("\n\n").filter(Boolean).map((p, i) => (
-      <p key={i} style={{ fontSize: 13, lineHeight: 1.78, color: "#333", margin: "0 0 14px", ...style }}>{p}</p>
+      <p key={i} dir="auto" style={{ fontSize: 13, lineHeight: 1.78, color: "#333", margin: "0 0 14px", unicodeBidi: "plaintext", overflowWrap: "anywhere", ...style }}>
+        <LinkifiedText text={p} />
+      </p>
     )) : null;
+  const withLinkPolicy = (node) => (
+    <LinkifyLinksProvider enabled={!preview}>
+      {node}
+    </LinkifyLinksProvider>
+  );
 
   if (tpl.blank) {
-    return (
+    return withLinkPolicy(
       <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "40px 48px", fontSize: 13, lineHeight: 1.85, color: "#333" }}>
           <div style={{ marginBottom: 20 }}>
-            {d.name && <div style={{ fontWeight: 600 }}>{d.name}</div>}
-            {d.jobTitle && <div>{d.jobTitle}</div>}
-            {[d.email, d.phone, d.location].filter(Boolean).map((c, i) => <div key={i}>{c}</div>)}
+            {d.name && <div style={{ fontWeight: 600 }}><LinkifiedText text={d.name} /></div>}
+            {d.jobTitle && <div><LinkifiedText text={d.jobTitle} /></div>}
+            {[d.email, d.phone, d.location].filter(Boolean).map((c, i) => <div key={i}><LinkifiedText text={c} /></div>)}
           </div>
-          {d.date && <div style={{ marginBottom: 20 }}>{d.date}</div>}
+          {d.date && <div style={{ marginBottom: 20 }}><LinkifiedText text={d.date} /></div>}
           {(d.recipientName || d.company) && (
             <div style={{ marginBottom: 20 }}>
-              {d.recipientName && <div style={{ fontWeight: 600 }}>{d.recipientName}</div>}
-              {d.recipientTitle && <div>{d.recipientTitle}</div>}
-              {d.company && <div>{d.company}</div>}
-              {d.companyAddress && <div>{d.companyAddress}</div>}
+              {d.recipientName && <div style={{ fontWeight: 600 }}><LinkifiedText text={d.recipientName} /></div>}
+              {d.recipientTitle && <div><LinkifiedText text={d.recipientTitle} /></div>}
+              {d.company && <div><LinkifiedText text={d.company} /></div>}
+              {d.companyAddress && <div><LinkifiedText text={d.companyAddress} /></div>}
             </div>
           )}
-          {d.subject && <div style={{ fontWeight: 600, marginBottom: 16 }}>Re: {d.subject}</div>}
-          {d.opening && <div style={{ marginBottom: 16 }}>Dear {d.opening},</div>}
+          {d.subject && <div style={{ fontWeight: 600, marginBottom: 16 }}>Re: <LinkifiedText text={d.subject} /></div>}
+          {d.opening && <div style={{ marginBottom: 16 }}>Dear <LinkifiedText text={d.opening} />,</div>}
           <Paras text={d.body} />
           <Paras text={d.closing} />
-          <div style={{ marginTop: 32 }}>{d.signoff || "Sincerely"},</div>
-          {!preview && <div style={{ marginTop: 40 }}>{d.name}</div>}
+          <div style={{ marginTop: 32 }}><LinkifiedText text={d.signoff || "Sincerely"} />,</div>
+          {!preview && <div style={{ marginTop: 40 }}><LinkifiedText text={d.name} /></div>}
         </div>
       </div>
     );
@@ -1333,29 +1349,29 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
       <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "36px 40px" }}>
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 20, fontWeight: 700, color: "#111" }}>{d.name}</div>
-            {d.jobTitle && <div style={{ fontSize: 12, color: tpl.accent, marginTop: 3, fontStyle: "italic" }}>{d.jobTitle}</div>}
+            <div style={{ fontSize: 20, fontWeight: 700, color: "#111" }}><LinkifiedText text={d.name} /></div>
+            {d.jobTitle && <div style={{ fontSize: 12, color: tpl.accent, marginTop: 3, fontStyle: "italic" }}><LinkifiedText text={d.jobTitle} /></div>}
             <div style={{ fontSize: 11, color: "#888", marginTop: 6 }}>
-              {[d.email, d.phone, d.location].filter(Boolean).join("  ·  ")}
+              <ContactLine items={[d.email, d.phone, d.location]} separator="  ·  " />
             </div>
             <div style={{ height: 1, background: tpl.accent + "55", marginTop: 12 }} />
           </div>
-          {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 18 }}>{d.date}</div>}
+          {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 18 }}><LinkifiedText text={d.date} /></div>}
           {(d.recipientName || d.company) && (
             <div style={{ marginBottom: 20, fontSize: 12.5, lineHeight: 1.7, color: "#333" }}>
-              {d.recipientName && <div style={{ fontWeight: 600 }}>{d.recipientName}</div>}
-              {d.recipientTitle && <div>{d.recipientTitle}</div>}
-              {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}>{d.company}</div>}
-              {d.companyAddress && <div style={{ color: "#999", fontSize: 12 }}>{d.companyAddress}</div>}
+              {d.recipientName && <div style={{ fontWeight: 600 }}><LinkifiedText text={d.recipientName} /></div>}
+              {d.recipientTitle && <div><LinkifiedText text={d.recipientTitle} /></div>}
+              {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}><LinkifiedText text={d.company} /></div>}
+              {d.companyAddress && <div style={{ color: "#999", fontSize: 12 }}><LinkifiedText text={d.companyAddress} /></div>}
             </div>
           )}
-          {d.subject && <div style={{ fontSize: 12.5, fontWeight: 600, color: "#111", marginBottom: 16 }}>Re: {d.subject}</div>}
-          {d.opening && <div style={{ fontSize: 13, marginBottom: 16, color: "#333" }}>Dear {d.opening},</div>}
+          {d.subject && <div style={{ fontSize: 12.5, fontWeight: 600, color: "#111", marginBottom: 16 }}>Re: <LinkifiedText text={d.subject} /></div>}
+          {d.opening && <div style={{ fontSize: 13, marginBottom: 16, color: "#333" }}>Dear <LinkifiedText text={d.opening} />,</div>}
           <Paras text={d.body} />
           <Paras text={d.closing} />
           <div style={{ marginTop: 28 }}>
-            <div style={{ fontSize: 13 }}>{d.signoff || "Sincerely"},</div>
-            {!preview && <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginTop: 36 }}>{d.name}</div>}
+            <div style={{ fontSize: 13 }}><LinkifiedText text={d.signoff || "Sincerely"} />,</div>
+            {!preview && <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginTop: 36 }}><LinkifiedText text={d.name} /></div>}
           </div>
         </div>
       </div>
@@ -1367,29 +1383,29 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
       <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "32%", background: tpl.accent, color: "#fff", padding: "28px 16px", flexShrink: 0 }}>
-            <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.2, marginBottom: 4 }}>{d.name}</div>
-            {d.jobTitle && <div style={{ fontSize: 11, opacity: 0.72, marginBottom: 18, fontStyle: "italic" }}>{d.jobTitle}</div>}
+            <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.2, marginBottom: 4 }}><LinkifiedText text={d.name} /></div>
+            {d.jobTitle && <div style={{ fontSize: 11, opacity: 0.72, marginBottom: 18, fontStyle: "italic" }}><LinkifiedText text={d.jobTitle} /></div>}
             <div style={{ height: 1, background: "rgba(255,255,255,0.22)", marginBottom: 14 }} />
             <ContactStack items={[d.email, d.phone, d.location]} style={{ fontSize: 10.5, opacity: 0.82, marginBottom: 7 }} />
           </div>
           <div style={{ flex: 1, padding: "28px 22px" }}>
-            {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 18 }}>{d.date}</div>}
+            {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 18 }}><LinkifiedText text={d.date} /></div>}
             {(d.recipientName || d.company) && (
               <div style={{ marginBottom: 20, fontSize: 12, lineHeight: 1.7,
                 paddingBottom: 16, borderBottom: "1px solid #e5e7eb" }}>
-                {d.recipientName && <div style={{ fontWeight: 600, color: "#111" }}>{d.recipientName}</div>}
-                {d.recipientTitle && <div style={{ color: "#555" }}>{d.recipientTitle}</div>}
-                {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}>{d.company}</div>}
-                {d.companyAddress && <div style={{ color: "#999", fontSize: 11.5 }}>{d.companyAddress}</div>}
+                {d.recipientName && <div style={{ fontWeight: 600, color: "#111" }}><LinkifiedText text={d.recipientName} /></div>}
+                {d.recipientTitle && <div style={{ color: "#555" }}><LinkifiedText text={d.recipientTitle} /></div>}
+                {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}><LinkifiedText text={d.company} /></div>}
+                {d.companyAddress && <div style={{ color: "#999", fontSize: 11.5 }}><LinkifiedText text={d.companyAddress} /></div>}
               </div>
             )}
-            {d.subject && <div style={{ fontSize: 12.5, fontWeight: 700, color: tpl.accent, marginBottom: 14 }}>Re: {d.subject}</div>}
-            {d.opening && <div style={{ fontSize: 13, marginBottom: 14 }}>Dear {d.opening},</div>}
+            {d.subject && <div style={{ fontSize: 12.5, fontWeight: 700, color: tpl.accent, marginBottom: 14 }}>Re: <LinkifiedText text={d.subject} /></div>}
+            {d.opening && <div style={{ fontSize: 13, marginBottom: 14 }}>Dear <LinkifiedText text={d.opening} />,</div>}
             <Paras text={d.body} style={{ fontSize: 12.5 }} />
             <Paras text={d.closing} style={{ fontSize: 12.5 }} />
             <div style={{ marginTop: 24 }}>
-              <div style={{ fontSize: 13 }}>{d.signoff || "Sincerely"},</div>
-              {!preview && <div style={{ fontSize: 13, fontWeight: 600, marginTop: 28, color: "#111" }}>{d.name}</div>}
+              <div style={{ fontSize: 13 }}><LinkifiedText text={d.signoff || "Sincerely"} />,</div>
+              {!preview && <div style={{ fontSize: 13, fontWeight: 600, marginTop: 28, color: "#111" }}><LinkifiedText text={d.name} /></div>}
             </div>
           </div>
         </div>
@@ -1402,30 +1418,30 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
       <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "36px 42px" }}>
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 28, fontWeight: 800, color: "#111", letterSpacing: "-0.5px" }}>{d.name}</div>
-            {d.jobTitle && <div style={{ fontSize: 12.5, color: "#666", marginTop: 4 }}>{d.jobTitle}</div>}
+            <div style={{ fontSize: 28, fontWeight: 800, color: "#111", letterSpacing: "-0.5px" }}><LinkifiedText text={d.name} /></div>
+            {d.jobTitle && <div style={{ fontSize: 12.5, color: "#666", marginTop: 4 }}><LinkifiedText text={d.jobTitle} /></div>}
             <div style={{ fontSize: 11, color: "#999", marginTop: 8 }}>
-              {[d.email, d.phone, d.location].filter(Boolean).join("   ·   ")}
+              <ContactLine items={[d.email, d.phone, d.location]} separator="   ·   " />
             </div>
             <div style={{ height: 2, background: tpl.accent, width: 36, marginTop: 14 }} />
           </div>
-          {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 20 }}>{d.date}</div>}
+          {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 20 }}><LinkifiedText text={d.date} /></div>}
           {(d.recipientName || d.company) && (
             <div style={{ marginBottom: 22, fontSize: 12, lineHeight: 1.7, color: "#555" }}>
-              {d.recipientName && <div style={{ fontWeight: 600, color: "#222" }}>{d.recipientName}</div>}
-              {d.recipientTitle && <div>{d.recipientTitle}</div>}
-              {d.company && <div style={{ fontWeight: 500 }}>{d.company}</div>}
-              {d.companyAddress && <div style={{ color: "#999" }}>{d.companyAddress}</div>}
+              {d.recipientName && <div style={{ fontWeight: 600, color: "#222" }}><LinkifiedText text={d.recipientName} /></div>}
+              {d.recipientTitle && <div><LinkifiedText text={d.recipientTitle} /></div>}
+              {d.company && <div style={{ fontWeight: 500 }}><LinkifiedText text={d.company} /></div>}
+              {d.companyAddress && <div style={{ color: "#999" }}><LinkifiedText text={d.companyAddress} /></div>}
             </div>
           )}
           {d.subject && <div style={{ fontSize: 11, fontWeight: 700, color: "#555", marginBottom: 18,
-            textTransform: "uppercase", letterSpacing: "1.5px" }}>{d.subject}</div>}
-          {d.opening && <div style={{ fontSize: 13, marginBottom: 16, color: "#444" }}>Dear {d.opening},</div>}
+            textTransform: "uppercase", letterSpacing: "1.5px" }}><LinkifiedText text={d.subject} /></div>}
+          {d.opening && <div style={{ fontSize: 13, marginBottom: 16, color: "#444" }}>Dear <LinkifiedText text={d.opening} />,</div>}
           <Paras text={d.body} style={{ color: "#444" }} />
           <Paras text={d.closing} style={{ color: "#444" }} />
           <div style={{ marginTop: 28 }}>
-            <div style={{ fontSize: 13, color: "#555" }}>{d.signoff || "Sincerely"},</div>
-            {!preview && <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginTop: 36 }}>{d.name}</div>}
+            <div style={{ fontSize: 13, color: "#555" }}><LinkifiedText text={d.signoff || "Sincerely"} />,</div>
+            {!preview && <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginTop: 36 }}><LinkifiedText text={d.name} /></div>}
           </div>
         </div>
       </div>
@@ -1436,36 +1452,36 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
     return (
       <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ background: tpl.accent, padding: "24px 28px 20px" }}>
-          <div style={{ fontSize: 24, fontWeight: 800, color: "#fff" }}>{d.name}</div>
-          {d.jobTitle && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 4 }}>{d.jobTitle}</div>}
+          <div style={{ fontSize: 24, fontWeight: 800, color: "#fff" }}><LinkifiedText text={d.name} /></div>
+          {d.jobTitle && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 4 }}><LinkifiedText text={d.jobTitle} /></div>}
           <div style={{ display: "flex", flexWrap: "wrap", gap: "3px 14px", marginTop: 9 }}>
             {[d.email, d.phone, d.location].filter(Boolean).map((c, i) => (
-              <span key={i} style={{ fontSize: 10.5, color: "rgba(255,255,255,0.68)" }}>{c}</span>
+              <span key={i} style={{ fontSize: 10.5, color: "rgba(255,255,255,0.68)" }}><LinkifiedText text={c} /></span>
             ))}
           </div>
         </div>
         <div style={{ padding: "24px 28px" }}>
-          {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 18 }}>{d.date}</div>}
+          {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 18 }}><LinkifiedText text={d.date} /></div>}
           {(d.recipientName || d.company) && (
             <div style={{ marginBottom: 20, fontSize: 12, lineHeight: 1.7,
               paddingBottom: 16, borderBottom: `2px solid ${tpl.accent}33` }}>
-              {d.recipientName && <div style={{ fontWeight: 600 }}>{d.recipientName}</div>}
-              {d.recipientTitle && <div style={{ color: "#555" }}>{d.recipientTitle}</div>}
-              {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}>{d.company}</div>}
-              {d.companyAddress && <div style={{ color: "#999", fontSize: 11.5 }}>{d.companyAddress}</div>}
+              {d.recipientName && <div style={{ fontWeight: 600 }}><LinkifiedText text={d.recipientName} /></div>}
+              {d.recipientTitle && <div style={{ color: "#555" }}><LinkifiedText text={d.recipientTitle} /></div>}
+              {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}><LinkifiedText text={d.company} /></div>}
+              {d.companyAddress && <div style={{ color: "#999", fontSize: 11.5 }}><LinkifiedText text={d.companyAddress} /></div>}
             </div>
           )}
           {d.subject && (
             <div style={{ display: "inline-block", fontSize: 10, fontWeight: 700, textTransform: "uppercase",
               letterSpacing: "1.5px", color: "#fff", background: tpl.accent,
-              padding: "2px 10px", borderRadius: 3, marginBottom: 16 }}>{d.subject}</div>
+              padding: "2px 10px", borderRadius: 3, marginBottom: 16 }}><LinkifiedText text={d.subject} /></div>
           )}
-          {d.opening && <div style={{ fontSize: 13, marginBottom: 14, display: "block" }}>Dear {d.opening},</div>}
+          {d.opening && <div style={{ fontSize: 13, marginBottom: 14, display: "block" }}>Dear <LinkifiedText text={d.opening} />,</div>}
           <Paras text={d.body} />
           <Paras text={d.closing} />
           <div style={{ marginTop: 28 }}>
-            <div style={{ fontSize: 13 }}>{d.signoff || "Sincerely"},</div>
-            {!preview && <div style={{ fontSize: 14, fontWeight: 600, marginTop: 28 }}>{d.name}</div>}
+            <div style={{ fontSize: 13 }}><LinkifiedText text={d.signoff || "Sincerely"} />,</div>
+            {!preview && <div style={{ fontSize: 14, fontWeight: 600, marginTop: 28 }}><LinkifiedText text={d.name} /></div>}
           </div>
         </div>
       </div>
@@ -1478,15 +1494,15 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "29%", background: tpl.accent + "0F", padding: "28px 16px",
             borderRight: `1px solid ${tpl.accent}22`, flexShrink: 0 }}>
-            <div style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", lineHeight: 1.2, marginBottom: 4 }}>{d.name}</div>
-            {d.jobTitle && <div style={{ fontSize: 11, color: tpl.accent, marginBottom: 16, fontStyle: "italic" }}>{d.jobTitle}</div>}
+            <div style={{ fontSize: 17, fontWeight: 700, color: "#1a1a1a", lineHeight: 1.2, marginBottom: 4 }}><LinkifiedText text={d.name} /></div>
+            {d.jobTitle && <div style={{ fontSize: 11, color: tpl.accent, marginBottom: 16, fontStyle: "italic" }}><LinkifiedText text={d.jobTitle} /></div>}
             <div style={{ height: 1, background: tpl.accent + "55", marginBottom: 14 }} />
             <ContactStack items={[d.email, d.phone, d.location]} style={{ fontSize: 10.5, color: "#555", marginBottom: 8 }} />
             {d.date && (
               <div style={{ marginTop: 18 }}>
                 <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase",
                   letterSpacing: "1.5px", color: tpl.accent, marginBottom: 5 }}>Date</div>
-                <div style={{ fontSize: 11, color: "#555" }}>{d.date}</div>
+                <div style={{ fontSize: 11, color: "#555" }}><LinkifiedText text={d.date} /></div>
               </div>
             )}
           </div>
@@ -1494,20 +1510,20 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
             {(d.recipientName || d.company) && (
               <div style={{ marginBottom: 22, fontSize: 12, lineHeight: 1.7,
                 paddingBottom: 16, borderBottom: `1px solid ${tpl.accent}33` }}>
-                {d.recipientName && <div style={{ fontWeight: 600, color: "#111" }}>{d.recipientName}</div>}
-                {d.recipientTitle && <div style={{ color: "#555" }}>{d.recipientTitle}</div>}
-                {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}>{d.company}</div>}
-                {d.companyAddress && <div style={{ color: "#999", fontSize: 11.5 }}>{d.companyAddress}</div>}
+                {d.recipientName && <div style={{ fontWeight: 600, color: "#111" }}><LinkifiedText text={d.recipientName} /></div>}
+                {d.recipientTitle && <div style={{ color: "#555" }}><LinkifiedText text={d.recipientTitle} /></div>}
+                {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}><LinkifiedText text={d.company} /></div>}
+                {d.companyAddress && <div style={{ color: "#999", fontSize: 11.5 }}><LinkifiedText text={d.companyAddress} /></div>}
               </div>
             )}
             {d.subject && <div style={{ fontSize: 12.5, fontWeight: 600, color: tpl.accent,
-              fontStyle: "italic", marginBottom: 16 }}>Re: {d.subject}</div>}
-            {d.opening && <div style={{ fontSize: 13, marginBottom: 16 }}>Dear {d.opening},</div>}
+              fontStyle: "italic", marginBottom: 16 }}>Re: <LinkifiedText text={d.subject} /></div>}
+            {d.opening && <div style={{ fontSize: 13, marginBottom: 16 }}>Dear <LinkifiedText text={d.opening} />,</div>}
             <Paras text={d.body} />
             <Paras text={d.closing} />
             <div style={{ marginTop: 28 }}>
-              <div style={{ fontSize: 13 }}>{d.signoff || "Sincerely"},</div>
-              {!preview && <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginTop: 36 }}>{d.name}</div>}
+              <div style={{ fontSize: 13 }}><LinkifiedText text={d.signoff || "Sincerely"} />,</div>
+              {!preview && <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginTop: 36 }}><LinkifiedText text={d.name} /></div>}
             </div>
           </div>
         </div>

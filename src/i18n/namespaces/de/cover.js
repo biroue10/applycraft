@@ -2,7 +2,7 @@ const cover = {
   "toolName": "Anschreiben-Generator",
   "eyebrow": "Anschreiben-Vorlagen",
   "galleryTitle": "Wähle einen Anschreiben-Stil, der zu deinem Lebenslauf passt",
-  "gallerySub": "Beginne mit einem professionellen Brieflayout und bearbeite dann den Inhalt neben einer Live-Vorschau. Du kannst bei Fertigstellung als PDF herunterladen.",
+  "gallerySub": "Beginne mit einem professionellen Brieflayout und bearbeite dann den Inhalt neben einer Live-Vorschau. Du kannst bei Fertigstellung als PDF oder DOCX herunterladen.",
   "stylesAvailable": "Briefstile verfügbar.",
   "resumeMatching": "Passend zum Lebenslauf",
   "heading": "Anschreiben",
@@ -39,7 +39,7 @@ const cover = {
   "phClosing": "Vielen Dank für Ihre Zeit und Ihr Interesse. Ich freue mich auf ein Gespräch mit Ihnen.",
   "phSignoff": "Mit freundlichen Grüßen",
   "nextStep": "Nächster empfohlener Schritt",
-  "nextStepBody": "Füge deinen Namen hinzu, um den Export des Anschreibens freizuschalten.",
+  "nextStepBody": "Füge deinen Namen vor dem Export des Anschreibens hinzu.",
   "comingSoon": "Benutzerdefinierte Anschreiben-Abschnitte folgen bald."
 };
 

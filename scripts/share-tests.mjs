@@ -91,8 +91,13 @@ assert.equal(normalizeSharedDocument({ k: "unknown", d: {} }), null, "invalid sh
 assert.equal(getResumeTemplateById("missing-template").id, "modern", "invalid resume template should fall back safely");
 
 const sharedSource = fs.readFileSync("src/SharedResume.jsx", "utf8");
+const documentPapersSource = fs.readFileSync("src/documents/DocumentPapers.jsx", "utf8");
 assert.ok(sharedSource.includes("ResumePaper"), "shared viewer should import/use ResumePaper");
 assert.ok(sharedSource.includes("CoverLetterPaper"), "shared viewer should import/use CoverLetterPaper");
+assert.ok(documentPapersSource.includes("LinkifiedText"), "shared document renderer should linkify resume and cover-letter text");
+assert.ok(/<LinkifiedText text=\{item\}/.test(documentPapersSource), "contact items should render with linkified text");
+assert.ok(/<LinkifiedText text=\{bullet\}/.test(documentPapersSource), "resume bullets should render with linkified text");
+assert.ok(/<LinkifiedText text=\{p\}/.test(documentPapersSource), "cover-letter paragraphs should render with linkified text");
 assert.ok(!/function\s+ResumeView\b/.test(sharedSource), "generic ResumeView renderer should be removed");
 assert.ok(!/function\s+CoverView\b/.test(sharedSource), "generic CoverView renderer should be removed");
 assert.ok(/lang=\{doc\.l\}/.test(sharedSource), "shared document article should receive document language");
