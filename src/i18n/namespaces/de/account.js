@@ -1,0 +1,30 @@
+const account = {
+  "saveTitle": "Master-Profil speichern",
+  "saveDesc": "Fügen Sie eine E-Mail hinzu, um Ihr Master-Profil auf jedem Gerät zu öffnen. Optional — der Builder bleibt kostenlos, ohne Konto.",
+  "emailLabel": "E-Mail-Adresse",
+  "consent": "Senden Sie mir einen Anmeldelink und speichern Sie mein Master-Profil, um es über meine Geräte zu synchronisieren.",
+  "sendLink": "Link senden",
+  "sending": "Senden…",
+  "linkSent": "Prüfen Sie Ihr Postfach auf den Anmeldelink.",
+  "notConfigured": "Geräteübergreifende Synchronisierung kommt bald.",
+  "signedInAs": "Angemeldet als",
+  "signOut": "Abmelden",
+  "syncNow": "Mit meinen Geräten synchronisieren",
+  "syncing": "Synchronisieren…",
+  "synced": "Master-Profil synchronisiert.",
+  "deleteSaved": "Meine gespeicherten Daten löschen",
+  "deletedSaved": "Ihre gespeicherten Cloud-Daten wurden gelöscht.",
+  "passActive": "Active-Search-Pass",
+  "passUntil": "Aktiv bis",
+  "upsellTitle": "Mit dem Active-Search-Pass freischalten",
+  "upsellSync": "Synchronisieren Sie Ihr Master-Profil auf allen Geräten.",
+  "upsellTailor": "Lassen Sie die KI Ihren Lebenslauf auf eine Stellenanzeige zuschneiden.",
+  "upsellBody": "Ein einmaliger 7-Tage-Pass — kein Abo. Alles andere bleibt für immer kostenlos.",
+  "getPass": "7-Tage-Pass holen",
+  "notNow": "Jetzt nicht",
+  "paymentsSoon": "Checkout kommt bald.",
+  "aiTailor": "✨ Per KI auf diese Stelle zuschneiden",
+  "tailoring": "Zuschneiden…"
+};
+
+export default account;

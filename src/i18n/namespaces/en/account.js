@@ -1,0 +1,30 @@
+const account = {
+  "saveTitle": "Save your Master Profile",
+  "saveDesc": "Add an email to open your Master Profile on any device. Optional — the builder stays free, with no account needed.",
+  "emailLabel": "Email address",
+  "consent": "Email me a sign-in link, and store my Master Profile so I can sync it across my devices.",
+  "sendLink": "Send me a link",
+  "sending": "Sending…",
+  "linkSent": "Check your inbox for your sign-in link.",
+  "notConfigured": "Cross-device sync is coming soon.",
+  "signedInAs": "Signed in as",
+  "signOut": "Sign out",
+  "syncNow": "Sync to my devices",
+  "syncing": "Syncing…",
+  "synced": "Master Profile synced to your devices.",
+  "deleteSaved": "Delete my saved data",
+  "deletedSaved": "Your saved cloud data has been deleted.",
+  "passActive": "Active Search Pass",
+  "passUntil": "Active until",
+  "upsellTitle": "Unlock with the Active Search Pass",
+  "upsellSync": "Sync your Master Profile across all your devices.",
+  "upsellTailor": "Let AI rewrite your resume to match any job description.",
+  "upsellBody": "A one-time 7-day pass — not a subscription. Everything else stays free, forever.",
+  "getPass": "Get the 7-day pass",
+  "notNow": "Not now",
+  "paymentsSoon": "Checkout is coming soon.",
+  "aiTailor": "✨ AI-tailor to this job",
+  "tailoring": "Tailoring…"
+};
+
+export default account;

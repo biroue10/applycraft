@@ -1,0 +1,30 @@
+const account = {
+  "saveTitle": "Enregistrez votre Profil Maître",
+  "saveDesc": "Ajoutez un e-mail pour ouvrir votre Profil Maître sur n'importe quel appareil. Optionnel — l'éditeur reste gratuit, sans compte.",
+  "emailLabel": "Adresse e-mail",
+  "consent": "Envoyez-moi un lien de connexion et enregistrez mon Profil Maître pour le synchroniser entre mes appareils.",
+  "sendLink": "Recevoir un lien",
+  "sending": "Envoi…",
+  "linkSent": "Vérifiez votre boîte de réception pour le lien de connexion.",
+  "notConfigured": "La synchronisation arrive bientôt.",
+  "signedInAs": "Connecté en tant que",
+  "signOut": "Se déconnecter",
+  "syncNow": "Synchroniser mes appareils",
+  "syncing": "Synchronisation…",
+  "synced": "Profil Maître synchronisé.",
+  "deleteSaved": "Supprimer mes données enregistrées",
+  "deletedSaved": "Vos données cloud enregistrées ont été supprimées.",
+  "passActive": "Pass Recherche Active",
+  "passUntil": "Actif jusqu'au",
+  "upsellTitle": "Débloquez avec le Pass Recherche Active",
+  "upsellSync": "Synchronisez votre Profil Maître sur tous vos appareils.",
+  "upsellTailor": "Laissez l'IA réécrire votre CV pour correspondre à une offre.",
+  "upsellBody": "Un pass unique de 7 jours — pas d'abonnement. Tout le reste reste gratuit, pour toujours.",
+  "getPass": "Obtenir le pass 7 jours",
+  "notNow": "Plus tard",
+  "paymentsSoon": "Le paiement arrive bientôt.",
+  "aiTailor": "✨ Adapter par IA à cette offre",
+  "tailoring": "Adaptation…"
+};
+
+export default account;

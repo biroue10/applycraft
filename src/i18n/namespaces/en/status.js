@@ -1,0 +1,28 @@
+const status = {
+  "photoType": "Profile photo must be JPG, PNG, or WebP and under 2 MB.",
+  "photoRead": "Could not read the selected image.",
+  "draftFail": "Could not save this draft in your browser.",
+  "resumeSaved": "Resume saved.",
+  "accountToSave": "Create a free account to save your resume.",
+  "newStarted": "Started a new resume.",
+  "linkCopied": "Shareable link copied to clipboard.",
+  "copied": "Copied.",
+  "resumeTextCopied": "Resume text copied to clipboard",
+  "incompleteDownload": "Downloaded resume may be incomplete. Add name, experience, and skills when ready.",
+  "pdfDownloaded": "PDF downloaded.",
+  "pdfSuccess": "PDF downloaded. You can keep editing or create a matching cover letter.",
+  "pdfFail": "PDF download failed. Your resume is still saved in this browser.",
+  "docxDownloaded": "DOCX downloaded.",
+  "docxSuccess": "DOCX downloaded. You can keep editing or create a matching cover letter.",
+  "docxFail": "DOCX download failed. Your resume is still saved in this browser.",
+  "noReadableText": "That file had no readable text (it may be a scanned image). Paste the text instead.",
+  "couldntReadFile": "Couldn't read that file. Paste your resume text instead.",
+  "resumeImported": "Resume imported into the builder.",
+  "readingResume": "Reading your resume…",
+  "importedReview": "Resume imported — review your details below.",
+  "couldntReadAuto": "Couldn't read that file automatically — you can paste your text in the ATS Checker instead.",
+  "localDataDeleted": "ApplyCraft local data deleted from this browser.",
+  "pdfNonLatin": "PDF export uses Latin-script fonts. For Arabic or other non-Latin scripts, use DOCX export so the text is preserved."
+};
+
+export default status;

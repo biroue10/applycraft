@@ -24,6 +24,21 @@ export const EVENTS = {
   COVER_STARTED: "cover_letter_started",
   ATS_STARTED: "ats_checker_started",
   PRICING_OPENED: "pricing_opened",
+  INTERFACE_LANGUAGE_SELECTED: "interface_language_selected",
+  DOCUMENT_LANGUAGE_SELECTED: "document_language_selected",
+  RTL_INTERFACE_ENABLED: "rtl_interface_enabled",
+  RTL_DOCUMENT_ENABLED: "rtl_document_enabled",
+  MULTILINGUAL_RESUME_EXPORTED: "multilingual_resume_exported",
+  MULTILINGUAL_COVER_LETTER_EXPORTED: "multilingual_cover_letter_exported",
+  PDF_EXPORT_STARTED: "pdf_export_started",
+  PDF_EXPORT_COMPLETED: "pdf_export_completed",
+  PDF_EXPORT_FAILED: "pdf_export_failed",
+  DOCX_EXPORT_STARTED: "docx_export_started",
+  DOCX_EXPORT_COMPLETED: "docx_export_completed",
+  DOCX_EXPORT_FAILED: "docx_export_failed",
+  LANGUAGE_MIGRATION_COMPLETED: "language_migration_completed",
+  LANGUAGE_MIGRATION_FAILED: "language_migration_failed",
+  MISSING_TRANSLATION_KEY: "missing_translation_key",
 };
 
 const ALLOWED = new Set(Object.values(EVENTS));

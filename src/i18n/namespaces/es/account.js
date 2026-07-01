@@ -1,0 +1,30 @@
+const account = {
+  "saveTitle": "Guarda tu Perfil Maestro",
+  "saveDesc": "Añade un correo para abrir tu Perfil Maestro en cualquier dispositivo. Opcional — el editor sigue siendo gratis, sin cuenta.",
+  "emailLabel": "Correo electrónico",
+  "consent": "Envíame un enlace de acceso y guarda mi Perfil Maestro para sincronizarlo entre mis dispositivos.",
+  "sendLink": "Enviarme un enlace",
+  "sending": "Enviando…",
+  "linkSent": "Revisa tu bandeja de entrada para el enlace de acceso.",
+  "notConfigured": "La sincronización llegará pronto.",
+  "signedInAs": "Conectado como",
+  "signOut": "Cerrar sesión",
+  "syncNow": "Sincronizar mis dispositivos",
+  "syncing": "Sincronizando…",
+  "synced": "Perfil Maestro sincronizado.",
+  "deleteSaved": "Eliminar mis datos guardados",
+  "deletedSaved": "Tus datos guardados en la nube se han eliminado.",
+  "passActive": "Pase de Búsqueda Activa",
+  "passUntil": "Activo hasta",
+  "upsellTitle": "Desbloquea con el Pase de Búsqueda Activa",
+  "upsellSync": "Sincroniza tu Perfil Maestro en todos tus dispositivos.",
+  "upsellTailor": "Deja que la IA reescriba tu currículum para una oferta concreta.",
+  "upsellBody": "Un pase único de 7 días — sin suscripción. Todo lo demás sigue gratis, para siempre.",
+  "getPass": "Obtener el pase de 7 días",
+  "notNow": "Ahora no",
+  "paymentsSoon": "El pago llegará pronto.",
+  "aiTailor": "✨ Adaptar con IA a esta oferta",
+  "tailoring": "Adaptando…"
+};
+
+export default account;

@@ -11,10 +11,21 @@ import { parseResume } from "./ats/parseResume.js";
 import * as resumes from "./resumes.js";
 import { buildShareUrl } from "./share.js";
 import { PRODUCT } from "./product.js";
+import { UI, ENTRY_UI, ACCT_UI, LANDING_UI, BUILDER_UI, COVER_UI, ATS_UI, TRACKER_UI, MASTER_UI, STATUS_UI, MODAL_UI, LANDING2_UI, FOOTER_UI } from "./i18n/index.js";
+import {
+  INTERFACE_LANGUAGES,
+  initialInterfaceLanguage,
+  initialDocumentLanguage,
+  persistInterfaceLanguage,
+  persistDocumentLanguage,
+  isRtlLang,
+} from "./i18n/languages.js";
+import { LANGUAGE_SCHEMA_VERSION, LANGUAGE_SCHEMA_VERSION_KEY } from "./i18n/config.js";
+import { documentLabelsFor } from "./i18n/documentLabels.js";
 
 // ── UI translation codes (languages with full UI translation) ──────
 const UI_LANGS = new Set(["en", "fr", "es", "ar", "de"]);
-const SITE_LANGUAGE_CODES = new Set(["en", "ar"]);
+const SITE_LANGUAGE_CODES = new Set(INTERFACE_LANGUAGES);
 // Centralized in src/product.js; verified against WORLD_LANGUAGES / UI_LANGS
 // by scripts/product-tests.mjs.
 const DOCUMENT_LANGUAGE_COUNT = PRODUCT.documentLanguageCount;
@@ -126,904 +137,20 @@ const WORLD_LANGUAGES = [
 // ── Account / sync / paid-pass strings (optional features) ──────────
 // Kept separate from the main UI dictionary for clarity. Accessed with the
 // same active language code; RTL is handled by the existing dir="rtl" logic.
-const ACCT_UI = {
-  en: {
-    saveTitle: "Save your Master Profile", saveDesc: "Add an email to open your Master Profile on any device. Optional — the builder stays free, with no account needed.",
-    emailLabel: "Email address", consent: "Email me a sign-in link, and store my Master Profile so I can sync it across my devices.",
-    sendLink: "Send me a link", sending: "Sending…", linkSent: "Check your inbox for your sign-in link.", notConfigured: "Cross-device sync is coming soon.",
-    signedInAs: "Signed in as", signOut: "Sign out", syncNow: "Sync to my devices", syncing: "Syncing…", synced: "Master Profile synced to your devices.",
-    deleteSaved: "Delete my saved data", deletedSaved: "Your saved cloud data has been deleted.",
-    passActive: "Active Search Pass", passUntil: "Active until",
-    upsellTitle: "Unlock with the Active Search Pass", upsellSync: "Sync your Master Profile across all your devices.", upsellTailor: "Let AI rewrite your resume to match any job description.",
-    upsellBody: "A one-time 7-day pass — not a subscription. Everything else stays free, forever.", getPass: "Get the 7-day pass", notNow: "Not now", paymentsSoon: "Checkout is coming soon.",
-    aiTailor: "✨ AI-tailor to this job", tailoring: "Tailoring…",
-  },
-  fr: {
-    saveTitle: "Enregistrez votre Profil Maître", saveDesc: "Ajoutez un e-mail pour ouvrir votre Profil Maître sur n'importe quel appareil. Optionnel — l'éditeur reste gratuit, sans compte.",
-    emailLabel: "Adresse e-mail", consent: "Envoyez-moi un lien de connexion et enregistrez mon Profil Maître pour le synchroniser entre mes appareils.",
-    sendLink: "Recevoir un lien", sending: "Envoi…", linkSent: "Vérifiez votre boîte de réception pour le lien de connexion.", notConfigured: "La synchronisation arrive bientôt.",
-    signedInAs: "Connecté en tant que", signOut: "Se déconnecter", syncNow: "Synchroniser mes appareils", syncing: "Synchronisation…", synced: "Profil Maître synchronisé.",
-    deleteSaved: "Supprimer mes données enregistrées", deletedSaved: "Vos données cloud enregistrées ont été supprimées.",
-    passActive: "Pass Recherche Active", passUntil: "Actif jusqu'au",
-    upsellTitle: "Débloquez avec le Pass Recherche Active", upsellSync: "Synchronisez votre Profil Maître sur tous vos appareils.", upsellTailor: "Laissez l'IA réécrire votre CV pour correspondre à une offre.",
-    upsellBody: "Un pass unique de 7 jours — pas d'abonnement. Tout le reste reste gratuit, pour toujours.", getPass: "Obtenir le pass 7 jours", notNow: "Plus tard", paymentsSoon: "Le paiement arrive bientôt.",
-    aiTailor: "✨ Adapter par IA à cette offre", tailoring: "Adaptation…",
-  },
-  es: {
-    saveTitle: "Guarda tu Perfil Maestro", saveDesc: "Añade un correo para abrir tu Perfil Maestro en cualquier dispositivo. Opcional — el editor sigue siendo gratis, sin cuenta.",
-    emailLabel: "Correo electrónico", consent: "Envíame un enlace de acceso y guarda mi Perfil Maestro para sincronizarlo entre mis dispositivos.",
-    sendLink: "Enviarme un enlace", sending: "Enviando…", linkSent: "Revisa tu bandeja de entrada para el enlace de acceso.", notConfigured: "La sincronización llegará pronto.",
-    signedInAs: "Conectado como", signOut: "Cerrar sesión", syncNow: "Sincronizar mis dispositivos", syncing: "Sincronizando…", synced: "Perfil Maestro sincronizado.",
-    deleteSaved: "Eliminar mis datos guardados", deletedSaved: "Tus datos guardados en la nube se han eliminado.",
-    passActive: "Pase de Búsqueda Activa", passUntil: "Activo hasta",
-    upsellTitle: "Desbloquea con el Pase de Búsqueda Activa", upsellSync: "Sincroniza tu Perfil Maestro en todos tus dispositivos.", upsellTailor: "Deja que la IA reescriba tu currículum para una oferta concreta.",
-    upsellBody: "Un pase único de 7 días — sin suscripción. Todo lo demás sigue gratis, para siempre.", getPass: "Obtener el pase de 7 días", notNow: "Ahora no", paymentsSoon: "El pago llegará pronto.",
-    aiTailor: "✨ Adaptar con IA a esta oferta", tailoring: "Adaptando…",
-  },
-  ar: {
-    saveTitle: "احفظ ملفك الرئيسي", saveDesc: "أضف بريدًا إلكترونيًا لفتح ملفك الرئيسي على أي جهاز. اختياري — يبقى المُنشئ مجانيًا دون حساب.",
-    emailLabel: "البريد الإلكتروني", consent: "أرسل لي رابط تسجيل الدخول، واحفظ ملفي الرئيسي لمزامنته عبر أجهزتي.",
-    sendLink: "أرسل لي رابطًا", sending: "جارٍ الإرسال…", linkSent: "تحقق من بريدك للحصول على رابط تسجيل الدخول.", notConfigured: "المزامنة عبر الأجهزة قادمة قريبًا.",
-    signedInAs: "مسجّل الدخول باسم", signOut: "تسجيل الخروج", syncNow: "المزامنة مع أجهزتي", syncing: "جارٍ المزامنة…", synced: "تمت مزامنة الملف الرئيسي.",
-    deleteSaved: "حذف بياناتي المحفوظة", deletedSaved: "تم حذف بياناتك المحفوظة في السحابة.",
-    passActive: "تصريح البحث النشط", passUntil: "نشط حتى",
-    upsellTitle: "افتح الميزة بتصريح البحث النشط", upsellSync: "زامن ملفك الرئيسي عبر جميع أجهزتك.", upsellTailor: "دع الذكاء الاصطناعي يعيد كتابة سيرتك لتطابق أي وصف وظيفي.",
-    upsellBody: "تصريح لمرة واحدة لمدة 7 أيام — وليس اشتراكًا. كل شيء آخر يبقى مجانيًا للأبد.", getPass: "احصل على تصريح 7 أيام", notNow: "ليس الآن", paymentsSoon: "الدفع قادم قريبًا.",
-    aiTailor: "✨ تخصيص بالذكاء الاصطناعي لهذه الوظيفة", tailoring: "جارٍ التخصيص…",
-  },
-  de: {
-    saveTitle: "Master-Profil speichern", saveDesc: "Fügen Sie eine E-Mail hinzu, um Ihr Master-Profil auf jedem Gerät zu öffnen. Optional — der Builder bleibt kostenlos, ohne Konto.",
-    emailLabel: "E-Mail-Adresse", consent: "Senden Sie mir einen Anmeldelink und speichern Sie mein Master-Profil, um es über meine Geräte zu synchronisieren.",
-    sendLink: "Link senden", sending: "Senden…", linkSent: "Prüfen Sie Ihr Postfach auf den Anmeldelink.", notConfigured: "Geräteübergreifende Synchronisierung kommt bald.",
-    signedInAs: "Angemeldet als", signOut: "Abmelden", syncNow: "Mit meinen Geräten synchronisieren", syncing: "Synchronisieren…", synced: "Master-Profil synchronisiert.",
-    deleteSaved: "Meine gespeicherten Daten löschen", deletedSaved: "Ihre gespeicherten Cloud-Daten wurden gelöscht.",
-    passActive: "Active-Search-Pass", passUntil: "Aktiv bis",
-    upsellTitle: "Mit dem Active-Search-Pass freischalten", upsellSync: "Synchronisieren Sie Ihr Master-Profil auf allen Geräten.", upsellTailor: "Lassen Sie die KI Ihren Lebenslauf auf eine Stellenanzeige zuschneiden.",
-    upsellBody: "Ein einmaliger 7-Tage-Pass — kein Abo. Alles andere bleibt für immer kostenlos.", getPass: "7-Tage-Pass holen", notNow: "Jetzt nicht", paymentsSoon: "Checkout kommt bald.",
-    aiTailor: "✨ Per KI auf diese Stelle zuschneiden", tailoring: "Zuschneiden…",
-  },
-};
 
-const UI = {
-  en: { name: "Full name", title: "Professional title", email: "Email", phone: "Phone",
-    location: "Location", summary: "About you", experience: "Experience", education: "Education",
-    skills: "Skills (comma separated)", generate: "Generate resume", generating: "Generating…",
-    heading: "Resume generator", sub: "Choose a language and template, add your details, get a polished resume.",
-    copy: "Copy", copied: "Copied", chooseTpl: "Choose a template", back: "Back",
-    dlPdf: "Download PDF", dlDocx: "Download DOCX",
-    linkedin: "LinkedIn", website: "Website / Portfolio",
-    certifications: "Certifications", languages: "Languages (comma separated)",
-    projects: "Projects", volunteer: "Volunteer Work", awards: "Awards & Achievements",
-    publications: "Publications", references: "References", extracurricular: "Extra-Curricular",
-    placeholderEx: "Role, company, dates, what you did — one per line", madeBy: "Built by",
-    placeholderName: "e.g. Jane Doe", placeholderTitle: "e.g. Software Engineer",
-    placeholderEmail: "you@example.com", placeholderPhone: "e.g. 712 345 678",
-    placeholderLocation: "e.g. London, UK",
-    placeholderSummary: "A short paragraph about your background and goals…",
-    placeholderEducation: "Degree, institution, year — one per line",
-    placeholderSkills: "JavaScript, React, Node.js, …",
-    placeholderLinkedin: "https://linkedin.com/in/yourname",
-    placeholderWebsite: "https://yourportfolio.com",
-    placeholderCerts: "AWS Certified Developer, 2024 — one per line",
-    placeholderLanguages: "English (Fluent), French (Intermediate)",
-    placeholderProjects: "Project name — tech used — what it achieved, one per line",
-    placeholderVolunteer: "Role, organisation, dates — one per line",
-    placeholderAwards: "Award name, issuer, year — one per line",
-    emailError: "Please enter a valid email address",
-    phoneError: "Invalid number", phoneDigits: "digits required" },
-  fr: { name: "Nom complet", title: "Titre professionnel", email: "E-mail", phone: "Téléphone",
-    location: "Localisation", summary: "À propos de vous", experience: "Expérience", education: "Formation",
-    skills: "Compétences (séparées par des virgules)", generate: "Générer le CV", generating: "Génération…",
-    heading: "Générateur de CV", sub: "Choisissez une langue et un modèle, ajoutez vos infos, obtenez un CV soigné.",
-    copy: "Copier", copied: "Copié", chooseTpl: "Choisissez un modèle", back: "Retour",
-    dlPdf: "Télécharger PDF", dlDocx: "Télécharger DOCX",
-    linkedin: "LinkedIn", website: "Site web / Portfolio",
-    certifications: "Certifications", languages: "Langues (séparées par des virgules)",
-    projects: "Projets", volunteer: "Bénévolat", awards: "Récompenses & Réalisations",
-    publications: "Publications", references: "Références", extracurricular: "Activités extra-scolaires",
-    placeholderEx: "Poste, entreprise, dates, missions — une par ligne", madeBy: "Créé par",
-    placeholderName: "ex. Jean Dupont", placeholderTitle: "ex. Ingénieur logiciel",
-    placeholderEmail: "vous@exemple.com", placeholderPhone: "ex. 06 12 34 56 78",
-    placeholderLocation: "ex. Paris, France",
-    placeholderSummary: "Un court paragraphe sur votre parcours et vos objectifs…",
-    placeholderEducation: "Diplôme, établissement, année — un par ligne",
-    placeholderSkills: "JavaScript, React, Node.js, …",
-    placeholderLinkedin: "https://linkedin.com/in/votrenom",
-    placeholderWebsite: "https://votresite.com",
-    placeholderCerts: "Certification AWS, 2024 — une par ligne",
-    placeholderLanguages: "Français (Natif), Anglais (Courant)",
-    placeholderProjects: "Nom du projet — technologies — résultat, une par ligne",
-    placeholderVolunteer: "Rôle, organisation, dates — une par ligne",
-    placeholderAwards: "Nom du prix, organisme, année — une par ligne",
-    emailError: "Veuillez saisir une adresse e-mail valide",
-    phoneError: "Numéro invalide", phoneDigits: "chiffres requis" },
-  es: { name: "Nombre completo", title: "Título profesional", email: "Correo", phone: "Teléfono",
-    location: "Ubicación", summary: "Sobre ti", experience: "Experiencia", education: "Educación",
-    skills: "Habilidades (separadas por comas)", generate: "Generar currículum", generating: "Generando…",
-    heading: "Generador de currículums", sub: "Elige idioma y plantilla, añade tus datos y obtén un currículum pulido.",
-    copy: "Copiar", copied: "Copiado", chooseTpl: "Elige una plantilla", back: "Volver",
-    dlPdf: "Descargar PDF", dlDocx: "Descargar DOCX",
-    linkedin: "LinkedIn", website: "Sitio web / Portafolio",
-    certifications: "Certificaciones", languages: "Idiomas (separados por comas)",
-    projects: "Proyectos", volunteer: "Voluntariado", awards: "Premios & Logros",
-    publications: "Publicaciones", references: "Referencias", extracurricular: "Actividades extracurriculares",
-    placeholderEx: "Puesto, empresa, fechas, qué hiciste — uno por línea", madeBy: "Creado por",
-    placeholderName: "ej. Juan García", placeholderTitle: "ej. Ingeniero de software",
-    placeholderEmail: "tu@ejemplo.com", placeholderPhone: "ej. 612 345 678",
-    placeholderLocation: "ej. Madrid, España",
-    placeholderSummary: "Un breve párrafo sobre tu trayectoria y objetivos…",
-    placeholderEducation: "Título, institución, año — uno por línea",
-    placeholderSkills: "JavaScript, React, Node.js, …",
-    placeholderLinkedin: "https://linkedin.com/in/tunombre",
-    placeholderWebsite: "https://tuportafolio.com",
-    placeholderCerts: "AWS Certified Developer, 2024 — uno por línea",
-    placeholderLanguages: "Español (Nativo), Inglés (Avanzado)",
-    placeholderProjects: "Nombre del proyecto — tecnologías — logro, uno por línea",
-    placeholderVolunteer: "Rol, organización, fechas — uno por línea",
-    placeholderAwards: "Premio, organización, año — uno por línea",
-    emailError: "Introduce un correo electrónico válido",
-    phoneError: "Número inválido", phoneDigits: "dígitos requeridos" },
-  ar: { name: "الاسم الكامل", title: "المسمى الوظيفي", email: "البريد", phone: "الهاتف",
-    location: "الموقع", summary: "نبذة عنك", experience: "الخبرة", education: "التعليم",
-    skills: "المهارات (مفصولة بفواصل)", generate: "إنشاء السيرة الذاتية", generating: "جارٍ الإنشاء…",
-    heading: "منشئ السيرة الذاتية", sub: "اختر لغة وقالباً، أضف بياناتك، واحصل على سيرة ذاتية متقنة.",
-    copy: "نسخ", copied: "تم النسخ", chooseTpl: "اختر قالباً", back: "رجوع",
-    dlPdf: "تحميل PDF", dlDocx: "تحميل DOCX",
-    linkedin: "لينكدإن", website: "الموقع / المحفظة",
-    certifications: "الشهادات", languages: "اللغات (مفصولة بفواصل)",
-    projects: "المشاريع", volunteer: "العمل التطوعي", awards: "الجوائز والإنجازات",
-    publications: "المنشورات", references: "المراجع", extracurricular: "الأنشطة اللاصفية",
-    placeholderEx: "المنصب، الشركة، التواريخ، مهامك — واحدة في كل سطر", madeBy: "من إبداع",
-    placeholderName: "مثال: أحمد محمد", placeholderTitle: "مثال: مهندس برمجيات",
-    placeholderEmail: "you@example.com", placeholderPhone: "مثال: 06 12 34 56 78",
-    placeholderLocation: "مثال: الرياض، السعودية",
-    placeholderSummary: "فقرة قصيرة عن خلفيتك وأهدافك المهنية…",
-    placeholderEducation: "الدرجة العلمية، المؤسسة، السنة — سطر لكل إدخال",
-    placeholderSkills: "جافاسكريبت، رياكت، نود.جي إس، …",
-    placeholderLinkedin: "https://linkedin.com/in/اسمك",
-    placeholderWebsite: "https://موقعك.com",
-    placeholderCerts: "شهادة AWS، 2024 — سطر لكل شهادة",
-    placeholderLanguages: "العربية (الأم)، الإنجليزية (متقدم)",
-    placeholderProjects: "اسم المشروع — التقنيات — النتيجة، سطر لكل مشروع",
-    placeholderVolunteer: "الدور، المنظمة، التواريخ — سطر لكل إدخال",
-    placeholderAwards: "اسم الجائزة، المانح، السنة — سطر لكل إدخال",
-    emailError: "يرجى إدخال عنوان بريد إلكتروني صحيح",
-    phoneError: "رقم غير صحيح", phoneDigits: "أرقام مطلوبة" },
-  de: { name: "Vollständiger Name", title: "Berufsbezeichnung", email: "E-Mail", phone: "Telefon",
-    location: "Standort", summary: "Über dich", experience: "Erfahrung", education: "Ausbildung",
-    skills: "Fähigkeiten (durch Kommas getrennt)", generate: "Lebenslauf erstellen", generating: "Wird erstellt…",
-    heading: "Lebenslauf-Generator", sub: "Sprache und Vorlage wählen, Daten eingeben, gepflegten Lebenslauf erhalten.",
-    copy: "Kopieren", copied: "Kopiert", chooseTpl: "Vorlage wählen", back: "Zurück",
-    dlPdf: "PDF herunterladen", dlDocx: "DOCX herunterladen",
-    linkedin: "LinkedIn", website: "Website / Portfolio",
-    certifications: "Zertifizierungen", languages: "Sprachen (durch Kommas getrennt)",
-    projects: "Projekte", volunteer: "Ehrenamtliche Arbeit", awards: "Auszeichnungen & Leistungen",
-    publications: "Publikationen", references: "Referenzen", extracurricular: "Außerschulische Aktivitäten",
-    placeholderEx: "Position, Firma, Zeitraum, Aufgaben — eine pro Zeile", madeBy: "Erstellt von",
-    placeholderName: "z.B. Hans Müller", placeholderTitle: "z.B. Softwareentwickler",
-    placeholderEmail: "du@beispiel.de", placeholderPhone: "z.B. 170 1234567",
-    placeholderLocation: "z.B. Berlin, Deutschland",
-    placeholderSummary: "Ein kurzer Absatz über deinen Werdegang und deine Ziele…",
-    placeholderEducation: "Abschluss, Einrichtung, Jahr — eine pro Zeile",
-    placeholderSkills: "JavaScript, React, Node.js, …",
-    placeholderLinkedin: "https://linkedin.com/in/deinname",
-    placeholderWebsite: "https://deinewebsite.de",
-    placeholderCerts: "AWS Certified Developer, 2024 — eine pro Zeile",
-    placeholderLanguages: "Deutsch (Muttersprache), Englisch (Fließend)",
-    placeholderProjects: "Projektname — Technologien — Ergebnis, eine pro Zeile",
-    placeholderVolunteer: "Rolle, Organisation, Zeitraum — eine pro Zeile",
-    placeholderAwards: "Auszeichnung, Aussteller, Jahr — eine pro Zeile",
-    emailError: "Bitte eine gültige E-Mail-Adresse eingeben",
-    phoneError: "Ungültige Nummer", phoneDigits: "Ziffern erforderlich" },
-};
 
 // ── Landing-page / site-chrome translations (full-site i18n, phase 1) ──
 // Keyed by interface language (en/fr/es/ar/de). Access via LANDING_UI[lang].
-const LANDING_UI = {
-  en: {
-    navResume: "Resume", navCover: "Cover Letter", navTracker: "Job Tracker", navAts: "ATS Checker",
-    createResume: "Create my resume", checkResume: "Check my existing resume",
-    heroEyebrow: "Free resume builder",
-    heroH1: "Create a job-ready resume without signing up.",
-    heroSub: "Build unlimited resumes with no signup, no watermark, and unlimited PDF or DOCX downloads — the builder is free forever. Editing and export happen in your browser unless you deliberately use an AI helper.",
-    trustBrowser: "Browser-first editing", trustNoSignup: "No signup", trustNoCard: "No credit card", trustFormats: "PDF & DOCX",
-    orImprove: "or improve an existing one", uploadResume: "Upload your resume", uploadHint: "PDF or DOCX · drag & drop or click",
-    statTemplates: "Templates", statCover: "Cover letter styles", statDocLangs: "Document languages", statFormats: "Export formats", statDownloads: "Free downloads",
-    comingSoonBody: "This feature is not yet available. We're working on it and it will be ready soon.", gotIt: "Got it",
-  },
-  fr: {
-    navResume: "CV", navCover: "Lettre de motivation", navTracker: "Suivi des candidatures", navAts: "Vérificateur ATS",
-    createResume: "Créer mon CV", checkResume: "Vérifier mon CV existant",
-    heroEyebrow: "Créateur de CV gratuit",
-    heroH1: "Créez un CV prêt à l'emploi sans inscription.",
-    heroSub: "Créez des CV illimités sans inscription, sans filigrane, avec des téléchargements PDF ou DOCX illimités — l'outil est gratuit pour toujours. L'édition et l'export se font dans votre navigateur, sauf si vous utilisez délibérément un assistant IA.",
-    trustBrowser: "Édition dans le navigateur", trustNoSignup: "Sans inscription", trustNoCard: "Sans carte bancaire", trustFormats: "PDF et DOCX",
-    orImprove: "ou améliorez un CV existant", uploadResume: "Importer votre CV", uploadHint: "PDF ou DOCX · glisser-déposer ou cliquer",
-    statTemplates: "Modèles", statCover: "Styles de lettre", statDocLangs: "Langues de document", statFormats: "Formats d'export", statDownloads: "Téléchargements gratuits",
-    comingSoonBody: "Cette fonctionnalité n'est pas encore disponible. Nous y travaillons et elle sera bientôt prête.", gotIt: "Compris",
-  },
-  es: {
-    navResume: "Currículum", navCover: "Carta de presentación", navTracker: "Seguimiento de empleos", navAts: "Verificador ATS",
-    createResume: "Crear mi currículum", checkResume: "Revisar mi currículum actual",
-    heroEyebrow: "Creador de currículums gratis",
-    heroH1: "Crea un currículum listo para enviar sin registrarte.",
-    heroSub: "Crea currículums ilimitados sin registro, sin marca de agua y con descargas ilimitadas en PDF o DOCX: la herramienta es gratis para siempre. La edición y la exportación ocurren en tu navegador, salvo que uses deliberadamente un asistente de IA.",
-    trustBrowser: "Edición en el navegador", trustNoSignup: "Sin registro", trustNoCard: "Sin tarjeta", trustFormats: "PDF y DOCX",
-    orImprove: "o mejora uno existente", uploadResume: "Sube tu currículum", uploadHint: "PDF o DOCX · arrastra y suelta o haz clic",
-    statTemplates: "Plantillas", statCover: "Estilos de carta", statDocLangs: "Idiomas de documento", statFormats: "Formatos de exportación", statDownloads: "Descargas gratis",
-    comingSoonBody: "Esta función aún no está disponible. Estamos trabajando en ella y estará lista pronto.", gotIt: "Entendido",
-  },
-  ar: {
-    navResume: "السيرة الذاتية", navCover: "خطاب التقديم", navTracker: "متابعة الوظائف", navAts: "فاحص ATS",
-    createResume: "أنشئ سيرتي الذاتية", checkResume: "افحص سيرتي الذاتية الحالية",
-    heroEyebrow: "منشئ سير ذاتية مجاني",
-    heroH1: "أنشئ سيرة ذاتية جاهزة للتقديم دون تسجيل.",
-    heroSub: "أنشئ عدداً غير محدود من السير الذاتية دون تسجيل، وبدون علامة مائية، مع تنزيلات غير محدودة بصيغة PDF أو DOCX — الأداة مجانية للأبد. يتم التحرير والتصدير في متصفحك ما لم تستخدم مساعد الذكاء الاصطناعي عمداً.",
-    trustBrowser: "التحرير في المتصفح", trustNoSignup: "بدون تسجيل", trustNoCard: "بدون بطاقة ائتمان", trustFormats: "PDF و DOCX",
-    orImprove: "أو حسّن سيرة ذاتية موجودة", uploadResume: "ارفع سيرتك الذاتية", uploadHint: "PDF أو DOCX · اسحب وأفلت أو انقر",
-    statTemplates: "القوالب", statCover: "أنماط الخطابات", statDocLangs: "لغات المستند", statFormats: "صيغ التصدير", statDownloads: "تنزيلات مجانية",
-    comingSoonBody: "هذه الميزة غير متاحة بعد. نحن نعمل عليها وستكون جاهزة قريباً.", gotIt: "حسناً",
-  },
-  de: {
-    navResume: "Lebenslauf", navCover: "Anschreiben", navTracker: "Bewerbungs-Tracker", navAts: "ATS-Prüfer",
-    createResume: "Lebenslauf erstellen", checkResume: "Meinen bestehenden Lebenslauf prüfen",
-    heroEyebrow: "Kostenloser Lebenslauf-Generator",
-    heroH1: "Erstelle einen bewerbungsfertigen Lebenslauf ohne Anmeldung.",
-    heroSub: "Erstelle unbegrenzt Lebensläufe ohne Anmeldung, ohne Wasserzeichen und mit unbegrenzten PDF- oder DOCX-Downloads — das Tool ist für immer kostenlos. Bearbeitung und Export erfolgen in deinem Browser, sofern du nicht bewusst einen KI-Assistenten nutzt.",
-    trustBrowser: "Bearbeitung im Browser", trustNoSignup: "Keine Anmeldung", trustNoCard: "Keine Kreditkarte", trustFormats: "PDF & DOCX",
-    orImprove: "oder einen bestehenden verbessern", uploadResume: "Lebenslauf hochladen", uploadHint: "PDF oder DOCX · ziehen & ablegen oder klicken",
-    statTemplates: "Vorlagen", statCover: "Anschreiben-Stile", statDocLangs: "Dokumentsprachen", statFormats: "Exportformate", statDownloads: "Kostenlose Downloads",
-    comingSoonBody: "Diese Funktion ist noch nicht verfügbar. Wir arbeiten daran und sie wird bald bereit sein.", gotIt: "Verstanden",
-  },
-};
 
 // ── Resume-builder chrome translations (full-site i18n, phase 2) ──
-const BUILDER_UI = {
-  en: {
-    toolName: "Resume Builder", savedLocally: "Saved locally", unsavedChanges: "Unsaved changes",
-    myResumes: "My resumes", unlimited: "Unlimited", free: "free", newResume: "New resume",
-    untitledResume: "Untitled resume", updated: "Updated", open: "Open",
-    templatesEyebrow: "Resume templates", galleryTitle: "Choose a resume that fits your career",
-    gallerySub: "Start with a professionally designed, ATS-friendly template. You can change colors, sections, and layout at any time.",
-    allFree: "All templates are free to customize.", badgePdf: "PDF export", badgeDocx: "DOCX export", badgeRtl: "RTL support",
-    searchTemplates: "Search templates", filters: "Filters", preview: "Preview", useTemplate: "Use template",
-    backToTemplates: "Back to templates", complete: "complete", save: "Save", saveResume: "Save resume",
-    customize: "Customize", documentSettings: "Document settings", templateLabel: "Template", atsConscious: "ATS-conscious",
-    languageLabel: "Language", customizeNote: "Typography, spacing, colors, and page size remain controlled by the selected template.",
-    exportingBtn: "Exporting...", exportBtn: "Export", exportTitle: "Export your resume", readyToExport: "Ready to export.",
-    improvementsRemain: "recommended improvements remain.", pdfHint: "Recommended for applications", docxHint: "Editable Word document",
-    edit: "Edit", addSection: "Add section", livePreview: "Live preview", aiPolished: "AI-polished",
-    selected: "Selected", recommended: "Recommended", clear: "Clear", clearFilters: "Clear filters",
-    noTemplatesTitle: "No templates found", noTemplatesSub: "Try removing a filter or searching with a broader term.", fit: "Fit",
-  },
-  fr: {
-    toolName: "Créateur de CV", savedLocally: "Enregistré localement", unsavedChanges: "Modifications non enregistrées",
-    myResumes: "Mes CV", unlimited: "Illimité", free: "gratuits", newResume: "Nouveau CV",
-    untitledResume: "CV sans titre", updated: "Mis à jour", open: "Ouvrir",
-    templatesEyebrow: "Modèles de CV", galleryTitle: "Choisissez un CV adapté à votre carrière",
-    gallerySub: "Commencez avec un modèle professionnel et compatible ATS. Vous pouvez changer les couleurs, les sections et la mise en page à tout moment.",
-    allFree: "Tous les modèles sont gratuits à personnaliser.", badgePdf: "Export PDF", badgeDocx: "Export DOCX", badgeRtl: "Prise en charge RTL",
-    searchTemplates: "Rechercher des modèles", filters: "Filtres", preview: "Aperçu", useTemplate: "Utiliser le modèle",
-    backToTemplates: "Retour aux modèles", complete: "complété", save: "Enregistrer", saveResume: "Enregistrer le CV",
-    customize: "Personnaliser", documentSettings: "Paramètres du document", templateLabel: "Modèle", atsConscious: "Optimisé ATS",
-    languageLabel: "Langue", customizeNote: "La typographie, l'espacement, les couleurs et le format de page restent contrôlés par le modèle sélectionné.",
-    exportingBtn: "Export en cours...", exportBtn: "Exporter", exportTitle: "Exporter votre CV", readyToExport: "Prêt à exporter.",
-    improvementsRemain: "améliorations recommandées restantes.", pdfHint: "Recommandé pour les candidatures", docxHint: "Document Word modifiable",
-    edit: "Modifier", addSection: "Ajouter une section", livePreview: "Aperçu en direct", aiPolished: "Optimisé par IA",
-    selected: "Sélectionné", recommended: "Recommandé", clear: "Effacer", clearFilters: "Effacer les filtres",
-    noTemplatesTitle: "Aucun modèle trouvé", noTemplatesSub: "Essayez de retirer un filtre ou d'élargir votre recherche.", fit: "Ajuster",
-  },
-  es: {
-    toolName: "Creador de currículums", savedLocally: "Guardado localmente", unsavedChanges: "Cambios sin guardar",
-    myResumes: "Mis currículums", unlimited: "Ilimitado", free: "gratis", newResume: "Nuevo currículum",
-    untitledResume: "Currículum sin título", updated: "Actualizado", open: "Abrir",
-    templatesEyebrow: "Plantillas de currículum", galleryTitle: "Elige un currículum que se adapte a tu carrera",
-    gallerySub: "Empieza con una plantilla profesional y compatible con ATS. Puedes cambiar colores, secciones y diseño en cualquier momento.",
-    allFree: "Todas las plantillas son gratis para personalizar.", badgePdf: "Exportar PDF", badgeDocx: "Exportar DOCX", badgeRtl: "Compatible con RTL",
-    searchTemplates: "Buscar plantillas", filters: "Filtros", preview: "Vista previa", useTemplate: "Usar plantilla",
-    backToTemplates: "Volver a las plantillas", complete: "completado", save: "Guardar", saveResume: "Guardar currículum",
-    customize: "Personalizar", documentSettings: "Configuración del documento", templateLabel: "Plantilla", atsConscious: "Optimizado para ATS",
-    languageLabel: "Idioma", customizeNote: "La tipografía, el espaciado, los colores y el tamaño de página los controla la plantilla seleccionada.",
-    exportingBtn: "Exportando...", exportBtn: "Exportar", exportTitle: "Exporta tu currículum", readyToExport: "Listo para exportar.",
-    improvementsRemain: "mejoras recomendadas pendientes.", pdfHint: "Recomendado para candidaturas", docxHint: "Documento de Word editable",
-    edit: "Editar", addSection: "Añadir sección", livePreview: "Vista previa en vivo", aiPolished: "Pulido por IA",
-    selected: "Seleccionada", recommended: "Recomendada", clear: "Borrar", clearFilters: "Borrar filtros",
-    noTemplatesTitle: "No se encontraron plantillas", noTemplatesSub: "Prueba a quitar un filtro o buscar con un término más amplio.", fit: "Ajustar",
-  },
-  ar: {
-    toolName: "منشئ السيرة الذاتية", savedLocally: "محفوظ محلياً", unsavedChanges: "تغييرات غير محفوظة",
-    myResumes: "سيري الذاتية", unlimited: "غير محدود", free: "مجانية", newResume: "سيرة ذاتية جديدة",
-    untitledResume: "سيرة ذاتية بدون عنوان", updated: "آخر تحديث", open: "فتح",
-    templatesEyebrow: "قوالب السيرة الذاتية", galleryTitle: "اختر سيرة ذاتية تناسب مسيرتك المهنية",
-    gallerySub: "ابدأ بقالب احترافي متوافق مع أنظمة تتبع المتقدمين (ATS). يمكنك تغيير الألوان والأقسام والتخطيط في أي وقت.",
-    allFree: "جميع القوالب مجانية للتخصيص.", badgePdf: "تصدير PDF", badgeDocx: "تصدير DOCX", badgeRtl: "دعم الكتابة من اليمين",
-    searchTemplates: "ابحث في القوالب", filters: "عوامل التصفية", preview: "معاينة", useTemplate: "استخدم القالب",
-    backToTemplates: "العودة إلى القوالب", complete: "مكتمل", save: "حفظ", saveResume: "حفظ السيرة الذاتية",
-    customize: "تخصيص", documentSettings: "إعدادات المستند", templateLabel: "القالب", atsConscious: "متوافق مع ATS",
-    languageLabel: "اللغة", customizeNote: "يظل الخط والتباعد والألوان وحجم الصفحة متحكَّماً بها من خلال القالب المحدد.",
-    exportingBtn: "جارٍ التصدير...", exportBtn: "تصدير", exportTitle: "صدّر سيرتك الذاتية", readyToExport: "جاهزة للتصدير.",
-    improvementsRemain: "تحسينات موصى بها متبقية.", pdfHint: "موصى به للتقديم على الوظائف", docxHint: "مستند Word قابل للتعديل",
-    edit: "تحرير", addSection: "إضافة قسم", livePreview: "معاينة مباشرة", aiPolished: "محسّن بالذكاء الاصطناعي",
-    selected: "محدد", recommended: "موصى به", clear: "مسح", clearFilters: "مسح عوامل التصفية",
-    noTemplatesTitle: "لم يتم العثور على قوالب", noTemplatesSub: "حاول إزالة أحد عوامل التصفية أو البحث بمصطلح أوسع.", fit: "ملاءمة",
-  },
-  de: {
-    toolName: "Lebenslauf-Generator", savedLocally: "Lokal gespeichert", unsavedChanges: "Nicht gespeicherte Änderungen",
-    myResumes: "Meine Lebensläufe", unlimited: "Unbegrenzt", free: "kostenlos", newResume: "Neuer Lebenslauf",
-    untitledResume: "Unbenannter Lebenslauf", updated: "Aktualisiert", open: "Öffnen",
-    templatesEyebrow: "Lebenslauf-Vorlagen", galleryTitle: "Wähle einen Lebenslauf, der zu deiner Karriere passt",
-    gallerySub: "Beginne mit einer professionell gestalteten, ATS-freundlichen Vorlage. Farben, Abschnitte und Layout kannst du jederzeit ändern.",
-    allFree: "Alle Vorlagen sind kostenlos anpassbar.", badgePdf: "PDF-Export", badgeDocx: "DOCX-Export", badgeRtl: "RTL-Unterstützung",
-    searchTemplates: "Vorlagen suchen", filters: "Filter", preview: "Vorschau", useTemplate: "Vorlage verwenden",
-    backToTemplates: "Zurück zu den Vorlagen", complete: "abgeschlossen", save: "Speichern", saveResume: "Lebenslauf speichern",
-    customize: "Anpassen", documentSettings: "Dokumenteinstellungen", templateLabel: "Vorlage", atsConscious: "ATS-optimiert",
-    languageLabel: "Sprache", customizeNote: "Typografie, Abstände, Farben und Seitengröße werden weiterhin von der gewählten Vorlage gesteuert.",
-    exportingBtn: "Wird exportiert...", exportBtn: "Exportieren", exportTitle: "Lebenslauf exportieren", readyToExport: "Bereit zum Export.",
-    improvementsRemain: "empfohlene Verbesserungen verbleiben.", pdfHint: "Empfohlen für Bewerbungen", docxHint: "Bearbeitbares Word-Dokument",
-    edit: "Bearbeiten", addSection: "Abschnitt hinzufügen", livePreview: "Live-Vorschau", aiPolished: "KI-optimiert",
-    selected: "Ausgewählt", recommended: "Empfohlen", clear: "Zurücksetzen", clearFilters: "Filter zurücksetzen",
-    noTemplatesTitle: "Keine Vorlagen gefunden", noTemplatesSub: "Entferne einen Filter oder suche mit einem allgemeineren Begriff.", fit: "Anpassen",
-  },
-};
 
 // ── Cover-letter-builder chrome translations (full-site i18n, phase 3) ──
-const COVER_UI = {
-  en: {
-    toolName: "Cover Letter Builder", eyebrow: "Cover letter templates", galleryTitle: "Choose a cover letter style that matches your resume",
-    gallerySub: "Start with a professional letter layout, then edit the content beside a live preview. You can download as PDF when ready.",
-    stylesAvailable: "letter styles available.", resumeMatching: "Resume matching",
-    heading: "Cover Letter", draft: "Draft", essentials: "essentials complete", exportPdf: "Export PDF",
-    notStarted: "Not started", complete: "Complete", missing: "Missing",
-    cardRecipient: "Recipient & company", cardYourInfo: "Your info", cardLetterContent: "Letter content",
-    cardOpening: "Opening", cardBody: "Body", cardClosing: "Closing & signature",
-    lblDate: "Date", lblCompany: "Company", lblRecipientName: "Recipient Name", lblRecipientTitle: "Recipient Title",
-    lblCompanyAddress: "Company Address", lblFullName: "Full Name *", lblJobTitle: "Job Title", lblEmail: "Email",
-    lblPhone: "Phone", lblLocation: "Location", lblSubject: "Subject / Re:", lblSalutation: "Salutation", dear: "Dear",
-    lblBodyParas: "Opening & Body Paragraphs", lblClosingPara: "Closing Paragraph", lblSignoff: "Sign-off",
-    phBody: "Write your paragraphs here.\n\nSeparate paragraphs with a blank line.", phOpening: "Mr. Chen / Hiring Manager",
-    phClosing: "Thank you for your time and consideration. I look forward to speaking with you.", phSignoff: "Sincerely",
-    nextStep: "Next recommended step", nextStepBody: "Add your name to unlock cover letter export.",
-    comingSoon: "Custom cover-letter sections are coming soon.",
-  },
-  fr: {
-    toolName: "Créateur de lettre de motivation", eyebrow: "Modèles de lettre de motivation", galleryTitle: "Choisissez un style de lettre assorti à votre CV",
-    gallerySub: "Commencez avec une mise en page de lettre professionnelle, puis modifiez le contenu à côté d'un aperçu en direct. Vous pourrez télécharger en PDF lorsque vous serez prêt.",
-    stylesAvailable: "styles de lettre disponibles.", resumeMatching: "Assorti au CV",
-    heading: "Lettre de motivation", draft: "Brouillon", essentials: "éléments essentiels complétés", exportPdf: "Exporter en PDF",
-    notStarted: "Non commencé", complete: "Complet", missing: "Incomplet",
-    cardRecipient: "Destinataire et entreprise", cardYourInfo: "Vos informations", cardLetterContent: "Contenu de la lettre",
-    cardOpening: "Introduction", cardBody: "Corps", cardClosing: "Conclusion et signature",
-    lblDate: "Date", lblCompany: "Entreprise", lblRecipientName: "Nom du destinataire", lblRecipientTitle: "Fonction du destinataire",
-    lblCompanyAddress: "Adresse de l'entreprise", lblFullName: "Nom complet *", lblJobTitle: "Intitulé du poste", lblEmail: "E-mail",
-    lblPhone: "Téléphone", lblLocation: "Localisation", lblSubject: "Objet / Concerne :", lblSalutation: "Formule d'appel", dear: "Cher/Chère",
-    lblBodyParas: "Paragraphes d'introduction et de corps", lblClosingPara: "Paragraphe de conclusion", lblSignoff: "Formule de politesse",
-    phBody: "Rédigez vos paragraphes ici.\n\nSéparez les paragraphes par une ligne vide.", phOpening: "M. Chen / Responsable du recrutement",
-    phClosing: "Je vous remercie de votre temps et de votre considération. Dans l'attente de votre réponse.", phSignoff: "Cordialement",
-    nextStep: "Prochaine étape recommandée", nextStepBody: "Ajoutez votre nom pour débloquer l'export de la lettre.",
-    comingSoon: "Les sections personnalisées de lettre arrivent bientôt.",
-  },
-  es: {
-    toolName: "Creador de carta de presentación", eyebrow: "Plantillas de carta de presentación", galleryTitle: "Elige un estilo de carta que combine con tu currículum",
-    gallerySub: "Empieza con un diseño de carta profesional y luego edita el contenido junto a una vista previa en vivo. Puedes descargar en PDF cuando esté listo.",
-    stylesAvailable: "estilos de carta disponibles.", resumeMatching: "A juego con el CV",
-    heading: "Carta de presentación", draft: "Borrador", essentials: "elementos esenciales completados", exportPdf: "Exportar PDF",
-    notStarted: "Sin empezar", complete: "Completo", missing: "Incompleto",
-    cardRecipient: "Destinatario y empresa", cardYourInfo: "Tu información", cardLetterContent: "Contenido de la carta",
-    cardOpening: "Apertura", cardBody: "Cuerpo", cardClosing: "Cierre y firma",
-    lblDate: "Fecha", lblCompany: "Empresa", lblRecipientName: "Nombre del destinatario", lblRecipientTitle: "Cargo del destinatario",
-    lblCompanyAddress: "Dirección de la empresa", lblFullName: "Nombre completo *", lblJobTitle: "Puesto", lblEmail: "Correo",
-    lblPhone: "Teléfono", lblLocation: "Ubicación", lblSubject: "Asunto / Ref.:", lblSalutation: "Saludo", dear: "Estimado/a",
-    lblBodyParas: "Párrafos de apertura y cuerpo", lblClosingPara: "Párrafo de cierre", lblSignoff: "Despedida",
-    phBody: "Escribe tus párrafos aquí.\n\nSepara los párrafos con una línea en blanco.", phOpening: "Sr. Chen / Responsable de contratación",
-    phClosing: "Gracias por su tiempo y consideración. Espero poder conversar con usted.", phSignoff: "Atentamente",
-    nextStep: "Siguiente paso recomendado", nextStepBody: "Añade tu nombre para desbloquear la exportación de la carta.",
-    comingSoon: "Las secciones personalizadas de la carta llegarán pronto.",
-  },
-  ar: {
-    toolName: "منشئ خطاب التقديم", eyebrow: "قوالب خطاب التقديم", galleryTitle: "اختر أسلوب خطاب يتناسب مع سيرتك الذاتية",
-    gallerySub: "ابدأ بتنسيق خطاب احترافي، ثم حرّر المحتوى بجانب معاينة مباشرة. يمكنك التنزيل بصيغة PDF عند الجاهزية.",
-    stylesAvailable: "أنماط خطابات متاحة.", resumeMatching: "متطابق مع السيرة",
-    heading: "خطاب التقديم", draft: "مسودة", essentials: "عناصر أساسية مكتملة", exportPdf: "تصدير PDF",
-    notStarted: "لم يبدأ", complete: "مكتمل", missing: "ناقص",
-    cardRecipient: "المُستلِم والشركة", cardYourInfo: "معلوماتك", cardLetterContent: "محتوى الخطاب",
-    cardOpening: "الافتتاحية", cardBody: "المتن", cardClosing: "الخاتمة والتوقيع",
-    lblDate: "التاريخ", lblCompany: "الشركة", lblRecipientName: "اسم المُستلِم", lblRecipientTitle: "منصب المُستلِم",
-    lblCompanyAddress: "عنوان الشركة", lblFullName: "الاسم الكامل *", lblJobTitle: "المسمى الوظيفي", lblEmail: "البريد الإلكتروني",
-    lblPhone: "الهاتف", lblLocation: "الموقع", lblSubject: "الموضوع / بخصوص:", lblSalutation: "التحية", dear: "عزيزي/عزيزتي",
-    lblBodyParas: "فقرات الافتتاحية والمتن", lblClosingPara: "فقرة الخاتمة", lblSignoff: "خاتمة التوقيع",
-    phBody: "اكتب فقراتك هنا.\n\nافصل بين الفقرات بسطر فارغ.", phOpening: "السيد تشين / مدير التوظيف",
-    phClosing: "شكراً لوقتك واهتمامك. أتطلع إلى التحدث معك.", phSignoff: "مع خالص التقدير",
-    nextStep: "الخطوة التالية الموصى بها", nextStepBody: "أضف اسمك لتفعيل تصدير خطاب التقديم.",
-    comingSoon: "أقسام خطاب التقديم المخصصة قادمة قريباً.",
-  },
-  de: {
-    toolName: "Anschreiben-Generator", eyebrow: "Anschreiben-Vorlagen", galleryTitle: "Wähle einen Anschreiben-Stil, der zu deinem Lebenslauf passt",
-    gallerySub: "Beginne mit einem professionellen Brieflayout und bearbeite dann den Inhalt neben einer Live-Vorschau. Du kannst bei Fertigstellung als PDF herunterladen.",
-    stylesAvailable: "Briefstile verfügbar.", resumeMatching: "Passend zum Lebenslauf",
-    heading: "Anschreiben", draft: "Entwurf", essentials: "wesentliche Felder ausgefüllt", exportPdf: "PDF exportieren",
-    notStarted: "Nicht begonnen", complete: "Vollständig", missing: "Unvollständig",
-    cardRecipient: "Empfänger & Unternehmen", cardYourInfo: "Deine Angaben", cardLetterContent: "Briefinhalt",
-    cardOpening: "Einleitung", cardBody: "Hauptteil", cardClosing: "Abschluss & Unterschrift",
-    lblDate: "Datum", lblCompany: "Unternehmen", lblRecipientName: "Name des Empfängers", lblRecipientTitle: "Position des Empfängers",
-    lblCompanyAddress: "Firmenadresse", lblFullName: "Vollständiger Name *", lblJobTitle: "Berufsbezeichnung", lblEmail: "E-Mail",
-    lblPhone: "Telefon", lblLocation: "Standort", lblSubject: "Betreff / Betr.:", lblSalutation: "Anrede", dear: "Sehr geehrte(r)",
-    lblBodyParas: "Einleitungs- und Hauptabsätze", lblClosingPara: "Schlussabsatz", lblSignoff: "Grußformel",
-    phBody: "Schreibe hier deine Absätze.\n\nTrenne Absätze durch eine Leerzeile.", phOpening: "Herr Chen / Personalverantwortliche(r)",
-    phClosing: "Vielen Dank für Ihre Zeit und Ihr Interesse. Ich freue mich auf ein Gespräch mit Ihnen.", phSignoff: "Mit freundlichen Grüßen",
-    nextStep: "Nächster empfohlener Schritt", nextStepBody: "Füge deinen Namen hinzu, um den Export des Anschreibens freizuschalten.",
-    comingSoon: "Benutzerdefinierte Anschreiben-Abschnitte folgen bald.",
-  },
-};
 
 // ── ATS Checker / Job Tracker / Master Profile translations (phase 4) ──
-const ATS_UI = {
-  en: { toolName: "ATS Checker", freeTool: "Free tool", title: "ATS Resume Checker",
-    sub: "Paste your resume and get an instant ATS score, keyword gap analysis, and a prioritized fix list. Nothing is uploaded; the check runs in your browser.",
-    detected: "Resume text detected from the ATS Checker page.", loadCheck: "Load & check →",
-    yourResume: "Your resume", reading: "Reading…", uploadBtn: "Upload PDF/DOCX", jdLabel: "Job description", optional: "optional",
-    analysing: "Analysing…", checkBtn: "Check My Resume →", scoreDesc: "ATS Readiness Score — reflects structure, completeness, and content quality.",
-    critical: "Critical", warning: "Warning", info: "Info", allClear: "All clear", keywordMatch: "Keyword Match",
-    crossLangPre: "Cross-language matching —", resumeWord: "resume", jdWord: "job description", kwMatchJd: "keyword match with JD",
-    matchedWord: "matched", missingWord: "missing", matchedLabel: "Matched", missingLabel: "Missing", noMissing: "✓ No significant missing keywords!",
-    aiSuggestions: "AI suggestions", aiDesc1: "Sends your resume", aiDescJd: "+ job description",
-    aiDesc2: "to the AI helper to catch semantic & cross-language matches and suggest rewrites. Nothing is sent until you click.",
-    thinking: "Thinking…", getAi: "Get AI suggestions", noIssues: "✓ No significant issues — your resume is well-structured for ATS parsing.",
-    issues: "Issues", fixTitle: "Fix these issues in the builder",
-    fixDesc: "ApplyCraft shows your live ATS score as you type. Pick a template, fill in the gaps, and export a polished PDF or DOCX — free, no account needed.",
-    openBuilder: "Open in Resume Builder →" },
-  fr: { toolName: "Vérificateur ATS", freeTool: "Outil gratuit", title: "Vérificateur de CV ATS",
-    sub: "Collez votre CV et obtenez un score ATS instantané, une analyse des mots-clés manquants et une liste de corrections priorisée. Rien n'est téléversé ; l'analyse s'exécute dans votre navigateur.",
-    detected: "Texte de CV détecté depuis la page du vérificateur ATS.", loadCheck: "Charger et vérifier →",
-    yourResume: "Votre CV", reading: "Lecture…", uploadBtn: "Importer PDF/DOCX", jdLabel: "Description du poste", optional: "facultatif",
-    analysing: "Analyse…", checkBtn: "Vérifier mon CV →", scoreDesc: "Score de compatibilité ATS — reflète la structure, l'exhaustivité et la qualité du contenu.",
-    critical: "Critique", warning: "Avertissement", info: "Info", allClear: "Tout est bon", keywordMatch: "Correspondance des mots-clés",
-    crossLangPre: "Correspondance multilingue —", resumeWord: "CV", jdWord: "description du poste", kwMatchJd: "de correspondance avec l'offre",
-    matchedWord: "trouvés", missingWord: "manquants", matchedLabel: "Trouvés", missingLabel: "Manquants", noMissing: "✓ Aucun mot-clé important manquant !",
-    aiSuggestions: "Suggestions IA", aiDesc1: "Envoie votre CV", aiDescJd: "+ la description du poste",
-    aiDesc2: "à l'assistant IA pour détecter les correspondances sémantiques et multilingues et proposer des reformulations. Rien n'est envoyé avant votre clic.",
-    thinking: "Réflexion…", getAi: "Obtenir des suggestions IA", noIssues: "✓ Aucun problème majeur — votre CV est bien structuré pour l'analyse ATS.",
-    issues: "Problèmes", fixTitle: "Corrigez ces problèmes dans l'éditeur",
-    fixDesc: "ApplyCraft affiche votre score ATS en direct pendant la saisie. Choisissez un modèle, comblez les lacunes et exportez un PDF ou DOCX soigné — gratuit, sans compte.",
-    openBuilder: "Ouvrir dans l'éditeur de CV →" },
-  es: { toolName: "Verificador ATS", freeTool: "Herramienta gratis", title: "Verificador de CV para ATS",
-    sub: "Pega tu currículum y obtén una puntuación ATS al instante, un análisis de palabras clave y una lista de mejoras priorizada. No se sube nada; el análisis se ejecuta en tu navegador.",
-    detected: "Texto de currículum detectado desde la página del verificador ATS.", loadCheck: "Cargar y verificar →",
-    yourResume: "Tu currículum", reading: "Leyendo…", uploadBtn: "Subir PDF/DOCX", jdLabel: "Descripción del puesto", optional: "opcional",
-    analysing: "Analizando…", checkBtn: "Verificar mi currículum →", scoreDesc: "Puntuación de compatibilidad ATS — refleja estructura, integridad y calidad del contenido.",
-    critical: "Crítico", warning: "Advertencia", info: "Info", allClear: "Todo correcto", keywordMatch: "Coincidencia de palabras clave",
-    crossLangPre: "Coincidencia multilingüe —", resumeWord: "currículum", jdWord: "descripción del puesto", kwMatchJd: "de coincidencia con la oferta",
-    matchedWord: "encontradas", missingWord: "faltantes", matchedLabel: "Encontradas", missingLabel: "Faltantes", noMissing: "✓ ¡No faltan palabras clave importantes!",
-    aiSuggestions: "Sugerencias de IA", aiDesc1: "Envía tu currículum", aiDescJd: "+ la descripción del puesto",
-    aiDesc2: "al asistente de IA para detectar coincidencias semánticas y multilingües y sugerir mejoras. No se envía nada hasta que hagas clic.",
-    thinking: "Pensando…", getAi: "Obtener sugerencias de IA", noIssues: "✓ Sin problemas importantes — tu currículum está bien estructurado para el análisis ATS.",
-    issues: "Problemas", fixTitle: "Corrige estos problemas en el editor",
-    fixDesc: "ApplyCraft muestra tu puntuación ATS en vivo mientras escribes. Elige una plantilla, completa lo que falta y exporta un PDF o DOCX pulido — gratis, sin cuenta.",
-    openBuilder: "Abrir en el editor de currículum →" },
-  ar: { toolName: "فاحص ATS", freeTool: "أداة مجانية", title: "فاحص السيرة الذاتية ATS",
-    sub: "الصق سيرتك الذاتية واحصل على درجة ATS فورية، وتحليل لفجوة الكلمات المفتاحية، وقائمة إصلاحات مرتبة حسب الأولوية. لا يتم رفع أي شيء؛ يجري الفحص في متصفحك.",
-    detected: "تم اكتشاف نص السيرة الذاتية من صفحة فاحص ATS.", loadCheck: "تحميل وفحص →",
-    yourResume: "سيرتك الذاتية", reading: "جارٍ القراءة…", uploadBtn: "رفع PDF/DOCX", jdLabel: "وصف الوظيفة", optional: "اختياري",
-    analysing: "جارٍ التحليل…", checkBtn: "افحص سيرتي الذاتية →", scoreDesc: "درجة الجاهزية لأنظمة ATS — تعكس البنية والاكتمال وجودة المحتوى.",
-    critical: "حرِج", warning: "تحذير", info: "معلومة", allClear: "كل شيء سليم", keywordMatch: "تطابق الكلمات المفتاحية",
-    crossLangPre: "تطابق متعدد اللغات —", resumeWord: "السيرة الذاتية", jdWord: "وصف الوظيفة", kwMatchJd: "تطابق مع الوصف الوظيفي",
-    matchedWord: "متطابقة", missingWord: "مفقودة", matchedLabel: "متطابقة", missingLabel: "مفقودة", noMissing: "✓ لا توجد كلمات مفتاحية مهمة مفقودة!",
-    aiSuggestions: "اقتراحات الذكاء الاصطناعي", aiDesc1: "يُرسل سيرتك الذاتية", aiDescJd: "+ وصف الوظيفة",
-    aiDesc2: "إلى مساعد الذكاء الاصطناعي لاكتشاف التطابقات الدلالية ومتعددة اللغات واقتراح إعادة صياغة. لا يُرسل أي شيء حتى تنقر.",
-    thinking: "جارٍ التفكير…", getAi: "احصل على اقتراحات الذكاء الاصطناعي", noIssues: "✓ لا توجد مشكلات مهمة — سيرتك الذاتية جيدة البنية لتحليل ATS.",
-    issues: "المشكلات", fixTitle: "أصلح هذه المشكلات في المُحرِّر",
-    fixDesc: "يعرض ApplyCraft درجة ATS الخاصة بك مباشرةً أثناء الكتابة. اختر قالباً، واملأ الفراغات، وصدّر ملف PDF أو DOCX أنيقاً — مجاناً، دون حساب.",
-    openBuilder: "افتح في مُحرِّر السيرة الذاتية →" },
-  de: { toolName: "ATS-Prüfer", freeTool: "Kostenloses Tool", title: "ATS-Lebenslauf-Prüfer",
-    sub: "Füge deinen Lebenslauf ein und erhalte sofort einen ATS-Score, eine Keyword-Lückenanalyse und eine priorisierte Fehlerliste. Es wird nichts hochgeladen; die Prüfung läuft in deinem Browser.",
-    detected: "Lebenslauftext von der ATS-Prüfer-Seite erkannt.", loadCheck: "Laden & prüfen →",
-    yourResume: "Dein Lebenslauf", reading: "Wird gelesen…", uploadBtn: "PDF/DOCX hochladen", jdLabel: "Stellenbeschreibung", optional: "optional",
-    analysing: "Wird analysiert…", checkBtn: "Meinen Lebenslauf prüfen →", scoreDesc: "ATS-Bereitschaftsscore — spiegelt Struktur, Vollständigkeit und Inhaltsqualität wider.",
-    critical: "Kritisch", warning: "Warnung", info: "Info", allClear: "Alles in Ordnung", keywordMatch: "Keyword-Übereinstimmung",
-    crossLangPre: "Sprachübergreifender Abgleich —", resumeWord: "Lebenslauf", jdWord: "Stellenbeschreibung", kwMatchJd: "Übereinstimmung mit der Stelle",
-    matchedWord: "gefunden", missingWord: "fehlend", matchedLabel: "Gefunden", missingLabel: "Fehlend", noMissing: "✓ Keine wichtigen Keywords fehlen!",
-    aiSuggestions: "KI-Vorschläge", aiDesc1: "Sendet deinen Lebenslauf", aiDescJd: "+ die Stellenbeschreibung",
-    aiDesc2: "an den KI-Helfer, um semantische und sprachübergreifende Treffer zu erkennen und Umformulierungen vorzuschlagen. Es wird nichts gesendet, bis du klickst.",
-    thinking: "Denkt nach…", getAi: "KI-Vorschläge erhalten", noIssues: "✓ Keine wichtigen Probleme — dein Lebenslauf ist gut für die ATS-Analyse strukturiert.",
-    issues: "Probleme", fixTitle: "Behebe diese Probleme im Editor",
-    fixDesc: "ApplyCraft zeigt deinen ATS-Score live beim Tippen. Wähle eine Vorlage, fülle die Lücken und exportiere ein sauberes PDF oder DOCX — kostenlos, ohne Konto.",
-    openBuilder: "Im Lebenslauf-Editor öffnen →" },
-};
-const TRACKER_UI = {
-  en: { toolName: "Job Tracker", eyebrow: "Application pipeline", title: "Job Tracker",
-    sub: "Track every opportunity from saved role to offer without leaving your career workspace.", tracked: "applications tracked",
-    statApplied: "Applied", statInterviews: "Interviews", statOffers: "Offers",
-    colSaved: "Saved", colPreparing: "Preparing", colApplied: "Applied", colInterview: "Interview", colOffer: "Offer", colRejected: "Rejected",
-    dropHere: "Drop cards here", companyPh: "Company", positionPh: "Position",
-    emptyTitle: "Start tracking your applications", emptySub: "Click + in any column, or drag cards between stages as you progress.", addFirst: "Add first application",
-    newApplication: "New Application", application: "Application", stage: "Stage",
-    lblCompany: "Company *", lblPosition: "Position *", lblSalary: "Salary / Range", lblLink: "Job listing URL", lblRecruiter: "Recruiter contact",
-    lblResume: "Resume used", lblCover: "Cover letter used", lblInterviewDate: "Interview date", lblReminder: "Follow-up reminder",
-    lblJobDesc: "Job description / key requirements", phJobDesc: "Paste the job description or key points to tailor your resume...",
-    lblNotes: "Notes", phNotes: "Interview feedback, impressions, to-dos...",
-    addApp: "Add application", saveChanges: "Save changes", cancel: "Cancel", delete: "Delete" },
-  fr: { toolName: "Suivi des candidatures", eyebrow: "Pipeline de candidatures", title: "Suivi des candidatures",
-    sub: "Suivez chaque opportunité, du poste enregistré à l'offre, sans quitter votre espace carrière.", tracked: "candidatures suivies",
-    statApplied: "Postulé", statInterviews: "Entretiens", statOffers: "Offres",
-    colSaved: "Enregistré", colPreparing: "En préparation", colApplied: "Postulé", colInterview: "Entretien", colOffer: "Offre", colRejected: "Refusé",
-    dropHere: "Déposez les cartes ici", companyPh: "Entreprise", positionPh: "Poste",
-    emptyTitle: "Commencez à suivre vos candidatures", emptySub: "Cliquez sur + dans une colonne, ou faites glisser les cartes entre les étapes au fur et à mesure.", addFirst: "Ajouter une première candidature",
-    newApplication: "Nouvelle candidature", application: "Candidature", stage: "Étape",
-    lblCompany: "Entreprise *", lblPosition: "Poste *", lblSalary: "Salaire / Fourchette", lblLink: "URL de l'offre", lblRecruiter: "Contact du recruteur",
-    lblResume: "CV utilisé", lblCover: "Lettre utilisée", lblInterviewDate: "Date d'entretien", lblReminder: "Rappel de relance",
-    lblJobDesc: "Description du poste / exigences clés", phJobDesc: "Collez la description du poste ou les points clés pour adapter votre CV...",
-    lblNotes: "Notes", phNotes: "Retours d'entretien, impressions, tâches à faire...",
-    addApp: "Ajouter la candidature", saveChanges: "Enregistrer", cancel: "Annuler", delete: "Supprimer" },
-  es: { toolName: "Seguimiento de empleos", eyebrow: "Flujo de candidaturas", title: "Seguimiento de empleos",
-    sub: "Sigue cada oportunidad, desde el puesto guardado hasta la oferta, sin salir de tu espacio de carrera.", tracked: "candidaturas en seguimiento",
-    statApplied: "Postulado", statInterviews: "Entrevistas", statOffers: "Ofertas",
-    colSaved: "Guardado", colPreparing: "Preparando", colApplied: "Postulado", colInterview: "Entrevista", colOffer: "Oferta", colRejected: "Rechazado",
-    dropHere: "Suelta las tarjetas aquí", companyPh: "Empresa", positionPh: "Puesto",
-    emptyTitle: "Empieza a seguir tus candidaturas", emptySub: "Haz clic en + en cualquier columna, o arrastra las tarjetas entre etapas según avances.", addFirst: "Añadir primera candidatura",
-    newApplication: "Nueva candidatura", application: "Candidatura", stage: "Etapa",
-    lblCompany: "Empresa *", lblPosition: "Puesto *", lblSalary: "Salario / Rango", lblLink: "URL de la oferta", lblRecruiter: "Contacto del reclutador",
-    lblResume: "Currículum usado", lblCover: "Carta usada", lblInterviewDate: "Fecha de entrevista", lblReminder: "Recordatorio de seguimiento",
-    lblJobDesc: "Descripción del puesto / requisitos clave", phJobDesc: "Pega la descripción del puesto o los puntos clave para adaptar tu currículum...",
-    lblNotes: "Notas", phNotes: "Comentarios de entrevistas, impresiones, tareas...",
-    addApp: "Añadir candidatura", saveChanges: "Guardar cambios", cancel: "Cancelar", delete: "Eliminar" },
-  ar: { toolName: "متابعة الوظائف", eyebrow: "مسار التقديمات", title: "متابعة الوظائف",
-    sub: "تابع كل فرصة من الوظيفة المحفوظة حتى العرض دون مغادرة مساحة عملك المهنية.", tracked: "تقديمات متابَعة",
-    statApplied: "تم التقديم", statInterviews: "المقابلات", statOffers: "العروض",
-    colSaved: "محفوظة", colPreparing: "قيد الإعداد", colApplied: "تم التقديم", colInterview: "مقابلة", colOffer: "عرض", colRejected: "مرفوضة",
-    dropHere: "أفلِت البطاقات هنا", companyPh: "الشركة", positionPh: "المنصب",
-    emptyTitle: "ابدأ بمتابعة تقديماتك", emptySub: "انقر على + في أي عمود، أو اسحب البطاقات بين المراحل أثناء تقدمك.", addFirst: "أضف أول تقديم",
-    newApplication: "تقديم جديد", application: "تقديم", stage: "المرحلة",
-    lblCompany: "الشركة *", lblPosition: "المنصب *", lblSalary: "الراتب / النطاق", lblLink: "رابط الوظيفة", lblRecruiter: "جهة اتصال المُوظِّف",
-    lblResume: "السيرة الذاتية المستخدمة", lblCover: "خطاب التقديم المستخدم", lblInterviewDate: "تاريخ المقابلة", lblReminder: "تذكير بالمتابعة",
-    lblJobDesc: "وصف الوظيفة / المتطلبات الأساسية", phJobDesc: "الصق وصف الوظيفة أو النقاط الأساسية لتخصيص سيرتك الذاتية...",
-    lblNotes: "ملاحظات", phNotes: "ملاحظات المقابلة، الانطباعات، المهام...",
-    addApp: "أضف التقديم", saveChanges: "حفظ التغييرات", cancel: "إلغاء", delete: "حذف" },
-  de: { toolName: "Bewerbungs-Tracker", eyebrow: "Bewerbungs-Pipeline", title: "Bewerbungs-Tracker",
-    sub: "Verfolge jede Gelegenheit von der gespeicherten Stelle bis zum Angebot, ohne deinen Karriere-Arbeitsbereich zu verlassen.", tracked: "Bewerbungen verfolgt",
-    statApplied: "Beworben", statInterviews: "Interviews", statOffers: "Angebote",
-    colSaved: "Gespeichert", colPreparing: "In Vorbereitung", colApplied: "Beworben", colInterview: "Interview", colOffer: "Angebot", colRejected: "Abgelehnt",
-    dropHere: "Karten hier ablegen", companyPh: "Unternehmen", positionPh: "Position",
-    emptyTitle: "Beginne, deine Bewerbungen zu verfolgen", emptySub: "Klicke auf + in einer Spalte oder ziehe Karten zwischen den Phasen, während du Fortschritte machst.", addFirst: "Erste Bewerbung hinzufügen",
-    newApplication: "Neue Bewerbung", application: "Bewerbung", stage: "Phase",
-    lblCompany: "Unternehmen *", lblPosition: "Position *", lblSalary: "Gehalt / Spanne", lblLink: "Stellen-URL", lblRecruiter: "Recruiter-Kontakt",
-    lblResume: "Verwendeter Lebenslauf", lblCover: "Verwendetes Anschreiben", lblInterviewDate: "Interviewtermin", lblReminder: "Nachfass-Erinnerung",
-    lblJobDesc: "Stellenbeschreibung / Kernanforderungen", phJobDesc: "Füge die Stellenbeschreibung oder Kernpunkte ein, um deinen Lebenslauf anzupassen...",
-    lblNotes: "Notizen", phNotes: "Interview-Feedback, Eindrücke, To-dos...",
-    addApp: "Bewerbung hinzufügen", saveChanges: "Änderungen speichern", cancel: "Abbrechen", delete: "Löschen" },
-};
-const MASTER_UI = {
-  en: { title: "Master Profile", subEmpty: "Build your complete career profile once. Generate any tailored resume from it.",
-    subItems: "career items · generates any tailored resume in seconds", tailorBtn: "Tailor for a Job",
-    tabPersonal: "Personal", tabExperience: "Experience", tabEducation: "Education", tabSkills: "Skills", tabMore: "More",
-    tailorTitle: "Tailor for a Specific Job", tailorDesc: "Paste the job description — we'll score your profile against it and let you select exactly what to include.",
-    tailorPh: "Paste the full job description here...", analyze: "Analyze →", kwExtracted: "keywords extracted",
-    selectInclude: "Select what to include in your tailored resume:", workExperience: "Work Experience", education: "Education", skills: "Skills",
-    projects: "Projects", certifications: "Certifications", languages: "Languages", generateTailored: "Generate Tailored Resume →", cancel: "Cancel" },
-  fr: { title: "Profil principal", subEmpty: "Créez une fois votre profil de carrière complet. Générez-en n'importe quel CV personnalisé.",
-    subItems: "éléments de carrière · génère un CV personnalisé en quelques secondes", tailorBtn: "Adapter à une offre",
-    tabPersonal: "Personnel", tabExperience: "Expérience", tabEducation: "Formation", tabSkills: "Compétences", tabMore: "Plus",
-    tailorTitle: "Adapter à une offre précise", tailorDesc: "Collez la description du poste — nous évaluerons votre profil et vous laisserons choisir exactement quoi inclure.",
-    tailorPh: "Collez la description complète du poste ici...", analyze: "Analyser →", kwExtracted: "mots-clés extraits",
-    selectInclude: "Sélectionnez ce qu'il faut inclure dans votre CV personnalisé :", workExperience: "Expérience professionnelle", education: "Formation", skills: "Compétences",
-    projects: "Projets", certifications: "Certifications", languages: "Langues", generateTailored: "Générer le CV personnalisé →", cancel: "Annuler" },
-  es: { title: "Perfil maestro", subEmpty: "Crea una vez tu perfil de carrera completo. Genera desde él cualquier currículum personalizado.",
-    subItems: "elementos de carrera · genera cualquier currículum personalizado en segundos", tailorBtn: "Adaptar a un empleo",
-    tabPersonal: "Personal", tabExperience: "Experiencia", tabEducation: "Educación", tabSkills: "Habilidades", tabMore: "Más",
-    tailorTitle: "Adaptar a un empleo concreto", tailorDesc: "Pega la descripción del puesto — puntuaremos tu perfil y te dejaremos elegir exactamente qué incluir.",
-    tailorPh: "Pega aquí la descripción completa del puesto...", analyze: "Analizar →", kwExtracted: "palabras clave extraídas",
-    selectInclude: "Selecciona qué incluir en tu currículum personalizado:", workExperience: "Experiencia laboral", education: "Educación", skills: "Habilidades",
-    projects: "Proyectos", certifications: "Certificaciones", languages: "Idiomas", generateTailored: "Generar currículum personalizado →", cancel: "Cancelar" },
-  ar: { title: "الملف الرئيسي", subEmpty: "أنشئ ملفك المهني الكامل مرة واحدة. ووَلِّد منه أي سيرة ذاتية مخصصة.",
-    subItems: "عنصراً مهنياً · يولّد أي سيرة ذاتية مخصصة في ثوانٍ", tailorBtn: "خصّص لوظيفة",
-    tabPersonal: "شخصي", tabExperience: "الخبرة", tabEducation: "التعليم", tabSkills: "المهارات", tabMore: "المزيد",
-    tailorTitle: "خصّص لوظيفة محددة", tailorDesc: "الصق وصف الوظيفة — سنقيّم ملفك مقابله وندعك تختار بالضبط ما يُدرَج.",
-    tailorPh: "الصق وصف الوظيفة الكامل هنا...", analyze: "تحليل →", kwExtracted: "كلمة مفتاحية مُستخرَجة",
-    selectInclude: "اختر ما يُدرَج في سيرتك الذاتية المخصصة:", workExperience: "الخبرة العملية", education: "التعليم", skills: "المهارات",
-    projects: "المشاريع", certifications: "الشهادات", languages: "اللغات", generateTailored: "ولّد السيرة الذاتية المخصصة →", cancel: "إلغاء" },
-  de: { title: "Master-Profil", subEmpty: "Erstelle einmal dein vollständiges Karriereprofil. Generiere daraus jeden maßgeschneiderten Lebenslauf.",
-    subItems: "Karriere-Einträge · generiert jeden maßgeschneiderten Lebenslauf in Sekunden", tailorBtn: "An eine Stelle anpassen",
-    tabPersonal: "Persönlich", tabExperience: "Erfahrung", tabEducation: "Ausbildung", tabSkills: "Fähigkeiten", tabMore: "Mehr",
-    tailorTitle: "An eine bestimmte Stelle anpassen", tailorDesc: "Füge die Stellenbeschreibung ein — wir bewerten dein Profil dagegen und lassen dich genau auswählen, was aufgenommen wird.",
-    tailorPh: "Füge hier die vollständige Stellenbeschreibung ein...", analyze: "Analysieren →", kwExtracted: "Keywords extrahiert",
-    selectInclude: "Wähle aus, was in deinen maßgeschneiderten Lebenslauf aufgenommen wird:", workExperience: "Berufserfahrung", education: "Ausbildung", skills: "Fähigkeiten",
-    projects: "Projekte", certifications: "Zertifizierungen", languages: "Sprachen", generateTailored: "Maßgeschneiderten Lebenslauf erstellen →", cancel: "Abbrechen" },
-};
 // ── Toast / status-message translations (phase 5) ──
-const STATUS_UI = {
-  en: { photoType: "Profile photo must be JPG, PNG, or WebP and under 2 MB.", photoRead: "Could not read the selected image.",
-    draftFail: "Could not save this draft in your browser.", resumeSaved: "Resume saved.", accountToSave: "Create a free account to save your resume.",
-    newStarted: "Started a new resume.", linkCopied: "Shareable link copied to clipboard.", copied: "Copied.", resumeTextCopied: "Resume text copied to clipboard",
-    incompleteDownload: "Downloaded resume may be incomplete. Add name, experience, and skills when ready.",
-    pdfDownloaded: "PDF downloaded.", pdfSuccess: "PDF downloaded. You can keep editing or create a matching cover letter.", pdfFail: "PDF download failed. Your resume is still saved in this browser.",
-    docxDownloaded: "DOCX downloaded.", docxSuccess: "DOCX downloaded. You can keep editing or create a matching cover letter.", docxFail: "DOCX download failed. Your resume is still saved in this browser.",
-    noReadableText: "That file had no readable text (it may be a scanned image). Paste the text instead.", couldntReadFile: "Couldn't read that file. Paste your resume text instead.",
-    resumeImported: "Resume imported into the builder.", readingResume: "Reading your resume…", importedReview: "Resume imported — review your details below.",
-    couldntReadAuto: "Couldn't read that file automatically — you can paste your text in the ATS Checker instead.", localDataDeleted: "ApplyCraft local data deleted from this browser.", pdfNonLatin: "PDF export uses Latin-script fonts. For Arabic or other non-Latin scripts, use DOCX export so the text is preserved." },
-  fr: { photoType: "La photo de profil doit être au format JPG, PNG ou WebP et faire moins de 2 Mo.", photoRead: "Impossible de lire l'image sélectionnée.",
-    draftFail: "Impossible d'enregistrer ce brouillon dans votre navigateur.", resumeSaved: "CV enregistré.", accountToSave: "Créez un compte gratuit pour enregistrer votre CV.",
-    newStarted: "Nouveau CV commencé.", linkCopied: "Lien de partage copié dans le presse-papiers.", copied: "Copié.", resumeTextCopied: "Texte du CV copié dans le presse-papiers",
-    incompleteDownload: "Le CV téléchargé est peut-être incomplet. Ajoutez le nom, l'expérience et les compétences quand vous serez prêt.",
-    pdfDownloaded: "PDF téléchargé.", pdfSuccess: "PDF téléchargé. Vous pouvez continuer à modifier ou créer une lettre de motivation assortie.", pdfFail: "Échec du téléchargement du PDF. Votre CV reste enregistré dans ce navigateur.",
-    docxDownloaded: "DOCX téléchargé.", docxSuccess: "DOCX téléchargé. Vous pouvez continuer à modifier ou créer une lettre de motivation assortie.", docxFail: "Échec du téléchargement du DOCX. Votre CV reste enregistré dans ce navigateur.",
-    noReadableText: "Ce fichier ne contenait aucun texte lisible (il s'agit peut-être d'une image scannée). Collez plutôt le texte.", couldntReadFile: "Impossible de lire ce fichier. Collez plutôt le texte de votre CV.",
-    resumeImported: "CV importé dans l'éditeur.", readingResume: "Lecture de votre CV…", importedReview: "CV importé — vérifiez vos informations ci-dessous.",
-    couldntReadAuto: "Impossible de lire ce fichier automatiquement — vous pouvez coller votre texte dans le vérificateur ATS.", localDataDeleted: "Données locales d'ApplyCraft supprimées de ce navigateur.", pdfNonLatin: "L'export PDF utilise des polices latines. Pour l'arabe ou d'autres écritures non latines, utilisez l'export DOCX pour préserver le texte." },
-  es: { photoType: "La foto de perfil debe ser JPG, PNG o WebP y pesar menos de 2 MB.", photoRead: "No se pudo leer la imagen seleccionada.",
-    draftFail: "No se pudo guardar este borrador en tu navegador.", resumeSaved: "Currículum guardado.", accountToSave: "Crea una cuenta gratis para guardar tu currículum.",
-    newStarted: "Has empezado un nuevo currículum.", linkCopied: "Enlace para compartir copiado al portapapeles.", copied: "Copiado.", resumeTextCopied: "Texto del currículum copiado al portapapeles",
-    incompleteDownload: "El currículum descargado puede estar incompleto. Añade nombre, experiencia y habilidades cuando estés listo.",
-    pdfDownloaded: "PDF descargado.", pdfSuccess: "PDF descargado. Puedes seguir editando o crear una carta de presentación a juego.", pdfFail: "Error al descargar el PDF. Tu currículum sigue guardado en este navegador.",
-    docxDownloaded: "DOCX descargado.", docxSuccess: "DOCX descargado. Puedes seguir editando o crear una carta de presentación a juego.", docxFail: "Error al descargar el DOCX. Tu currículum sigue guardado en este navegador.",
-    noReadableText: "Ese archivo no tenía texto legible (puede ser una imagen escaneada). Pega el texto en su lugar.", couldntReadFile: "No se pudo leer ese archivo. Pega el texto de tu currículum en su lugar.",
-    resumeImported: "Currículum importado al editor.", readingResume: "Leyendo tu currículum…", importedReview: "Currículum importado — revisa tus datos abajo.",
-    couldntReadAuto: "No se pudo leer ese archivo automáticamente — puedes pegar el texto en el verificador ATS.", localDataDeleted: "Datos locales de ApplyCraft eliminados de este navegador.", pdfNonLatin: "La exportación PDF usa fuentes latinas. Para árabe u otras escrituras no latinas, usa la exportación DOCX para conservar el texto." },
-  ar: { photoType: "يجب أن تكون صورة الملف الشخصي بصيغة JPG أو PNG أو WebP وأقل من 2 ميغابايت.", photoRead: "تعذّرت قراءة الصورة المحددة.",
-    draftFail: "تعذّر حفظ هذه المسودة في متصفحك.", resumeSaved: "تم حفظ السيرة الذاتية.", accountToSave: "أنشئ حساباً مجانياً لحفظ سيرتك الذاتية.",
-    newStarted: "تم بدء سيرة ذاتية جديدة.", linkCopied: "تم نسخ رابط المشاركة إلى الحافظة.", copied: "تم النسخ.", resumeTextCopied: "تم نسخ نص السيرة الذاتية إلى الحافظة",
-    incompleteDownload: "قد تكون السيرة الذاتية المُنزَّلة غير مكتملة. أضف الاسم والخبرة والمهارات عند الجاهزية.",
-    pdfDownloaded: "تم تنزيل PDF.", pdfSuccess: "تم تنزيل PDF. يمكنك متابعة التحرير أو إنشاء خطاب تقديم مطابق.", pdfFail: "فشل تنزيل PDF. سيرتك الذاتية لا تزال محفوظة في هذا المتصفح.",
-    docxDownloaded: "تم تنزيل DOCX.", docxSuccess: "تم تنزيل DOCX. يمكنك متابعة التحرير أو إنشاء خطاب تقديم مطابق.", docxFail: "فشل تنزيل DOCX. سيرتك الذاتية لا تزال محفوظة في هذا المتصفح.",
-    noReadableText: "لم يحتوِ هذا الملف على نص قابل للقراءة (قد يكون صورة ممسوحة ضوئياً). الصق النص بدلاً من ذلك.", couldntReadFile: "تعذّرت قراءة هذا الملف. الصق نص سيرتك الذاتية بدلاً من ذلك.",
-    resumeImported: "تم استيراد السيرة الذاتية إلى المُحرِّر.", readingResume: "جارٍ قراءة سيرتك الذاتية…", importedReview: "تم استيراد السيرة الذاتية — راجع بياناتك أدناه.",
-    couldntReadAuto: "تعذّرت قراءة هذا الملف تلقائياً — يمكنك لصق النص في فاحص ATS.", localDataDeleted: "تم حذف بيانات ApplyCraft المحلية من هذا المتصفح.", pdfNonLatin: "يستخدم تصدير PDF خطوطاً لاتينية. للعربية أو الكتابات غير اللاتينية، استخدم تصدير DOCX للحفاظ على النص." },
-  de: { photoType: "Das Profilfoto muss JPG, PNG oder WebP sein und unter 2 MB liegen.", photoRead: "Das ausgewählte Bild konnte nicht gelesen werden.",
-    draftFail: "Dieser Entwurf konnte in deinem Browser nicht gespeichert werden.", resumeSaved: "Lebenslauf gespeichert.", accountToSave: "Erstelle ein kostenloses Konto, um deinen Lebenslauf zu speichern.",
-    newStarted: "Neuen Lebenslauf begonnen.", linkCopied: "Freigabelink in die Zwischenablage kopiert.", copied: "Kopiert.", resumeTextCopied: "Lebenslauftext in die Zwischenablage kopiert",
-    incompleteDownload: "Der heruntergeladene Lebenslauf ist möglicherweise unvollständig. Ergänze Name, Erfahrung und Fähigkeiten, wenn du bereit bist.",
-    pdfDownloaded: "PDF heruntergeladen.", pdfSuccess: "PDF heruntergeladen. Du kannst weiter bearbeiten oder ein passendes Anschreiben erstellen.", pdfFail: "PDF-Download fehlgeschlagen. Dein Lebenslauf ist weiterhin in diesem Browser gespeichert.",
-    docxDownloaded: "DOCX heruntergeladen.", docxSuccess: "DOCX heruntergeladen. Du kannst weiter bearbeiten oder ein passendes Anschreiben erstellen.", docxFail: "DOCX-Download fehlgeschlagen. Dein Lebenslauf ist weiterhin in diesem Browser gespeichert.",
-    noReadableText: "Diese Datei enthielt keinen lesbaren Text (möglicherweise ein gescanntes Bild). Füge stattdessen den Text ein.", couldntReadFile: "Diese Datei konnte nicht gelesen werden. Füge stattdessen deinen Lebenslauftext ein.",
-    resumeImported: "Lebenslauf in den Editor importiert.", readingResume: "Dein Lebenslauf wird gelesen…", importedReview: "Lebenslauf importiert — überprüfe deine Angaben unten.",
-    couldntReadAuto: "Diese Datei konnte nicht automatisch gelesen werden — du kannst den Text in den ATS-Prüfer einfügen.", localDataDeleted: "Lokale ApplyCraft-Daten aus diesem Browser gelöscht.", pdfNonLatin: "Der PDF-Export nutzt lateinische Schriften. Für Arabisch oder andere nicht-lateinische Schriften nutze den DOCX-Export, um den Text zu erhalten." },
-};
 // ── Modal translations (upload-resume + feedback) (phase 5) ──
-const MODAL_UI = {
-  en: {
-    upload: { fileErr: "Please upload a PDF or DOCX file under 8 MB.", emailReq: "Email address is required.", emailInvalid: "Enter a valid email address.",
-      selectFirst: "Please select a resume file first.", title: "Upload resume", desc: "Upload your existing resume and we'll pre-fill the editor so you can improve it.",
-      dragDrop: "Drag & drop or click to browse", pdfMax: "PDF or DOCX · max 8 MB", clickChange: "click to change", emailLabel: "Email address", improveBtn: "Improve my resume →", close: "Close" },
-    feedback: { r1: "Not helpful", r2: "Okay", r3: "Helpful", r4: "Really good", r5: "Love it!", thankYou: "Thank you!",
-      thankDesc: "Your feedback means a lot and directly shapes what gets built next.", done: "Done", title: "Share your experience",
-      desc: "How has ApplyCraft helped you? Your honest feedback shapes what gets built next.", rateQ: "How would you rate it?", diffQ: "What made the difference?",
-      msgPh: "Tell us what helped, what could be better, or share your win...", emailLabel: "Email", emailOptional: "(optional — only if you'd like a reply)",
-      errGeneric: "Something went wrong — please try again.", sending: "Sending…", send: "Send feedback →" },
-  },
-  fr: {
-    upload: { fileErr: "Veuillez importer un fichier PDF ou DOCX de moins de 8 Mo.", emailReq: "L'adresse e-mail est requise.", emailInvalid: "Saisissez une adresse e-mail valide.",
-      selectFirst: "Veuillez d'abord sélectionner un fichier de CV.", title: "Importer un CV", desc: "Importez votre CV existant et nous pré-remplirons l'éditeur pour que vous puissiez l'améliorer.",
-      dragDrop: "Glissez-déposez ou cliquez pour parcourir", pdfMax: "PDF ou DOCX · max 8 Mo", clickChange: "cliquer pour changer", emailLabel: "Adresse e-mail", improveBtn: "Améliorer mon CV →", close: "Fermer" },
-    feedback: { r1: "Pas utile", r2: "Correct", r3: "Utile", r4: "Très bien", r5: "J'adore !", thankYou: "Merci !",
-      thankDesc: "Votre avis compte beaucoup et oriente directement les prochaines fonctionnalités.", done: "Terminé", title: "Partagez votre expérience",
-      desc: "Comment ApplyCraft vous a-t-il aidé ? Votre avis sincère oriente les prochaines fonctionnalités.", rateQ: "Quelle note lui donneriez-vous ?", diffQ: "Qu'est-ce qui a fait la différence ?",
-      msgPh: "Dites-nous ce qui a aidé, ce qui pourrait être amélioré, ou partagez votre réussite...", emailLabel: "E-mail", emailOptional: "(facultatif — uniquement si vous souhaitez une réponse)",
-      errGeneric: "Une erreur s'est produite — veuillez réessayer.", sending: "Envoi…", send: "Envoyer l'avis →" },
-  },
-  es: {
-    upload: { fileErr: "Sube un archivo PDF o DOCX de menos de 8 MB.", emailReq: "La dirección de correo es obligatoria.", emailInvalid: "Introduce una dirección de correo válida.",
-      selectFirst: "Primero selecciona un archivo de currículum.", title: "Subir currículum", desc: "Sube tu currículum actual y rellenaremos el editor para que puedas mejorarlo.",
-      dragDrop: "Arrastra y suelta o haz clic para explorar", pdfMax: "PDF o DOCX · máx. 8 MB", clickChange: "haz clic para cambiar", emailLabel: "Dirección de correo", improveBtn: "Mejorar mi currículum →", close: "Cerrar" },
-    feedback: { r1: "Nada útil", r2: "Regular", r3: "Útil", r4: "Muy bueno", r5: "¡Me encanta!", thankYou: "¡Gracias!",
-      thankDesc: "Tu opinión significa mucho y define directamente lo próximo que construiremos.", done: "Listo", title: "Comparte tu experiencia",
-      desc: "¿Cómo te ha ayudado ApplyCraft? Tu opinión sincera define lo próximo que construiremos.", rateQ: "¿Cómo lo valorarías?", diffQ: "¿Qué marcó la diferencia?",
-      msgPh: "Cuéntanos qué te ayudó, qué se podría mejorar o comparte tu logro...", emailLabel: "Correo", emailOptional: "(opcional — solo si quieres una respuesta)",
-      errGeneric: "Algo salió mal — inténtalo de nuevo.", sending: "Enviando…", send: "Enviar opinión →" },
-  },
-  ar: {
-    upload: { fileErr: "يرجى رفع ملف PDF أو DOCX أقل من 8 ميغابايت.", emailReq: "عنوان البريد الإلكتروني مطلوب.", emailInvalid: "أدخل عنوان بريد إلكتروني صالحاً.",
-      selectFirst: "يرجى اختيار ملف السيرة الذاتية أولاً.", title: "رفع سيرة ذاتية", desc: "ارفع سيرتك الذاتية الحالية وسنملأ المحرر مسبقاً لتتمكن من تحسينها.",
-      dragDrop: "اسحب وأفلت أو انقر للتصفح", pdfMax: "PDF أو DOCX · بحد أقصى 8 ميغابايت", clickChange: "انقر للتغيير", emailLabel: "عنوان البريد الإلكتروني", improveBtn: "حسّن سيرتي الذاتية →", close: "إغلاق" },
-    feedback: { r1: "غير مفيد", r2: "مقبول", r3: "مفيد", r4: "جيد جداً", r5: "أحببته!", thankYou: "شكراً لك!",
-      thankDesc: "رأيك يعني لنا الكثير ويوجّه مباشرةً ما سنبنيه لاحقاً.", done: "تم", title: "شاركنا تجربتك",
-      desc: "كيف ساعدك ApplyCraft؟ رأيك الصادق يوجّه ما سنبنيه لاحقاً.", rateQ: "كيف تقيّمه؟", diffQ: "ما الذي أحدث الفرق؟",
-      msgPh: "أخبرنا بما ساعدك، وما يمكن تحسينه، أو شاركنا إنجازك...", emailLabel: "البريد الإلكتروني", emailOptional: "(اختياري — فقط إذا كنت ترغب في رد)",
-      errGeneric: "حدث خطأ ما — يرجى المحاولة مرة أخرى.", sending: "جارٍ الإرسال…", send: "إرسال الرأي →" },
-  },
-  de: {
-    upload: { fileErr: "Bitte lade eine PDF- oder DOCX-Datei unter 8 MB hoch.", emailReq: "E-Mail-Adresse ist erforderlich.", emailInvalid: "Gib eine gültige E-Mail-Adresse ein.",
-      selectFirst: "Bitte wähle zuerst eine Lebenslaufdatei aus.", title: "Lebenslauf hochladen", desc: "Lade deinen bestehenden Lebenslauf hoch und wir füllen den Editor vor, damit du ihn verbessern kannst.",
-      dragDrop: "Ziehen & ablegen oder zum Durchsuchen klicken", pdfMax: "PDF oder DOCX · max. 8 MB", clickChange: "zum Ändern klicken", emailLabel: "E-Mail-Adresse", improveBtn: "Meinen Lebenslauf verbessern →", close: "Schließen" },
-    feedback: { r1: "Nicht hilfreich", r2: "Okay", r3: "Hilfreich", r4: "Richtig gut", r5: "Liebe es!", thankYou: "Danke!",
-      thankDesc: "Dein Feedback bedeutet uns viel und prägt direkt, was als Nächstes gebaut wird.", done: "Fertig", title: "Teile deine Erfahrung",
-      desc: "Wie hat ApplyCraft dir geholfen? Dein ehrliches Feedback prägt, was als Nächstes gebaut wird.", rateQ: "Wie würdest du es bewerten?", diffQ: "Was hat den Unterschied gemacht?",
-      msgPh: "Sag uns, was geholfen hat, was besser sein könnte, oder teile deinen Erfolg...", emailLabel: "E-Mail", emailOptional: "(optional — nur wenn du eine Antwort möchtest)",
-      errGeneric: "Etwas ist schiefgelaufen — bitte versuche es erneut.", sending: "Wird gesendet…", send: "Feedback senden →" },
-  },
-};
 // ── Landing marketing-body translations (phase 6) ──
-const LANDING2_UI = {
-  en: {
-    mp: { eyebrow: "Master Profile", t1: "Build once.", t2: "Tailor for everything.",
-      desc: "Create your complete career profile a single time — every job, every skill, every achievement. Paste a job description and get a perfectly tailored resume in seconds. No retyping, ever.",
-      btn: "Build my Master Profile →", s1: "Fill your complete career history once", s2: "Paste any job description", s3: "AI scores and selects relevant items", s4: "One-click tailored resume, ready to send" },
-    hiw: { eyebrow: "How it works", title: "A polished CV in three steps",
-      s1t: "Pick a template", s1d: "Choose from {n} professional designs — from minimal to bold. Templates use ATS-conscious structure.",
-      s2t: "Fill in your details", s2d: "Type directly into the live form. The preview updates in real time as you write.",
-      s3t: "Download & apply", s3d: "Export as PDF or DOCX in your chosen language. Ready to send in under 5 minutes.", browse: "Browse templates" },
-    strip: { suffix: "professional templates", noMatch: "No templates match", clearSearch: "Clear search", browseAllPre: "Browse all", browseAllSuf: "templates →", templatesWord: "templates", showingPre: "Showing 6 of", foundSuf: "found" },
-    pledge: { eyebrow: "Our commitment", t1: "Free means", hi: "actually free.",
-      desc: "Most resume builders give you one free resume, then charge for a second one or to remove a watermark. The ApplyCraft builder is free forever — unlimited resumes and cover letters, AI achievement coaching, and unlimited PDF or DOCX downloads, without an account or a credit card. For an active job search, optional power-ups (AI tailoring and cross-device sync) are available as a one-time 7-day pass — never a subscription, and nothing that's free today ever becomes paid.",
-      chips: ["Unlimited resumes & cover letters", "No watermarks", "No account", "No credit card", "Free AI coaching", "PDF & DOCX downloads"] },
-    cmp: { eyebrow: "How we compare", title: "No paywall at the download button.",
-      desc: "Most builders let you design a resume, then ask for your card the moment you click download. ApplyCraft never does.", col2: "Typical builders", included: "Included",
-      rows: [["Download PDF & DOCX for free", "Paywalled"], ["No account required", "Sign-up first"], ["No credit card at download", "Card required"], ["No watermarks", "Watermarked"], ["Unlimited resumes & cover letters", "1 free, then pay"], ["Built-in ATS checker", "Premium only"], ["Your data stays in your browser", "Stored on servers"], ["5 interface languages incl. Arabic (RTL)", "English only"]],
-      footnote: "“Typical builders” reflects common practices across popular paid resume tools. Optional ApplyCraft power-ups (AI tailoring, cross-device sync) are a one-time 7-day pass — never a subscription." },
-    ml: { eyebrow: "Multilingual superpowers", title: "Built for the global job market",
-      desc: "A resume builder designed specifically for multilingual job seekers — write in any language, relabel across {docs} document languages, and run the interface in {ui}, including full right-to-left support.",
-      cards: [{ t: "Document labels in {docs} languages", d: "Switch resume section labels and date formats across {docs} document languages without changing your written content." }, { t: "Full interface translation in {ui} languages", d: "Use the builder interface in English, French, Spanish, Arabic, or German while keeping the resume language separate." }, { t: "Full right-to-left support", d: "Arabic, Hebrew, Farsi and other RTL languages render with correct alignment, mirroring, and typography." }, { t: "Formatting survives translation", d: "Your layout, template, and design stay stable after translation. Only the words change." }, { t: "Multilingual cover letters", d: "Create a matching cover letter with the same formatting approach as your resume." }] },
-    priv: { eyebrow: "Privacy & trust", title: "Your resume data stays yours. Always.",
-      desc: "Resume data is personal. ApplyCraft is designed around browser-first editing and export, without requiring an account or cloud resume storage.",
-      cards: [{ t: "No account required", b: "ApplyCraft does not require an email, password, or account profile to use the core resume builder." }, { t: "Optional AI helpers", b: "Use AI or translation helpers only when you are comfortable with the relevant provider processing submitted text." }, { t: "Privacy-conscious design", b: "The builder is designed to reduce the amount of personal data handled by the service." }, { t: "Delete local data", b: "Remove ApplyCraft-created master profile, job tracker, and ATS checker records from this browser." }, { t: "Browser-side export", b: "The standard PDF and DOCX export flow runs in the browser using JavaScript." }, { t: "No account profile", b: "No email, password, or personal dashboard is required before creating and downloading a resume." }],
-      del: "Delete local data", read: "Read our full Privacy Policy →" },
-    ea: { title: "We're just getting started",
-      p1: "ApplyCraft is a new, independent tool built by one person who got tired of resume builders that paywalled basic features, added watermarks, and stored personal data without consent.",
-      p2: "No fake reviews. No VC spin. If you use ApplyCraft and it helps you land an interview, we'd genuinely love to hear about it — your feedback shapes what gets built next.", share: "Share your experience →" },
-    faq: { eyebrow: "FAQ", title: "Common questions",
-      items: [{ q: "Is ApplyCraft really free?", a: "Yes. The core builder, templates, language options, previews, and PDF or DOCX downloads are available without a paid tier, account, or credit card." }, { q: "Do you store or sell my data?", a: "ApplyCraft does not require an account profile to build a resume. Standard editing and export are browser-first; optional AI and translation helpers may process the text you choose to submit." }, { q: "Are the templates ATS-compatible?", a: "The templates are designed with readable typography, clear section headings, and ATS-conscious layouts to improve parsing compatibility." }, { q: "Can I really use {docs} document languages?", a: "Yes. Type directly in any language, switch document labels and date formats across {docs} document languages, and use the Translate button to convert an existing CV to a different language without rebuilding from scratch. RTL languages like Arabic are fully supported." }, { q: "What download formats are available?", a: "PDF and DOCX. PDF is ideal for most applications. DOCX is available for recruiters or employers who need an editable file." }, { q: "Do I need to create an account?", a: "No. There is no sign-up, no login, no email address required. Open the app and start building immediately." }] },
-    final: { title: "Start building for free", sub: "No account needed. Download your resume in seconds." },
-    toolkit: "Career toolkit", searchFeatures: "Search features...",
-  },
-  fr: {
-    mp: { eyebrow: "Profil principal", t1: "Créez une fois.", t2: "Adaptez pour tout.",
-      desc: "Créez une seule fois votre profil de carrière complet — chaque poste, chaque compétence, chaque réussite. Collez une description de poste et obtenez un CV parfaitement adapté en quelques secondes. Plus jamais de ressaisie.",
-      btn: "Créer mon profil principal →", s1: "Remplissez tout votre parcours une seule fois", s2: "Collez n'importe quelle description de poste", s3: "L'IA évalue et sélectionne les éléments pertinents", s4: "CV adapté en un clic, prêt à envoyer" },
-    hiw: { eyebrow: "Comment ça marche", title: "Un CV soigné en trois étapes",
-      s1t: "Choisissez un modèle", s1d: "Choisissez parmi {n} designs professionnels — du minimaliste au audacieux. Les modèles utilisent une structure compatible ATS.",
-      s2t: "Saisissez vos informations", s2d: "Saisissez directement dans le formulaire en direct. L'aperçu se met à jour en temps réel.",
-      s3t: "Téléchargez et postulez", s3d: "Exportez en PDF ou DOCX dans la langue choisie. Prêt à envoyer en moins de 5 minutes.", browse: "Parcourir les modèles" },
-    strip: { suffix: "modèles professionnels", noMatch: "Aucun modèle ne correspond à", clearSearch: "Effacer la recherche", browseAllPre: "Parcourir les", browseAllSuf: "modèles →", templatesWord: "modèles", showingPre: "Affichage de 6 sur", foundSuf: "trouvés" },
-    pledge: { eyebrow: "Notre engagement", t1: "Gratuit signifie", hi: "vraiment gratuit.",
-      desc: "La plupart des créateurs de CV offrent un CV gratuit, puis facturent le deuxième ou la suppression du filigrane. L'éditeur ApplyCraft est gratuit pour toujours — CV et lettres illimités, coaching IA des réalisations, et téléchargements PDF ou DOCX illimités, sans compte ni carte bancaire. Pour une recherche active, des options facultatives (adaptation IA et synchronisation multi-appareils) sont disponibles via un pass unique de 7 jours — jamais un abonnement, et rien de gratuit aujourd'hui ne deviendra payant.",
-      chips: ["CV et lettres illimités", "Sans filigrane", "Sans compte", "Sans carte bancaire", "Coaching IA gratuit", "Téléchargements PDF et DOCX"] },
-    cmp: { eyebrow: "Comparaison", title: "Aucun paywall au moment du téléchargement.",
-      desc: "La plupart des outils vous laissent concevoir un CV, puis réclament votre carte dès que vous cliquez sur télécharger. ApplyCraft ne le fait jamais.", col2: "Outils habituels", included: "Inclus",
-      rows: [["Téléchargement PDF et DOCX gratuit", "Payant"], ["Aucun compte requis", "Inscription d'abord"], ["Aucune carte au téléchargement", "Carte requise"], ["Sans filigrane", "Avec filigrane"], ["CV et lettres illimités", "1 gratuit, puis payant"], ["Vérificateur ATS intégré", "Premium uniquement"], ["Vos données restent dans votre navigateur", "Stockées sur des serveurs"], ["5 langues d'interface dont l'arabe (RTL)", "Anglais uniquement"]],
-      footnote: "« Outils habituels » reflète les pratiques courantes des principaux créateurs de CV payants. Les options ApplyCraft (adaptation IA, synchronisation) sont un pass unique de 7 jours — jamais un abonnement." },
-    ml: { eyebrow: "Super-pouvoirs multilingues", title: "Conçu pour le marché de l'emploi mondial",
-      desc: "Un créateur de CV conçu spécifiquement pour les candidats multilingues — écrivez dans n'importe quelle langue, réétiquetez parmi {docs} langues de document, et utilisez l'interface en {ui}, avec une prise en charge complète de droite à gauche.",
-      cards: [{ t: "Étiquettes de document en {docs} langues", d: "Changez les étiquettes de section et les formats de date parmi {docs} langues de document sans modifier votre contenu." }, { t: "Interface traduite en {ui} langues", d: "Utilisez l'interface en anglais, français, espagnol, arabe ou allemand tout en gardant la langue du CV séparée." }, { t: "Prise en charge complète de droite à gauche", d: "L'arabe, l'hébreu, le farsi et d'autres langues RTL s'affichent avec un alignement et une typographie corrects." }, { t: "La mise en forme survit à la traduction", d: "Votre mise en page, votre modèle et votre design restent stables après traduction. Seuls les mots changent." }, { t: "Lettres de motivation multilingues", d: "Créez une lettre assortie avec la même approche de mise en forme que votre CV." }] },
-    priv: { eyebrow: "Confidentialité et confiance", title: "Vos données de CV restent les vôtres. Toujours.",
-      desc: "Les données de CV sont personnelles. ApplyCraft est conçu autour d'une édition et d'un export dans le navigateur, sans compte ni stockage de CV dans le cloud.",
-      cards: [{ t: "Aucun compte requis", b: "ApplyCraft n'exige ni e-mail, ni mot de passe, ni profil de compte pour utiliser l'éditeur principal." }, { t: "Assistants IA facultatifs", b: "Utilisez les assistants IA ou de traduction uniquement si vous acceptez que le prestataire traite le texte soumis." }, { t: "Conception soucieuse de la vie privée", b: "L'éditeur est conçu pour réduire la quantité de données personnelles traitées par le service." }, { t: "Supprimer les données locales", b: "Supprimez de ce navigateur le profil principal, le suivi des candidatures et les enregistrements du vérificateur ATS créés par ApplyCraft." }, { t: "Export côté navigateur", b: "L'export standard PDF et DOCX s'exécute dans le navigateur en JavaScript." }, { t: "Aucun profil de compte", b: "Aucun e-mail, mot de passe ou tableau de bord n'est requis avant de créer et télécharger un CV." }],
-      del: "Supprimer les données locales", read: "Lire notre politique de confidentialité →" },
-    ea: { title: "Nous ne faisons que commencer",
-      p1: "ApplyCraft est un nouvel outil indépendant créé par une seule personne, lassée des créateurs de CV qui verrouillaient les fonctions de base, ajoutaient des filigranes et stockaient les données personnelles sans consentement.",
-      p2: "Pas de faux avis. Pas de discours marketing. Si ApplyCraft vous aide à décrocher un entretien, nous serions ravis de le savoir — votre avis oriente les prochaines fonctionnalités.", share: "Partagez votre expérience →" },
-    faq: { eyebrow: "FAQ", title: "Questions fréquentes",
-      items: [{ q: "ApplyCraft est-il vraiment gratuit ?", a: "Oui. L'éditeur, les modèles, les options de langue, les aperçus et les téléchargements PDF ou DOCX sont disponibles sans offre payante, compte ni carte bancaire." }, { q: "Stockez-vous ou vendez-vous mes données ?", a: "ApplyCraft n'exige pas de compte pour créer un CV. L'édition et l'export standards se font dans le navigateur ; les assistants IA et de traduction facultatifs peuvent traiter le texte que vous soumettez." }, { q: "Les modèles sont-ils compatibles ATS ?", a: "Les modèles sont conçus avec une typographie lisible, des intitulés de section clairs et des mises en page compatibles ATS pour améliorer l'analyse." }, { q: "Puis-je vraiment utiliser {docs} langues de document ?", a: "Oui. Écrivez dans n'importe quelle langue, changez les étiquettes et formats de date parmi {docs} langues, et utilisez le bouton Traduire pour convertir un CV existant sans tout refaire. Les langues RTL comme l'arabe sont entièrement prises en charge." }, { q: "Quels formats de téléchargement sont disponibles ?", a: "PDF et DOCX. Le PDF convient à la plupart des candidatures. Le DOCX est disponible pour les recruteurs qui ont besoin d'un fichier modifiable." }, { q: "Dois-je créer un compte ?", a: "Non. Aucune inscription, aucune connexion, aucune adresse e-mail requise. Ouvrez l'application et commencez immédiatement." }] },
-    final: { title: "Commencez gratuitement", sub: "Aucun compte nécessaire. Téléchargez votre CV en quelques secondes." },
-    toolkit: "Boîte à outils carrière", searchFeatures: "Rechercher des fonctions...",
-  },
-  es: {
-    mp: { eyebrow: "Perfil maestro", t1: "Créalo una vez.", t2: "Adáptalo para todo.",
-      desc: "Crea una sola vez tu perfil de carrera completo — cada empleo, cada habilidad, cada logro. Pega una descripción de puesto y obtén un currículum perfectamente adaptado en segundos. Nunca más volver a escribir.",
-      btn: "Crear mi perfil maestro →", s1: "Completa todo tu historial profesional una vez", s2: "Pega cualquier descripción de puesto", s3: "La IA puntúa y selecciona los elementos relevantes", s4: "Currículum adaptado en un clic, listo para enviar" },
-    hiw: { eyebrow: "Cómo funciona", title: "Un CV pulido en tres pasos",
-      s1t: "Elige una plantilla", s1d: "Elige entre {n} diseños profesionales — de minimalista a llamativo. Las plantillas usan una estructura compatible con ATS.",
-      s2t: "Rellena tus datos", s2d: "Escribe directamente en el formulario en vivo. La vista previa se actualiza en tiempo real.",
-      s3t: "Descarga y postula", s3d: "Exporta en PDF o DOCX en el idioma elegido. Listo para enviar en menos de 5 minutos.", browse: "Ver plantillas" },
-    strip: { suffix: "plantillas profesionales", noMatch: "Ninguna plantilla coincide con", clearSearch: "Borrar búsqueda", browseAllPre: "Ver las", browseAllSuf: "plantillas →", templatesWord: "plantillas", showingPre: "Mostrando 6 de", foundSuf: "encontradas" },
-    pledge: { eyebrow: "Nuestro compromiso", t1: "Gratis significa", hi: "realmente gratis.",
-      desc: "La mayoría de los creadores de CV te dan uno gratis y luego cobran por el segundo o por quitar la marca de agua. El editor de ApplyCraft es gratis para siempre — currículums y cartas ilimitados, coaching de logros con IA y descargas ilimitadas en PDF o DOCX, sin cuenta ni tarjeta. Para una búsqueda activa, hay mejoras opcionales (adaptación con IA y sincronización entre dispositivos) mediante un pase único de 7 días — nunca una suscripción, y nada que sea gratis hoy pasará a ser de pago.",
-      chips: ["Currículums y cartas ilimitados", "Sin marcas de agua", "Sin cuenta", "Sin tarjeta", "Coaching de IA gratis", "Descargas PDF y DOCX"] },
-    cmp: { eyebrow: "Cómo comparamos", title: "Sin muro de pago en el botón de descarga.",
-      desc: "La mayoría de los creadores te dejan diseñar un currículum y luego piden tu tarjeta al pulsar descargar. ApplyCraft nunca lo hace.", col2: "Creadores típicos", included: "Incluido",
-      rows: [["Descarga PDF y DOCX gratis", "De pago"], ["Sin cuenta requerida", "Registro primero"], ["Sin tarjeta al descargar", "Tarjeta requerida"], ["Sin marcas de agua", "Con marca de agua"], ["Currículums y cartas ilimitados", "1 gratis, luego pago"], ["Verificador ATS integrado", "Solo premium"], ["Tus datos quedan en tu navegador", "Almacenados en servidores"], ["5 idiomas de interfaz incl. árabe (RTL)", "Solo inglés"]],
-      footnote: "«Creadores típicos» refleja prácticas comunes de las herramientas de CV de pago populares. Las mejoras opcionales de ApplyCraft (adaptación IA, sincronización) son un pase único de 7 días — nunca una suscripción." },
-    ml: { eyebrow: "Superpoderes multilingües", title: "Diseñado para el mercado laboral global",
-      desc: "Un creador de CV diseñado específicamente para candidatos multilingües — escribe en cualquier idioma, reetiqueta entre {docs} idiomas de documento y usa la interfaz en {ui}, con soporte completo de derecha a izquierda.",
-      cards: [{ t: "Etiquetas de documento en {docs} idiomas", d: "Cambia las etiquetas de sección y los formatos de fecha entre {docs} idiomas de documento sin cambiar tu contenido." }, { t: "Interfaz traducida en {ui} idiomas", d: "Usa la interfaz en inglés, francés, español, árabe o alemán manteniendo separado el idioma del currículum." }, { t: "Soporte completo de derecha a izquierda", d: "El árabe, el hebreo, el farsi y otros idiomas RTL se muestran con alineación y tipografía correctas." }, { t: "El formato sobrevive a la traducción", d: "Tu diseño, plantilla y estilo permanecen estables tras la traducción. Solo cambian las palabras." }, { t: "Cartas de presentación multilingües", d: "Crea una carta a juego con el mismo enfoque de formato que tu currículum." }] },
-    priv: { eyebrow: "Privacidad y confianza", title: "Tus datos del currículum son tuyos. Siempre.",
-      desc: "Los datos del currículum son personales. ApplyCraft está diseñado en torno a la edición y exportación en el navegador, sin requerir cuenta ni almacenamiento en la nube.",
-      cards: [{ t: "Sin cuenta requerida", b: "ApplyCraft no requiere correo, contraseña ni perfil de cuenta para usar el editor principal." }, { t: "Asistentes de IA opcionales", b: "Usa los asistentes de IA o traducción solo cuando te sientas cómodo con que el proveedor procese el texto enviado." }, { t: "Diseño respetuoso con la privacidad", b: "El editor está diseñado para reducir la cantidad de datos personales que maneja el servicio." }, { t: "Eliminar datos locales", b: "Elimina de este navegador el perfil maestro, el seguimiento de empleos y los registros del verificador ATS creados por ApplyCraft." }, { t: "Exportación en el navegador", b: "El flujo estándar de exportación PDF y DOCX se ejecuta en el navegador con JavaScript." }, { t: "Sin perfil de cuenta", b: "No se requiere correo, contraseña ni panel personal antes de crear y descargar un currículum." }],
-      del: "Eliminar datos locales", read: "Leer nuestra política de privacidad completa →" },
-    ea: { title: "Apenas estamos empezando",
-      p1: "ApplyCraft es una herramienta nueva e independiente creada por una sola persona, cansada de los creadores de CV que cobraban por funciones básicas, añadían marcas de agua y almacenaban datos personales sin consentimiento.",
-      p2: "Sin reseñas falsas. Sin discurso de inversores. Si usas ApplyCraft y te ayuda a conseguir una entrevista, nos encantaría saberlo — tu opinión define lo próximo que construiremos.", share: "Comparte tu experiencia →" },
-    faq: { eyebrow: "Preguntas frecuentes", title: "Preguntas comunes",
-      items: [{ q: "¿ApplyCraft es realmente gratis?", a: "Sí. El editor, las plantillas, las opciones de idioma, las vistas previas y las descargas en PDF o DOCX están disponibles sin nivel de pago, cuenta ni tarjeta." }, { q: "¿Almacenan o venden mis datos?", a: "ApplyCraft no requiere una cuenta para crear un currículum. La edición y exportación estándar son en el navegador; los asistentes opcionales de IA y traducción pueden procesar el texto que elijas enviar." }, { q: "¿Las plantillas son compatibles con ATS?", a: "Las plantillas están diseñadas con tipografía legible, encabezados de sección claros y diseños compatibles con ATS para mejorar el análisis." }, { q: "¿Puedo usar de verdad {docs} idiomas de documento?", a: "Sí. Escribe en cualquier idioma, cambia las etiquetas y formatos de fecha entre {docs} idiomas, y usa el botón Traducir para convertir un CV existente sin rehacerlo. Los idiomas RTL como el árabe son totalmente compatibles." }, { q: "¿Qué formatos de descarga hay?", a: "PDF y DOCX. El PDF es ideal para la mayoría de candidaturas. El DOCX está disponible para reclutadores que necesitan un archivo editable." }, { q: "¿Necesito crear una cuenta?", a: "No. No hay registro, ni inicio de sesión, ni correo requerido. Abre la app y empieza de inmediato." }] },
-    final: { title: "Empieza gratis", sub: "Sin cuenta. Descarga tu currículum en segundos." },
-    toolkit: "Kit de carrera", searchFeatures: "Buscar funciones...",
-  },
-  ar: {
-    mp: { eyebrow: "الملف الرئيسي", t1: "أنشئه مرة واحدة.", t2: "خصّصه لكل شيء.",
-      desc: "أنشئ ملفك المهني الكامل مرة واحدة — كل وظيفة، وكل مهارة، وكل إنجاز. الصق وصف وظيفة واحصل على سيرة ذاتية مخصصة تماماً في ثوانٍ. دون إعادة كتابة أبداً.",
-      btn: "أنشئ ملفي الرئيسي →", s1: "املأ تاريخك المهني الكامل مرة واحدة", s2: "الصق أي وصف وظيفة", s3: "يقيّم الذكاء الاصطناعي ويختار العناصر ذات الصلة", s4: "سيرة ذاتية مخصصة بنقرة واحدة، جاهزة للإرسال" },
-    hiw: { eyebrow: "كيف يعمل", title: "سيرة ذاتية أنيقة في ثلاث خطوات",
-      s1t: "اختر قالباً", s1d: "اختر من بين {n} تصميماً احترافياً — من البسيط إلى الجريء. تستخدم القوالب بنية متوافقة مع أنظمة ATS.",
-      s2t: "املأ بياناتك", s2d: "اكتب مباشرةً في النموذج المباشر. تتحدّث المعاينة فوراً أثناء الكتابة.",
-      s3t: "نزّل وقدّم", s3d: "صدّر بصيغة PDF أو DOCX باللغة التي تختارها. جاهزة للإرسال في أقل من 5 دقائق.", browse: "تصفّح القوالب" },
-    strip: { suffix: "قالباً احترافياً", noMatch: "لا توجد قوالب مطابقة لـ", clearSearch: "مسح البحث", browseAllPre: "تصفّح كل", browseAllSuf: "قالب →", templatesWord: "قالب", showingPre: "عرض 6 من", foundSuf: "موجودة" },
-    pledge: { eyebrow: "التزامنا", t1: "مجاني يعني", hi: "مجاني فعلاً.",
-      desc: "تمنحك معظم أدوات إنشاء السير الذاتية سيرة مجانية واحدة، ثم تتقاضى رسوماً مقابل الثانية أو لإزالة العلامة المائية. محرر ApplyCraft مجاني للأبد — سير ذاتية وخطابات غير محدودة، وتدريب على الإنجازات بالذكاء الاصطناعي، وتنزيلات PDF أو DOCX غير محدودة، دون حساب أو بطاقة ائتمان. للبحث النشط عن وظيفة، تتوفر إضافات اختيارية (تخصيص بالذكاء الاصطناعي ومزامنة عبر الأجهزة) كتذكرة لمرة واحدة لمدة 7 أيام — وليست اشتراكاً أبداً، ولن يصبح أي شيء مجاني اليوم مدفوعاً.",
-      chips: ["سير ذاتية وخطابات غير محدودة", "بدون علامات مائية", "بدون حساب", "بدون بطاقة ائتمان", "تدريب ذكاء اصطناعي مجاني", "تنزيلات PDF و DOCX"] },
-    cmp: { eyebrow: "كيف نتميز", title: "لا جدار دفع عند زر التنزيل.",
-      desc: "تتيح لك معظم الأدوات تصميم سيرة ذاتية، ثم تطلب بطاقتك لحظة النقر على التنزيل. ApplyCraft لا يفعل ذلك أبداً.", col2: "الأدوات المعتادة", included: "مُضمَّن",
-      rows: [["تنزيل PDF و DOCX مجاناً", "مدفوع"], ["لا حاجة لحساب", "التسجيل أولاً"], ["لا بطاقة عند التنزيل", "البطاقة مطلوبة"], ["بدون علامات مائية", "بعلامة مائية"], ["سير ذاتية وخطابات غير محدودة", "واحدة مجانية ثم الدفع"], ["فاحص ATS مدمج", "للنسخة المدفوعة فقط"], ["بياناتك تبقى في متصفحك", "مخزّنة على الخوادم"], ["5 لغات واجهة منها العربية (RTL)", "الإنجليزية فقط"]],
-      footnote: "تعكس عبارة «الأدوات المعتادة» الممارسات الشائعة بين أدوات السير الذاتية المدفوعة الشهيرة. إضافات ApplyCraft الاختيارية (التخصيص بالذكاء الاصطناعي والمزامنة) هي تذكرة لمرة واحدة لمدة 7 أيام — وليست اشتراكاً أبداً." },
-    ml: { eyebrow: "قدرات متعددة اللغات", title: "مصمّم لسوق العمل العالمي",
-      desc: "منشئ سير ذاتية مصمّم خصيصاً للباحثين عن عمل متعددي اللغات — اكتب بأي لغة، وأعد التسمية عبر {docs} لغة مستند، وشغّل الواجهة بـ{ui}، مع دعم كامل للكتابة من اليمين إلى اليسار.",
-      cards: [{ t: "تسميات المستند بـ{docs} لغة", d: "بدّل تسميات أقسام السيرة وصيغ التواريخ عبر {docs} لغة مستند دون تغيير المحتوى المكتوب." }, { t: "ترجمة كاملة للواجهة بـ{ui} لغات", d: "استخدم واجهة المحرر بالإنجليزية أو الفرنسية أو الإسبانية أو العربية أو الألمانية مع إبقاء لغة السيرة منفصلة." }, { t: "دعم كامل للكتابة من اليمين إلى اليسار", d: "تُعرض العربية والعبرية والفارسية وغيرها من لغات RTL بمحاذاة وانعكاس وطباعة صحيحة." }, { t: "التنسيق يصمد بعد الترجمة", d: "يبقى تخطيطك وقالبك وتصميمك ثابتاً بعد الترجمة. تتغيّر الكلمات فقط." }, { t: "خطابات تقديم متعددة اللغات", d: "أنشئ خطاب تقديم مطابقاً بنفس أسلوب تنسيق سيرتك الذاتية." }] },
-    priv: { eyebrow: "الخصوصية والثقة", title: "بيانات سيرتك الذاتية تبقى لك. دائماً.",
-      desc: "بيانات السيرة الذاتية شخصية. صُمّم ApplyCraft حول التحرير والتصدير في المتصفح، دون الحاجة إلى حساب أو تخزين سحابي للسيرة.",
-      cards: [{ t: "لا حاجة لحساب", b: "لا يتطلب ApplyCraft بريداً أو كلمة مرور أو ملف حساب لاستخدام المحرر الأساسي." }, { t: "مساعدو ذكاء اصطناعي اختياريون", b: "استخدم مساعدي الذكاء الاصطناعي أو الترجمة فقط عندما تكون مرتاحاً لمعالجة المزوّد للنص المُرسَل." }, { t: "تصميم يراعي الخصوصية", b: "صُمّم المحرر لتقليل كمية البيانات الشخصية التي تعالجها الخدمة." }, { t: "حذف البيانات المحلية", b: "احذف من هذا المتصفح الملف الرئيسي ومتابعة الوظائف وسجلات فاحص ATS التي أنشأها ApplyCraft." }, { t: "التصدير في المتصفح", b: "يجري تدفق التصدير القياسي بصيغة PDF و DOCX في المتصفح باستخدام JavaScript." }, { t: "لا ملف حساب", b: "لا حاجة لبريد أو كلمة مرور أو لوحة شخصية قبل إنشاء السيرة الذاتية وتنزيلها." }],
-      del: "حذف البيانات المحلية", read: "اقرأ سياسة الخصوصية الكاملة →" },
-    ea: { title: "نحن في البداية فقط",
-      p1: "ApplyCraft أداة جديدة ومستقلة بناها شخص واحد سئم من أدوات السير الذاتية التي تحجب الميزات الأساسية خلف الدفع، وتضيف علامات مائية، وتخزّن البيانات الشخصية دون موافقة.",
-      p2: "لا مراجعات مزيّفة. لا دعاية مستثمرين. إذا استخدمت ApplyCraft وساعدك في الحصول على مقابلة، فسنسعد حقاً بسماع ذلك — رأيك يوجّه ما سنبنيه لاحقاً.", share: "شاركنا تجربتك →" },
-    faq: { eyebrow: "الأسئلة الشائعة", title: "أسئلة شائعة",
-      items: [{ q: "هل ApplyCraft مجاني حقاً؟", a: "نعم. المحرر الأساسي والقوالب وخيارات اللغة والمعاينات وتنزيلات PDF أو DOCX متاحة دون مستوى مدفوع أو حساب أو بطاقة ائتمان." }, { q: "هل تخزّنون بياناتي أو تبيعونها؟", a: "لا يتطلب ApplyCraft حساباً لإنشاء سيرة ذاتية. التحرير والتصدير القياسيان يجريان في المتصفح؛ وقد يعالج مساعدو الذكاء الاصطناعي والترجمة الاختياريون النص الذي تختار إرساله." }, { q: "هل القوالب متوافقة مع ATS؟", a: "صُمّمت القوالب بطباعة واضحة وعناوين أقسام واضحة وتخطيطات متوافقة مع ATS لتحسين قابلية التحليل." }, { q: "هل يمكنني فعلاً استخدام {docs} لغة مستند؟", a: "نعم. اكتب مباشرةً بأي لغة، وبدّل التسميات وصيغ التواريخ عبر {docs} لغة، واستخدم زر الترجمة لتحويل سيرة موجودة إلى لغة أخرى دون إعادة البناء. لغات RTL مثل العربية مدعومة بالكامل." }, { q: "ما صيغ التنزيل المتاحة؟", a: "PDF و DOCX. PDF مثالي لمعظم الطلبات. DOCX متاح للمسؤولين عن التوظيف الذين يحتاجون ملفاً قابلاً للتعديل." }, { q: "هل أحتاج إلى إنشاء حساب؟", a: "لا. لا تسجيل ولا تسجيل دخول ولا حاجة لبريد إلكتروني. افتح التطبيق وابدأ فوراً." }] },
-    final: { title: "ابدأ مجاناً", sub: "لا حاجة لحساب. نزّل سيرتك الذاتية في ثوانٍ." },
-    toolkit: "حقيبة أدوات المهنة", searchFeatures: "ابحث في الميزات...",
-  },
-  de: {
-    mp: { eyebrow: "Master-Profil", t1: "Einmal erstellen.", t2: "Für alles anpassen.",
-      desc: "Erstelle dein vollständiges Karriereprofil ein einziges Mal — jede Stelle, jede Fähigkeit, jede Leistung. Füge eine Stellenbeschreibung ein und erhalte in Sekunden einen perfekt zugeschnittenen Lebenslauf. Nie wieder abtippen.",
-      btn: "Mein Master-Profil erstellen →", s1: "Fülle einmal deinen kompletten Werdegang aus", s2: "Füge eine beliebige Stellenbeschreibung ein", s3: "Die KI bewertet und wählt relevante Einträge aus", s4: "Maßgeschneiderter Lebenslauf per Klick, versandbereit" },
-    hiw: { eyebrow: "So funktioniert's", title: "Ein gepflegter Lebenslauf in drei Schritten",
-      s1t: "Vorlage wählen", s1d: "Wähle aus {n} professionellen Designs — von minimal bis auffällig. Die Vorlagen nutzen eine ATS-freundliche Struktur.",
-      s2t: "Daten eingeben", s2d: "Tippe direkt in das Live-Formular. Die Vorschau aktualisiert sich in Echtzeit.",
-      s3t: "Herunterladen & bewerben", s3d: "Exportiere als PDF oder DOCX in der gewählten Sprache. In unter 5 Minuten versandbereit.", browse: "Vorlagen ansehen" },
-    strip: { suffix: "professionelle Vorlagen", noMatch: "Keine Vorlagen passen zu", clearSearch: "Suche löschen", browseAllPre: "Alle", browseAllSuf: "Vorlagen ansehen →", templatesWord: "Vorlagen", showingPre: "6 von", foundSuf: "gefunden" },
-    pledge: { eyebrow: "Unser Versprechen", t1: "Kostenlos heißt", hi: "wirklich kostenlos.",
-      desc: "Die meisten Lebenslauf-Tools geben dir einen kostenlosen Lebenslauf und verlangen dann Geld für den zweiten oder zum Entfernen eines Wasserzeichens. Der ApplyCraft-Editor ist für immer kostenlos — unbegrenzte Lebensläufe und Anschreiben, KI-Leistungscoaching und unbegrenzte PDF- oder DOCX-Downloads, ohne Konto oder Kreditkarte. Für eine aktive Jobsuche gibt es optionale Power-ups (KI-Anpassung und geräteübergreifende Synchronisierung) als einmaligen 7-Tage-Pass — niemals ein Abo, und nichts, was heute kostenlos ist, wird je kostenpflichtig.",
-      chips: ["Unbegrenzte Lebensläufe & Anschreiben", "Keine Wasserzeichen", "Kein Konto", "Keine Kreditkarte", "Kostenloses KI-Coaching", "PDF- & DOCX-Downloads"] },
-    cmp: { eyebrow: "Im Vergleich", title: "Keine Bezahlschranke am Download-Button.",
-      desc: "Die meisten Tools lassen dich einen Lebenslauf gestalten und verlangen dann deine Karte, sobald du auf Download klickst. ApplyCraft tut das nie.", col2: "Typische Tools", included: "Enthalten",
-      rows: [["PDF & DOCX kostenlos herunterladen", "Kostenpflichtig"], ["Kein Konto erforderlich", "Erst Anmeldung"], ["Keine Karte beim Download", "Karte erforderlich"], ["Keine Wasserzeichen", "Mit Wasserzeichen"], ["Unbegrenzte Lebensläufe & Anschreiben", "1 gratis, dann zahlen"], ["Integrierter ATS-Prüfer", "Nur Premium"], ["Deine Daten bleiben im Browser", "Auf Servern gespeichert"], ["5 Oberflächensprachen inkl. Arabisch (RTL)", "Nur Englisch"]],
-      footnote: "„Typische Tools“ spiegelt gängige Praktiken beliebter kostenpflichtiger Lebenslauf-Tools wider. Optionale ApplyCraft-Power-ups (KI-Anpassung, Synchronisierung) sind ein einmaliger 7-Tage-Pass — niemals ein Abo." },
-    ml: { eyebrow: "Mehrsprachige Superkräfte", title: "Für den globalen Arbeitsmarkt gemacht",
-      desc: "Ein Lebenslauf-Generator, der speziell für mehrsprachige Bewerber entwickelt wurde — schreibe in jeder Sprache, beschrifte neu über {docs} Dokumentsprachen und nutze die Oberfläche in {ui}, mit vollständiger Rechts-nach-links-Unterstützung.",
-      cards: [{ t: "Dokumentbeschriftungen in {docs} Sprachen", d: "Wechsle Abschnittsbeschriftungen und Datumsformate über {docs} Dokumentsprachen, ohne deinen Inhalt zu ändern." }, { t: "Vollständige Oberflächenübersetzung in {ui} Sprachen", d: "Nutze die Editor-Oberfläche auf Englisch, Französisch, Spanisch, Arabisch oder Deutsch, während die Lebenslaufsprache getrennt bleibt." }, { t: "Vollständige Rechts-nach-links-Unterstützung", d: "Arabisch, Hebräisch, Farsi und andere RTL-Sprachen werden mit korrekter Ausrichtung und Typografie dargestellt." }, { t: "Formatierung übersteht die Übersetzung", d: "Dein Layout, deine Vorlage und dein Design bleiben nach der Übersetzung stabil. Nur die Wörter ändern sich." }, { t: "Mehrsprachige Anschreiben", d: "Erstelle ein passendes Anschreiben mit demselben Formatierungsansatz wie dein Lebenslauf." }] },
-    priv: { eyebrow: "Datenschutz & Vertrauen", title: "Deine Lebenslaufdaten bleiben deine. Immer.",
-      desc: "Lebenslaufdaten sind persönlich. ApplyCraft ist auf browser-first Bearbeitung und Export ausgelegt, ohne Konto oder Cloud-Speicherung.",
-      cards: [{ t: "Kein Konto erforderlich", b: "ApplyCraft benötigt keine E-Mail, kein Passwort und kein Kontoprofil für den Kern-Editor." }, { t: "Optionale KI-Helfer", b: "Nutze KI- oder Übersetzungshelfer nur, wenn du damit einverstanden bist, dass der Anbieter den übermittelten Text verarbeitet." }, { t: "Datenschutzbewusstes Design", b: "Der Editor ist darauf ausgelegt, die Menge der vom Dienst verarbeiteten persönlichen Daten zu reduzieren." }, { t: "Lokale Daten löschen", b: "Entferne von ApplyCraft erstellte Master-Profil-, Job-Tracker- und ATS-Prüfer-Daten aus diesem Browser." }, { t: "Export im Browser", b: "Der Standard-PDF- und DOCX-Export läuft im Browser mit JavaScript." }, { t: "Kein Kontoprofil", b: "Keine E-Mail, kein Passwort und kein persönliches Dashboard nötig, um einen Lebenslauf zu erstellen und herunterzuladen." }],
-      del: "Lokale Daten löschen", read: "Vollständige Datenschutzerklärung lesen →" },
-    ea: { title: "Wir fangen gerade erst an",
-      p1: "ApplyCraft ist ein neues, unabhängiges Tool, gebaut von einer Person, die genug hatte von Lebenslauf-Tools, die Grundfunktionen hinter Bezahlschranken setzten, Wasserzeichen hinzufügten und persönliche Daten ohne Einwilligung speicherten.",
-      p2: "Keine gefälschten Bewertungen. Kein VC-Gerede. Wenn ApplyCraft dir hilft, ein Interview zu bekommen, würden wir uns wirklich freuen, davon zu hören — dein Feedback prägt, was als Nächstes gebaut wird.", share: "Teile deine Erfahrung →" },
-    faq: { eyebrow: "FAQ", title: "Häufige Fragen",
-      items: [{ q: "Ist ApplyCraft wirklich kostenlos?", a: "Ja. Der Kern-Editor, Vorlagen, Sprachoptionen, Vorschauen und PDF- oder DOCX-Downloads sind ohne Bezahlstufe, Konto oder Kreditkarte verfügbar." }, { q: "Speichert oder verkauft ihr meine Daten?", a: "ApplyCraft benötigt kein Kontoprofil, um einen Lebenslauf zu erstellen. Standard-Bearbeitung und -Export sind browser-first; optionale KI- und Übersetzungshelfer können den von dir übermittelten Text verarbeiten." }, { q: "Sind die Vorlagen ATS-kompatibel?", a: "Die Vorlagen sind mit lesbarer Typografie, klaren Abschnittsüberschriften und ATS-freundlichen Layouts gestaltet, um die Auslesbarkeit zu verbessern." }, { q: "Kann ich wirklich {docs} Dokumentsprachen nutzen?", a: "Ja. Schreibe direkt in jeder Sprache, wechsle Beschriftungen und Datumsformate über {docs} Sprachen und nutze die Übersetzen-Schaltfläche, um einen bestehenden Lebenslauf umzuwandeln, ohne neu zu beginnen. RTL-Sprachen wie Arabisch werden vollständig unterstützt." }, { q: "Welche Download-Formate gibt es?", a: "PDF und DOCX. PDF ist ideal für die meisten Bewerbungen. DOCX ist für Recruiter verfügbar, die eine bearbeitbare Datei benötigen." }, { q: "Muss ich ein Konto erstellen?", a: "Nein. Keine Anmeldung, kein Login, keine E-Mail erforderlich. Öffne die App und lege sofort los." }] },
-    final: { title: "Kostenlos loslegen", sub: "Kein Konto nötig. Lade deinen Lebenslauf in Sekunden herunter." },
-    toolkit: "Karriere-Toolkit", searchFeatures: "Funktionen suchen...",
-  },
-};
 // ── Site-footer translations (phase 7) ──
-const FOOTER_UI = {
-  en: { brand: "Free resume and cover letter builder for the global job market. {docs} document languages, {ui} interface languages, {tpl} templates, no sign-up required.",
-    product: "Product", company: "Company", resources: "Resources", legal: "Legal",
-    resumeBuilder: "Resume Builder", coverLetter: "Cover Letter", atsChecker: "ATS Checker", pricing: "Pricing", changelog: "Changelog", roadmap: "Roadmap", status: "Status",
-    about: "About & Founder", contact: "Contact", blog: "Blog", help: "Help Center", resumeGuide: "Resume Guide", atsGuide: "ATS Guide", coverGuide: "Cover Letter Guide",
-    freeBuilder: "Free Resume Builder", studentBuilder: "Student Resume Builder", canadianBuilder: "Canadian Resume Builder",
-    terms: "Terms of Service", privacy: "Privacy Policy", cookies: "Cookie Policy", refundPolicy: "Refund Policy", gdpr: "GDPR", aiDisclosure: "AI Disclosure", accessibility: "Accessibility",
-    badge1: "No account required", badge2: "Optional AI helpers", badge3: "Browser-first editing" },
-  fr: { brand: "Créateur gratuit de CV et de lettres de motivation pour le marché de l'emploi mondial. {docs} langues de document, {ui} langues d'interface, {tpl} modèles, sans inscription.",
-    product: "Produit", company: "Entreprise", resources: "Ressources", legal: "Mentions légales",
-    resumeBuilder: "Créateur de CV", coverLetter: "Lettre de motivation", atsChecker: "Vérificateur ATS", pricing: "Tarifs", changelog: "Journal des modifications", roadmap: "Feuille de route", status: "État du service",
-    about: "À propos et fondateur", contact: "Contact", blog: "Blog", help: "Centre d'aide", resumeGuide: "Guide du CV", atsGuide: "Guide ATS", coverGuide: "Guide de la lettre de motivation",
-    freeBuilder: "Créateur de CV gratuit", studentBuilder: "Créateur de CV étudiant", canadianBuilder: "Créateur de CV canadien",
-    terms: "Conditions d'utilisation", privacy: "Politique de confidentialité", cookies: "Politique relative aux cookies", refundPolicy: "Politique de remboursement", gdpr: "RGPD", aiDisclosure: "Divulgation IA", accessibility: "Accessibilité",
-    badge1: "Aucun compte requis", badge2: "Assistants IA facultatifs", badge3: "Édition dans le navigateur" },
-  es: { brand: "Creador gratuito de currículums y cartas de presentación para el mercado laboral global. {docs} idiomas de documento, {ui} idiomas de interfaz, {tpl} plantillas, sin registro.",
-    product: "Producto", company: "Empresa", resources: "Recursos", legal: "Legal",
-    resumeBuilder: "Creador de currículums", coverLetter: "Carta de presentación", atsChecker: "Verificador ATS", pricing: "Precios", changelog: "Registro de cambios", roadmap: "Hoja de ruta", status: "Estado",
-    about: "Acerca de y fundador", contact: "Contacto", blog: "Blog", help: "Centro de ayuda", resumeGuide: "Guía del currículum", atsGuide: "Guía ATS", coverGuide: "Guía de la carta",
-    freeBuilder: "Creador de currículums gratis", studentBuilder: "Creador de CV para estudiantes", canadianBuilder: "Creador de CV canadiense",
-    terms: "Términos del servicio", privacy: "Política de privacidad", cookies: "Política de cookies", refundPolicy: "Política de reembolso", gdpr: "RGPD", aiDisclosure: "Divulgación de IA", accessibility: "Accesibilidad",
-    badge1: "Sin cuenta requerida", badge2: "Asistentes de IA opcionales", badge3: "Edición en el navegador" },
-  ar: { brand: "منشئ مجاني للسير الذاتية وخطابات التقديم لسوق العمل العالمي. {docs} لغة مستند، {ui} لغات واجهة، {tpl} قالباً، دون تسجيل.",
-    product: "المنتج", company: "الشركة", resources: "الموارد", legal: "قانوني",
-    resumeBuilder: "منشئ السيرة الذاتية", coverLetter: "خطاب التقديم", atsChecker: "فاحص ATS", pricing: "الأسعار", changelog: "سجل التغييرات", roadmap: "خارطة الطريق", status: "الحالة",
-    about: "حول والمؤسس", contact: "اتصل بنا", blog: "المدونة", help: "مركز المساعدة", resumeGuide: "دليل السيرة الذاتية", atsGuide: "دليل ATS", coverGuide: "دليل خطاب التقديم",
-    freeBuilder: "منشئ سيرة ذاتية مجاني", studentBuilder: "منشئ سيرة ذاتية للطلاب", canadianBuilder: "منشئ سيرة ذاتية كندية",
-    terms: "شروط الخدمة", privacy: "سياسة الخصوصية", cookies: "سياسة ملفات تعريف الارتباط", refundPolicy: "سياسة الاسترداد", gdpr: "اللائحة العامة لحماية البيانات", aiDisclosure: "الإفصاح عن الذكاء الاصطناعي", accessibility: "إمكانية الوصول",
-    badge1: "لا حاجة لحساب", badge2: "مساعدو ذكاء اصطناعي اختياريون", badge3: "التحرير في المتصفح" },
-  de: { brand: "Kostenloser Lebenslauf- und Anschreiben-Generator für den globalen Arbeitsmarkt. {docs} Dokumentsprachen, {ui} Oberflächensprachen, {tpl} Vorlagen, ohne Anmeldung.",
-    product: "Produkt", company: "Unternehmen", resources: "Ressourcen", legal: "Rechtliches",
-    resumeBuilder: "Lebenslauf-Generator", coverLetter: "Anschreiben", atsChecker: "ATS-Prüfer", pricing: "Preise", changelog: "Änderungsprotokoll", roadmap: "Roadmap", status: "Status",
-    about: "Über uns & Gründer", contact: "Kontakt", blog: "Blog", help: "Hilfecenter", resumeGuide: "Lebenslauf-Leitfaden", atsGuide: "ATS-Leitfaden", coverGuide: "Anschreiben-Leitfaden",
-    freeBuilder: "Kostenloser Lebenslauf-Generator", studentBuilder: "Lebenslauf-Generator für Studenten", canadianBuilder: "Kanadischer Lebenslauf-Generator",
-    terms: "Nutzungsbedingungen", privacy: "Datenschutzerklärung", cookies: "Cookie-Richtlinie", refundPolicy: "Rückerstattungsrichtlinie", gdpr: "DSGVO", aiDisclosure: "KI-Offenlegung", accessibility: "Barrierefreiheit",
-    badge1: "Kein Konto erforderlich", badge2: "Optionale KI-Helfer", badge3: "Bearbeitung im Browser" },
-};
 
 // ── Templates ─────────────────────────────────────────────────────
 const TEMPLATES = [
@@ -2121,18 +1248,6 @@ function buildLiveData(form, t) {
 }
 
 // ── Entry-editor microcopy (5 languages, RTL-aware via caller) ─────────────
-const ENTRY_UI = {
-  en: { editHeading: "Edit heading", addEntry: "Add entry", remove: "Remove", show: "Show in resume", hide: "Hide from resume", untitled: "Untitled entry", collapse: "Collapse", expand: "Expand", reorder: "Drag to reorder",
-        labels: { title: "Job title", company: "Company", startDate: "Start date", endDate: "End date", description: "Description", degree: "Degree", institution: "Institution", year: "Year", subtitle: "Subtitle", skill: "Skill", language: "Language", certification: "Certification", issuer: "Issuer", project: "Project", tech: "Tools / role", role: "Role", organization: "Organization", award: "Award", details: "Details", pubTitle: "Title", publisher: "Publisher / venue", refName: "Name", refRelation: "Relationship", contact: "Contact details", activity: "Activity", school: "School / university", location: "Location", link: "Link" }, addContent: "Add content", addContentSub: "Choose a section to add to your resume", alreadyAdded: "Already added", close: "Close" },
-  fr: { editHeading: "Modifier le titre", addEntry: "Ajouter", remove: "Supprimer", show: "Afficher dans le CV", hide: "Masquer du CV", untitled: "Entrée sans titre", collapse: "Réduire", expand: "Développer", reorder: "Glisser pour réordonner",
-        labels: { title: "Intitulé du poste", company: "Entreprise", startDate: "Date de début", endDate: "Date de fin", description: "Description", degree: "Diplôme", institution: "Établissement", year: "Année", subtitle: "Sous-titre", skill: "Compétence", language: "Langue", certification: "Certification", issuer: "Émetteur", project: "Projet", tech: "Outils / rôle", role: "Rôle", organization: "Organisation", award: "Récompense", details: "Détails", pubTitle: "Titre", publisher: "Éditeur / lieu", refName: "Nom", refRelation: "Relation", contact: "Coordonnées", activity: "Activité", school: "École / université", location: "Localisation", link: "Lien" }, addContent: "Ajouter du contenu", addContentSub: "Choisissez une section à ajouter à votre CV", alreadyAdded: "Déjà ajouté", close: "Fermer" },
-  es: { editHeading: "Editar título", addEntry: "Añadir", remove: "Eliminar", show: "Mostrar en el CV", hide: "Ocultar del CV", untitled: "Entrada sin título", collapse: "Contraer", expand: "Expandir", reorder: "Arrastra para reordenar",
-        labels: { title: "Puesto", company: "Empresa", startDate: "Fecha de inicio", endDate: "Fecha de fin", description: "Descripción", degree: "Título", institution: "Institución", year: "Año", subtitle: "Subtítulo", skill: "Habilidad", language: "Idioma", certification: "Certificación", issuer: "Emisor", project: "Proyecto", tech: "Herramientas / rol", role: "Rol", organization: "Organización", award: "Premio", details: "Detalles", pubTitle: "Título", publisher: "Editorial / lugar", refName: "Nombre", refRelation: "Relación", contact: "Datos de contacto", activity: "Actividad", school: "Escuela / universidad", location: "Ubicación", link: "Enlace" }, addContent: "Añadir contenido", addContentSub: "Elige una sección para añadir a tu CV", alreadyAdded: "Ya añadido", close: "Cerrar" },
-  ar: { editHeading: "تعديل العنوان", addEntry: "إضافة", remove: "حذف", show: "إظهار في السيرة", hide: "إخفاء من السيرة", untitled: "إدخال بدون عنوان", collapse: "طي", expand: "توسيع", reorder: "اسحب لإعادة الترتيب",
-        labels: { title: "المسمى الوظيفي", company: "الشركة", startDate: "تاريخ البدء", endDate: "تاريخ الانتهاء", description: "الوصف", degree: "الشهادة", institution: "المؤسسة", year: "السنة", subtitle: "عنوان فرعي", skill: "مهارة", language: "لغة", certification: "الشهادة", issuer: "الجهة المانحة", project: "المشروع", tech: "الأدوات / الدور", role: "الدور", organization: "المنظمة", award: "الجائزة", details: "التفاصيل", pubTitle: "العنوان", publisher: "الناشر / المكان", refName: "الاسم", refRelation: "العلاقة", contact: "بيانات الاتصال", activity: "النشاط", school: "المدرسة / الجامعة", location: "الموقع", link: "رابط" }, addContent: "إضافة محتوى", addContentSub: "اختر قسمًا لإضافته إلى سيرتك الذاتية", alreadyAdded: "مضاف بالفعل", close: "إغلاق" },
-  de: { editHeading: "Überschrift bearbeiten", addEntry: "Eintrag hinzufügen", remove: "Entfernen", show: "Im Lebenslauf anzeigen", hide: "Im Lebenslauf ausblenden", untitled: "Eintrag ohne Titel", collapse: "Einklappen", expand: "Ausklappen", reorder: "Zum Umordnen ziehen",
-        labels: { title: "Position", company: "Unternehmen", startDate: "Startdatum", endDate: "Enddatum", description: "Beschreibung", degree: "Abschluss", institution: "Institution", year: "Jahr", subtitle: "Untertitel", skill: "Fähigkeit", language: "Sprache", certification: "Zertifizierung", issuer: "Aussteller", project: "Projekt", tech: "Tools / Rolle", role: "Rolle", organization: "Organisation", award: "Auszeichnung", details: "Details", pubTitle: "Titel", publisher: "Verlag / Ort", refName: "Name", refRelation: "Beziehung", contact: "Kontaktdaten", activity: "Aktivität", school: "Schule / Universität", location: "Standort", link: "Link" }, addContent: "Inhalt hinzufügen", addContentSub: "Wählen Sie einen Abschnitt für Ihren Lebenslauf", alreadyAdded: "Bereits hinzugefügt", close: "Schließen" },
-};
 
 // Inline rich-text editor for an entry description. Reuses the markdown-marker
 // toolbar (bold/italic/underline/strike/bullet/numbered/divider/clear) but works
@@ -2306,7 +1421,7 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
 }
 
 // Reusable section card. Drives every section from ENTRY_SCHEMAS — no per-section markup.
-function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onToggleCollapse, onEditHeading, onAdd, onChangeEntry, onDeleteEntry, onToggleVisible, onReorder }) {
+function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, collapsed, onToggleCollapse, onEditHeading, onRestoreDefault, onAdd, onChangeEntry, onDeleteEntry, onToggleVisible, onReorder }) {
   const schema = ENTRY_SCHEMAS[sectionKey];
   const [expandedId, setExpandedId] = useState(null);
   const [editingHeading, setEditingHeading] = useState(false);
@@ -2377,6 +1492,14 @@ function SectionCard({ sectionKey, heading, entries, eui, rtl, collapsed, onTogg
                   cursor: "pointer", fontFamily: "inherit" }}>
                 Rename section
               </button>
+              {heading !== defaultHeading && (
+                <button type="button" onClick={(e) => { e.stopPropagation(); setMenuOpen(false); setHeadingDraft(defaultHeading); onRestoreDefault?.(); }}
+                  style={{ display: "block", width: "100%", padding: "10px 12px", textAlign: "left",
+                    background: "none", border: "none", color: C.text1, fontSize: 13, fontWeight: 700,
+                    cursor: "pointer", fontFamily: "inherit", boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}` }}>
+                  Restore default label
+                </button>
+              )}
               <div style={{ padding: "9px 12px", boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}`, color: C.text3,
                 fontSize: 11.5, lineHeight: 1.4 }}>
                 Reorder, hide, and delete are available on individual entries.
@@ -3627,7 +2750,13 @@ export default function ResumeGenerator() {
   const [coverTemplateHover, setCoverTemplateHover] = useState("");
   const [coverTemplateFocus, setCoverTemplateFocus] = useState("");
   const [step, setStep] = useState(initialRoute.step);
-  const [selectedLang, setSelectedLang] = useState(getInitialSiteLanguage);
+  const [interfaceLanguage, setInterfaceLanguage] = useState(initialInterfaceLanguage);
+  const [documentLanguage, setDocumentLanguage] = useState(initialDocumentLanguage);
+  const selectedLang = languageByCode(interfaceLanguage);
+  const selectedDocumentLang = languageByCode(documentLanguage);
+  const lang = UI_LANGS.has(interfaceLanguage) ? interfaceLanguage : "en";
+  const docLang = selectedDocumentLang?.code || "en";
+  const documentRtl = isRtlLang(docLang);
   const [tpl, setTpl] = useState(() => (
     initialRoute.navPage === "resume" && initialRoute.step === "form"
       ? TEMPLATES.find((template) => template.id === RECOMMENDED_TEMPLATE_ID) || TEMPLATES.find((template) => !template.blank) || null
@@ -3659,7 +2788,7 @@ export default function ResumeGenerator() {
   const [educationError, setEducationError] = useState("");
   const [skillsError, setSkillsError] = useState("");
   const [shakeField, setShakeField] = useState("");
-  const [phoneCode, setPhoneCode] = useState(() => LANG_CODE[selectedLang?.code] || "+1");
+  const [phoneCode, setPhoneCode] = useState(() => LANG_CODE[interfaceLanguage] || "+1");
   const [zoomed, setZoomed] = useState(false);
   const [previewZoom, setPreviewZoom] = useState(86);
   const [mobileResumeMode, setMobileResumeMode] = useState("edit");
@@ -3682,20 +2811,89 @@ export default function ResumeGenerator() {
   const hasPass = account.hasActivePass();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
+  const resumePrintRef = useRef(null);
+  const coverPrintRef = useRef(null);
   const setSiteLanguage = useCallback((language) => {
-    const next = SITE_LANGUAGE_CODES.has(language?.code) ? language : languageByCode("en");
-    setSelectedLang(next);
-    setPhoneCode(LANG_CODE[next.code] || "+1");
-    try { localStorage.setItem(SITE_LANGUAGE_STORAGE_KEY, next.code); } catch {}
+    const nextCode = SITE_LANGUAGE_CODES.has(language?.code) ? language.code : "en";
+    setInterfaceLanguage(nextCode);
+    setPhoneCode(LANG_CODE[nextCode] || "+1");
+    persistInterfaceLanguage(nextCode);
+    track(EVENTS.INTERFACE_LANGUAGE_SELECTED, {
+      language: nextCode,
+      interface_direction: isRtlLang(nextCode) ? "rtl" : "ltr",
+    });
+    if (isRtlLang(nextCode)) track(EVENTS.RTL_INTERFACE_ENABLED, { language: nextCode });
+    try {
+      localStorage.setItem(SITE_LANGUAGE_STORAGE_KEY, nextCode);
+      localStorage.setItem(LANGUAGE_SCHEMA_VERSION_KEY, LANGUAGE_SCHEMA_VERSION);
+    } catch {}
   }, []);
+  const setDocumentLanguagePreference = useCallback((language) => {
+    const nextCode = languageByCode(language?.code || "en").code || "en";
+    setDocumentLanguage(nextCode);
+    persistDocumentLanguage(nextCode);
+    track(EVENTS.DOCUMENT_LANGUAGE_SELECTED, {
+      language: nextCode,
+      document_direction: isRtlLang(nextCode) ? "rtl" : "ltr",
+    });
+    if (isRtlLang(nextCode)) track(EVENTS.RTL_DOCUMENT_ENABLED, { language: nextCode });
+  }, []);
+
+  const printDocumentPreview = useCallback((ref, type = "resume") => {
+    const node = ref.current;
+    if (!node || typeof window === "undefined") return false;
+    const printWindow = window.open("", "_blank", "width=900,height=1200");
+    if (!printWindow) return false;
+    const direction = isRtlLang(docLang) ? "rtl" : "ltr";
+    const title = type === "cover" ? "ApplyCraft cover letter" : "ApplyCraft resume";
+    const instruction = lang === "fr"
+      ? "Dans la fenêtre d'impression, choisissez Enregistrer au format PDF comme destination."
+      : lang === "ar"
+        ? "في نافذة الطباعة، اختر «حفظ كملف PDF» كوجهة."
+        : "In the print window, choose Save as PDF as the destination.";
+    printWindow.document.open();
+    printWindow.document.write(`<!doctype html>
+<html lang="${docLang}" dir="${direction}">
+<head>
+<meta charset="utf-8" />
+<title>${title}</title>
+<style>
+  @page { size: A4; margin: 14mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; color: #111; }
+  body { font-family: ${direction === "rtl" ? "'Noto Sans Arabic', Tahoma, Arial, sans-serif" : "Inter, Arial, sans-serif"}; direction: ${direction}; }
+  .print-instruction { font: 13px Arial, sans-serif; color: #334155; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; }
+  .print-root { width: 182mm; margin: 0 auto; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .print-root * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  section, article, header, main, aside { break-inside: avoid; }
+  p, li, div { unicode-bidi: plaintext; }
+  @media print {
+    .print-instruction { display: none; }
+    .print-root { width: 100%; margin: 0; box-shadow: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="print-instruction">${instruction}</div>
+<main class="print-root">${node.innerHTML}</main>
+<script>
+  const done = () => setTimeout(() => { window.focus(); window.print(); }, 80);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(done).catch(done);
+  else done();
+</script>
+</body>
+</html>`);
+    printWindow.document.close();
+    return true;
+  }, [docLang, lang]);
 
   useEffect(() => {
     if (typeof document === "undefined") return;
-    const direction = selectedLang.rtl ? "rtl" : "ltr";
-    document.documentElement.lang = selectedLang.code || "en";
+    const direction = isRtlLang(interfaceLanguage) ? "rtl" : "ltr";
+    document.documentElement.lang = interfaceLanguage || "en";
     document.documentElement.dir = direction;
     document.body?.setAttribute("dir", direction);
-  }, [selectedLang]);
+  }, [interfaceLanguage]);
 
   useEffect(() => {
     const close = (e) => { if (userMenuRef.current && !userMenuRef.current.contains(e.target)) setUserMenuOpen(false); };
@@ -3706,6 +2904,16 @@ export default function ResumeGenerator() {
   // Analytics init + optional-account bootstrap (runs once in the browser).
   useEffect(() => {
     initAnalytics();
+    try {
+      track(EVENTS.LANGUAGE_MIGRATION_COMPLETED, {
+        interface_language: lang,
+        document_language: docLang,
+        interface_direction: rtl ? "rtl" : "ltr",
+        document_direction: documentRtl ? "rtl" : "ltr",
+      });
+    } catch {
+      track(EVENTS.LANGUAGE_MIGRATION_FAILED);
+    }
     if (!ACCOUNTS_ENABLED) return;
     let cancelled = false;
     (async () => {
@@ -3869,8 +3077,10 @@ export default function ResumeGenerator() {
     }
   }, [appView, navPage, step, coverStep]);
 
-  const lang = UI_LANGS.has(selectedLang.code) ? selectedLang.code : "en";
   const t = UI[lang];
+  const documentBaseT = UI[UI_LANGS.has(docLang) ? docLang : "en"] || UI.en;
+  const docLabels = ["en", "fr", "ar"].includes(docLang) ? documentLabelsFor(docLang).sections : {};
+  const documentT = { ...documentBaseT, ...docLabels, extracurricular: docLabels.achievements || documentBaseT.extracurricular };
   const at = ACCT_UI[lang]; // account / sync / pass strings
   const eui = ENTRY_UI[lang] || ENTRY_UI.en; // structured-entry editor strings
   const lx = LANDING_UI[lang] || LANDING_UI.en; // landing / site-chrome strings
@@ -3881,7 +3091,7 @@ export default function ResumeGenerator() {
   const ms = MASTER_UI[lang] || MASTER_UI.en; // master profile strings
   const st = STATUS_UI[lang] || STATUS_UI.en; // toast / status messages
   const l2 = LANDING2_UI[lang] || LANDING2_UI.en; // landing marketing body
-  const rtl = selectedLang.rtl || false;
+  const rtl = isRtlLang(interfaceLanguage);
   const set = useCallback((k) => (e) => setForm(f => ({ ...f, [k]: e.target.value })), []);
   const setField = useCallback((k, v) => setForm(f => ({ ...f, [k]: v })), []);
 
@@ -3991,9 +3201,9 @@ export default function ResumeGenerator() {
   // Memoised so non-form state changes (modal open, ATS result, etc.) don't
   // trigger an expensive re-parse of the entire form on every render.
   const liveData = useMemo(
-    () => buildLiveData({ ...form, phone: fullPhone, photo: photoUrl }, t),
+    () => buildLiveData({ ...form, phone: fullPhone, photo: photoUrl }, documentT),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [form, fullPhone, photoUrl, lang]
+    [form, fullPhone, photoUrl, docLang, lang]
   );
   const isMobile = useIsMobile();
   const rPage  = isMobile ? rPageMobile  : rPageDesktop;
@@ -4201,14 +3411,14 @@ export default function ResumeGenerator() {
       // NEW paid capability — AI rewrites the profile to match the JD.
       // TODO(server): add a "tailor-resume" action to /api/ai that ALSO verifies
       // the active pass server-side (mirror the gating in functions/api/sync.js).
-      const text = await callAi("tailor-resume", JSON.stringify({ master, jd: jdText }), selectedLang.code || "en");
+      const text = await callAi("tailor-resume", JSON.stringify({ master, jd: jdText }), docLang || "en");
       if (text) { setResult(prev => ({ ...(prev || {}), tailored: text })); setStatusMsg(at.synced); setTimeout(() => setStatusMsg(""), 3000); }
     } catch {
       setStatusMsg(at.notConfigured); setTimeout(() => setStatusMsg(""), 3000);
     } finally {
       setAiTailoring(false);
     }
-  }, [hasPass, master, jdText, selectedLang, at]);
+  }, [hasPass, master, jdText, docLang, at]);
 
   const handleDeleteSavedData = useCallback(async () => {
     try { await account.deleteSavedData(); } catch { /* ignore */ }
@@ -4249,8 +3459,7 @@ export default function ResumeGenerator() {
 
   async function translateCV() {
     if (!form.name || translating) return;
-    const langName = selectedLang?.name || "English";
-    const langCode = selectedLang?.code || "en";
+    const langCode = docLang || "en";
     if (langCode === "en") return;
     setTranslating(true);
     try {
@@ -4323,7 +3532,6 @@ export default function ResumeGenerator() {
     ].find(([e]) => e);
     if (firstErr) { scrollToError(firstErr[1]); return; }
     setLoading(true); setResult(null); setAiPolished(false);
-    const langName = selectedLang.name;
     const resumeText = `Candidate details:
 Name: ${form.name}
 Title: ${form.title}
@@ -4343,12 +3551,12 @@ Volunteer: ${form.volunteer}
 Awards: ${form.awards}`;
 
     try {
-      const text = await callAi("generate-resume", resumeText, selectedLang.code || "en");
+      const text = await callAi("generate-resume", resumeText, docLang || "en");
       const clean = text.replace(/```json|```/g, "").trim();
       setResult(JSON.parse(clean));
       setAiPolished(true);
     } catch {
-      setResult(buildLiveData({ ...form, phone: fullPhone, photo: photoUrl }, t));
+      setResult(buildLiveData({ ...form, phone: fullPhone, photo: photoUrl }, documentT));
     } finally {
       setLoading(false);
     }
@@ -4374,9 +3582,23 @@ Awards: ${form.awards}`;
       setStatusMsg(st.incompleteDownload);
       setTimeout(() => setStatusMsg(""), 3500);
     }
+    if (documentRtl) {
+      setExporting("pdf");
+      track(EVENTS.PDF_EXPORT_STARTED, { document_type: "resume", language: docLang, template: tpl?.id || "", document_direction: "rtl" });
+      const opened = printDocumentPreview(resumePrintRef, "resume");
+      setStatusMsg(opened
+        ? (lang === "fr" ? "Dans la fenêtre d'impression, choisissez Enregistrer au format PDF." : lang === "ar" ? "في نافذة الطباعة، اختر «حفظ كملف PDF»." : "In the print window, choose Save as PDF.")
+        : st.pdfFail);
+      setExportSuccess(opened ? st.pdfSuccess : "");
+      track(opened ? EVENTS.PDF_EXPORT_COMPLETED : EVENTS.PDF_EXPORT_FAILED, { document_type: "resume", language: docLang, template: tpl?.id || "", export_type: "html_print" });
+      if (opened && docLang !== lang) track(EVENTS.MULTILINGUAL_RESUME_EXPORTED, { language: docLang, interface_language: lang, export_type: "pdf", template: tpl?.id || "" });
+      setTimeout(() => { setExporting(""); if (opened) setStatusMsg(""); }, opened ? 4500 : 3500);
+      return;
+    }
     setExporting("pdf");
     setExportSuccess("");
     try {
+    track(EVENTS.PDF_EXPORT_STARTED, { document_type: "resume", language: docLang, template: tpl?.id || "", document_direction: "ltr" });
     const { jsPDF } = await import("jspdf");
     // jsPDF built-in fonts render WinAnsi/Latin-1 (accents kept, non-Latin dropped).
     const safe = pdfSafe;
@@ -4507,10 +3729,13 @@ Awards: ${form.awards}`;
     setExportSuccess(st.pdfSuccess);
     setStatusMsg(st.pdfDownloaded);
     trackUxEvent("pdf_export_completed");
+    track(EVENTS.PDF_EXPORT_COMPLETED, { document_type: "resume", language: docLang, template: tpl?.id || "", export_type: "jspdf" });
+    if (docLang !== lang) track(EVENTS.MULTILINGUAL_RESUME_EXPORTED, { language: docLang, interface_language: lang, export_type: "pdf", template: tpl?.id || "" });
     track(EVENTS.RESUME_EXPORTED, { format: "pdf", template: tpl?.id || "" });
     setTimeout(() => { setExportSuccess(""); setStatusMsg(""); }, 4500);
     } catch {
       setStatusMsg(st.pdfFail);
+      track(EVENTS.PDF_EXPORT_FAILED, { document_type: "resume", language: docLang, template: tpl?.id || "", export_type: "jspdf" });
       setTimeout(() => setStatusMsg(""), 3500);
     } finally {
       setExporting("");
@@ -4528,6 +3753,7 @@ Awards: ${form.awards}`;
     setExporting("docx");
     setExportSuccess("");
     try {
+    track(EVENTS.DOCX_EXPORT_STARTED, { document_type: "resume", language: docLang, template: tpl?.id || "" });
     const { Document, Packer, Paragraph, TextRun, BorderStyle, AlignmentType } = await import("docx");
 
     const accent = tpl.accent.replace("#", "").toUpperCase();
@@ -4596,10 +3822,13 @@ Awards: ${form.awards}`;
     setExportSuccess(st.docxSuccess);
     setStatusMsg(st.docxDownloaded);
     trackUxEvent("docx_export_completed");
+    track(EVENTS.DOCX_EXPORT_COMPLETED, { document_type: "resume", language: docLang, template: tpl?.id || "" });
+    if (docLang !== lang) track(EVENTS.MULTILINGUAL_RESUME_EXPORTED, { language: docLang, interface_language: lang, export_type: "docx", template: tpl?.id || "" });
     track(EVENTS.RESUME_EXPORTED, { format: "docx", template: tpl?.id || "" });
     setTimeout(() => { setExportSuccess(""); setStatusMsg(""); }, 4500);
     } catch {
       setStatusMsg(st.docxFail);
+      track(EVENTS.DOCX_EXPORT_FAILED, { document_type: "resume", language: docLang, template: tpl?.id || "" });
       setTimeout(() => setStatusMsg(""), 3500);
     } finally {
       setExporting("");
@@ -5097,10 +4326,11 @@ Awards: ${form.awards}`;
       <>
         <FormattingBar fieldKey={key} />
         <textarea id={id || `field-${key}`} value={form[key]} onChange={onChange} placeholder={ph || ""} rows={5}
+          dir={documentRtl ? "rtl" : "ltr"}
           style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit", ...errStyle }} />
       </>
     ) : (
-      <input id={id || `field-${key}`} value={form[key]} onChange={onChange} placeholder={ph || ""} style={{ ...inputStyle, ...errStyle }} />
+      <input id={id || `field-${key}`} value={form[key]} onChange={onChange} placeholder={ph || ""} dir={documentRtl ? "rtl" : "ltr"} style={{ ...inputStyle, ...errStyle }} />
     );
   };
 
@@ -5109,11 +4339,17 @@ Awards: ${form.awards}`;
     <SectionCard
       sectionKey={key}
       heading={(form.sectionTitles && form.sectionTitles[key]) || defaultHeading}
+      defaultHeading={defaultHeading}
       entries={form[key + "Entries"] || []}
-      eui={eui} rtl={rtl}
+      eui={eui} rtl={documentRtl}
       collapsed={!!collapsedSections[key]}
       onToggleCollapse={() => toggleSectionCollapse(key)}
       onEditHeading={(h) => setSectionTitle(key, h)}
+      onRestoreDefault={() => setForm((f) => {
+        const nextTitles = { ...(f.sectionTitles || {}) };
+        delete nextTitles[key];
+        return { ...f, sectionTitles: nextTitles };
+      })}
       onAdd={() => addSectionEntry(key)}
       onChangeEntry={(id, ch) => changeSectionEntry(key, id, ch)}
       onDeleteEntry={(id) => deleteSectionEntry(key, id)}
@@ -5584,17 +4820,32 @@ Awards: ${form.awards}`;
                   <strong style={{ display: "block", fontSize: 13 }}>{bu.templateLabel}</strong>
                   <span style={{ color: C.text3, fontSize: 12 }}>{tpl.name} · {bu.atsConscious}</span>
                 </button>
-                <div style={{ fontSize: 12, fontWeight: 800, color: C.text3, marginBottom: 7 }}>{bu.languageLabel}</div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: C.text3, marginBottom: 7 }}>
+                  {lang === "fr" ? "Langue de l'interface" : lang === "ar" ? "لغة الواجهة" : "Interface language"}
+                </div>
                 <LanguageDropdown
                   selected={selectedLang}
                   onSelect={(l) => {
                     setSiteLanguage(l);
-                    setCustomizeOpen(false);
                   }}
                   siteOnly
                 />
+                <div style={{ fontSize: 12, fontWeight: 800, color: C.text3, margin: "12px 0 7px" }}>
+                  {lang === "fr" ? "Langue du document" : lang === "ar" ? "لغة المستند" : "Document language"}
+                </div>
+                <LanguageDropdown
+                  selected={selectedDocumentLang}
+                  onSelect={(l) => {
+                    setDocumentLanguagePreference(l);
+                  }}
+                  ariaLabel={lang === "fr" ? "Choisir la langue du document" : lang === "ar" ? "اختر لغة المستند" : "Choose document language"}
+                />
                 <p style={{ margin: "10px 0 0", fontSize: 11.5, color: C.text3, lineHeight: 1.5 }}>
-                  {bu.customizeNote}
+                  {lang === "fr"
+                    ? "La langue de l'interface change les menus. La langue du document change les titres, l'orientation et l'export sans traduire votre contenu."
+                    : lang === "ar"
+                      ? "لغة الواجهة تغيّر القوائم. لغة المستند تغيّر العناوين والاتجاه والتصدير دون ترجمة المحتوى الذي كتبته."
+                      : "Interface language changes menus. Document language changes labels, direction, and export without translating your content."}
                 </p>
               </div>
             )}
@@ -5887,7 +5138,7 @@ Awards: ${form.awards}`;
                         .filter(([, v]) => v?.trim())
                         .map(([k, v]) => `${k}: ${v}`)
                         .join("\n");
-                      const text = await callAi("rewrite-achievement", coachBullet, selectedLang.code || "en", extras);
+                      const text = await callAi("rewrite-achievement", coachBullet, docLang || "en", extras);
                       setCoachResult(text);
                     } catch {
                       const bullet = buildStrongBullet(coachBullet, coachAnswers, ctx);
@@ -6135,11 +5386,11 @@ Awards: ${form.awards}`;
                 {copied ? t.copied : t.copy}
               </button>
             )}
-            <div style={zoomed ? { width: "min(780px, 94vw)", maxHeight: "94vh", overflowY: "auto", borderRadius: 8 } : {
+            <div ref={resumePrintRef} style={zoomed ? { width: "min(780px, 94vw)", maxHeight: "94vh", overflowY: "auto", borderRadius: 8 } : {
               maxWidth: 760, margin: "0 auto", transform: `scale(${previewZoom / 100})`, transformOrigin: "top center",
               transition: "transform 0.18s ease", paddingBottom: `${Math.max(0, 100 - previewZoom) * 2}px`
             }}>
-              <ResumePaper tpl={tpl} result={result || liveData} rtl={rtl} placeholder={false} />
+              <ResumePaper tpl={tpl} result={result || liveData} rtl={documentRtl} lang={docLang} placeholder={false} />
             </div>
             {zoomed && (
               <button
@@ -6185,10 +5436,12 @@ Awards: ${form.awards}`;
       <>
         <CoverFormattingBar fieldKey={key} />
         <textarea id={`cover-field-${key}`} value={coverForm[key]} onChange={e => setCoverForm(f => ({ ...f, [key]: e.target.value }))}
+          dir={documentRtl ? "rtl" : "ltr"}
           placeholder={ph} rows={4} style={{ ...inputStyle, resize: "vertical", minHeight: 90 }} />
       </>
     ) : (
       <input id={`cover-field-${key}`} value={coverForm[key]} onChange={e => setCoverForm(f => ({ ...f, [key]: e.target.value }))}
+        dir={documentRtl ? "rtl" : "ltr"}
         placeholder={ph} style={inputStyle} />
     );
     return icon && !multiline ? <IconInput icon={icon}>{control}</IconInput> : control;
@@ -6196,6 +5449,18 @@ Awards: ${form.awards}`;
 
   async function downloadCoverPDF() {
     if (!coverTpl) return;
+    if (documentRtl) {
+      track(EVENTS.PDF_EXPORT_STARTED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", document_direction: "rtl" });
+      const opened = printDocumentPreview(coverPrintRef, "cover");
+      setStatusMsg(opened
+        ? (lang === "fr" ? "Dans la fenêtre d'impression, choisissez Enregistrer au format PDF." : lang === "ar" ? "في نافذة الطباعة، اختر «حفظ كملف PDF»." : "In the print window, choose Save as PDF.")
+        : st.pdfFail);
+      track(opened ? EVENTS.PDF_EXPORT_COMPLETED : EVENTS.PDF_EXPORT_FAILED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", export_type: "html_print" });
+      if (opened && docLang !== lang) track(EVENTS.MULTILINGUAL_COVER_LETTER_EXPORTED, { language: docLang, interface_language: lang, export_type: "pdf", template: coverTpl?.id || "" });
+      setTimeout(() => setStatusMsg(""), opened ? 4500 : 3500);
+      return;
+    }
+    track(EVENTS.PDF_EXPORT_STARTED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", document_direction: "ltr" });
     const { default: jsPDF } = await import("jspdf");
     const d = coverForm;
     const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -6254,6 +5519,8 @@ Awards: ${form.awards}`;
     }
 
     doc.save(`${sanitizeFilename(safe(d.name || "cover-letter"), "cover-letter")}-cover-letter.pdf`);
+    track(EVENTS.PDF_EXPORT_COMPLETED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", export_type: "jspdf" });
+    if (docLang !== lang) track(EVENTS.MULTILINGUAL_COVER_LETTER_EXPORTED, { language: docLang, interface_language: lang, export_type: "pdf", template: coverTpl?.id || "" });
   }
 
   const getCoverTemplateMeta = (template) => {
@@ -6442,6 +5709,18 @@ Awards: ${form.awards}`;
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
             <button type="button" onClick={() => setCoverStep("templates")} style={{ ...softBtn }}>{bu.customize}</button>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              {!isMobile && (
+                <span style={{ color: C.text3, fontSize: 12, fontWeight: 800 }}>
+                  {lang === "fr" ? "Document" : lang === "ar" ? "المستند" : "Document"}
+                </span>
+              )}
+              <LanguageDropdown
+                selected={selectedDocumentLang}
+                onSelect={setDocumentLanguagePreference}
+                ariaLabel={lang === "fr" ? "Choisir la langue du document" : lang === "ar" ? "اختر لغة المستند" : "Choose document language"}
+              />
+            </div>
             {isMobile && (
               <button onClick={() => setMobileCoverMode(mobileCoverMode === "edit" ? "preview" : "edit")}
                 style={{ ...softBtn }}>
@@ -6579,10 +5858,10 @@ Awards: ${form.awards}`;
               </div>
             </div>
             <div style={{ overflowX: "auto" }}>
-              <div style={{ maxWidth: 760, margin: "0 auto", transform: `scale(${previewZoom / 100})`,
+              <div ref={coverPrintRef} style={{ maxWidth: 760, margin: "0 auto", transform: `scale(${previewZoom / 100})`,
                 transformOrigin: "top center", transition: "transform 0.18s ease",
                 paddingBottom: `${Math.max(0, 100 - previewZoom) * 2}px` }}>
-                <CoverLetterPaper tpl={coverTpl} data={coverForm} />
+                <CoverLetterPaper tpl={coverTpl} data={coverForm} rtl={documentRtl} lang={docLang} />
               </div>
             </div>
           </div>
@@ -9678,7 +8957,7 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
   );
 }
 
-function LanguageDropdown({ selected, onSelect, siteOnly = false }) {
+function LanguageDropdown({ selected, onSelect, siteOnly = false, ariaLabel = "Choose language" }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const ref = useRef(null);
@@ -9698,14 +8977,14 @@ function LanguageDropdown({ selected, onSelect, siteOnly = false }) {
 
   return (
     <div ref={ref} style={{ position: "relative", zIndex: 500 }}>
-      <button onClick={() => setOpen(o => !o)} style={{
+      <button onClick={() => setOpen(o => !o)} aria-label={ariaLabel} aria-expanded={open} style={{
         display: "flex", alignItems: "center", gap: 7, padding: "7px 12px",
         background: C.surface, border: `1px solid ${C.border}`, borderRadius: 9,
         color: C.text1, fontSize: 13.5, fontWeight: 600, cursor: "pointer",
         fontFamily: "inherit", transition: "border-color .15s",
       }}>
         <span style={{ fontSize: 17 }}>{selected.flag}</span>
-        <span>{siteOnly ? (selected.code === "ar" ? "العربية" : "English") : selected.name}</span>
+        <span>{selected.native || selected.name}</span>
         <span style={{ fontSize: 10, color: C.text3, marginLeft: 2 }}>{open ? "▲" : "▼"}</span>
       </button>
 
@@ -9722,7 +9001,7 @@ function LanguageDropdown({ selected, onSelect, siteOnly = false }) {
               autoFocus
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder={siteOnly ? "English or Arabic…" : "Search language…"}
+              placeholder={siteOnly ? "Search interface language…" : "Search language…"}
               style={{
                 width: "100%", boxSizing: "border-box",
                 padding: "8px 10px", background: C.elevated,
@@ -10039,7 +9318,7 @@ function ThumbPreview({ tp, isMobile }) {
   );
 }
 
-function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = false }) {
+function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder = true, preview = false }) {
   const tpl = rawTpl.variant ? { ...rawTpl, id: rawTpl.variant } : rawTpl;
   const hasContent = result && (result.name !== "—" || result.summary || (result.sections && result.sections.length));
   const empty = placeholder && !hasContent;
@@ -10049,12 +9328,16 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
     height: preview ? "100%" : undefined,
     maxHeight: undefined,
     padding: preview ? 12 : 0,
-    fontFamily: tpl.font, overflow: preview ? "visible" : "hidden",
+    fontFamily: rtl ? "'Noto Sans Arabic', 'Tahoma', 'Arial', sans-serif" : tpl.font,
+    direction: rtl ? "rtl" : "ltr",
+    textAlign: rtl ? "right" : "left",
+    unicodeBidi: "plaintext",
+    overflow: preview ? "visible" : "hidden",
     boxShadow: preview ? "0 2px 12px rgba(0,0,0,0.12)" : "0 4px 16px rgba(0,0,0,0.18)",
     width: "100%", boxSizing: "border-box" };
 
   if (empty) {
-    return <div style={{ ...paper, display: "flex", alignItems: "center", justifyContent: "center",
+    return <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={{ ...paper, display: "flex", alignItems: "center", justifyContent: "center",
       color: "#9ca3af", fontFamily: "'Inter', sans-serif", fontSize: 14, padding: 30, textAlign: "center" }}>
       {tpl.id === "blank"
         ? "Fill in the form — your plain-text resume will appear here."
@@ -10064,7 +9347,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
 
   if (tpl.id === "blank") {
     return (
-      <div style={{ ...paper, fontFamily: "'Inter', system-ui, sans-serif" }}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={{ ...paper, fontFamily: rtl ? "'Noto Sans Arabic', 'Tahoma', 'Arial', sans-serif" : "'Inter', system-ui, sans-serif" }}>
         <div style={{ padding: "28px 32px" }}>
           <div style={{ marginBottom: 14 }}>
             <div style={{ fontWeight: 700, fontSize: 22, color: "#111", letterSpacing: "-0.3px" }}>{data.name}</div>
@@ -10107,7 +9390,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
       </div>
     );
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "30px 34px" }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: 28, fontWeight: 700, color: "#111", letterSpacing: "0.5px",
@@ -10148,7 +9431,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
     const sideS = data.sections.filter(isSidebar);
     const mainS = data.sections.filter(s => !isSidebar(s));
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "32%", background: tpl.accent, color: "#fff", padding: "28px 16px",
             flexShrink: 0 }}>
@@ -10205,7 +9488,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
   // ── MINIMAL (Precision Line — left-aligned, thin rules) ──────────
   if (tpl.id === "minimal") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "32px 36px" }}>
           <div style={{ marginBottom: 22 }}>
             <div style={{ fontSize: 30, fontWeight: 800, color: "#111", letterSpacing: "-0.5px",
@@ -10247,7 +9530,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
   // ── BOLD (full-bleed accent header, badge section headings) ──────
   if (tpl.id === "bold") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ background: tpl.accent, padding: "26px 28px 22px" }}>
           <div style={{ fontSize: 27, fontWeight: 800, color: "#fff", letterSpacing: "-0.3px",
             lineHeight: 1.1 }}>{data.name}</div>
@@ -10293,7 +9576,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
     const sideS = data.sections.filter(isSidebar);
     const mainS = data.sections.filter(s => !isSidebar(s));
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "29%", background: tpl.accent + "0F", padding: "28px 16px",
             borderRight: `1px solid ${tpl.accent}22`, flexShrink: 0 }}>
@@ -10351,7 +9634,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
   // ── EXECUTIVE (split header, left-bar sections, gold rule) ───────
   if (tpl.id === "executive") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "28px 32px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end",
             marginBottom: 14 }}>
@@ -10403,7 +9686,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
     const sideS = data.sections.filter(isSidebar);
     const mainS = data.sections.filter(s => !isSidebar(s));
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "34%", background: tpl.accent, color: "#fff", padding: "28px 16px",
             flexShrink: 0, display: "flex", flexDirection: "column" }}>
@@ -10502,7 +9785,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
   // ── SHARP (black & white corporate, full-width black rules) ─────
   if (tpl.id === "sharp") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "28px 36px" }}>
           <div style={{ paddingBottom: 14, marginBottom: 18, borderBottom: "2.5px solid #111" }}>
             <div style={{ fontSize: 26, fontWeight: 900, color: "#111", letterSpacing: "0.5px",
@@ -10546,7 +9829,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
     const sideS = data.sections.filter(isSidebar);
     const mainS = data.sections.filter(s => !isSidebar(s));
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "30%", background: "#0f172a", color: "#fff", padding: "28px 16px",
             flexShrink: 0 }}>
@@ -10605,7 +9888,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
   // ── PRISM (gradient header, accent line) ─────────────────────────
   if (tpl.id === "prism") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ background: `linear-gradient(135deg, ${tpl.accent} 0%, #3B82F6 100%)`,
           padding: "26px 30px 22px" }}>
           <div style={{ fontSize: 26, fontWeight: 800, color: "#fff", letterSpacing: "-0.3px",
@@ -10655,7 +9938,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
     const expSection = data.sections.find(s => /exp|expér|work|employ/i.test(s.heading)) || data.sections[0];
     const restSections = data.sections.filter(s => s !== expSection);
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         {/* Header */}
         <div style={{ padding: "20px 26px 16px", borderBottom: `3px solid ${tpl.accent}` }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
@@ -10727,7 +10010,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
   // ── HORIZON (centered banner header) ─────────────────────────────
   if (tpl.id === "horizon") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ background: tpl.accent, padding: "30px 32px 22px", textAlign: "center" }}>
           <div style={{ fontSize: 28, fontWeight: 800, color: "#fff", letterSpacing: "1px",
             textTransform: "uppercase", lineHeight: 1.1 }}>{data.name}</div>
@@ -10775,7 +10058,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
   // ── NORDIC (Scandinavian minimal) ────────────────────────────────
   if (tpl.id === "nordic") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "36px 44px" }}>
           <div style={{ marginBottom: 28 }}>
             <div style={{ fontSize: 32, fontWeight: 300, color: "#111", letterSpacing: "-0.5px",
@@ -10861,7 +10144,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
     const sideS = data.sections.filter(isSidebar);
     const mainS = data.sections.filter(s => !isSidebar(s));
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ flex: 1, padding: "28px 20px 28px 28px" }}>
             <div style={{ marginBottom: 20, display: "flex", alignItems: "center", gap: 14 }}>
@@ -10925,7 +10208,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
   // ── ACADEMY (academic/scholarly) ─────────────────────────────────
   if (tpl.id === "academy") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "32px 36px" }}>
           <div style={{ textAlign: "center", marginBottom: 20 }}>
             <div style={{ fontSize: 26, fontWeight: 700, color: "#111", letterSpacing: "0.3px",
@@ -10967,7 +10250,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
   // ── SPARK (vibrant section header bands) ─────────────────────────
   if (tpl.id === "spark") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "26px 28px 20px" }}>
           <div style={{ fontSize: 28, fontWeight: 800, color: "#111", letterSpacing: "-0.3px",
             lineHeight: 1.1 }}>{data.name}</div>
@@ -11012,7 +10295,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
   // ── STONE (warm gray header, understated serif) ───────────────────
   if (tpl.id === "stone") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ background: "#f6f4ef", borderBottom: "1px solid #e8e3da", padding: "28px 32px" }}>
           <div style={{ fontSize: 27, fontWeight: 700, color: "#2c2520", letterSpacing: "0.2px",
             lineHeight: 1.1 }}>{data.name}</div>
@@ -11054,7 +10337,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
   // ── IVY (British CV style, double rule) ──────────────────────────
   if (tpl.id === "ivy") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "30px 38px" }}>
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontSize: 28, fontWeight: 700, color: "#111", lineHeight: 1.1 }}>{data.name}</div>
@@ -11100,7 +10383,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
     const sideS = data.sections.filter(isSidebar);
     const mainS = data.sections.filter(s => !isSidebar(s));
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "31%", background: "#1e1e1e", color: "#e4e4e4",
             padding: "28px 16px", flexShrink: 0, display: "flex", flexDirection: "column" }}>
@@ -11212,7 +10495,7 @@ function ResumePaper({ tpl: rawTpl, result, rtl, placeholder = true, preview = f
 
   // ── FALLBACK (same as classic) ───────────────────────────────────
   return (
-    <div style={paper}>
+    <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
       <div style={{ padding: "28px 32px", textAlign: "center" }}>
         <div style={{ fontSize: 26, fontWeight: 700, color: "#111" }}>{data.name}</div>
         {data.title && <div style={{ fontSize: 13, color: tpl.accent, marginTop: 4 }}>{data.title}</div>}
@@ -11507,7 +10790,7 @@ const footerDot  = { color: C.border, margin: "0 2px" };
 const footerLink = { color: C.text2, textDecoration: "none", transition: "color .15s" };
 
 // ── CoverLetterPaper ──────────────────────────────────────────────
-function CoverLetterPaper({ tpl: rawTpl, data: d, preview = false }) {
+function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en", preview = false }) {
   const tpl = rawTpl.variant ? { ...rawTpl, id: rawTpl.variant } : rawTpl;
   const paper = {
     background: "#fff", color: "#1a1a1a",
@@ -11515,7 +10798,11 @@ function CoverLetterPaper({ tpl: rawTpl, data: d, preview = false }) {
     height: preview ? "100%" : undefined,
     maxHeight: undefined,
     padding: preview ? 12 : 0,
-    fontFamily: tpl.font, overflow: preview ? "visible" : "hidden",
+    fontFamily: rtl ? "'Noto Sans Arabic', 'Tahoma', 'Arial', sans-serif" : tpl.font,
+    direction: rtl ? "rtl" : "ltr",
+    textAlign: rtl ? "right" : "left",
+    unicodeBidi: "plaintext",
+    overflow: preview ? "visible" : "hidden",
     boxShadow: preview ? "0 2px 12px rgba(0,0,0,0.12)" : "0 4px 16px rgba(0,0,0,0.18)",
     width: "100%", boxSizing: "border-box",
   };
@@ -11527,7 +10814,7 @@ function CoverLetterPaper({ tpl: rawTpl, data: d, preview = false }) {
 
   if (tpl.blank) {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "40px 48px", fontSize: 13, lineHeight: 1.85, color: "#333" }}>
           <div style={{ marginBottom: 20 }}>
             {d.name && <div style={{ fontWeight: 600 }}>{d.name}</div>}
@@ -11556,7 +10843,7 @@ function CoverLetterPaper({ tpl: rawTpl, data: d, preview = false }) {
 
   if (tpl.id === "classic") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "36px 40px" }}>
           <div style={{ marginBottom: 20 }}>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#111" }}>{d.name}</div>
@@ -11590,7 +10877,7 @@ function CoverLetterPaper({ tpl: rawTpl, data: d, preview = false }) {
 
   if (tpl.id === "modern") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "32%", background: tpl.accent, color: "#fff", padding: "28px 16px", flexShrink: 0 }}>
             <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.2, marginBottom: 4 }}>{d.name}</div>
@@ -11627,7 +10914,7 @@ function CoverLetterPaper({ tpl: rawTpl, data: d, preview = false }) {
 
   if (tpl.id === "minimal") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ padding: "36px 42px" }}>
           <div style={{ marginBottom: 24 }}>
             <div style={{ fontSize: 28, fontWeight: 800, color: "#111", letterSpacing: "-0.5px" }}>{d.name}</div>
@@ -11662,7 +10949,7 @@ function CoverLetterPaper({ tpl: rawTpl, data: d, preview = false }) {
 
   if (tpl.id === "bold") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ background: tpl.accent, padding: "24px 28px 20px" }}>
           <div style={{ fontSize: 24, fontWeight: 800, color: "#fff" }}>{d.name}</div>
           {d.jobTitle && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 4 }}>{d.jobTitle}</div>}
@@ -11702,7 +10989,7 @@ function CoverLetterPaper({ tpl: rawTpl, data: d, preview = false }) {
 
   if (tpl.id === "elegant") {
     return (
-      <div style={paper}>
+      <div lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "29%", background: tpl.accent + "0F", padding: "28px 16px",
             borderRight: `1px solid ${tpl.accent}22`, flexShrink: 0 }}>

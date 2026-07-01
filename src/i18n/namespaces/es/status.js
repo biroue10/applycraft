@@ -1,0 +1,28 @@
+const status = {
+  "photoType": "La foto de perfil debe ser JPG, PNG o WebP y pesar menos de 2 MB.",
+  "photoRead": "No se pudo leer la imagen seleccionada.",
+  "draftFail": "No se pudo guardar este borrador en tu navegador.",
+  "resumeSaved": "Currículum guardado.",
+  "accountToSave": "Crea una cuenta gratis para guardar tu currículum.",
+  "newStarted": "Has empezado un nuevo currículum.",
+  "linkCopied": "Enlace para compartir copiado al portapapeles.",
+  "copied": "Copiado.",
+  "resumeTextCopied": "Texto del currículum copiado al portapapeles",
+  "incompleteDownload": "El currículum descargado puede estar incompleto. Añade nombre, experiencia y habilidades cuando estés listo.",
+  "pdfDownloaded": "PDF descargado.",
+  "pdfSuccess": "PDF descargado. Puedes seguir editando o crear una carta de presentación a juego.",
+  "pdfFail": "Error al descargar el PDF. Tu currículum sigue guardado en este navegador.",
+  "docxDownloaded": "DOCX descargado.",
+  "docxSuccess": "DOCX descargado. Puedes seguir editando o crear una carta de presentación a juego.",
+  "docxFail": "Error al descargar el DOCX. Tu currículum sigue guardado en este navegador.",
+  "noReadableText": "Ese archivo no tenía texto legible (puede ser una imagen escaneada). Pega el texto en su lugar.",
+  "couldntReadFile": "No se pudo leer ese archivo. Pega el texto de tu currículum en su lugar.",
+  "resumeImported": "Currículum importado al editor.",
+  "readingResume": "Leyendo tu currículum…",
+  "importedReview": "Currículum importado — revisa tus datos abajo.",
+  "couldntReadAuto": "No se pudo leer ese archivo automáticamente — puedes pegar el texto en el verificador ATS.",
+  "localDataDeleted": "Datos locales de ApplyCraft eliminados de este navegador.",
+  "pdfNonLatin": "La exportación PDF usa fuentes latinas. Para árabe u otras escrituras no latinas, usa la exportación DOCX para conservar el texto."
+};
+
+export default status;

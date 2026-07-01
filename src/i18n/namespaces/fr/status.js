@@ -1,0 +1,28 @@
+const status = {
+  "photoType": "La photo de profil doit être au format JPG, PNG ou WebP et faire moins de 2 Mo.",
+  "photoRead": "Impossible de lire l'image sélectionnée.",
+  "draftFail": "Impossible d'enregistrer ce brouillon dans votre navigateur.",
+  "resumeSaved": "CV enregistré.",
+  "accountToSave": "Créez un compte gratuit pour enregistrer votre CV.",
+  "newStarted": "Nouveau CV commencé.",
+  "linkCopied": "Lien de partage copié dans le presse-papiers.",
+  "copied": "Copié.",
+  "resumeTextCopied": "Texte du CV copié dans le presse-papiers",
+  "incompleteDownload": "Le CV téléchargé est peut-être incomplet. Ajoutez le nom, l'expérience et les compétences quand vous serez prêt.",
+  "pdfDownloaded": "PDF téléchargé.",
+  "pdfSuccess": "PDF téléchargé. Vous pouvez continuer à modifier ou créer une lettre de motivation assortie.",
+  "pdfFail": "Échec du téléchargement du PDF. Votre CV reste enregistré dans ce navigateur.",
+  "docxDownloaded": "DOCX téléchargé.",
+  "docxSuccess": "DOCX téléchargé. Vous pouvez continuer à modifier ou créer une lettre de motivation assortie.",
+  "docxFail": "Échec du téléchargement du DOCX. Votre CV reste enregistré dans ce navigateur.",
+  "noReadableText": "Ce fichier ne contenait aucun texte lisible (il s'agit peut-être d'une image scannée). Collez plutôt le texte.",
+  "couldntReadFile": "Impossible de lire ce fichier. Collez plutôt le texte de votre CV.",
+  "resumeImported": "CV importé dans l'éditeur.",
+  "readingResume": "Lecture de votre CV…",
+  "importedReview": "CV importé — vérifiez vos informations ci-dessous.",
+  "couldntReadAuto": "Impossible de lire ce fichier automatiquement — vous pouvez coller votre texte dans le vérificateur ATS.",
+  "localDataDeleted": "Données locales d'ApplyCraft supprimées de ce navigateur.",
+  "pdfNonLatin": "L'export PDF utilise des polices latines. Pour l'arabe ou d'autres écritures non latines, utilisez l'export DOCX pour préserver le texte."
+};
+
+export default status;
