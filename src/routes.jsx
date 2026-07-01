@@ -1,14 +1,23 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import ResumeGenerator from "./ResumeGenerator.jsx";
-import SharedResume from "./SharedResume.jsx";
+
+const SharedResume = lazy(() => import("./SharedResume.jsx"));
+
+function SharedResumeRoute() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100vh", background: "#06080F" }} />}>
+      <SharedResume />
+    </Suspense>
+  );
+}
 
 // Canonical + hreflang are injected per route at BUILD TIME by the
 // onBeforePageRender hook in vite.config.js (zero client JS), using the
 // genuine-cluster map in src/seo/alternates.js.
 export const routes = [
   { path: "/", element: <ResumeGenerator /> },
-  { path: "/r", element: <SharedResume /> },
-  { path: "/r/:shareId", element: <SharedResume /> },
+  { path: "/r", element: <SharedResumeRoute /> },
+  { path: "/r/:shareId", element: <SharedResumeRoute /> },
   { path: "/resume/templates", element: <ResumeGenerator /> },
   { path: "/resume/builder", element: <ResumeGenerator /> },
   { path: "/cover-letter/templates", element: <ResumeGenerator /> },

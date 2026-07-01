@@ -3,11 +3,9 @@ import { useLocation } from "react-router-dom";
 import { ACCOUNTS_ENABLED, PAYMENTS_ENABLED, ACTIVE_SEARCH_PASS } from "./config.js";
 import { initAnalytics, track, EVENTS } from "./analytics.js";
 import * as account from "./account.js";
-import { analyzeKeywords, detectLanguage, LANG_LABEL } from "./ats/engine.js";
 import { scoreFromIssues, scoreBand, issueCost, READINESS_EXPLAINER } from "./ats/scoring.js";
 import { pdfSafe, containsNonLatin1 } from "./pdf/text.js";
 import { useFocusTrap } from "./a11y/useFocusTrap.js";
-import { parseResume } from "./ats/parseResume.js";
 import * as resumes from "./resumes.js";
 import { buildPrivateShareUrl } from "./share.js";
 import { linkifyText, normalizeLinkHref } from "./utils/linkify.js";
@@ -4823,7 +4821,7 @@ Awards: ${form.awards}`;
   // passive bullet openers for the readiness checks.
   const WEAK_ATS = /^(responsible for|helped?( to)?|assisted?( with)?|worked on|was part of|involved in|supported?|participated in|contributed to|did |handled |performed |undertook |was involved)/i;
 
-  const scoreRawResume = (text, jdText) => {
+  const scoreRawResume = async (text, jdText) => {
     const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
     const issues = [];
     const hasEmail    = /\b[\w.+%-]+@[\w.-]+\.[a-z]{2,}\b/i.test(text);
@@ -4856,12 +4854,13 @@ Awards: ${form.awards}`;
 
     let kwGap = null;
     if (jdText && jdText.trim().length > 30) {
+      const { analyzeKeywords } = await import("./ats/engine.js");
       const a = analyzeKeywords(text, jdText); // stopword-filtered, normalized, cross-language
       if (a.total > 3) {
         const pct = a.pct;
         kwGap = { present: a.present, missing: a.missing, pct, total: a.total,
           crossLanguage: a.crossLanguage, langResume: a.langResume, langJd: a.langJd };
-        const xl = a.crossLanguage ? ` (cross-language: ${LANG_LABEL[a.langResume]} resume vs ${LANG_LABEL[a.langJd]} job)` : "";
+        const xl = a.crossLanguage ? ` (cross-language: ${String(a.langResume || "").toUpperCase()} resume vs ${String(a.langJd || "").toUpperCase()} job)` : "";
         if (pct < 30) issues.unshift({ level:"critical", icon:"🎯", title:`Low keyword match: ${pct}% vs. job description${xl}`, detail:`Only ${pct}% of the meaningful keywords in this job description appear in your resume. Adding more of the role's genuine keywords generally improves overlap.` });
         else if (pct < 45) issues.unshift({ level:"warning", icon:"🎯", title:`Keyword match: ${pct}%${xl}`, detail:`You match ${pct}% of this job description's keywords. Weaving in more of the role's real terms (where they truly apply) tends to help.` });
       }
@@ -6235,13 +6234,6 @@ Awards: ${form.awards}`;
     };
 
     // Detected languages for the badges (client-side, cheap).
-    const resumeLang = localText.trim().length > 20 ? detectLanguage(localText) : null;
-    const jdLang = localJd.trim().length > 20 ? detectLanguage(localJd) : null;
-    const langBadge = (lang) => lang
-      ? <span style={{ marginInlineStart: 8, fontSize: 10, fontWeight: 800, padding: "2px 7px", borderRadius: 999,
-          background: `${C.accent}1f`, color: C.accent2, letterSpacing: "0.5px", verticalAlign: "middle" }}>{LANG_LABEL[lang] || lang.toUpperCase()}</span>
-      : null;
-
     // OPT-IN AI layer — only fires on explicit click, with a rapid-call guard.
     const getAiSuggestions = async () => {
       const now = Date.now();
@@ -6262,8 +6254,8 @@ Awards: ${form.awards}`;
       if (localText.trim().length < 40) return;
       track(EVENTS.ATS_STARTED);
       setRunning(true);
-      setTimeout(() => {
-        const r = scoreRawResume(localText, localJd);
+      setTimeout(async () => {
+        const r = await scoreRawResume(localText, localJd);
         setResult(r);
         setAtsResult(r);
         setAtsText(localText);
@@ -6276,8 +6268,9 @@ Awards: ${form.awards}`;
       }, 150);
     };
 
-    const importToBuilder = () => {
+    const importToBuilder = async () => {
       if (localText.trim().length < 20) return;
+      const { parseResume } = await import("./ats/parseResume.js");
       hydrateFromParsed(parseResume(localText)); // structured parse → correct fields, no dumps
       setNavPage("resume");
       setStep(tpl ? "form" : "templates");
@@ -6349,7 +6342,7 @@ Awards: ${form.awards}`;
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 16 }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8 }}>
-              <span style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, textTransform: "uppercase", letterSpacing: "1px" }}>{ats.yourResume}{langBadge(resumeLang)}</span>
+              <span style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, textTransform: "uppercase", letterSpacing: "1px" }}>{ats.yourResume}</span>
               <button type="button" onClick={() => fileRef.current && fileRef.current.click()} disabled={reading}
                 style={{ display: "inline-flex", alignItems: "center", gap: 5, background: `${C.accent}14`,
                   border: `1px solid ${C.accent}40`, borderRadius: 7, padding: "4px 10px", fontSize: 11.5, fontWeight: 700,
@@ -6367,7 +6360,7 @@ Awards: ${form.awards}`;
           </div>
           <div>
             <div style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, textTransform: "uppercase",
-              letterSpacing: "1px", marginBottom: 8 }}>{ats.jdLabel} <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— {ats.optional}</span>{langBadge(jdLang)}</div>
+              letterSpacing: "1px", marginBottom: 8 }}>{ats.jdLabel} <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— {ats.optional}</span></div>
             <textarea value={localJd} onChange={e => setLocalJd(e.target.value)}
               placeholder={"Paste the job description here to get a keyword gap analysis.\n\nWith it, you'll see:\n  • Which keywords you match ✓\n  • Which are missing ✗\n  • Your keyword match %\n\nWithout it, you still get a full ATS readiness score."}
               style={{ width: "100%", height: 240, resize: "vertical", background: C.elevated,
@@ -6435,7 +6428,7 @@ Awards: ${form.awards}`;
               <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>{ats.keywordMatch}</div>
               {result.kwGap.crossLanguage && (
                 <div style={{ fontSize: 11.5, color: C.accent2, marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
-                  🌍 {ats.crossLangPre} {LANG_LABEL[result.kwGap.langResume]} {ats.resumeWord} vs {LANG_LABEL[result.kwGap.langJd]} {ats.jdWord}
+                  🌍 {ats.crossLangPre} {String(result.kwGap.langResume || "").toUpperCase()} {ats.resumeWord} vs {String(result.kwGap.langJd || "").toUpperCase()} {ats.jdWord}
                 </div>
               )}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
@@ -7471,7 +7464,10 @@ Awards: ${form.awards}`;
             setUploadModalOpen(false);
             setStatusMsg(st.readingResume);
             try {
-              const { extractResumeText } = await import("./ats/extractText.js");
+              const [{ extractResumeText }, { parseResume }] = await Promise.all([
+                import("./ats/extractText.js"),
+                import("./ats/parseResume.js"),
+              ]);
               const text = await extractResumeText(file);
               const parsed = parseResume(text);
               if (email) parsed.email = parsed.email || email;
