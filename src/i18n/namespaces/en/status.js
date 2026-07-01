@@ -22,7 +22,11 @@ const status = {
   "importedReview": "Resume imported — review your details below.",
   "couldntReadAuto": "Couldn't read that file automatically — you can paste your text in the ATS Checker instead.",
   "localDataDeleted": "ApplyCraft local data deleted from this browser.",
-  "pdfNonLatin": "PDF export uses Latin-script fonts. For Arabic or other non-Latin scripts, use DOCX export so the text is preserved."
+  "pdfNonLatin": "PDF export uses Latin-script fonts. For Arabic or other non-Latin scripts, use DOCX export so the text is preserved.",
+  "translateStarted": "Translating resume content...",
+  "translateSuccess": "Resume content translated. Review the text before exporting.",
+  "translateFail": "Translation failed. Your original resume content is unchanged.",
+  "translateNoContent": "Add resume content before translating."
 };
 
 export default status;

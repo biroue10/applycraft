@@ -153,6 +153,15 @@ test("direct RTL PDF export avoids popup print flow and preserves visual metadat
   assert.match(app, /await exportVisualPdf\(coverPrintRef/);
 });
 
+test("content translation remains explicit and opt-in", () => {
+  assert.match(app, /callAi\("translate-resume"/);
+  assert.match(app, /window\.confirm\(translateLabel\(bu\.translateContentConfirm/);
+  assert.match(app, /translateContentButton/);
+  assert.match(app, /translateContentHint/);
+  assert.match(app, /docLang !== "en"/);
+  assert.doesNotMatch(app, /setDocumentLanguagePreference[\s\S]{0,500}translateCV\(/);
+});
+
 test("Arabic DOCX export uses bidi paragraph and RTL run options", () => {
   assert.match(app, /bidirectional: docxRtl/);
   assert.match(app, /rightToLeft: docxRtl/);

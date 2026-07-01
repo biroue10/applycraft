@@ -22,7 +22,11 @@ const status = {
   "importedReview": "Currículum importado — revisa tus datos abajo.",
   "couldntReadAuto": "No se pudo leer ese archivo automáticamente — puedes pegar el texto en el verificador ATS.",
   "localDataDeleted": "Datos locales de ApplyCraft eliminados de este navegador.",
-  "pdfNonLatin": "La exportación PDF usa fuentes latinas. Para árabe u otras escrituras no latinas, usa la exportación DOCX para conservar el texto."
+  "pdfNonLatin": "La exportación PDF usa fuentes latinas. Para árabe u otras escrituras no latinas, usa la exportación DOCX para conservar el texto.",
+  "translateStarted": "Traduciendo el contenido del currículum...",
+  "translateSuccess": "Contenido del currículum traducido. Revisa el texto antes de exportar.",
+  "translateFail": "La traducción falló. El contenido original del currículum no cambió.",
+  "translateNoContent": "Agrega contenido al currículum antes de traducir."
 };
 
 export default status;

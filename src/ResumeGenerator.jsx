@@ -3115,6 +3115,9 @@ export default function ResumeGenerator() {
   const l2 = LANDING2_UI[lang] || LANDING2_UI.en; // landing marketing body
   const why = l2.why || LANDING2_UI.en.why;
   const rtl = isRtlLang(interfaceLanguage);
+  const translateLabel = useCallback((template, values = {}) => (
+    String(template || "").replace(/\{(\w+)\}/g, (_, key) => values[key] ?? "")
+  ), []);
   const set = useCallback((k) => (e) => setForm(f => ({ ...f, [k]: e.target.value })), []);
   const setField = useCallback((k, v) => setForm(f => ({ ...f, [k]: v })), []);
 
@@ -3495,17 +3498,27 @@ export default function ResumeGenerator() {
   }
 
   async function translateCV() {
-    if (!form.name || translating) return;
+    if (translating) return;
     const langCode = docLang || "en";
     if (langCode === "en") return;
+    const targetName = selectedDocumentLang?.native || selectedDocumentLang?.name || langCode;
+    const confirmed = typeof window === "undefined"
+      ? true
+      : window.confirm(translateLabel(bu.translateContentConfirm, { language: targetName }));
+    if (!confirmed) return;
     setTranslating(true);
+    setStatusMsg(st.translateStarted || "Translating resume content...");
     try {
       const fieldKeys = ["title", "summary", "experience", "education", "skills",
-        "certifications", "projects", "volunteer", "awards"];
+        "languages", "certifications", "projects", "volunteer", "awards", "extracurricular"];
       const toTranslate = Object.fromEntries(
         fieldKeys.filter(k => form[k]?.trim()).map(k => [k, form[k]])
       );
-      if (Object.keys(toTranslate).length === 0) return;
+      if (Object.keys(toTranslate).length === 0) {
+        setStatusMsg(st.translateNoContent || "Add resume content before translating.");
+        setTimeout(() => setStatusMsg(""), 3000);
+        return;
+      }
       const text = await callAi("translate-resume", JSON.stringify(toTranslate), langCode);
       const clean = text.replace(/```json|```/g, "").trim();
       const translated = JSON.parse(clean);
@@ -3522,8 +3535,13 @@ export default function ResumeGenerator() {
         });
         return next;
       });
+      setResult(null);
+      setAiPolished(false);
+      setStatusMsg(st.translateSuccess || "Resume content translated. Review the text before exporting.");
+      setTimeout(() => setStatusMsg(""), 4500);
     } catch {
-      // silently fail — user keeps original
+      setStatusMsg(st.translateFail || "Translation failed. Your original resume content is unchanged.");
+      setTimeout(() => setStatusMsg(""), 3500);
     } finally {
       setTranslating(false);
     }
@@ -4953,6 +4971,35 @@ Awards: ${form.awards}`;
                 <p style={{ margin: "10px 0 0", fontSize: 11.5, color: C.text3, lineHeight: 1.5 }}>
                   {bu.languageSeparationNote}
                 </p>
+                {docLang !== "en" && (
+                  <div style={{ marginTop: 10 }}>
+                    <button
+                      type="button"
+                      onClick={translateCV}
+                      disabled={translating}
+                      style={{
+                        width: "100%",
+                        minHeight: 38,
+                        borderRadius: 9,
+                        border: `1px solid ${C.accent}55`,
+                        background: translating ? C.elevated : `${C.accent}18`,
+                        color: C.accent2,
+                        fontSize: 12.5,
+                        fontWeight: 850,
+                        cursor: translating ? "wait" : "pointer",
+                        fontFamily: "inherit",
+                        padding: "8px 10px",
+                      }}
+                    >
+                      {translating
+                        ? bu.translatingContentButton
+                        : translateLabel(bu.translateContentButton, { language: selectedDocumentLang.native || selectedDocumentLang.name })}
+                    </button>
+                    <p style={{ margin: "7px 0 0", fontSize: 11, color: C.text3, lineHeight: 1.45 }}>
+                      {bu.translateContentHint}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>

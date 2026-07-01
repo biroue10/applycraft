@@ -22,7 +22,11 @@ const status = {
   "importedReview": "Lebenslauf importiert — überprüfe deine Angaben unten.",
   "couldntReadAuto": "Diese Datei konnte nicht automatisch gelesen werden — du kannst den Text in den ATS-Prüfer einfügen.",
   "localDataDeleted": "Lokale ApplyCraft-Daten aus diesem Browser gelöscht.",
-  "pdfNonLatin": "Der PDF-Export nutzt lateinische Schriften. Für Arabisch oder andere nicht-lateinische Schriften nutze den DOCX-Export, um den Text zu erhalten."
+  "pdfNonLatin": "Der PDF-Export nutzt lateinische Schriften. Für Arabisch oder andere nicht-lateinische Schriften nutze den DOCX-Export, um den Text zu erhalten.",
+  "translateStarted": "Lebenslauf-Inhalt wird übersetzt...",
+  "translateSuccess": "Lebenslauf-Inhalt übersetzt. Prüfe den Text vor dem Export.",
+  "translateFail": "Übersetzung fehlgeschlagen. Dein ursprünglicher Lebenslauf-Inhalt bleibt unverändert.",
+  "translateNoContent": "Füge Lebenslauf-Inhalt hinzu, bevor du übersetzt."
 };
 
 export default status;

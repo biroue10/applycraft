@@ -22,7 +22,11 @@ const status = {
   "importedReview": "CV importé — vérifiez vos informations ci-dessous.",
   "couldntReadAuto": "Impossible de lire ce fichier automatiquement — vous pouvez coller votre texte dans le vérificateur ATS.",
   "localDataDeleted": "Données locales d'ApplyCraft supprimées de ce navigateur.",
-  "pdfNonLatin": "L'export PDF utilise des polices latines. Pour l'arabe ou d'autres écritures non latines, utilisez l'export DOCX pour préserver le texte."
+  "pdfNonLatin": "L'export PDF utilise des polices latines. Pour l'arabe ou d'autres écritures non latines, utilisez l'export DOCX pour préserver le texte.",
+  "translateStarted": "Traduction du contenu du CV...",
+  "translateSuccess": "Contenu du CV traduit. Relisez le texte avant l'export.",
+  "translateFail": "La traduction a échoué. Le contenu original de votre CV est conservé.",
+  "translateNoContent": "Ajoutez du contenu au CV avant de le traduire."
 };
 
 export default status;
