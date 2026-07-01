@@ -24,6 +24,7 @@
     "test:a11y": "node scripts/a11y-check.mjs",
     "test:security": "node scripts/security-tests.mjs",
     "test:i18n": "node scripts/i18n-tests.mjs",
+    "test:share": "node scripts/share-tests.mjs",
     "test:i18n-strings": "node scripts/check-hardcoded-strings.mjs",
     "test:ux": "node scripts/ux-tests.mjs",
     "test:visual": "node scripts/visual-regression.mjs",

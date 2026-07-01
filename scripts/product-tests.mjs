@@ -3,7 +3,7 @@
 //
 // Fails (non-zero exit) when the single source of truth in src/product.js
 // drifts from:
-//   1. the actual template / language arrays in src/ResumeGenerator.jsx, or
+//   1. the actual template registry / language arrays in source, or
 //   2. the optional-pass defaults in src/config.js, or
 //   3. the product claims printed in the static HTML pages.
 //
@@ -25,23 +25,24 @@ const check = (name, fn) => {
 };
 
 const gen = readFileSync(path.join(root, "src/ResumeGenerator.jsx"), "utf8");
+const registry = readFileSync(path.join(root, "src/documents/templateRegistry.js"), "utf8");
 
 // Bracket-accurate extraction of a top-level array literal.
-function arrayLiteral(marker) {
-  const start = gen.indexOf("[", gen.indexOf(marker));
+function arrayLiteral(source, marker) {
+  const start = source.indexOf("[", source.indexOf(marker));
   let depth = 0, i = start;
-  for (; i < gen.length; i++) {
-    if (gen[i] === "[") depth++;
-    else if (gen[i] === "]") { depth--; if (depth === 0) { i++; break; } }
+  for (; i < source.length; i++) {
+    if (source[i] === "[") depth++;
+    else if (source[i] === "]") { depth--; if (depth === 0) { i++; break; } }
   }
-  return gen.slice(start, i);
+  return source.slice(start, i);
 }
 const countEntries = (block) => [...block.matchAll(/\{\s*id:\s*"([^"]+)"/g)].length;
 const countBlank = (block) => [...block.matchAll(/blank:\s*true/g)].length;
 
-const tplBlock = arrayLiteral("const TEMPLATES =");
-const covBlock = arrayLiteral("const COVER_TEMPLATES =");
-const wlBlock = arrayLiteral("const WORLD_LANGUAGES =");
+const tplBlock = arrayLiteral(registry, "const TEMPLATES =");
+const covBlock = arrayLiteral(registry, "const COVER_TEMPLATES =");
+const wlBlock = arrayLiteral(gen, "const WORLD_LANGUAGES =");
 const resumeCount = countEntries(tplBlock) - countBlank(tplBlock);
 const coverCount = countEntries(covBlock);
 const docCount = [...wlBlock.matchAll(/code:\s*"/g)].length;

@@ -6,6 +6,9 @@
 
 import LZString from "lz-string";
 
+const SUPPORTED_SHARE_LANGS = new Set(["en", "fr", "ar", "es", "de"]);
+const RTL_CONTENT_RE = /[\u0590-\u08ff\uFB1D-\uFDFF\uFE70-\uFEFF]/g;
+
 // Legacy base64url fallback (links created before LZ compression).
 function fromB64Url(s) {
   try {
@@ -30,6 +33,52 @@ export function decodeShare(str) {
   const legacy = fromB64Url(str);
   if (legacy) { try { return JSON.parse(legacy); } catch { /* noop */ } }
   return null;
+}
+
+export function normalizeShareLanguage(language, fallback = "en") {
+  const raw = String(language || "").trim().toLowerCase();
+  const code = raw.split(/[-_]/)[0];
+  return SUPPORTED_SHARE_LANGS.has(code) ? code : fallback;
+}
+
+function collectText(value, out = []) {
+  if (!value) return out;
+  if (typeof value === "string") {
+    out.push(value);
+    return out;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectText(item, out));
+    return out;
+  }
+  if (typeof value === "object") {
+    Object.values(value).forEach((item) => collectText(item, out));
+  }
+  return out;
+}
+
+function inferLanguageFromContent(data) {
+  const text = collectText(data).join(" ");
+  const matches = text.match(RTL_CONTENT_RE) || [];
+  return matches.length >= 8 ? "ar" : "en";
+}
+
+export function normalizeSharedDocument(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const kind = raw.k === "cover" ? "cover" : raw.k === "resume" ? "resume" : null;
+  if (!kind) return null;
+  const data = raw.d && typeof raw.d === "object" ? raw.d : {};
+  const hasExplicitLanguage = Boolean(raw.l || raw.language || raw.documentLanguage);
+  const inferredFallback = hasExplicitLanguage ? "en" : inferLanguageFromContent(data);
+  return {
+    v: Number(raw.v || 1),
+    k: kind,
+    t: String(raw.t || raw.templateId || "modern"),
+    l: normalizeShareLanguage(raw.l || raw.language || raw.documentLanguage, inferredFallback),
+    p: String(raw.p || raw.pageSize || "a4").toLowerCase() === "letter" ? "letter" : "a4",
+    c: raw.c && typeof raw.c === "object" ? raw.c : {},
+    d: data,
+  };
 }
 
 export function buildShareUrl(payload) {

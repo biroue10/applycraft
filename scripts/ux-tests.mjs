@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const app = await readFile(new URL("../src/ResumeGenerator.jsx", import.meta.url), "utf8");
+const templateRegistry = await readFile(new URL("../src/documents/templateRegistry.js", import.meta.url), "utf8");
 const landing = await readFile(new URL("../src/i18n/namespaces/en/landing.js", import.meta.url), "utf8");
 const landing2 = await readFile(new URL("../src/i18n/namespaces/en/landing2.js", import.meta.url), "utf8");
 const common = await readFile(new URL("../src/i18n/namespaces/en/common.js", import.meta.url), "utf8");
@@ -12,7 +13,7 @@ assert.match(landing, /Create my resume/, "homepage needs a specific primary CTA
 assert.match(landing, /Check my existing resume/, "homepage needs a specific secondary CTA");
 assert.match(landing, /Create a job-ready resume without signing up\./, "homepage value proposition should be direct");
 assert.match(app, /startResume\("hero_primary"\)/, "hero CTA should use the fast-start resume path");
-assert.match(app, /RECOMMENDED_TEMPLATE_ID = "modern"/, "resume flow should preselect a recommended template");
+assert.match(templateRegistry, /RECOMMENDED_TEMPLATE_ID = "modern"/, "resume flow should preselect a recommended template");
 assert.match(builder, /Use template/, "template selector should expose a clear use action");
 assert.match(builder, /Recommended/, "template selector should call out the default");
 assert.match(app, /mobileResumeMode/, "mobile edit and preview modes should be explicit");

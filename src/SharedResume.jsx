@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { decodeShare } from "./share.js";
+import React, { useEffect, useMemo, useState } from "react";
+import { decodeShare, normalizeSharedDocument } from "./share.js";
+import { isRtlLang } from "./i18n/languages.js";
+import { ResumePaper, CoverLetterPaper } from "./documents/DocumentPapers.jsx";
+import { getResumeTemplateById, getCoverTemplateById } from "./documents/templateRegistry.js";
 
-// Public viewer for a shared resume / cover letter. Reads the encoded document
-// from the URL fragment (SSR-safe: only on the client), renders it centered on
-// a clean page with the full ApplyCraft site navbar + footer. Nothing is
-// fetched — this is a standalone, lightweight page (no ResumeGenerator import).
+// Public viewer for a shared resume / cover letter. The encoded payload lives
+// entirely in the URL fragment, so no resume content is uploaded to ApplyCraft.
 
-// Dark-theme tokens mirrored from the main app's `C` object.
 const PAGE_BG = "#06080F";
 const SURFACE = "#0D1424";
 const BORDER  = "#20324E";
@@ -14,14 +14,7 @@ const TEXT1   = "#EEF2FF";
 const TEXT2   = "#B6C2D6";
 const TEXT3   = "#7186A6";
 const GRAD    = "linear-gradient(135deg,#6366F1 0%,#3B82F6 100%)";
-
-const PAPER = "#ffffff";
-const INK = "#1a1a1a";
-const MUTE = "#5b6678";
-const ACCENT = "#6366F1";
 const EMAIL = "hello@applycraft.io";
-
-const cleanLine = (s) => String(s || "").replace(/\*\*|__|\*|~~/g, "");
 
 function Logo({ size = 24 }) {
   return (
@@ -40,10 +33,10 @@ const NAV_LINKS = [
 
 function SiteNav() {
   return (
-    <nav style={{ position: "sticky", top: 0, zIndex: 100, background: PAGE_BG + "cc",
+    <nav className="ac-shared-site-nav" style={{ position: "sticky", top: 0, zIndex: 100, background: PAGE_BG + "cc",
       backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)", borderBottom: `1px solid ${BORDER}` }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 64,
-        display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14 }}>
         <Logo size={24} />
         <nav aria-label="Primary tools" style={{ display: "flex", gap: 4 }} className="ac-shared-nav-links">
           {NAV_LINKS.map((l) => (
@@ -64,7 +57,7 @@ function SiteFooter() {
   const col = { fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px", color: TEXT3, marginBottom: 16 };
   const lk = { display: "block", fontSize: 13.5, color: TEXT2, textDecoration: "none", padding: "4px 0" };
   return (
-    <div style={{ padding: "56px 24px 32px", borderTop: `1px solid ${BORDER}` }}>
+    <div className="ac-shared-site-footer" style={{ padding: "56px 24px 32px", borderTop: `1px solid ${BORDER}` }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 40, marginBottom: 48 }}>
           <div style={{ maxWidth: 280 }}>
@@ -124,94 +117,103 @@ function SiteFooter() {
   );
 }
 
-function ResumeView({ d }) {
+function SharedStyles({ pageSize }) {
+  const size = pageSize === "letter" ? "Letter" : "A4";
   return (
-    <article style={{ background: PAPER, color: INK, width: "100%", maxWidth: 800, margin: "0 auto",
-      borderRadius: 10, boxShadow: "0 24px 70px rgba(0,0,0,0.45)", padding: "44px 48px", boxSizing: "border-box" }}>
-      <header style={{ borderBottom: `2px solid ${ACCENT}`, paddingBottom: 14, marginBottom: 18 }}>
-        <h1 style={{ margin: 0, fontSize: 30, fontWeight: 800, letterSpacing: "-0.5px" }}>{d.name || "Resume"}</h1>
-        {d.title && <div style={{ fontSize: 15, color: ACCENT, fontWeight: 700, marginTop: 4 }}>{d.title}</div>}
-        {Array.isArray(d.contact) && d.contact.length > 0 && (
-          <div style={{ fontSize: 12.5, color: MUTE, marginTop: 8 }}>{d.contact.filter(Boolean).join("   •   ")}</div>
-        )}
-      </header>
-      {d.summary && <p style={{ fontSize: 13.5, lineHeight: 1.7, color: "#333", margin: "0 0 18px" }}>{cleanLine(d.summary)}</p>}
-      {(d.sections || []).map((s, i) => (
-        <section key={i} style={{ marginBottom: 16 }}>
-          <h2 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px", color: ACCENT, margin: "0 0 8px" }}>{s.heading}</h2>
-          {(s.items || []).map((it, j) => {
-            const line = cleanLine(it);
-            const bullet = /^\s*[•\-*]\s/.test(line);
-            return (
-              <div key={j} style={{ fontSize: 13, lineHeight: 1.6, color: "#333", marginBottom: 3,
-                paddingLeft: bullet ? 14 : 0, position: "relative" }}>
-                {bullet ? line.replace(/^\s*[•\-*]\s/, "• ") : line}
-              </div>
-            );
-          })}
-        </section>
-      ))}
-    </article>
-  );
-}
-
-function CoverView({ d }) {
-  const paras = String(d.body || "").split(/\n{2,}/).filter((p) => p.trim());
-  return (
-    <article style={{ background: PAPER, color: INK, width: "100%", maxWidth: 760, margin: "0 auto",
-      borderRadius: 10, boxShadow: "0 24px 70px rgba(0,0,0,0.45)", padding: "48px 52px", boxSizing: "border-box", lineHeight: 1.7 }}>
-      <header style={{ borderBottom: `2px solid ${ACCENT}`, paddingBottom: 12, marginBottom: 16 }}>
-        <div style={{ fontSize: 24, fontWeight: 800 }}>{d.name || ""}</div>
-        {d.jobTitle && <div style={{ fontSize: 13.5, color: ACCENT, fontWeight: 700 }}>{d.jobTitle}</div>}
-        <div style={{ fontSize: 12, color: MUTE, marginTop: 6 }}>{[d.email, d.phone, d.location].filter(Boolean).join("   •   ")}</div>
-      </header>
-      {d.date && <div style={{ fontSize: 12.5, color: MUTE, marginBottom: 10 }}>{d.date}</div>}
-      {(d.recipientName || d.company) && (
-        <div style={{ fontSize: 13, marginBottom: 14 }}>
-          {d.recipientName && <div style={{ fontWeight: 700 }}>{d.recipientName}</div>}
-          {d.recipientTitle && <div>{d.recipientTitle}</div>}
-          {d.company && <div>{d.company}</div>}
-          {d.companyAddress && <div style={{ color: MUTE }}>{d.companyAddress}</div>}
-        </div>
-      )}
-      {d.subject && <div style={{ fontWeight: 700, marginBottom: 12 }}>Re: {d.subject}</div>}
-      {d.opening && <p style={{ margin: "0 0 12px", fontSize: 13.5 }}>Dear {d.opening},</p>}
-      {paras.map((p, i) => <p key={i} style={{ margin: "0 0 12px", fontSize: 13.5 }}>{cleanLine(p)}</p>)}
-      {d.closing && <p style={{ margin: "0 0 16px", fontSize: 13.5 }}>{cleanLine(d.closing)}</p>}
-      <p style={{ margin: 0, fontSize: 13.5 }}>{d.signoff || "Sincerely"},</p>
-      <p style={{ margin: "2px 0 0", fontSize: 13.5, fontWeight: 700 }}>{d.name || ""}</p>
-    </article>
+    <style>{`
+      .ac-shared-document-wrap {
+        width: min(100%, 860px);
+        margin: 0 auto;
+        overflow-wrap: anywhere;
+      }
+      .ac-shared-document-wrap bdi,
+      .ac-shared-document-wrap a {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+      @media (max-width: 720px) {
+        .ac-shared-nav-links { display: none !important; }
+        .ac-shared-main { padding: 20px 10px 36px !important; }
+        .ac-shared-document-wrap { width: 100%; }
+      }
+      @media print {
+        @page { size: ${size}; margin: 14mm; }
+        html, body, #root {
+          background: #fff !important;
+        }
+        .ac-shared-site-nav,
+        .ac-shared-site-footer {
+          display: none !important;
+        }
+        .ac-shared-main {
+          padding: 0 !important;
+          background: #fff !important;
+        }
+        .ac-shared-document-wrap {
+          width: 100% !important;
+          margin: 0 !important;
+          box-shadow: none !important;
+          overflow: visible !important;
+        }
+        .ac-shared-document-wrap > article > div {
+          box-shadow: none !important;
+        }
+        * {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+    `}</style>
   );
 }
 
 export default function SharedResume() {
   const [doc, setDoc] = useState(null);
   const [ready, setReady] = useState(false);
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const frag = window.location.hash.replace(/^#/, "");
-    setDoc(frag ? decodeShare(frag) : null);
+    setDoc(frag ? normalizeSharedDocument(decodeShare(frag)) : null);
     setReady(true);
   }, []);
+
+  const resolved = useMemo(() => {
+    if (!doc) return null;
+    const rtl = isRtlLang(doc.l);
+    const template = doc.k === "cover" ? getCoverTemplateById(doc.t) : getResumeTemplateById(doc.t);
+    return { rtl, template };
+  }, [doc]);
 
   return (
     <div style={{ minHeight: "100vh", background: PAGE_BG, display: "flex", flexDirection: "column",
       fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
       <SiteNav />
+      <SharedStyles pageSize={doc?.p || "a4"} />
 
-      <main style={{ flex: 1, padding: "32px 16px 56px" }}>
+      <main className="ac-shared-main" style={{ flex: 1, padding: "32px 16px 56px" }}>
         {!ready ? (
-          <div style={{ color: TEXT3, textAlign: "center", padding: 60 }}>Loading…</div>
-        ) : !doc ? (
+          <div style={{ color: TEXT3, textAlign: "center", padding: 60 }}>Loading...</div>
+        ) : !doc || !resolved ? (
           <div style={{ color: TEXT2, textAlign: "center", padding: 60, maxWidth: 460, margin: "0 auto" }}>
             <div style={{ fontSize: 18, fontWeight: 800, color: TEXT1, marginBottom: 8 }}>This shared link is empty or invalid.</div>
             <div style={{ fontSize: 14, marginBottom: 20 }}>Ask the sender for a fresh link, or build your own resume for free.</div>
             <a href="/resume/templates" style={{ background: GRAD, color: "#fff", textDecoration: "none",
               borderRadius: 3, padding: "11px 22px", fontSize: 14, fontWeight: 700, display: "inline-block" }}>
-              Build my resume — free
+              Build my resume - free
             </a>
           </div>
-        ) : doc.k === "cover" ? <CoverView d={doc.d || {}} /> : <ResumeView d={doc.d || {}} />}
+        ) : (
+          <div className="ac-shared-document-wrap">
+            <article lang={doc.l} dir={resolved.rtl ? "rtl" : "ltr"} data-share-kind={doc.k} data-template-id={resolved.template.id}>
+              {doc.k === "cover" ? (
+                <CoverLetterPaper tpl={resolved.template} data={doc.d || {}} rtl={resolved.rtl} lang={doc.l} preview={false} />
+              ) : (
+                <ResumePaper tpl={resolved.template} result={doc.d || {}} rtl={resolved.rtl} lang={doc.l} placeholder={false} preview={false} />
+              )}
+            </article>
+          </div>
+        )}
       </main>
 
       <SiteFooter />
