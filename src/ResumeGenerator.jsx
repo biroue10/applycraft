@@ -2846,10 +2846,17 @@ export default function ResumeGenerator() {
       : lang === "ar"
         ? "للحصول على ملف PDF نظيف، اختر « حفظ كملف PDF » وقم بإيقاف خيار « الرؤوس والتذييلات » في نافذة الطباعة."
         : "For a clean PDF, choose \"Save as PDF\" and turn off \"Headers and footers\" in the print dialog.";
+    const printButtonLabel = lang === "fr" ? "Ouvrir la fenêtre d’impression" : lang === "ar" ? "فتح نافذة الطباعة" : "Open print dialog";
     const doc = printWindow.document;
     doc.documentElement.lang = docLang || "en";
     doc.documentElement.dir = direction;
     doc.title = title;
+    try {
+      const origin = window.location?.origin || "https://applycraft.io";
+      printWindow.history.replaceState({}, title, `${origin}/print/${type}`);
+    } catch {
+      // If the browser refuses history changes in a print popup, the PDF remains local-only.
+    }
 
     const meta = doc.createElement("meta");
     meta.setAttribute("charset", "utf-8");
@@ -2869,6 +2876,19 @@ body {
   color: #334155;
   padding: 12px 16px;
   border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.print-instruction button {
+  border: 0;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  font: 700 12px Arial, sans-serif;
+  padding: 8px 12px;
+  cursor: pointer;
 }
 .print-root {
   width: 186mm;
@@ -2939,7 +2959,14 @@ p, li, div, span {
     while (doc.body.firstChild) doc.body.removeChild(doc.body.firstChild);
     const instructionEl = doc.createElement("div");
     instructionEl.className = "print-instruction";
-    instructionEl.textContent = instruction;
+    const instructionText = doc.createElement("span");
+    instructionText.textContent = instruction;
+    instructionEl.appendChild(instructionText);
+    const printButton = doc.createElement("button");
+    printButton.type = "button";
+    printButton.textContent = printButtonLabel;
+    printButton.disabled = true;
+    instructionEl.appendChild(printButton);
     doc.body.appendChild(instructionEl);
 
     const root = doc.createElement("main");
@@ -2956,10 +2983,15 @@ p, li, div, span {
     root.appendChild(clone);
     doc.body.appendChild(root);
 
-    const finish = () => setTimeout(() => {
+    const runPrint = () => {
       printWindow.focus();
       printWindow.print();
-    }, 80);
+    };
+    printButton.addEventListener("click", runPrint);
+    const finish = () => {
+      printButton.disabled = false;
+      if (direction !== "rtl") setTimeout(runPrint, 80);
+    };
     if (doc.fonts?.ready) doc.fonts.ready.then(finish).catch(finish);
     else finish();
     return true;

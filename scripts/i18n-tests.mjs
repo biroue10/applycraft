@@ -140,6 +140,7 @@ test("secure print flow avoids unsafe sinks and preserves print metadata", () =>
   assert.match(app, /appendChild\(clone\)/);
   assert.match(app, /doc\.documentElement\.lang = docLang/);
   assert.match(app, /doc\.documentElement\.dir = direction/);
+  assert.match(app, /printWindow\.history\.replaceState/);
   assert.match(app, /@page \{ size: A4; margin: 12mm; \}/);
   assert.match(app, /Headers and footers/);
   assert.match(app, /En-têtes et pieds de page/);
@@ -147,6 +148,8 @@ test("secure print flow avoids unsafe sinks and preserves print metadata", () =>
   assert.match(app, /\.resume-tag-list/);
   assert.match(app, /break-inside: avoid/);
   assert.match(app, /align-items: flex-start/);
+  assert.match(app, /printButton\.addEventListener\("click", runPrint\)/);
+  assert.match(app, /direction !== "rtl"/);
   assert.match(app, /doc\.fonts\?\.ready/);
   assert.match(app, /choose \\"Save as PDF\\"/);
 });

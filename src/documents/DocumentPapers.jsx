@@ -251,7 +251,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
   }
 
   // Whether a section belongs in a sidebar (skills, languages)
-  const isSidebar = (s) => /skill|compét|habilidad|مهارات|fähig|^language|^langue|^idioma|^sprach/i.test(s.heading);
+  const isSidebar = (s) => /skill|compét|habilidad|مهارات|لغة|لغات|اللغات|fähig|^language|^langue|^idioma|^sprach/i.test(`${s.key || ""} ${s.heading || ""}`);
   const renderSectionBody = (s, options = {}) => (
     <ResumeSectionBody section={s} sidebar={isSidebar(s)} accent={tpl.accent} {...options} />
   );
