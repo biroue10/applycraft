@@ -4164,6 +4164,7 @@ export default function ResumeGenerator() {
     setAppView("app");
     setMobileResumeMode("edit");
     trackUxEvent("resume_editor_started", { source, template: template.id });
+    track(EVENTS.TEMPLATE_SELECTED, { template: template.id });
   }, []);
 
   // ── Optional account / sync / paid-pass handlers ──────────────────────────
@@ -4952,7 +4953,7 @@ Awards: ${form.awards}`;
                         background: active ? "rgba(2,6,23,0.48)" : "rgba(2,6,23,0)",
                         opacity: isMobile ? 0 : active ? 1 : 0, pointerEvents: isMobile ? "none" : active ? "auto" : "none",
                         transition: "opacity 0.18s ease, background 0.18s ease" }}>
-                        <button type="button" onClick={() => setTemplatePreview(tp)}
+                        <button type="button" onClick={() => { track(EVENTS.TEMPLATE_PREVIEW_OPENED, { template: tp.id }); setTemplatePreview(tp); }}
                           aria-label={`Preview ${tp.name} template`}
                           style={{ minHeight: 40, padding: "0 14px", background: "rgba(15,23,42,0.82)",
                             color: "#fff", border: "1px solid rgba(255,255,255,0.28)", borderRadius: 9,
@@ -4986,7 +4987,7 @@ Awards: ${form.awards}`;
                     </p>
                     {isMobile && (
                     <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-                      <button type="button" onClick={() => setTemplatePreview(tp)}
+                      <button type="button" onClick={() => { track(EVENTS.TEMPLATE_PREVIEW_OPENED, { template: tp.id }); setTemplatePreview(tp); }}
                         aria-label={`Preview ${tp.name} template`}
                         style={{ flex: 1, minHeight: 44, padding: "0 13px", background: "transparent",
                           color: C.text2, border: `1px solid ${C.border}`, borderRadius: 9,
@@ -6339,7 +6340,7 @@ Awards: ${form.awards}`;
                         background: active ? "rgba(2,6,23,0.48)" : "rgba(2,6,23,0)",
                         opacity: isMobile ? 0 : active ? 1 : 0, pointerEvents: isMobile ? "none" : active ? "auto" : "none",
                         transition: "opacity 0.18s ease, background 0.18s ease" }}>
-                        <button type="button" onClick={() => setCoverTemplatePreview(tp)}
+                        <button type="button" onClick={() => { track(EVENTS.TEMPLATE_PREVIEW_OPENED, { template: tp.id }); setCoverTemplatePreview(tp); }}
                           aria-label={`Preview ${tp.name} cover letter template`}
                           style={{ minHeight: 40, padding: "0 14px", background: "rgba(15,23,42,0.82)",
                             color: "#fff", border: "1px solid rgba(255,255,255,0.28)", borderRadius: 9,
@@ -6347,7 +6348,7 @@ Awards: ${form.awards}`;
                           {bu.preview}
                         </button>
                         <button type="button" aria-label={recommended ? "Use recommended cover letter template" : `Use ${tp.name} cover letter template`}
-                          onClick={() => { setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); }}
+                          onClick={() => { track(EVENTS.COVER_STARTED, { template: tp.id }); setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); }}
                           style={{ minHeight: 40, padding: "0 15px", background: C.grad, color: "#fff",
                             border: "none", borderRadius: 9, fontSize: 13, fontWeight: 900,
                             cursor: "pointer", fontFamily: "inherit" }}>
@@ -6369,7 +6370,7 @@ Awards: ${form.awards}`;
                     <p style={{ margin: "4px 0 0", color: C.text2, fontSize: 13.2, lineHeight: 1.45 }}>{meta.description}</p>
                     {isMobile && (
                       <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-                        <button type="button" onClick={() => setCoverTemplatePreview(tp)}
+                        <button type="button" onClick={() => { track(EVENTS.TEMPLATE_PREVIEW_OPENED, { template: tp.id }); setCoverTemplatePreview(tp); }}
                           aria-label={`Preview ${tp.name} cover letter template`}
                           style={{ flex: 1, minHeight: 44, padding: "0 13px", background: "transparent",
                             color: C.text2, border: `1px solid ${C.border}`, borderRadius: 9,
@@ -6377,7 +6378,7 @@ Awards: ${form.awards}`;
                           {bu.preview}
                         </button>
                         <button type="button" aria-label={recommended ? "Use recommended cover letter template" : `Use ${tp.name} cover letter template`}
-                          onClick={() => { setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); }}
+                          onClick={() => { track(EVENTS.COVER_STARTED, { template: tp.id }); setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); }}
                           style={{ flex: 1, minHeight: 44, background: C.grad, color: "#fff", border: "none",
                             borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
                           {bu.useTemplate}
@@ -6706,6 +6707,7 @@ Awards: ${form.awards}`;
 
     const check = () => {
       if (localText.trim().length < 40) return;
+      track(EVENTS.ATS_STARTED);
       setRunning(true);
       setTimeout(() => {
         const r = scoreRawResume(localText, localJd);
@@ -8043,7 +8045,7 @@ Awards: ${form.awards}`;
               </p>
               <div style={{ animation: isMobile ? "none" : "acFadeUp 0.65s ease 0.5s both",
                 display: "flex", gap: 12, justifyContent: isMobile ? "center" : "flex-start", flexWrap: "wrap" }}>
-              <button onClick={() => startResume("hero_primary")}
+              <button onClick={() => { track(EVENTS.HERO_CTA_CLICKED, { location: "hero" }); startResume("hero_primary"); }}
                 style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
                   padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer",
                   animation: isMobile ? "none" : "acPulse 2.8s ease-in-out 1.4s infinite",

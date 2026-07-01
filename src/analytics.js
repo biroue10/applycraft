@@ -15,6 +15,15 @@ export const EVENTS = {
   EMAIL_CAPTURED: "email_captured",
   CHECKOUT_STARTED: "checkout_started",
   CHECKOUT_COMPLETED: "checkout_completed",
+  // Conversion-funnel events (Phase 10). Props are limited to non-PII scalars
+  // like a template id or a UI location — never resume/cover text, names,
+  // emails, addresses, or job descriptions.
+  HERO_CTA_CLICKED: "hero_cta_clicked",
+  TEMPLATE_PREVIEW_OPENED: "template_preview_opened",
+  TEMPLATE_SELECTED: "template_selected",
+  COVER_STARTED: "cover_letter_started",
+  ATS_STARTED: "ats_checker_started",
+  PRICING_OPENED: "pricing_opened",
 };
 
 const ALLOWED = new Set(Object.values(EVENTS));
