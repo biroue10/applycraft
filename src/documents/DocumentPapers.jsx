@@ -33,6 +33,152 @@ function BidiText({ children, style }) {
   return <span dir="auto" style={{ unicodeBidi: "plaintext", overflowWrap: "anywhere", ...style }}>{children}</span>;
 }
 
+const LEADING_BULLET_RE = /^\s*(?:[•·▪▫‣◦-]|\d+[.)])\s+/;
+
+function stripLeadingBullet(value) {
+  return String(value || "").replace(LEADING_BULLET_RE, "").trim();
+}
+
+function splitHeaderLine(value) {
+  const raw = stripLeadingBullet(value);
+  const [leftRaw, ...dateParts] = raw.split("|");
+  const left = (leftRaw || "").trim();
+  const date = dateParts.join("|").trim();
+  const parts = left.split(/\s+[—–-]\s+/).map((part) => part.trim()).filter(Boolean);
+  const title = parts.shift() || left;
+  const meta = [...parts, date].map((part) => part.trim()).filter(Boolean);
+  return { title: title.trim(), meta };
+}
+
+function sectionKind(section) {
+  const key = String(section?.key || "").toLowerCase();
+  const heading = String(section?.heading || "").toLowerCase();
+  if (/experience|work|employment|expér|parcours|experiencia|erfahrung|خبرة/.test(`${key} ${heading}`)) return "experience";
+  if (/education|formation|educación|ausbildung|تعليم|دراسة/.test(`${key} ${heading}`)) return "education";
+  return "generic";
+}
+
+function isHeaderLikeLine(line) {
+  const value = String(line || "").trim();
+  if (!value || LEADING_BULLET_RE.test(value)) return false;
+  return /\s+[—–-]\s+|\|/.test(value);
+}
+
+export function structureSectionItems(section) {
+  const kind = sectionKind(section);
+  const entries = [];
+  let current = null;
+
+  (section?.items || []).forEach((item) => {
+    const raw = String(item || "").trim();
+    if (!raw) return;
+    const bullet = LEADING_BULLET_RE.test(raw);
+    const headerLike = isHeaderLikeLine(raw);
+    const clean = stripLeadingBullet(raw);
+
+    if (!current && bullet) {
+      current = { title: "", meta: [], bullets: [clean] };
+      entries.push(current);
+      return;
+    }
+
+    if (!current || headerLike) {
+      current = { ...splitHeaderLine(raw), bullets: [] };
+      entries.push(current);
+      return;
+    }
+
+    if (!clean) return;
+
+    if (kind === "education" && !bullet && current.bullets.length === 0 && current.meta.length < 3) {
+      current.meta.push(clean);
+      return;
+    }
+
+    current.bullets.push(clean);
+  });
+
+  return entries.filter((entry) => entry.title || entry.meta.length || entry.bullets.length);
+}
+
+function TagList({ items, style, tagStyle }) {
+  const values = (Array.isArray(items) ? items : []).map((item) => String(item || "").trim()).filter(Boolean);
+  if (!values.length) return null;
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem 0.4rem", alignItems: "center", ...style }}>
+      {values.map((item, index) => (
+        <span key={index} dir="auto" style={{
+          display: "inline-flex",
+          alignItems: "center",
+          lineHeight: 1.25,
+          whiteSpace: "normal",
+          overflowWrap: "anywhere",
+          unicodeBidi: "isolate",
+          ...tagStyle,
+        }}>{item}</span>
+      ))}
+    </div>
+  );
+}
+
+function ResumeSectionBody({ section, sidebar = false, accent = "#2563eb", tagStyle, tagListStyle, itemStyle, titleStyle, metaStyle, bulletStyle, bulletListStyle }) {
+  if (sidebar) {
+    return <TagList items={section.items} style={tagListStyle} tagStyle={tagStyle} />;
+  }
+
+  const entries = structureSectionItems(section);
+  if (!entries.length) return null;
+
+  return (
+    <>
+      {entries.map((entry, index) => (
+        <div key={index} style={{ marginTop: index ? 8 : 0, marginBottom: 8, ...itemStyle }}>
+          {entry.title && (
+            <div dir="auto" style={{
+              fontWeight: 700,
+              color: "#111827",
+              fontSize: 12.8,
+              lineHeight: 1.35,
+              unicodeBidi: "plaintext",
+              overflowWrap: "anywhere",
+              ...titleStyle,
+            }}>{entry.title}</div>
+          )}
+          {entry.meta.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.12rem 0.38rem", marginTop: 2, fontSize: 10.8, lineHeight: 1.35, color: "#5f6b7a", ...metaStyle }}>
+              {entry.meta.map((meta, metaIndex) => (
+                <React.Fragment key={metaIndex}>
+                  {metaIndex > 0 && <span aria-hidden="true" style={{ color: "#9ca3af" }}>·</span>}
+                  <bdi dir="auto" style={{ unicodeBidi: "isolate", overflowWrap: "anywhere" }}>{meta}</bdi>
+                </React.Fragment>
+              ))}
+            </div>
+          )}
+          {entry.bullets.length > 0 && (
+            <ul style={{
+              margin: "4px 0 0",
+              paddingInlineStart: 16,
+              color: "#374151",
+              ...bulletListStyle,
+            }}>
+              {entry.bullets.map((bullet, bulletIndex) => (
+                <li key={bulletIndex} dir="auto" style={{
+                  marginBottom: 2,
+                  fontSize: 12.2,
+                  lineHeight: 1.42,
+                  unicodeBidi: "plaintext",
+                  overflowWrap: "anywhere",
+                  ...bulletStyle,
+                }}>{bullet}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      ))}
+    </>
+  );
+}
+
 export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder = true, preview = false }) {
   const tpl = rawTpl.variant ? { ...rawTpl, id: rawTpl.variant } : rawTpl;
   const hasContent = result && (result.name !== "—" || result.summary || (result.sections && result.sections.length));
@@ -83,9 +229,11 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
             <div key={i} style={{ marginBottom: 14 }}>
               <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px",
                 color: "#111", marginBottom: 5 }}>{s.heading}</div>
-              {s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 13, lineHeight: 1.55, color: "#333", marginBottom: 3 }}>{it}</div>
-              ))}
+              <ResumeSectionBody section={s} accent={tpl.accent}
+                tagStyle={{ fontSize: 11, padding: "3px 9px", borderRadius: 3, background: "#f3f4f6", color: "#374151" }}
+                titleStyle={{ fontSize: 13, color: "#222" }}
+                metaStyle={{ fontSize: 11, color: "#666" }}
+                bulletStyle={{ fontSize: 12.3, color: "#333" }} />
             </div>
           ))}
         </div>
@@ -95,6 +243,9 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
 
   // Whether a section belongs in a sidebar (skills, languages)
   const isSidebar = (s) => /skill|compét|habilidad|مهارات|fähig|^language|^langue|^idioma|^sprach/i.test(s.heading);
+  const renderSectionBody = (s, options = {}) => (
+    <ResumeSectionBody section={s} sidebar={isSidebar(s)} accent={tpl.accent} {...options} />
+  );
 
   // ── CLASSIC (Mercury Flow — centered serif, accent rule) ─────────
   if (tpl.id === "classic") {
@@ -124,18 +275,15 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
             <div key={i}>
               <SHead label={s.heading} />
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5, justifyContent: "center" }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 10.5, padding: "3px 11px", borderRadius: 999,
-                      border: `1px solid ${tpl.accent}77`, color: tpl.accent, fontWeight: 500 }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.65, color: "#333", marginBottom: 5,
-                  paddingInlineStart: 14, position: "relative", textAlign: "start", unicodeBidi: "plaintext" }}>
-                  <span style={{ position: "absolute", insetInlineStart: 0, color: tpl.accent }}>›</span>{it}
-                </div>
-              ))}
+                renderSectionBody(s, {
+                  tagListStyle: { justifyContent: "center" },
+                  tagStyle: { fontSize: 10.5, padding: "3px 11px", borderRadius: 999, border: `1px solid ${tpl.accent}77`, color: tpl.accent, fontWeight: 500 },
+                })
+              ) : renderSectionBody(s, {
+                titleStyle: { fontSize: 12.8, color: "#222" },
+                metaStyle: { justifyContent: "center" },
+                bulletStyle: { fontSize: 12.2, color: "#333" },
+              })}
             </div>
           ))}
         </div>
@@ -166,12 +314,9 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
               <div key={i} style={{ marginTop: 20 }}>
                 <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px",
                   opacity: 0.55, marginBottom: 9 }}>{s.heading}</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 10, padding: "2px 9px", borderRadius: 999,
-                      background: "rgba(255,255,255,0.16)", color: "#fff", fontWeight: 500 }}>{it}</span>
-                  ))}
-                </div>
+                {renderSectionBody(s, {
+                  tagStyle: { fontSize: 10, padding: "2px 9px", borderRadius: 999, background: "rgba(255,255,255,0.16)", color: "#fff", fontWeight: 500 },
+                })}
               </div>
             ))}
           </div>
@@ -187,10 +332,11 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                     letterSpacing: "1.5px", color: tpl.accent, whiteSpace: "nowrap" }}>{s.heading}</div>
                   <div style={{ flex: 1, height: 1, background: tpl.accent + "33" }} />
                 </div>
-                {s.items.map((it, j) => (
-                  <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333", marginBottom: 5,
-                    paddingInlineStart: 10, borderInlineStart: `2px solid ${tpl.accent}28`, unicodeBidi: "plaintext" }}>{it}</div>
-                ))}
+                {renderSectionBody(s, {
+                  itemStyle: { paddingInlineStart: 10, borderInlineStart: `2px solid ${tpl.accent}28` },
+                  titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                  bulletStyle: { fontSize: 12.1, color: "#333" },
+                })}
               </div>
             ))}
           </div>
@@ -224,16 +370,13 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                 <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
               </div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 11, padding: "3px 11px", borderRadius: 3,
-                      background: "#f3f4f6", color: "#374151", fontWeight: 500 }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.65, color: "#444",
-                  marginBottom: 5 }}>{it}</div>
-              ))}
+                renderSectionBody(s, {
+                  tagStyle: { fontSize: 11, padding: "3px 11px", borderRadius: 3, background: "#f3f4f6", color: "#374151", fontWeight: 500 },
+                })
+              ) : renderSectionBody(s, {
+                titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                bulletStyle: { fontSize: 12.2, color: "#444" },
+              })}
             </div>
           ))}
         </div>
@@ -262,18 +405,14 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                 letterSpacing: "1.5px", color: "#fff", background: tpl.accent,
                 padding: "2px 10px", borderRadius: 3, marginBottom: 10 }}>{s.heading}</div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 11, padding: "3px 10px", borderRadius: 999,
-                      border: `1px solid ${tpl.accent}99`, color: tpl.accent, fontWeight: 500 }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333", marginBottom: 5,
-                  paddingLeft: 13, position: "relative" }}>
-                  <span style={{ position: "absolute", left: 0, color: tpl.accent, fontWeight: 700 }}>▸</span>{it}
-                </div>
-              ))}
+                renderSectionBody(s, {
+                  tagStyle: { fontSize: 11, padding: "3px 10px", borderRadius: 999, border: `1px solid ${tpl.accent}99`, color: tpl.accent, fontWeight: 500 },
+                })
+              ) : renderSectionBody(s, {
+                itemStyle: { paddingInlineStart: 12, borderInlineStart: `2px solid ${tpl.accent}30` },
+                titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                bulletStyle: { fontSize: 12.2, color: "#333" },
+              })}
             </div>
           ))}
         </div>
@@ -304,13 +443,9 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
               <div key={i} style={{ marginTop: 20 }}>
                 <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px",
                   color: tpl.accent, marginBottom: 9 }}>{s.heading}</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 3,
-                      border: `1px solid ${tpl.accent}66`, color: tpl.accent + "cc",
-                      background: "#fff" }}>{it}</span>
-                  ))}
-                </div>
+                {renderSectionBody(s, {
+                  tagStyle: { fontSize: 10, padding: "2px 8px", borderRadius: 3, border: `1px solid ${tpl.accent}66`, color: tpl.accent + "cc", background: "#fff" },
+                })}
               </div>
             ))}
           </div>
@@ -326,10 +461,10 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                     letterSpacing: "1.5px", color: tpl.accent, whiteSpace: "nowrap" }}>{s.heading}</div>
                   <div style={{ flex: 1, height: 1, background: tpl.accent + "44" }} />
                 </div>
-                {s.items.map((it, j) => (
-                  <div key={j} style={{ fontSize: 12.5, lineHeight: 1.65, color: "#333",
-                    marginBottom: 7 }}>{it}</div>
-                ))}
+                {renderSectionBody(s, {
+                  titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                  bulletStyle: { fontSize: 12.2, color: "#333" },
+                })}
               </div>
             ))}
           </div>
@@ -367,16 +502,15 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                 <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
               </div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5, paddingLeft: 13 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 11, padding: "3px 10px", borderRadius: 3,
-                      background: tpl.accent + "18", color: tpl.accent, fontWeight: 500 }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333", marginBottom: 5,
-                  paddingLeft: 13 }}>· {it}</div>
-              ))}
+                renderSectionBody(s, {
+                  tagListStyle: { paddingInlineStart: 13 },
+                  tagStyle: { fontSize: 11, padding: "3px 10px", borderRadius: 3, background: tpl.accent + "18", color: tpl.accent, fontWeight: 500 },
+                })
+              ) : renderSectionBody(s, {
+                itemStyle: { paddingInlineStart: 12, borderInlineStart: `2px solid ${tpl.accent}24` },
+                titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                bulletStyle: { fontSize: 12.2, color: "#333" },
+              })}
             </div>
           ))}
         </div>
@@ -410,12 +544,9 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
               <div key={i} style={{ marginTop: 18 }}>
                 <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px",
                   opacity: 0.55, marginBottom: 9 }}>{s.heading}</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 999,
-                      background: "rgba(255,255,255,0.18)", color: "#fff", fontWeight: 500 }}>{it}</span>
-                  ))}
-                </div>
+                {renderSectionBody(s, {
+                  tagStyle: { fontSize: 10, padding: "2px 8px", borderRadius: 999, background: "rgba(255,255,255,0.18)", color: "#fff", fontWeight: 500 },
+                })}
               </div>
             ))}
           </div>
@@ -428,12 +559,11 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                 <div style={{ fontSize: 10.5, fontWeight: 700, textTransform: "uppercase",
                   letterSpacing: "1.5px", color: tpl.accent, borderBottom: `2px solid ${tpl.accent}`,
                   paddingBottom: 5, marginBottom: 10 }}>{s.heading}</div>
-                {s.items.map((it, j) => (
-                  <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333", marginBottom: 5,
-                    paddingLeft: 12, position: "relative" }}>
-                    <span style={{ position: "absolute", left: 0, color: tpl.accent, fontWeight: 700 }}>▸</span>{it}
-                  </div>
-                ))}
+                {renderSectionBody(s, {
+                  itemStyle: { paddingInlineStart: 12, borderInlineStart: `2px solid ${tpl.accent}28` },
+                  titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                  bulletStyle: { fontSize: 12.2, color: "#333" },
+                })}
               </div>
             ))}
           </div>
@@ -464,17 +594,14 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
               <div style={{ fontSize: 10.5, color: tpl.accent, fontWeight: 700, marginBottom: 9,
                 letterSpacing: "1px" }}>── {s.heading.toUpperCase()} ──</div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 10.5, padding: "2px 9px", borderRadius: 3,
-                      border: `1px solid ${tpl.accent}55`, color: tpl.accent + "cc" }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12, lineHeight: 1.55, color: "#c9d1d9", marginBottom: 5 }}>
-                  <span style={{ color: tpl.accent }}>▸ </span>{it}
-                </div>
-              ))}
+                renderSectionBody(s, {
+                  tagStyle: { fontSize: 10.5, padding: "2px 9px", borderRadius: 3, border: `1px solid ${tpl.accent}55`, color: tpl.accent + "cc" },
+                })
+              ) : renderSectionBody(s, {
+                titleStyle: { fontSize: 12.5, color: "#f8fafc" },
+                metaStyle: { color: "#8b949e" },
+                bulletStyle: { fontSize: 11.8, color: "#c9d1d9" },
+              })}
             </div>
           ))}
         </div>
@@ -507,16 +634,14 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                 <div style={{ flex: 1, height: 1.5, background: "#111" }} />
               </div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 11, padding: "2px 10px", borderRadius: 2,
-                      border: "1px solid #555", color: "#333", fontWeight: 500 }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#222", marginBottom: 5,
-                  paddingLeft: 10, borderLeft: "2px solid #ddd" }}>{it}</div>
-              ))}
+                renderSectionBody(s, {
+                  tagStyle: { fontSize: 11, padding: "2px 10px", borderRadius: 2, border: "1px solid #555", color: "#333", fontWeight: 500 },
+                })
+              ) : renderSectionBody(s, {
+                itemStyle: { paddingInlineStart: 10, borderInlineStart: "2px solid #ddd" },
+                titleStyle: { fontSize: 12.8, color: "#111827" },
+                bulletStyle: { fontSize: 12.2, color: "#222" },
+              })}
             </div>
           ))}
         </div>
@@ -548,12 +673,9 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
               <div key={i} style={{ marginTop: 20 }}>
                 <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase",
                   letterSpacing: "1.5px", color: tpl.accent, marginBottom: 9 }}>{s.heading}</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 3,
-                      background: "rgba(255,255,255,0.08)", color: "#cbd5e1" }}>{it}</span>
-                  ))}
-                </div>
+                {renderSectionBody(s, {
+                  tagStyle: { fontSize: 10, padding: "2px 8px", borderRadius: 3, background: "rgba(255,255,255,0.08)", color: "#cbd5e1" },
+                })}
               </div>
             ))}
           </div>
@@ -570,10 +692,11 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                     letterSpacing: "1.5px", color: "#0f172a" }}>{s.heading}</div>
                   <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
                 </div>
-                {s.items.map((it, j) => (
-                  <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333",
-                    marginBottom: 5, paddingLeft: 13 }}>· {it}</div>
-                ))}
+                {renderSectionBody(s, {
+                  itemStyle: { paddingInlineStart: 12, borderInlineStart: `2px solid ${tpl.accent}24` },
+                  titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                  bulletStyle: { fontSize: 12.2, color: "#333" },
+                })}
               </div>
             ))}
           </div>
@@ -607,18 +730,14 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                   background: `linear-gradient(90deg, ${tpl.accent}55, transparent)` }} />
               </div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 11, padding: "3px 10px", borderRadius: 999,
-                      background: tpl.accent + "15", color: tpl.accent, fontWeight: 500 }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333", marginBottom: 5,
-                  paddingLeft: 12, position: "relative" }}>
-                  <span style={{ position: "absolute", left: 0, color: tpl.accent, fontWeight: 700 }}>›</span>{it}
-                </div>
-              ))}
+                renderSectionBody(s, {
+                  tagStyle: { fontSize: 11, padding: "3px 10px", borderRadius: 999, background: tpl.accent + "15", color: tpl.accent, fontWeight: 500 },
+                })
+              ) : renderSectionBody(s, {
+                itemStyle: { paddingInlineStart: 12, borderInlineStart: `2px solid ${tpl.accent}24` },
+                titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                bulletStyle: { fontSize: 12.2, color: "#333" },
+              })}
             </div>
           ))}
         </div>
@@ -660,10 +779,12 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                   {expSection.heading}
                   <div style={{ flex: 1, height: 1, background: tpl.accent + "44" }} />
                 </div>
-                {expSection.items.map((it, j) => (
-                  <div key={j} style={{ fontSize: 12, lineHeight: 1.55, color: "#333",
-                    marginBottom: 4, paddingLeft: 10, borderLeft: `2px solid ${tpl.accent}33` }}>{it}</div>
-                ))}
+                {renderSectionBody(expSection, {
+                  itemStyle: { paddingInlineStart: 10, borderInlineStart: `2px solid ${tpl.accent}33` },
+                  titleStyle: { fontSize: 12.4, color: "#1f2937" },
+                  metaStyle: { fontSize: 10.4 },
+                  bulletStyle: { fontSize: 11.5, color: "#333" },
+                })}
               </div>
             )}
           </div>
@@ -678,16 +799,14 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                   <div style={{ flex: 1, height: 1, background: tpl.accent + "44" }} />
                 </div>
                 {isSidebar(s) ? (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                    {s.items.map((it, j) => (
-                      <span key={j} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 3,
-                        background: tpl.accent + "12", color: tpl.accent, fontWeight: 500 }}>{it}</span>
-                    ))}
-                  </div>
-                ) : s.items.map((it, j) => (
-                  <div key={j} style={{ fontSize: 11.5, lineHeight: 1.55, color: "#444",
-                    marginBottom: 4 }}>· {it}</div>
-                ))}
+                  renderSectionBody(s, {
+                    tagStyle: { fontSize: 10, padding: "2px 8px", borderRadius: 3, background: tpl.accent + "12", color: tpl.accent, fontWeight: 500 },
+                  })
+                ) : renderSectionBody(s, {
+                  titleStyle: { fontSize: 11.9, color: "#1f2937" },
+                  metaStyle: { fontSize: 10.2 },
+                  bulletStyle: { fontSize: 11.1, color: "#444" },
+                })}
               </div>
             ))}
           </div>
@@ -722,18 +841,13 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                 <div style={{ flex: 1, height: 1, background: tpl.accent + "44" }} />
               </div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 10.5, padding: "2px 10px", borderRadius: 2,
-                      border: `1px solid ${tpl.accent}66`, color: tpl.accent, fontWeight: 500 }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333", marginBottom: 5,
-                  paddingLeft: 12 }}>
-                  <span style={{ color: tpl.accent, marginRight: 5 }}>▸</span>{it}
-                </div>
-              ))}
+                renderSectionBody(s, {
+                  tagStyle: { fontSize: 10.5, padding: "2px 10px", borderRadius: 2, border: `1px solid ${tpl.accent}66`, color: tpl.accent, fontWeight: 500 },
+                })
+              ) : renderSectionBody(s, {
+                titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                bulletStyle: { fontSize: 12.2, color: "#333" },
+              })}
             </div>
           ))}
         </div>
@@ -765,14 +879,14 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
               <div style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase",
                 letterSpacing: "3px", color: tpl.accent, marginBottom: 10 }}>{s.heading}</div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "3px 16px" }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 12, color: "#555" }}>— {it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.75, color: "#333", marginBottom: 5 }}>{it}</div>
-              ))}
+                renderSectionBody(s, {
+                  tagListStyle: { gap: "3px 16px" },
+                  tagStyle: { fontSize: 12, color: "#555" },
+                })
+              ) : renderSectionBody(s, {
+                titleStyle: { fontSize: 12.8, color: "#1f2937", fontWeight: 600 },
+                bulletStyle: { fontSize: 12.2, color: "#333", lineHeight: 1.48 },
+              })}
             </div>
           ))}
         </div>
@@ -806,18 +920,14 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                 <div style={{ flex: 1, height: 1, background: tpl.accent + "33" }} />
               </div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 10.5, padding: "2px 9px", borderRadius: 3,
-                      border: `1px solid ${tpl.accent}66`, color: tpl.accent + "cc" }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12, lineHeight: 1.6, color: "#d4c9b5", marginBottom: 5,
-                  paddingLeft: 12 }}>
-                  <span style={{ color: tpl.accent }}>▸ </span>{it}
-                </div>
-              ))}
+                renderSectionBody(s, {
+                  tagStyle: { fontSize: 10.5, padding: "2px 9px", borderRadius: 3, border: `1px solid ${tpl.accent}66`, color: tpl.accent + "cc" },
+                })
+              ) : renderSectionBody(s, {
+                titleStyle: { fontSize: 12.5, color: "#f0ece3" },
+                metaStyle: { color: "#9b8d78" },
+                bulletStyle: { fontSize: 11.8, color: "#d4c9b5" },
+              })}
             </div>
           ))}
         </div>
@@ -859,10 +969,11 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                   {s.heading}
                   <div style={{ flex: 1, height: 1, background: tpl.accent + "33" }} />
                 </div>
-                {s.items.map((it, j) => (
-                  <div key={j} style={{ fontSize: 12, lineHeight: 1.6, color: "#333", marginBottom: 4,
-                    paddingLeft: 10, borderLeft: `2px solid ${tpl.accent}44` }}>{it}</div>
-                ))}
+                {renderSectionBody(s, {
+                  itemStyle: { paddingInlineStart: 10, borderInlineStart: `2px solid ${tpl.accent}44` },
+                  titleStyle: { fontSize: 12.5, color: "#1f2937" },
+                  bulletStyle: { fontSize: 11.8, color: "#333" },
+                })}
               </div>
             ))}
           </div>
@@ -874,12 +985,9 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
               <div key={i} style={{ marginBottom: 18 }}>
                 <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase",
                   letterSpacing: "1.5px", color: tpl.accent, marginBottom: 8 }}>{s.heading}</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 3,
-                      background: tpl.accent + "18", color: tpl.accent }}>{it}</span>
-                  ))}
-                </div>
+                {renderSectionBody(s, {
+                  tagStyle: { fontSize: 10, padding: "2px 8px", borderRadius: 3, background: tpl.accent + "18", color: tpl.accent },
+                })}
               </div>
             ))}
           </div>
@@ -911,18 +1019,13 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                 letterSpacing: "2px", color: tpl.accent, marginBottom: 8,
                 borderBottom: `1px solid ${tpl.accent}44`, paddingBottom: 5 }}>{s.heading}</div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 11, padding: "2px 10px", borderRadius: 2,
-                      border: `1px solid ${tpl.accent}66`, color: "#333" }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.65, color: "#333", marginBottom: 5,
-                  paddingLeft: 18, position: "relative" }}>
-                  <span style={{ position: "absolute", left: 5, color: tpl.accent }}>·</span>{it}
-                </div>
-              ))}
+                renderSectionBody(s, {
+                  tagStyle: { fontSize: 11, padding: "2px 10px", borderRadius: 2, border: `1px solid ${tpl.accent}66`, color: "#333" },
+                })
+              ) : renderSectionBody(s, {
+                titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                bulletStyle: { fontSize: 12.2, color: "#333" },
+              })}
             </div>
           ))}
         </div>
@@ -953,17 +1056,13 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
               borderLeft: `3px solid ${tpl.accent}` }}>{s.heading}</div>
             <div style={{ padding: "10px 28px 14px" }}>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 11, padding: "3px 12px", borderRadius: 999,
-                      background: tpl.accent + "15", color: tpl.accent, fontWeight: 600 }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333", marginBottom: 4 }}>
-                  <span style={{ color: tpl.accent, marginRight: 6, fontWeight: 700 }}>›</span>{it}
-                </div>
-              ))}
+                renderSectionBody(s, {
+                  tagStyle: { fontSize: 11, padding: "3px 12px", borderRadius: 999, background: tpl.accent + "15", color: tpl.accent, fontWeight: 600 },
+                })
+              ) : renderSectionBody(s, {
+                titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                bulletStyle: { fontSize: 12.2, color: "#333" },
+              })}
             </div>
           </div>
         ))}
@@ -997,15 +1096,14 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                 <div style={{ flex: 1, height: 1, background: "#d4cfc7" }} />
               </div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 11, padding: "2px 9px", borderRadius: 3,
-                      background: "#f6f4ef", border: "1px solid #d4cfc7", color: "#4a4039" }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.7, color: "#3d3530", marginBottom: 5 }}>{it}</div>
-              ))}
+                renderSectionBody(s, {
+                  tagStyle: { fontSize: 11, padding: "2px 9px", borderRadius: 3, background: "#f6f4ef", border: "1px solid #d4cfc7", color: "#4a4039" },
+                })
+              ) : renderSectionBody(s, {
+                titleStyle: { fontSize: 12.8, color: "#2c2520" },
+                metaStyle: { color: "#7a6e65" },
+                bulletStyle: { fontSize: 12.2, color: "#3d3530" },
+              })}
             </div>
           ))}
         </div>
@@ -1036,20 +1134,13 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
               <div style={{ fontSize: 12, fontWeight: 700, color: tpl.accent,
                 borderBottom: `1px solid ${tpl.accent}44`, paddingBottom: 5, marginBottom: 10 }}>{s.heading}</div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 11.5, padding: "2px 10px", borderRadius: 2,
-                      border: `1px solid ${tpl.accent}55`, color: "#333" }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.65, color: "#333", marginBottom: 5,
-                  paddingLeft: 16, position: "relative" }}>
-                  <span style={{ position: "absolute", left: 2, top: 6, width: 5, height: 5,
-                    background: tpl.accent, borderRadius: "50%",
-                    display: "inline-block" }} />{it}
-                </div>
-              ))}
+                renderSectionBody(s, {
+                  tagStyle: { fontSize: 11.5, padding: "2px 10px", borderRadius: 2, border: `1px solid ${tpl.accent}55`, color: "#333" },
+                })
+              ) : renderSectionBody(s, {
+                titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                bulletStyle: { fontSize: 12.2, color: "#333" },
+              })}
             </div>
           ))}
         </div>
@@ -1083,12 +1174,9 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
               <div key={i} style={{ marginTop: 20 }}>
                 <div style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase",
                   letterSpacing: "1.5px", color: tpl.accent, marginBottom: 9 }}>{s.heading}</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 10, padding: "2px 7px", borderRadius: 2,
-                      background: "rgba(255,255,255,0.08)", color: "#d1d5db" }}>{it}</span>
-                  ))}
-                </div>
+                {renderSectionBody(s, {
+                  tagStyle: { fontSize: 10, padding: "2px 7px", borderRadius: 2, background: "rgba(255,255,255,0.08)", color: "#d1d5db" },
+                })}
               </div>
             ))}
           </div>
@@ -1105,10 +1193,11 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                     letterSpacing: "2px", color: "#1e1e1e" }}>{s.heading}</div>
                   <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
                 </div>
-                {s.items.map((it, j) => (
-                  <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333",
-                    marginBottom: 5, paddingLeft: 16 }}>· {it}</div>
-                ))}
+                {renderSectionBody(s, {
+                  itemStyle: { paddingInlineStart: 12, borderInlineStart: `2px solid ${tpl.accent}24` },
+                  titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                  bulletStyle: { fontSize: 12.2, color: "#333" },
+                })}
               </div>
             ))}
           </div>
@@ -1148,20 +1237,13 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
                   background: `linear-gradient(90deg, ${tpl.accent}44, transparent)` }} />
               </div>
               {isSidebar(s) ? (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {s.items.map((it, j) => (
-                    <span key={j} style={{ fontSize: 11, padding: "2px 10px", borderRadius: 999,
-                      background: tpl.accent + "15", color: tpl.accent, fontWeight: 500 }}>{it}</span>
-                  ))}
-                </div>
-              ) : s.items.map((it, j) => (
-                <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333", marginBottom: 5,
-                  display: "flex", alignItems: "flex-start", gap: 8 }}>
-                  <span style={{ width: 6, height: 6, background: tpl.accent, flexShrink: 0,
-                    marginTop: 5, borderRadius: 1 }} />
-                  <span>{it}</span>
-                </div>
-              ))}
+                renderSectionBody(s, {
+                  tagStyle: { fontSize: 11, padding: "2px 10px", borderRadius: 999, background: tpl.accent + "15", color: tpl.accent, fontWeight: 500 },
+                })
+              ) : renderSectionBody(s, {
+                titleStyle: { fontSize: 12.8, color: "#1f2937" },
+                bulletStyle: { fontSize: 12.2, color: "#333" },
+              })}
             </div>
           ))}
         </div>
@@ -1182,9 +1264,12 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
           <div key={i} style={{ marginBottom: 14, textAlign: "left" }}>
             <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px",
               color: tpl.accent, marginBottom: 7 }}>{s.heading}</div>
-            {s.items.map((it, j) => (
-              <div key={j} style={{ fontSize: 12.5, lineHeight: 1.6, color: "#333", marginBottom: 4 }}>• {it}</div>
-            ))}
+            {renderSectionBody(s, {
+              tagListStyle: { justifyContent: "center" },
+              tagStyle: { fontSize: 11, padding: "2px 10px", borderRadius: 999, border: `1px solid ${tpl.accent}55`, color: tpl.accent },
+              titleStyle: { fontSize: 12.8, color: "#1f2937" },
+              bulletStyle: { fontSize: 12.2, color: "#333" },
+            })}
           </div>
         ))}
       </div>

@@ -10,7 +10,7 @@ import { useFocusTrap } from "./a11y/useFocusTrap.js";
 import { parseResume } from "./ats/parseResume.js";
 import * as resumes from "./resumes.js";
 import { buildPrivateShareUrl } from "./share.js";
-import { ResumePaper, CoverLetterPaper } from "./documents/DocumentPapers.jsx";
+import { ResumePaper, CoverLetterPaper, structureSectionItems } from "./documents/DocumentPapers.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
 import { UI, ENTRY_UI, ACCT_UI, LANDING_UI, BUILDER_UI, COVER_UI, ATS_UI, TRACKER_UI, MASTER_UI, STATUS_UI, MODAL_UI, LANDING2_UI, FOOTER_UI } from "./i18n/index.js";
@@ -3823,6 +3823,7 @@ Awards: ${form.awards}`;
       bidirectional: docxRtl,
       ...options,
     });
+    const isDocxTagSection = (section) => /skill|compét|habilidad|مهارات|fähig|^language|^langue|^idioma|^sprach/i.test(section.heading || "");
     const children = [];
 
     // Name
@@ -3869,12 +3870,34 @@ Awards: ${form.awards}`;
         border: { bottom: { color: accent, space: 1, style: BorderStyle.SINGLE, size: 4 } },
         spacing: { before: 240, after: 120 },
       }));
-      for (const item of section.items) {
+      if (isDocxTagSection(section)) {
         children.push(makeParagraph({
-          children: [makeRun({ text: docxRtl ? `${item} •` : `• ${item}`, size: 20 })],
-          spacing: { after: 80 },
-          indent: docxRtl ? { right: 260 } : { left: 260 },
+          children: [makeRun({ text: (section.items || []).filter(Boolean).join("   •   "), size: 20 })],
+          spacing: { after: 100 },
         }));
+        continue;
+      }
+      for (const entry of structureSectionItems(section)) {
+        if (entry.title) {
+          children.push(makeParagraph({
+            children: [makeRun({ text: entry.title, bold: true, size: 21, color: "111111" })],
+            spacing: { before: 80, after: 20 },
+          }));
+        }
+        if (entry.meta?.length) {
+          children.push(makeParagraph({
+            children: [makeRun({ text: entry.meta.join("   •   "), size: 18, color: "666666" })],
+            spacing: { after: entry.bullets?.length ? 45 : 95 },
+          }));
+        }
+        for (const bullet of (entry.bullets || [])) {
+          children.push(makeParagraph({
+            children: [makeRun({ text: bullet, size: 20 })],
+            bullet: { level: 0 },
+            spacing: { after: 60 },
+            indent: docxRtl ? { right: 260 } : { left: 260 },
+          }));
+        }
       }
     }
 
