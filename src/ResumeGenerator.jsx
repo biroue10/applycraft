@@ -2834,168 +2834,80 @@ export default function ResumeGenerator() {
     if (isRtlLang(nextCode)) track(EVENTS.RTL_DOCUMENT_ENABLED, { language: nextCode });
   }, []);
 
-  const printDocumentPreview = useCallback((ref, type = "resume") => {
+  const exportVisualPdf = useCallback(async (ref, fileNameBase, type = "resume") => {
     const node = ref.current;
-    if (!node || typeof window === "undefined") return false;
-    const printWindow = window.open("", "_blank", "width=900,height=1200");
-    if (!printWindow) return false;
+    if (!node || typeof document === "undefined") return false;
     const direction = isRtlLang(docLang) ? "rtl" : "ltr";
-    const title = type === "cover" ? "ApplyCraft cover letter" : "ApplyCraft resume";
-    const instruction = lang === "fr"
-      ? "Pour obtenir un PDF propre, choisissez « Enregistrer au format PDF » et désactivez « En-têtes et pieds de page » dans la fenêtre d’impression."
-      : lang === "ar"
-        ? "للحصول على ملف PDF نظيف، اختر « حفظ كملف PDF » وقم بإيقاف خيار « الرؤوس والتذييلات » في نافذة الطباعة."
-        : "For a clean PDF, choose \"Save as PDF\" and turn off \"Headers and footers\" in the print dialog.";
-    const printButtonLabel = lang === "fr" ? "Ouvrir la fenêtre d’impression" : lang === "ar" ? "فتح نافذة الطباعة" : "Open print dialog";
-    const doc = printWindow.document;
-    doc.documentElement.lang = docLang || "en";
-    doc.documentElement.dir = direction;
-    doc.title = title;
-    try {
-      const origin = window.location?.origin || "https://applycraft.io";
-      printWindow.history.replaceState({}, title, `${origin}/print/${type}`);
-    } catch {
-      // If the browser refuses history changes in a print popup, the PDF remains local-only.
+    if (document.fonts?.ready) {
+      try { await document.fonts.ready; } catch { /* continue with available fonts */ }
     }
-
-    const meta = doc.createElement("meta");
-    meta.setAttribute("charset", "utf-8");
-    doc.head.appendChild(meta);
-
-    const style = doc.createElement("style");
-    style.textContent = `
-@page { size: A4; margin: 12mm; }
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; background: #fff; color: #111; }
-body {
-  font-family: ${direction === "rtl" ? "'Noto Sans Arabic', Tahoma, Arial, sans-serif" : "Inter, Arial, sans-serif"};
-  direction: ${direction};
-}
-.print-instruction {
-  font: 13px Arial, sans-serif;
-  color: #334155;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.print-instruction button {
-  border: 0;
-  border-radius: 8px;
-  background: #2563eb;
-  color: #fff;
-  font: 700 12px Arial, sans-serif;
-  padding: 8px 12px;
-  cursor: pointer;
-}
-.print-root {
-  width: 186mm;
-  margin: 0 auto;
-  background: #fff;
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-.print-root * {
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-section, article, header, main, aside {
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-.resume-paper,
-.resume-section,
-.resume-item,
-.resume-tag-list,
-.resume-contact-row,
-.resume-contact-block,
-.resume-bullets,
-.resume-bullets li {
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-.resume-paper {
-  min-height: auto !important;
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  box-shadow: none !important;
-}
-.resume-paper > div {
-  min-height: auto !important;
-  height: auto !important;
-  align-items: flex-start !important;
-}
-.resume-tag-list {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 0.25rem 0.35rem !important;
-}
-.resume-bullets {
-  margin-top: 0.24rem !important;
-  margin-bottom: 0.42rem !important;
-}
-.resume-bullets li {
-  line-height: 1.38 !important;
-  margin-bottom: 0.14rem !important;
-}
-p, li, div, span {
-  unicode-bidi: plaintext;
-}
-@media print {
-  .print-instruction { display: none; }
-  .print-root {
-    width: 100%;
-    margin: 0;
-    box-shadow: none !important;
-    transform: none !important;
-  }
-  body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-}`;
-    doc.head.appendChild(style);
-
-    while (doc.body.firstChild) doc.body.removeChild(doc.body.firstChild);
-    const instructionEl = doc.createElement("div");
-    instructionEl.className = "print-instruction";
-    const instructionText = doc.createElement("span");
-    instructionText.textContent = instruction;
-    instructionEl.appendChild(instructionText);
-    const printButton = doc.createElement("button");
-    printButton.type = "button";
-    printButton.textContent = printButtonLabel;
-    printButton.disabled = true;
-    instructionEl.appendChild(printButton);
-    doc.body.appendChild(instructionEl);
-
-    const root = doc.createElement("main");
-    root.className = "print-root";
-    root.lang = docLang || "en";
-    root.dir = direction;
-    const clone = node.cloneNode(true);
-    clone.removeAttribute("style");
-    clone.style.maxWidth = "none";
-    clone.style.margin = "0";
+    const { default: html2canvas } = await import("html2canvas");
+    const { jsPDF } = await import("jspdf");
+    const source = node.querySelector?.(".resume-paper") || node;
+    const host = document.createElement("div");
+    host.setAttribute("aria-hidden", "true");
+    Object.assign(host.style, {
+      position: "fixed",
+      left: "-10000px",
+      top: "0",
+      width: "794px",
+      background: "#fff",
+      pointerEvents: "none",
+      zIndex: "-1",
+      direction,
+    });
+    const clone = source.cloneNode(true);
+    clone.style.width = "794px";
+    clone.style.maxWidth = "794px";
     clone.style.transform = "none";
-    clone.style.paddingBottom = "0";
-    clone.style.width = "100%";
-    root.appendChild(clone);
-    doc.body.appendChild(root);
-
-    const runPrint = () => {
-      printWindow.focus();
-      printWindow.print();
-    };
-    printButton.addEventListener("click", runPrint);
-    const finish = () => {
-      printButton.disabled = false;
-      if (direction !== "rtl") setTimeout(runPrint, 80);
-    };
-    if (doc.fonts?.ready) doc.fonts.ready.then(finish).catch(finish);
-    else finish();
-    return true;
-  }, [docLang, lang]);
+    clone.style.margin = "0";
+    clone.style.boxShadow = "none";
+    clone.style.overflow = "visible";
+    clone.style.direction = direction;
+    clone.setAttribute("lang", docLang || "en");
+    clone.setAttribute("dir", direction);
+    const inner = clone.firstElementChild;
+    if (inner) {
+      inner.style.minHeight = "auto";
+      inner.style.alignItems = "flex-start";
+    }
+    host.appendChild(clone);
+    document.body.appendChild(host);
+    try {
+      const canvas = await html2canvas(clone, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+        windowWidth: 794,
+      });
+      const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const sliceHeight = Math.max(1, Math.floor(canvas.width * (pageHeight / pageWidth)));
+      let y = 0;
+      let pageIndex = 0;
+      while (y < canvas.height) {
+        const currentSliceHeight = Math.min(sliceHeight, canvas.height - y);
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = currentSliceHeight;
+        const ctx = pageCanvas.getContext("2d");
+        if (!ctx) throw new Error("canvas_context_unavailable");
+        ctx.drawImage(canvas, 0, y, canvas.width, currentSliceHeight, 0, 0, canvas.width, currentSliceHeight);
+        const imgData = pageCanvas.toDataURL("image/png");
+        const imgHeight = pageWidth * (currentSliceHeight / canvas.width);
+        if (pageIndex > 0) pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, 0, pageWidth, imgHeight, undefined, "FAST");
+        y += currentSliceHeight;
+        pageIndex += 1;
+      }
+      pdf.save(`${sanitizeFilename(fileNameBase, type === "cover" ? "cover-letter" : "resume")}${type === "cover" ? "-cover-letter" : ""}.pdf`);
+      return true;
+    } finally {
+      host.remove();
+    }
+  }, [docLang]);
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -3710,14 +3622,22 @@ Awards: ${form.awards}`;
     if (documentRtl) {
       setExporting("pdf");
       track(EVENTS.PDF_EXPORT_STARTED, { document_type: "resume", language: docLang, template: tpl?.id || "", document_direction: "rtl" });
-      const opened = printDocumentPreview(resumePrintRef, "resume");
-      setStatusMsg(opened
-        ? (lang === "fr" ? "Pour obtenir un PDF propre, choisissez Enregistrer au format PDF et désactivez les en-têtes et pieds de page." : lang === "ar" ? "للحصول على ملف PDF نظيف، اختر حفظ كملف PDF وقم بإيقاف الرؤوس والتذييلات." : "For a clean PDF, choose Save as PDF and turn off Headers and footers.")
-        : st.pdfFail);
-      setExportSuccess(opened ? st.pdfSuccess : "");
-      track(opened ? EVENTS.PDF_EXPORT_COMPLETED : EVENTS.PDF_EXPORT_FAILED, { document_type: "resume", language: docLang, template: tpl?.id || "", export_type: "html_print" });
-      if (opened && docLang !== lang) track(EVENTS.MULTILINGUAL_RESUME_EXPORTED, { language: docLang, interface_language: lang, export_type: "pdf", template: tpl?.id || "" });
-      setTimeout(() => { setExporting(""); if (opened) setStatusMsg(""); }, opened ? 4500 : 3500);
+      try {
+        await exportVisualPdf(resumePrintRef, src.name || "resume", "resume");
+        setExportSuccess(st.pdfSuccess);
+        setStatusMsg(st.pdfDownloaded);
+        trackUxEvent("pdf_export_completed");
+        track(EVENTS.PDF_EXPORT_COMPLETED, { document_type: "resume", language: docLang, template: tpl?.id || "", export_type: "visual_pdf" });
+        if (docLang !== lang) track(EVENTS.MULTILINGUAL_RESUME_EXPORTED, { language: docLang, interface_language: lang, export_type: "pdf", template: tpl?.id || "" });
+        track(EVENTS.RESUME_EXPORTED, { format: "pdf", template: tpl?.id || "" });
+        setTimeout(() => { setExportSuccess(""); setStatusMsg(""); }, 4500);
+      } catch {
+        setStatusMsg(st.pdfFail);
+        track(EVENTS.PDF_EXPORT_FAILED, { document_type: "resume", language: docLang, template: tpl?.id || "", export_type: "visual_pdf" });
+        setTimeout(() => setStatusMsg(""), 3500);
+      } finally {
+        setExporting("");
+      }
       return;
     }
     setExporting("pdf");
@@ -5639,13 +5559,20 @@ Awards: ${form.awards}`;
     if (documentRtl) {
       setExporting("pdf");
       track(EVENTS.PDF_EXPORT_STARTED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", document_direction: "rtl" });
-      const opened = printDocumentPreview(coverPrintRef, "cover");
-      setStatusMsg(opened
-        ? (lang === "fr" ? "Pour obtenir un PDF propre, choisissez Enregistrer au format PDF et désactivez les en-têtes et pieds de page." : lang === "ar" ? "للحصول على ملف PDF نظيف، اختر حفظ كملف PDF وقم بإيقاف الرؤوس والتذييلات." : "For a clean PDF, choose Save as PDF and turn off Headers and footers.")
-        : st.pdfFail);
-      track(opened ? EVENTS.PDF_EXPORT_COMPLETED : EVENTS.PDF_EXPORT_FAILED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", export_type: "html_print" });
-      if (opened && docLang !== lang) track(EVENTS.MULTILINGUAL_COVER_LETTER_EXPORTED, { language: docLang, interface_language: lang, export_type: "pdf", template: coverTpl?.id || "" });
-      setTimeout(() => { setExporting(""); setStatusMsg(""); }, opened ? 4500 : 3500);
+      try {
+        await exportVisualPdf(coverPrintRef, coverForm.name || "cover-letter", "cover");
+        setExportSuccess(st.pdfSuccess);
+        setStatusMsg(st.pdfDownloaded);
+        track(EVENTS.PDF_EXPORT_COMPLETED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", export_type: "visual_pdf" });
+        if (docLang !== lang) track(EVENTS.MULTILINGUAL_COVER_LETTER_EXPORTED, { language: docLang, interface_language: lang, export_type: "pdf", template: coverTpl?.id || "" });
+        setTimeout(() => { setExportSuccess(""); setStatusMsg(""); }, 4500);
+      } catch {
+        setStatusMsg(st.pdfFail);
+        track(EVENTS.PDF_EXPORT_FAILED, { document_type: "cover", language: docLang, template: coverTpl?.id || "", export_type: "visual_pdf" });
+        setTimeout(() => setStatusMsg(""), 3500);
+      } finally {
+        setExporting("");
+      }
       return;
     }
     setExporting("pdf");

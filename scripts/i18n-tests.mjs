@@ -134,24 +134,23 @@ test("analytics whitelist contains multilingual events only with safe scalar pro
   assert.doesNotMatch(app, /track\([^)]*(?:name|email|phone|address|summary|experience|education|coverText|jobDescription)\b/i);
 });
 
-test("secure print flow avoids unsafe sinks and preserves print metadata", () => {
+test("direct RTL PDF export avoids popup print flow and preserves visual metadata", () => {
   assert.doesNotMatch(app, /document\.write|insertAdjacentHTML|dangerouslySetInnerHTML|\.innerHTML\s*=/);
+  assert.doesNotMatch(app, /window\.open\(/);
+  assert.doesNotMatch(app, /about:blank|Open print dialog|Headers and footers|html_print/);
+  assert.match(app, /const exportVisualPdf = useCallback/);
+  assert.match(app, /await import\("html2canvas"\)/);
+  assert.match(app, /await import\("jspdf"\)/);
+  assert.match(app, /document\.fonts\?\.ready/);
   assert.match(app, /cloneNode\(true\)/);
-  assert.match(app, /appendChild\(clone\)/);
-  assert.match(app, /doc\.documentElement\.lang = docLang/);
-  assert.match(app, /doc\.documentElement\.dir = direction/);
-  assert.match(app, /printWindow\.history\.replaceState/);
-  assert.match(app, /@page \{ size: A4; margin: 12mm; \}/);
-  assert.match(app, /Headers and footers/);
-  assert.match(app, /En-têtes et pieds de page/);
-  assert.match(app, /الرؤوس والتذييلات/);
-  assert.match(app, /\.resume-tag-list/);
-  assert.match(app, /break-inside: avoid/);
-  assert.match(app, /align-items: flex-start/);
-  assert.match(app, /printButton\.addEventListener\("click", runPrint\)/);
-  assert.match(app, /direction !== "rtl"/);
-  assert.match(app, /doc\.fonts\?\.ready/);
-  assert.match(app, /choose \\"Save as PDF\\"/);
+  assert.match(app, /host\.appendChild\(clone\)/);
+  assert.match(app, /clone\.setAttribute\("lang", docLang/);
+  assert.match(app, /clone\.setAttribute\("dir", direction\)/);
+  assert.match(app, /canvas\.width \* \(pageHeight \/ pageWidth\)/);
+  assert.match(app, /inner\.style\.alignItems = "flex-start"/);
+  assert.match(app, /export_type: "visual_pdf"/);
+  assert.match(app, /await exportVisualPdf\(resumePrintRef/);
+  assert.match(app, /await exportVisualPdf\(coverPrintRef/);
 });
 
 test("Arabic DOCX export uses bidi paragraph and RTL run options", () => {
