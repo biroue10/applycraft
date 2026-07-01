@@ -62,7 +62,7 @@ export function initialInterfaceLanguage() {
 
 // Resolve the initial DOCUMENT language, running the one-time migration.
 // Priority: explicit new key → legacy site key → English. Any language code is
-// allowed here (documents can be written in any of the 99 document languages).
+// allowed here (resume content can be written in any supported picker language).
 export function initialDocumentLanguage() {
   const explicit = baseCode(read(DOCUMENT_LANG_KEY));
   if (isDocumentLang(explicit)) return explicit;

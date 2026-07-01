@@ -90,11 +90,11 @@ const landing2 = {
   "ml": {
     "eyebrow": "Mehrsprachige Superkräfte",
     "title": "Für den globalen Arbeitsmarkt gemacht",
-    "desc": "Ein Lebenslauf-Generator, der speziell für mehrsprachige Bewerber entwickelt wurde — schreibe in jeder Sprache, beschrifte neu über {docs} Dokumentsprachen und nutze die Oberfläche in {ui}, mit vollständiger Rechts-nach-links-Unterstützung.",
+    "desc": "Ein Lebenslauf-Generator für mehrsprachige Bewerber — schreibe Inhalte in jeder Sprache, mit vollständig lokalisierten Oberflächen- und Dokumentbeschriftungen derzeit auf Englisch, Französisch und Arabisch.",
     "cards": [
       {
-        "t": "Dokumentbeschriftungen in {docs} Sprachen",
-        "d": "Wechsle Abschnittsbeschriftungen und Datumsformate über {docs} Dokumentsprachen, ohne deinen Inhalt zu ändern."
+        "t": "Lokalisierte Beschriftungen auf Englisch, Französisch und Arabisch",
+        "d": "Wechsle Standardbeschriftungen, Dokumentrichtung und Exportverhalten, ohne deinen geschriebenen Inhalt zu ändern."
       },
       {
         "t": "Vollständige Oberflächenübersetzung in {ui} Sprachen",
@@ -170,8 +170,8 @@ const landing2 = {
         "a": "Die Vorlagen sind mit lesbarer Typografie, klaren Abschnittsüberschriften und ATS-freundlichen Layouts gestaltet, um die Auslesbarkeit zu verbessern."
       },
       {
-        "q": "Kann ich wirklich {docs} Dokumentsprachen nutzen?",
-        "a": "Ja. Schreibe direkt in jeder Sprache, wechsle Beschriftungen und Datumsformate über {docs} Sprachen und nutze die Übersetzen-Schaltfläche, um einen bestehenden Lebenslauf umzuwandeln, ohne neu zu beginnen. RTL-Sprachen wie Arabisch werden vollständig unterstützt."
+        "q": "Kann ich meinen Lebenslauf in jeder Sprache schreiben?",
+        "a": "Ja. Du kannst Lebenslaufinhalte in jeder Sprache schreiben. Vollständig lokalisierte Oberfläche und Dokumentbeschriftungen sind derzeit produktionsreif auf Englisch, Französisch und Arabisch; weitere Sprachen sind geplant."
       },
       {
         "q": "Welche Download-Formate gibt es?",

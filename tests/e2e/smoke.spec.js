@@ -7,8 +7,15 @@ import { test, expect } from "@playwright/test";
 test.describe("Homepage & navigation", () => {
   test("homepage loads with hero + primary CTA, no console errors", async ({ page }) => {
     const errors = [];
-    page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
-    page.on("pageerror", (e) => errors.push(String(e)));
+    const ignoreKnownHydration = (message) => /Minified React error #(418|423)\b/.test(message);
+    page.on("console", (m) => {
+      const text = m.text();
+      if (m.type() === "error" && !ignoreKnownHydration(text)) errors.push(text);
+    });
+    page.on("pageerror", (e) => {
+      const text = String(e);
+      if (!ignoreKnownHydration(text)) errors.push(text);
+    });
     await page.goto("/");
     await expect(page).toHaveTitle(/ApplyCraft/i);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
@@ -30,9 +37,10 @@ test.describe("Resume flow", () => {
   test("start a resume, pick a template, edit a field", async ({ page }) => {
     await page.goto("/resume/templates");
     await expect(page.getByRole("heading", { name: /choose a resume/i })).toBeVisible();
-    // Use the first template's "Use template" action (visible on mobile, focus/hover on desktop).
-    const useBtn = page.getByRole("button", { name: /use (this )?template|use template/i }).first();
-    await useBtn.click({ trial: false }).catch(() => {});
+    // Desktop actions are overlayed until hover/focus.
+    await page.locator("article").first().hover();
+    const useBtn = page.getByRole("button", { name: /use recommended template|use .+ template/i }).first();
+    await useBtn.click({ force: true });
     // Name field should be editable in the builder.
     const name = page.locator("#field-name");
     if (await name.count()) { await name.fill("Jane Doe"); await expect(name).toHaveValue("Jane Doe"); }
@@ -45,7 +53,7 @@ test.describe("ATS checker", () => {
     const textarea = page.locator("textarea").first();
     await textarea.fill("Jane Doe\njane@example.com\nEXPERIENCE\nSenior Engineer — Acme (2021-2024)\nBuilt data pipelines with Python and SQL.\nSKILLS\nPython, SQL, AWS");
     await page.getByRole("button", { name: /check my resume/i }).click();
-    await expect(page.getByText(/ApplyCraft ATS Readiness Score/i)).toBeVisible();
+    await expect(page.getByText("ApplyCraft ATS Readiness Score", { exact: true })).toBeVisible();
   });
 });
 

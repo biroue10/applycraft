@@ -28,7 +28,7 @@ const UI_LANGS = new Set(["en", "fr", "es", "ar", "de"]);
 const SITE_LANGUAGE_CODES = new Set(INTERFACE_LANGUAGES);
 // Centralized in src/product.js; verified against WORLD_LANGUAGES / UI_LANGS
 // by scripts/product-tests.mjs.
-const DOCUMENT_LANGUAGE_COUNT = PRODUCT.documentLanguageCount;
+const LOCALIZED_DOCUMENT_LANGUAGE_COUNT = PRODUCT.localizedDocumentLanguageCount;
 const UI_LANGUAGE_COUNT = PRODUCT.interfaceLanguageCount;
 
 // ── All world languages for the picker ────────────────────────────
@@ -2847,43 +2847,88 @@ export default function ResumeGenerator() {
     const direction = isRtlLang(docLang) ? "rtl" : "ltr";
     const title = type === "cover" ? "ApplyCraft cover letter" : "ApplyCraft resume";
     const instruction = lang === "fr"
-      ? "Dans la fenêtre d'impression, choisissez Enregistrer au format PDF comme destination."
+      ? "Dans la fenêtre d'impression, choisissez « Enregistrer au format PDF » comme destination."
       : lang === "ar"
-        ? "في نافذة الطباعة، اختر «حفظ كملف PDF» كوجهة."
-        : "In the print window, choose Save as PDF as the destination.";
-    printWindow.document.open();
-    printWindow.document.write(`<!doctype html>
-<html lang="${docLang}" dir="${direction}">
-<head>
-<meta charset="utf-8" />
-<title>${title}</title>
-<style>
-  @page { size: A4; margin: 14mm; }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: #fff; color: #111; }
-  body { font-family: ${direction === "rtl" ? "'Noto Sans Arabic', Tahoma, Arial, sans-serif" : "Inter, Arial, sans-serif"}; direction: ${direction}; }
-  .print-instruction { font: 13px Arial, sans-serif; color: #334155; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; }
-  .print-root { width: 182mm; margin: 0 auto; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .print-root * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  section, article, header, main, aside { break-inside: avoid; }
-  p, li, div { unicode-bidi: plaintext; }
-  @media print {
-    .print-instruction { display: none; }
-    .print-root { width: 100%; margin: 0; box-shadow: none !important; }
+        ? "في نافذة الطباعة، اختر « حفظ كملف PDF » كوجهة."
+        : "In the print window, choose \"Save as PDF\" as the destination.";
+    const doc = printWindow.document;
+    doc.documentElement.lang = docLang || "en";
+    doc.documentElement.dir = direction;
+    doc.title = title;
+
+    const meta = doc.createElement("meta");
+    meta.setAttribute("charset", "utf-8");
+    doc.head.appendChild(meta);
+
+    const style = doc.createElement("style");
+    style.textContent = `
+@page { size: A4; margin: 14mm; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #fff; color: #111; }
+body {
+  font-family: ${direction === "rtl" ? "'Noto Sans Arabic', Tahoma, Arial, sans-serif" : "Inter, Arial, sans-serif"};
+  direction: ${direction};
+}
+.print-instruction {
+  font: 13px Arial, sans-serif;
+  color: #334155;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.print-root {
+  width: 182mm;
+  margin: 0 auto;
+  background: #fff;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.print-root * {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+section, article, header, main, aside {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+p, li, div, span {
+  unicode-bidi: plaintext;
+}
+@media print {
+  .print-instruction { display: none; }
+  .print-root {
+    width: 100%;
+    margin: 0;
+    box-shadow: none !important;
+    transform: none !important;
   }
-</style>
-</head>
-<body>
-<div class="print-instruction">${instruction}</div>
-<main class="print-root">${node.innerHTML}</main>
-<script>
-  const done = () => setTimeout(() => { window.focus(); window.print(); }, 80);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(done).catch(done);
-  else done();
-</script>
-</body>
-</html>`);
-    printWindow.document.close();
+}`;
+    doc.head.appendChild(style);
+
+    while (doc.body.firstChild) doc.body.removeChild(doc.body.firstChild);
+    const instructionEl = doc.createElement("div");
+    instructionEl.className = "print-instruction";
+    instructionEl.textContent = instruction;
+    doc.body.appendChild(instructionEl);
+
+    const root = doc.createElement("main");
+    root.className = "print-root";
+    root.lang = docLang || "en";
+    root.dir = direction;
+    const clone = node.cloneNode(true);
+    clone.removeAttribute("style");
+    clone.style.maxWidth = "none";
+    clone.style.margin = "0";
+    clone.style.transform = "none";
+    clone.style.paddingBottom = "0";
+    root.appendChild(clone);
+    doc.body.appendChild(root);
+
+    const finish = () => setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 80);
+    if (doc.fonts?.ready) doc.fonts.ready.then(finish).catch(finish);
+    else finish();
     return true;
   }, [docLang, lang]);
 
@@ -3757,18 +3802,31 @@ Awards: ${form.awards}`;
     const { Document, Packer, Paragraph, TextRun, BorderStyle, AlignmentType } = await import("docx");
 
     const accent = tpl.accent.replace("#", "").toUpperCase();
+    const docxRtl = isRtlLang(docLang);
+    const docxAlignment = docxRtl ? AlignmentType.RIGHT : AlignmentType.LEFT;
+    const docxFont = docxRtl ? "Noto Sans Arabic" : "Aptos";
+    const makeRun = (options = {}) => new TextRun({
+      font: docxFont,
+      rightToLeft: docxRtl,
+      ...options,
+    });
+    const makeParagraph = (options = {}) => new Paragraph({
+      alignment: options.alignment || docxAlignment,
+      bidirectional: docxRtl,
+      ...options,
+    });
     const children = [];
 
     // Name
-    children.push(new Paragraph({
-      children: [new TextRun({ text: src.name || "", bold: true, size: 44, color: "111111" })],
+    children.push(makeParagraph({
+      children: [makeRun({ text: src.name || "", bold: true, size: 44, color: "111111" })],
       spacing: { after: 60 },
     }));
 
     // Title
     if (src.title) {
-      children.push(new Paragraph({
-        children: [new TextRun({ text: src.title, size: 26, color: accent })],
+      children.push(makeParagraph({
+        children: [makeRun({ text: src.title, size: 26, color: accent })],
         spacing: { after: 60 },
       }));
     }
@@ -3776,42 +3834,55 @@ Awards: ${form.awards}`;
     // Contact
     const contact = (src.contact || []).filter(Boolean).join("   •   ");
     if (contact) {
-      children.push(new Paragraph({
-        children: [new TextRun({ text: contact, size: 20, color: "666666" })],
+      children.push(makeParagraph({
+        children: [makeRun({ text: contact, size: 20, color: "666666" })],
         spacing: { after: 120 },
       }));
     }
 
     // Divider
-    children.push(new Paragraph({
+    children.push(makeParagraph({
       border: { bottom: { color: accent, space: 1, style: BorderStyle.SINGLE, size: 8 } },
       spacing: { after: 160 },
     }));
 
     // Summary
     if (src.summary) {
-      children.push(new Paragraph({
-        children: [new TextRun({ text: src.summary, size: 21 })],
+      children.push(makeParagraph({
+        children: [makeRun({ text: src.summary, size: 21 })],
         spacing: { after: 240 },
       }));
     }
 
     // Sections
     for (const section of (src.sections || [])) {
-      children.push(new Paragraph({
-        children: [new TextRun({ text: section.heading.toUpperCase(), bold: true, size: 22, color: accent })],
+      children.push(makeParagraph({
+        children: [makeRun({ text: section.heading.toUpperCase(), bold: true, size: 22, color: accent })],
         border: { bottom: { color: accent, space: 1, style: BorderStyle.SINGLE, size: 4 } },
         spacing: { before: 240, after: 120 },
       }));
       for (const item of section.items) {
-        children.push(new Paragraph({
-          children: [new TextRun({ text: `• ${item}`, size: 20 })],
+        children.push(makeParagraph({
+          children: [makeRun({ text: docxRtl ? `${item} •` : `• ${item}`, size: 20 })],
           spacing: { after: 80 },
+          indent: docxRtl ? { right: 260 } : { left: 260 },
         }));
       }
     }
 
-    const docFile = new Document({ sections: [{ properties: {}, children }] });
+    const docFile = new Document({
+      creator: "ApplyCraft",
+      description: `${docLang || "en"} resume export`,
+      fonts: [{ name: "Noto Sans Arabic" }, { name: "Arial" }, { name: "Aptos" }],
+      sections: [{
+        properties: {
+          page: {
+            margin: { top: 720, right: 720, bottom: 720, left: 720 },
+          },
+        },
+        children,
+      }],
+    });
     const blob = await Packer.toBlob(docFile);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -4821,7 +4892,7 @@ Awards: ${form.awards}`;
                   <span style={{ color: C.text3, fontSize: 12 }}>{tpl.name} · {bu.atsConscious}</span>
                 </button>
                 <div style={{ fontSize: 12, fontWeight: 800, color: C.text3, marginBottom: 7 }}>
-                  {lang === "fr" ? "Langue de l'interface" : lang === "ar" ? "لغة الواجهة" : "Interface language"}
+                  {bu.interfaceLanguage}
                 </div>
                 <LanguageDropdown
                   selected={selectedLang}
@@ -4831,21 +4902,17 @@ Awards: ${form.awards}`;
                   siteOnly
                 />
                 <div style={{ fontSize: 12, fontWeight: 800, color: C.text3, margin: "12px 0 7px" }}>
-                  {lang === "fr" ? "Langue du document" : lang === "ar" ? "لغة المستند" : "Document language"}
+                  {bu.documentLanguage}
                 </div>
                 <LanguageDropdown
                   selected={selectedDocumentLang}
                   onSelect={(l) => {
                     setDocumentLanguagePreference(l);
                   }}
-                  ariaLabel={lang === "fr" ? "Choisir la langue du document" : lang === "ar" ? "اختر لغة المستند" : "Choose document language"}
+                  ariaLabel={bu.chooseDocumentLanguage}
                 />
                 <p style={{ margin: "10px 0 0", fontSize: 11.5, color: C.text3, lineHeight: 1.5 }}>
-                  {lang === "fr"
-                    ? "La langue de l'interface change les menus. La langue du document change les titres, l'orientation et l'export sans traduire votre contenu."
-                    : lang === "ar"
-                      ? "لغة الواجهة تغيّر القوائم. لغة المستند تغيّر العناوين والاتجاه والتصدير دون ترجمة المحتوى الذي كتبته."
-                      : "Interface language changes menus. Document language changes labels, direction, and export without translating your content."}
+                  {bu.languageSeparationNote}
                 </p>
               </div>
             )}
@@ -5712,13 +5779,13 @@ Awards: ${form.awards}`;
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               {!isMobile && (
                 <span style={{ color: C.text3, fontSize: 12, fontWeight: 800 }}>
-                  {lang === "fr" ? "Document" : lang === "ar" ? "المستند" : "Document"}
+                  {bu.documentLanguage}
                 </span>
               )}
               <LanguageDropdown
                 selected={selectedDocumentLang}
                 onSelect={setDocumentLanguagePreference}
-                ariaLabel={lang === "fr" ? "Choisir la langue du document" : lang === "ar" ? "اختر لغة المستند" : "Choose document language"}
+                ariaLabel={bu.chooseDocumentLanguage}
               />
             </div>
             {isMobile && (
@@ -6267,7 +6334,7 @@ Awards: ${form.awards}`;
         <p style={{ fontSize: 14.5, color: C.text1, lineHeight: 1.8, margin: 0 }}>
           Getting a job is hard enough without fighting the tools meant to help you. ApplyCraft
           gives every job seeker — regardless of budget or background — free access to polished,
-          ATS-conscious documents with labels in {DOCUMENT_LANGUAGE_COUNT} document languages. No account, no paywall, no catch.
+          ATS-conscious documents you can write in any language, with fully localized labels in English, French, and Arabic. No account, no paywall, no catch.
         </p>
       </div>
 
@@ -6279,7 +6346,7 @@ Awards: ${form.awards}`;
           {[
             ["document", "Build a resume", `Choose from ${RESUME_TEMPLATE_COUNT} professional templates with live preview.`],
             ["document", "Write a cover letter", "6 matching cover letter styles with full customisation."],
-            ["globe", `${DOCUMENT_LANGUAGE_COUNT} document languages`, "Full RTL support for Arabic, Hebrew and more."],
+            ["globe", "Write in any language", "Fully localized labels are production-ready in English, French, and Arabic."],
             ["upload", "PDF & DOCX export", "Download in the format any employer expects."],
             ["lock", "Browser-first", "Build and export without creating an account or cloud profile."],
             ["spark", "AI suggestions", "Optional AI polish to sharpen your wording instantly."],
@@ -7397,7 +7464,7 @@ Awards: ${form.awards}`;
             {[
               { n: `${RESUME_TEMPLATE_COUNT}`, label: lx.statTemplates },
               { n: `${COVER_TEMPLATE_COUNT}`, label: lx.statCover },
-              { n: DOCUMENT_LANGUAGE_COUNT, label: lx.statDocLangs },
+              { n: `${LOCALIZED_DOCUMENT_LANGUAGE_COUNT}`, label: lx.statDocLangs },
               { n: "2", label: lx.statFormats },
               { n: "∞", label: lx.statDownloads },
             ].map(s => (
@@ -7662,11 +7729,11 @@ Awards: ${form.awards}`;
               <h2 style={{ fontSize: "clamp(24px, 3.5vw, 40px)", fontWeight: 800, letterSpacing: "-1px",
                 color: C.text1, margin: "0 0 16px" }}>{l2.ml.title}</h2>
               <p style={{ fontSize: 15.5, color: C.text2, maxWidth: 560, margin: "0 auto", lineHeight: 1.7 }}>
-                {l2.ml.desc.replace("{docs}", DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT)}
+                {l2.ml.desc.replace("{docs}", LOCALIZED_DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT)}
               </p>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
-              {l2.ml.cards.map((c) => ({ icon: c.icon, title: c.t.replace("{docs}", DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT), desc: c.d.replace("{docs}", DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT) })).map((f, i) => {
+              {l2.ml.cards.map((c) => ({ icon: c.icon, title: c.t.replace("{docs}", LOCALIZED_DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT), desc: c.d.replace("{docs}", LOCALIZED_DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT) })).map((f, i) => {
                 const icons = ["globe", "document", "arrowRight", "check", "document"];
                 f.icon = icons[i] || "check";
                 return (
@@ -7776,7 +7843,7 @@ Awards: ${form.awards}`;
                 letterSpacing: "-0.8px", color: C.text1, margin: 0 }}>{l2.faq.title}</h2>
             </FadeIn>
             {l2.faq.items.map((raw, i) => {
-              const item = { q: raw.q.replace("{docs}", DOCUMENT_LANGUAGE_COUNT), a: raw.a.replace(/\{docs\}/g, DOCUMENT_LANGUAGE_COUNT) };
+              const item = { q: raw.q.replace("{docs}", LOCALIZED_DOCUMENT_LANGUAGE_COUNT), a: raw.a.replace(/\{docs\}/g, LOCALIZED_DOCUMENT_LANGUAGE_COUNT) };
               return <FAQItem key={i} item={item} C={C} />;
             })}
           </div>
@@ -10531,7 +10598,7 @@ function SiteFooter({ lang }) {
             <a href="/" style={{ background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               fontSize: 20, fontWeight: 800, textDecoration: "none", display: "block", marginBottom: 12, letterSpacing: "-0.5px" }}>ApplyCraft</a>
             <p style={{ fontSize: 13, color: C.text3, lineHeight: 1.75, margin: "0 0 16px" }}>
-              {f.brand.replace("{docs}", DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT).replace("{tpl}", RESUME_TEMPLATE_COUNT)}
+              {f.brand.replace("{docs}", LOCALIZED_DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT).replace("{tpl}", RESUME_TEMPLATE_COUNT)}
             </p>
             <a href={`mailto:${AUTHOR.email}`} style={{ fontSize: 13, color: C.text2, textDecoration: "none" }}>{AUTHOR.email}</a>
           </div>

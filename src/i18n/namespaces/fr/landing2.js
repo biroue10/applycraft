@@ -90,11 +90,11 @@ const landing2 = {
   "ml": {
     "eyebrow": "Super-pouvoirs multilingues",
     "title": "Conçu pour le marché de l'emploi mondial",
-    "desc": "Un créateur de CV conçu spécifiquement pour les candidats multilingues — écrivez dans n'importe quelle langue, réétiquetez parmi {docs} langues de document, et utilisez l'interface en {ui}, avec une prise en charge complète de droite à gauche.",
+    "desc": "Un créateur de CV conçu pour les candidats multilingues — rédigez dans n'importe quelle langue, avec une interface et des libellés de document entièrement localisés en anglais, français et arabe.",
     "cards": [
       {
-        "t": "Étiquettes de document en {docs} langues",
-        "d": "Changez les étiquettes de section et les formats de date parmi {docs} langues de document sans modifier votre contenu."
+        "t": "Libellés localisés en anglais, français et arabe",
+        "d": "Changez les libellés standard, le sens de lecture et l'export sans modifier le contenu que vous avez rédigé."
       },
       {
         "t": "Interface traduite en {ui} langues",
@@ -170,8 +170,8 @@ const landing2 = {
         "a": "Les modèles sont conçus avec une typographie lisible, des intitulés de section clairs et des mises en page compatibles ATS pour améliorer l'analyse."
       },
       {
-        "q": "Puis-je vraiment utiliser {docs} langues de document ?",
-        "a": "Oui. Écrivez dans n'importe quelle langue, changez les étiquettes et formats de date parmi {docs} langues, et utilisez le bouton Traduire pour convertir un CV existant sans tout refaire. Les langues RTL comme l'arabe sont entièrement prises en charge."
+        "q": "Puis-je rédiger mon CV dans n'importe quelle langue ?",
+        "a": "Oui. Vous pouvez rédiger le contenu du CV dans n'importe quelle langue. La prise en charge complète de l'interface et des libellés de document est actuellement prête pour la production en anglais, français et arabe ; d'autres langues sont prévues."
       },
       {
         "q": "Quels formats de téléchargement sont disponibles ?",

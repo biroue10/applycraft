@@ -17,7 +17,7 @@ const landing = {
   "uploadHint": "PDF or DOCX · drag & drop or click",
   "statTemplates": "Templates",
   "statCover": "Cover letter styles",
-  "statDocLangs": "Document languages",
+  "statDocLangs": "Localized languages",
   "statFormats": "Export formats",
   "statDownloads": "Free downloads",
   "comingSoonBody": "This feature is not yet available. We're working on it and it will be ready soon.",

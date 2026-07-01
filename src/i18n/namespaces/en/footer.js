@@ -1,5 +1,5 @@
 const footer = {
-  "brand": "Free resume and cover letter builder for the global job market. {docs} document languages, {ui} interface languages, {tpl} templates, no sign-up required.",
+  "brand": "Free resume and cover letter builder for the global job market. Write in any language, with fully localized English, French, and Arabic support, {tpl} templates, no sign-up required.",
   "product": "Product",
   "company": "Company",
   "resources": "Resources",

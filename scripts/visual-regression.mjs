@@ -22,8 +22,8 @@ for (const token of [
   assert.match(css, new RegExp(`${token}:`), `Missing shared design token ${token}`);
 }
 
-assert.match(app, /const DOCUMENT_LANGUAGE_COUNT = 99;/, "Document language count should be explicit");
-assert.match(app, /const UI_LANGUAGE_COUNT = UI_LANGS\.size;/, "UI language count should be derived from UI_LANGS");
+assert.match(app, /const LOCALIZED_DOCUMENT_LANGUAGE_COUNT = PRODUCT\.localizedDocumentLanguageCount;/, "Localized document-language count should be explicit");
+assert.match(app, /const UI_LANGUAGE_COUNT = PRODUCT\.interfaceLanguageCount;/, "UI language count should come from product facts");
 assert.match(app, /function LineIcon/, "React app should use the lightweight inline icon helper");
 assert.doesNotMatch(app, /50\+ languages|50\+ language|ATS-safe|Full UI/, "React app contains outdated product claims");
 
@@ -42,7 +42,7 @@ for (const file of htmlFiles) {
   const html = read(file);
   const h1Count = (html.match(/<h1\b/gi) || []).length;
   if (!file.endsWith("404.html")) assert.equal(h1Count, 1, `${file} should keep exactly one H1`);
-  assert.doesNotMatch(html, /50\+ languages|50\+ language|50\+ langues|50\+ لغة|13 templates|ATS-safe|Full UI/, `${file} contains outdated product claims`);
+  assert.doesNotMatch(html, /50\+ languages|50\+ language|50\+ langues|50\+ لغة|99 document languages|99 langues de document|13 templates|ATS-safe|Full UI/, `${file} contains outdated product claims`);
   if (!file.endsWith("404.html")) {
     assert.match(html, /<link rel="canonical"/, `${file} should keep a canonical link`);
   }

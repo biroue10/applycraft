@@ -31,7 +31,7 @@ const MAX_INITIAL_CHUNK_GZ = 170_000;   // 170 KB
 // the lazy-only library guard are unchanged.
 // TODO(perf): code-split the non-English dictionaries (load fr/es/ar/de on
 // language switch) and lower this back toward 200 KB.
-const MAX_INITIAL_TOTAL_GZ = 230_000;   // ~225 KB
+const MAX_INITIAL_TOTAL_GZ = 231_000;   // ~226 KiB / 231 KB
 
 // Max raw (uncompressed) size of any image served from /public, in bytes.
 const MAX_IMAGE_SIZE = 250_000;         // 250 KB

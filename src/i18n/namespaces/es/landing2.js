@@ -90,11 +90,11 @@ const landing2 = {
   "ml": {
     "eyebrow": "Superpoderes multilingües",
     "title": "Diseñado para el mercado laboral global",
-    "desc": "Un creador de CV diseñado específicamente para candidatos multilingües — escribe en cualquier idioma, reetiqueta entre {docs} idiomas de documento y usa la interfaz en {ui}, con soporte completo de derecha a izquierda.",
+    "desc": "Un creador de CV para candidatos multilingües — escribe contenido en cualquier idioma, con interfaz y etiquetas de documento completamente localizadas actualmente en inglés, francés y árabe.",
     "cards": [
       {
-        "t": "Etiquetas de documento en {docs} idiomas",
-        "d": "Cambia las etiquetas de sección y los formatos de fecha entre {docs} idiomas de documento sin cambiar tu contenido."
+        "t": "Etiquetas localizadas en inglés, francés y árabe",
+        "d": "Cambia las etiquetas estándar, la dirección del documento y la exportación sin modificar tu contenido escrito."
       },
       {
         "t": "Interfaz traducida en {ui} idiomas",
@@ -170,8 +170,8 @@ const landing2 = {
         "a": "Las plantillas están diseñadas con tipografía legible, encabezados de sección claros y diseños compatibles con ATS para mejorar el análisis."
       },
       {
-        "q": "¿Puedo usar de verdad {docs} idiomas de documento?",
-        "a": "Sí. Escribe en cualquier idioma, cambia las etiquetas y formatos de fecha entre {docs} idiomas, y usa el botón Traducir para convertir un CV existente sin rehacerlo. Los idiomas RTL como el árabe son totalmente compatibles."
+        "q": "¿Puedo escribir mi CV en cualquier idioma?",
+        "a": "Sí. Puedes escribir el contenido del CV en cualquier idioma. El soporte completo de interfaz y etiquetas de documento está listo actualmente en inglés, francés y árabe; hay más idiomas previstos."
       },
       {
         "q": "¿Qué formatos de descarga hay?",

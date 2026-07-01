@@ -24,7 +24,10 @@ function attr(tag, name) {
 
 function canonicalFromHtml(html) {
   const tag = html.match(/<link[^>]+rel=["']canonical["'][^>]*>/i)?.[0] || "";
-  return attr(tag, "href");
+  const canonical = attr(tag, "href");
+  if (canonical) return canonical;
+  const ogUrl = html.match(/<meta[^>]+property=["']og:url["'][^>]*>/i)?.[0] || "";
+  return attr(ogUrl, "content");
 }
 
 function isNoindex(html) {

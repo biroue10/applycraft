@@ -17,7 +17,7 @@ const landing = {
   "uploadHint": "PDF o DOCX · arrastra y suelta o haz clic",
   "statTemplates": "Plantillas",
   "statCover": "Estilos de carta",
-  "statDocLangs": "Idiomas de documento",
+  "statDocLangs": "Idiomas localizados",
   "statFormats": "Formatos de exportación",
   "statDownloads": "Descargas gratis",
   "comingSoonBody": "Esta función aún no está disponible. Estamos trabajando en ella y estará lista pronto.",

@@ -54,9 +54,12 @@ check("resume template count matches code", () =>
 check("cover-letter template count matches code", () =>
   assert.equal(PRODUCT.coverLetterTemplateCount, coverCount,
     `product.js says ${PRODUCT.coverLetterTemplateCount} cover templates, code has ${coverCount}`));
-check("document language count matches code", () =>
-  assert.equal(PRODUCT.documentLanguageCount, docCount,
-    `product.js says ${PRODUCT.documentLanguageCount} document languages, WORLD_LANGUAGES has ${docCount}`));
+check("writable language picker count matches code", () =>
+  assert.equal(PRODUCT.writableLanguageCount, docCount,
+    `product.js says ${PRODUCT.writableLanguageCount} writable languages, WORLD_LANGUAGES has ${docCount}`));
+check("localized document language count is production scoped", () =>
+  assert.equal(PRODUCT.localizedDocumentLanguageCount, 3,
+    "production localized document labels should currently be English, French, and Arabic"));
 check("interface language count matches code", () =>
   assert.equal(PRODUCT.interfaceLanguageCount, uiCount,
     `product.js says ${PRODUCT.interfaceLanguageCount} interface languages, UI_LANGS has ${uiCount}`));
@@ -77,21 +80,16 @@ function walkHtml(dir) {
   }
   return out;
 }
-const footerRe = /(\d+) document languages, (\d+) interface languages, (\d+) templates/g;
+const outdatedLocalizedClaimRe = /99 document languages|99 langues de document|99 idiomas de documento|99 Dokumentsprachen/gi;
 const htmlFiles = walkHtml(path.join(root, "public"));
 const claimMismatches = [];
 for (const f of htmlFiles) {
   const html = readFileSync(f, "utf8");
-  for (const m of html.matchAll(footerRe)) {
-    const [, docs, ui, tpl] = m.map(Number);
-    if (docs !== PRODUCT.documentLanguageCount || ui !== PRODUCT.interfaceLanguageCount || tpl !== PRODUCT.resumeTemplateCount) {
-      claimMismatches.push(`${path.relative(root, f)}: "${m[0]}"`);
-    }
-  }
+  for (const m of html.matchAll(outdatedLocalizedClaimRe)) claimMismatches.push(`${path.relative(root, f)}: "${m[0]}"`);
 }
-check("static-HTML footer claims match product.js", () =>
+check("static HTML avoids inaccurate 99 localized language claims", () =>
   assert.equal(claimMismatches.length, 0,
-    `mismatched product claims:\n       ${claimMismatches.join("\n       ")}`));
+    `outdated language claims:\n       ${claimMismatches.join("\n       ")}`));
 
 console.log("");
 if (failures) { console.error(`Product consistency: ${failures} check(s) failed.`); process.exit(1); }

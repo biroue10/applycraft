@@ -1,10 +1,10 @@
 <div align="center">
 
-<img src="docs/screenshots/01_cover.png" alt="ApplyCraft — The CV builder that works in Arabic, French, and 99 document languages" width="600"/>
+<img src="docs/screenshots/01_cover.png" alt="ApplyCraft — The CV builder with English, French, and Arabic multilingual support" width="600"/>
 
 <br/>
 
-**The CV builder that actually works in Arabic, French, and 99 document languages.**
+**The CV builder that actually works in English, French, and Arabic, while letting candidates write in any language.**
 
 ATS-conscious templates · live preview · PDF and DOCX · no watermark · no credit card required.
 
@@ -23,7 +23,7 @@ ATS-conscious templates · live preview · PDF and DOCX · no watermark · no cr
 
 ApplyCraft is a free, privacy-first resume and cover letter builder built for the global job market. No account. No watermark. No paywall. Just open the browser, pick a template, fill in your details, and download a polished PDF or DOCX in under 5 minutes.
 
-**46 templates · 99 document languages · ∞ free downloads**
+**46 templates · localized EN/FR/AR support · ∞ free downloads**
 
 ---
 
@@ -115,7 +115,7 @@ Every template is:
 ## Multilingual superpowers
 
 <div align="center">
-<img src="docs/screenshots/08_multilingual.png" alt="Built for the global job market — 99 document languages, full RTL support" width="540"/>
+<img src="docs/screenshots/08_multilingual.png" alt="Built for the global job market — English, French, and Arabic support with RTL layouts" width="540"/>
 </div>
 
 <br/>
@@ -124,7 +124,7 @@ ApplyCraft is the only resume builder designed from the ground up for multilingu
 
 | Feature | Detail |
 |---------|--------|
-| **99 document languages** | Set section labels (Experience, Education, Skills…) in any of 99 languages with one click |
+| **Write in any language** | Fully localized interface and document labels are production-ready in English, French, and Arabic |
 | **Full interface in 5 languages** | Complete interface translation for EN, FR, ES, AR, and DE |
 | **Full right-to-left** | Arabic, Hebrew, Farsi, Pashto, Urdu and other RTL languages render correctly |
 | **Formatting survives** | Your layout and design stay perfect after translation |
@@ -272,7 +272,7 @@ resume-app/
 - [x] 46 resume templates + 18 cover letter templates
 - [x] PDF and DOCX export
 - [x] RTL support (Arabic, Hebrew, Farsi, Pashto, Urdu)
-- [x] 99 document languages, 5 full UI translations
+- [x] Write in any language, with production localized support in English, French, and Arabic
 - [x] Free ATS checker (EN, FR, AR)
 - [x] Static prerendering (SSG) for SEO
 - [ ] Serverless API key proxy (Cloudflare Worker) for safe AI usage

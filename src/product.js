@@ -23,7 +23,8 @@ export const PRODUCT = {
   // UI_LANGS in src/ResumeGenerator.jsx.
   resumeTemplateCount: 46,        // TEMPLATES, excluding the "blank" template
   coverLetterTemplateCount: 18,   // COVER_TEMPLATES (count shown in the gallery)
-  documentLanguageCount: 99,      // WORLD_LANGUAGES
+  writableLanguageCount: 99,      // WORLD_LANGUAGES — users can write content in these languages
+  localizedDocumentLanguageCount: 3, // Production document labels: en, fr, ar
   interfaceLanguageCount: 5,      // UI_LANGS — en, fr, es, ar, de
 
   // Free / account model (matches the live product: the core builder, every

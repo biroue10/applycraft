@@ -89,7 +89,7 @@ ${content}
     <div class="footer-top">
       <div class="footer-brand">
         <a href="/" class="footer-logo">ApplyCraft</a>
-        <p>Free resume and cover letter builder for the global job market. 99 document languages, 5 interface languages, 22 templates, no sign-up required.</p>
+        <p>Free resume and cover letter builder for the global job market. Write in any language, with fully localized English, French, and Arabic support, 22 templates, no sign-up required.</p>
         <a href="mailto:${EMAIL}">${EMAIL}</a>
       </div>
       <nav class="footer-grid" aria-label="Footer">
@@ -244,7 +244,7 @@ const PAGES = {
   <li><strong>No watermarked downloads.</strong> Your resume exports as a professional document, not an advertisement for the tool that made it.</li>
   <li><strong>Browser-first by design.</strong> The main resume workflow runs in your browser, reducing unnecessary server storage of personal career information.</li>
   <li><strong>ATS-conscious templates.</strong> Layouts use readable typography, clear section labels, and text-based structure so applicant tracking systems can parse the document more reliably.</li>
-  <li><strong>Global by default.</strong> ApplyCraft supports 99 document languages, right-to-left layouts, and separate interface/document language choices for international applications.</li>
+  <li><strong>Global by default.</strong> ApplyCraft lets candidates write in any language, with production-ready English, French, and Arabic document labels, right-to-left layouts, and separate interface/document language choices.</li>
   <li><strong>Resume and cover letter together.</strong> You can build matching application documents instead of piecing together separate files from different tools.</li>
   <li><strong>Optional AI helpers.</strong> Writing, tailoring, and translation features are available when useful, but the core builder does not depend on AI or force it into the workflow.</li>
   <li><strong>Practical exports.</strong> Download PDF or DOCX files you can submit directly, share with recruiters, or keep as your own editable records.</li>
@@ -383,7 +383,7 @@ const PAGES = {
 <div class="changelog-entry">
   <p class="meta">v1.2 · June 2026</p>
   <h2>Multilingual &amp; RTL</h2>
-  <p><span class="badge badge-green">New</span> 99 document languages with one-click switching.</p>
+  <p><span class="badge badge-green">New</span> Separate interface and document languages, with localized English, French, and Arabic labels.</p>
   <p><span class="badge badge-green">New</span> Full RTL layout support for Arabic, Hebrew, and Farsi.</p>
   <p><span class="badge badge-green">New</span> Translate button — convert existing resume content to a new language instantly.</p>
   <p><span class="badge badge-green">New</span> 6 cover letter templates with live preview.</p>

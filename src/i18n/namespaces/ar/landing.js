@@ -17,7 +17,7 @@ const landing = {
   "uploadHint": "PDF أو DOCX · اسحب وأفلت أو انقر",
   "statTemplates": "القوالب",
   "statCover": "أنماط الخطابات",
-  "statDocLangs": "لغات المستند",
+  "statDocLangs": "لغات مترجمة",
   "statFormats": "صيغ التصدير",
   "statDownloads": "تنزيلات مجانية",
   "comingSoonBody": "هذه الميزة غير متاحة بعد. نحن نعمل عليها وستكون جاهزة قريباً.",

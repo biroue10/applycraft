@@ -20,6 +20,6 @@ export default defineConfig({
     : { command: "npm run preview -- --port 4173", url: "http://localhost:4173", reuseExistingServer: !process.env.CI, timeout: 60_000 },
   projects: [
     { name: "desktop-chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "mobile-safari", use: { ...devices["iPhone 13"] } },
+    { name: "mobile-chromium", use: { ...devices["Pixel 5"] } },
   ],
 });

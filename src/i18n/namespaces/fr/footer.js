@@ -1,5 +1,5 @@
 const footer = {
-  "brand": "Créateur gratuit de CV et de lettres de motivation pour le marché de l'emploi mondial. {docs} langues de document, {ui} langues d'interface, {tpl} modèles, sans inscription.",
+  "brand": "Créateur gratuit de CV et de lettres de motivation pour le marché mondial. Rédigez dans n'importe quelle langue, avec une prise en charge complète en anglais, français et arabe, {tpl} modèles, sans inscription.",
   "product": "Produit",
   "company": "Entreprise",
   "resources": "Ressources",

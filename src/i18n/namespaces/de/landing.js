@@ -17,7 +17,7 @@ const landing = {
   "uploadHint": "PDF oder DOCX · ziehen & ablegen oder klicken",
   "statTemplates": "Vorlagen",
   "statCover": "Anschreiben-Stile",
-  "statDocLangs": "Dokumentsprachen",
+  "statDocLangs": "Lokalisierte Sprachen",
   "statFormats": "Exportformate",
   "statDownloads": "Kostenlose Downloads",
   "comingSoonBody": "Diese Funktion ist noch nicht verfügbar. Wir arbeiten daran und sie wird bald bereit sein.",

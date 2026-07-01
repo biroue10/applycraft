@@ -90,11 +90,11 @@ const landing2 = {
   "ml": {
     "eyebrow": "Multilingual superpowers",
     "title": "Built for the global job market",
-    "desc": "A resume builder designed specifically for multilingual job seekers — write in any language, relabel across {docs} document languages, and run the interface in {ui}, including full right-to-left support.",
+    "desc": "A resume builder designed for multilingual job seekers — write content in any language, with fully localized interface and document labels currently available in English, French, and Arabic.",
     "cards": [
       {
-        "t": "Document labels in {docs} languages",
-        "d": "Switch resume section labels and date formats across {docs} document languages without changing your written content."
+        "t": "Localized labels in English, French, and Arabic",
+        "d": "Switch standard resume section labels, direction, and export behavior without changing your written content."
       },
       {
         "t": "Full interface translation in {ui} languages",
@@ -170,8 +170,8 @@ const landing2 = {
         "a": "The templates are designed with readable typography, clear section headings, and ATS-conscious layouts to improve parsing compatibility."
       },
       {
-        "q": "Can I really use {docs} document languages?",
-        "a": "Yes. Type directly in any language, switch document labels and date formats across {docs} document languages, and use the Translate button to convert an existing CV to a different language without rebuilding from scratch. RTL languages like Arabic are fully supported."
+        "q": "Can I write my resume in any language?",
+        "a": "Yes. You can write resume content in any language. Fully localized interface and document-label support is currently production-ready in English, French, and Arabic, with additional languages planned."
       },
       {
         "q": "What download formats are available?",

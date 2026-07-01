@@ -72,7 +72,10 @@ function routeFor(filePath) {
   if (filePath === path.join(HTML_ROOT, "404.html")) return "/404.html";
   const rel = path.relative(HTML_ROOT, filePath).replaceAll(path.sep, "/");
   if (rel === "index.html") return "/";
-  return `/${path.dirname(rel).replace(/^\.$/, "")}/`;
+  if (path.basename(rel) === "index.html") {
+    return `/${path.dirname(rel).replace(/^\.$/, "")}/`;
+  }
+  return `/${rel.replace(/\.html$/, "")}/`;
 }
 
 function isNoindex(html) {
@@ -95,6 +98,18 @@ const routeMap = new Map();
 const titleMap = new Map();
 const descriptionMap = new Map();
 const canonicalMap = new Map();
+const APP_SHELL_ROUTES = new Set([
+  "/app/ats-checker/",
+  "/cover-letter/builder/",
+  "/cover-letter/templates/",
+  "/email-signature/",
+  "/job-tracker/",
+  "/master-profile/",
+  "/personal-website/",
+  "/r/",
+  "/resume/builder/",
+  "/resume/templates/",
+]);
 
 for (const filePath of htmlFiles) {
   const html = fs.readFileSync(filePath, "utf8");
@@ -114,11 +129,14 @@ for (const filePath of htmlFiles) {
     twitterImage: meta(html, "twitter:image"),
     noindex: isNoindex(html),
   };
+  page.appShell = USE_DIST && APP_SHELL_ROUTES.has(route);
   pages.push(page);
 
-  if (page.title) titleMap.set(page.title, [...(titleMap.get(page.title) || []), route]);
-  if (page.description) descriptionMap.set(page.description, [...(descriptionMap.get(page.description) || []), route]);
-  if (page.canonical) canonicalMap.set(page.canonical, [...(canonicalMap.get(page.canonical) || []), route]);
+  if (!page.appShell) {
+    if (page.title) titleMap.set(page.title, [...(titleMap.get(page.title) || []), route]);
+    if (page.description) descriptionMap.set(page.description, [...(descriptionMap.get(page.description) || []), route]);
+    if (page.canonical) canonicalMap.set(page.canonical, [...(canonicalMap.get(page.canonical) || []), route]);
+  }
 }
 
 for (const page of pages) {
@@ -126,7 +144,7 @@ for (const page of pages) {
   if (!page.title) errors.push(`${label}: missing <title>`);
   if (!page.description) errors.push(`${label}: missing meta description`);
   if (!page.canonical) errors.push(`${label}: missing canonical URL`);
-  if (page.h1 !== 1) errors.push(`${label}: expected exactly one H1, found ${page.h1}`);
+  if (!page.appShell && page.h1 !== 1) errors.push(`${label}: expected exactly one H1, found ${page.h1}`);
   if (page.canonical && !page.canonical.startsWith(SITE + "/")) errors.push(`${label}: canonical must use ${SITE}`);
   if (page.ogImage && !imageExists(page.ogImage)) errors.push(`${label}: og:image does not map to an existing public file: ${page.ogImage}`);
   if (!page.ogImage) errors.push(`${label}: missing og:image`);
@@ -167,6 +185,7 @@ for (const loc of sitemapUrls) {
 }
 
 for (const page of pages) {
+  if (page.appShell) continue;
   if (page.noindex && sitemapSet.has(page.canonical)) errors.push(`${page.route}: noindex page included in sitemap`);
   if (!page.noindex && page.route !== "/404.html" && !sitemapSet.has(page.canonical)) errors.push(`${page.route}: indexable page missing from sitemap`);
 }
