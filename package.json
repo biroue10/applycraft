@@ -19,6 +19,8 @@
     "test:pdf": "node scripts/pdf-tests.mjs",
     "test:gallery": "node scripts/gallery-tests.mjs",
     "test:seo:hreflang": "node scripts/seo-hreflang-tests.mjs",
+    "test:e2e:static": "node scripts/e2e-static-tests.mjs",
+    "test:e2e": "playwright test",
     "test:a11y": "node scripts/a11y-check.mjs",
     "test:security": "node scripts/security-tests.mjs",
     "test:ux": "node scripts/ux-tests.mjs",
@@ -41,6 +43,7 @@
     "axe-core": "^4.12.1",
     "jsdom": "^29.1.1",
     "rollup-plugin-visualizer": "^6.0.11",
-    "vite": "^6.4.3"
+    "vite": "^6.4.3",
+    "@playwright/test": "^1.48.0"
   }
 }
