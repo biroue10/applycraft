@@ -19,9 +19,9 @@ function ContactStack({ items, style, itemStyle }) {
   const values = (Array.isArray(items) ? items : []).filter(Boolean);
   if (!values.length) return null;
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6, lineHeight: 1.35, ...style }}>
+    <div className="resume-contact-block" style={{ display: "flex", flexDirection: "column", gap: "0.18rem", lineHeight: 1.38, ...style }}>
       {values.map((item, index) => (
-        <bdi key={index} dir="auto" style={{ unicodeBidi: "isolate", overflowWrap: "anywhere", wordBreak: "normal", ...itemStyle }}>
+        <bdi key={index} dir="auto" className="contact-item" style={{ unicodeBidi: "isolate", overflowWrap: "anywhere", wordBreak: "normal", ...itemStyle }}>
           {item}
         </bdi>
       ))}
@@ -155,17 +155,17 @@ function ResumeSectionBody({ section, sidebar = false, accent = "#2563eb", tagSt
             </div>
           )}
           {entry.bullets.length > 0 && (
-            <ul style={{
-              margin: "4px 0 0",
+            <ul className="resume-bullets" style={{
+              margin: "5px 0 8px",
               paddingInlineStart: 16,
               color: "#374151",
               ...bulletListStyle,
             }}>
               {entry.bullets.map((bullet, bulletIndex) => (
                 <li key={bulletIndex} dir="auto" style={{
-                  marginBottom: 2,
+                  marginBottom: 3,
                   fontSize: 12.2,
-                  lineHeight: 1.42,
+                  lineHeight: 1.46,
                   unicodeBidi: "plaintext",
                   overflowWrap: "anywhere",
                   ...bulletStyle,
