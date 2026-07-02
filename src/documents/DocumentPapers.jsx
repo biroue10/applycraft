@@ -156,15 +156,18 @@ function TagList({ items, style, tagStyle }) {
   return (
     <div className="resume-tag-list" style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem 0.4rem", alignItems: "center", ...style }}>
       {values.map((item, index) => (
-        <span key={index} dir="auto" style={{
-          display: "inline-flex",
-          alignItems: "center",
-          lineHeight: 1.25,
-          whiteSpace: "normal",
-          overflowWrap: "anywhere",
-          unicodeBidi: "isolate",
-          ...tagStyle,
-        }}><LinkifiedText text={item} /></span>
+        <React.Fragment key={`${item}-${index}`}>
+          {index > 0 && <span aria-hidden="true" style={{ opacity: 0.6 }}> · </span>}
+          <span dir="auto" style={{
+            display: "inline-flex",
+            alignItems: "center",
+            lineHeight: 1.25,
+            whiteSpace: "normal",
+            overflowWrap: "anywhere",
+            unicodeBidi: "isolate",
+            ...tagStyle,
+          }}><LinkifiedText text={item} /></span>
+        </React.Fragment>
       ))}
     </div>
   );

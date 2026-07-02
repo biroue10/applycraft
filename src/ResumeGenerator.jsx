@@ -1867,7 +1867,7 @@ function ResumeMiniSection({ accent, title, children }) {
   );
 }
 
-function InlineList({ items, color = "inherit", separator = "·", justifyContent = "flex-start", fontSize }) {
+function InlineList({ items, color = "inherit", separator = " · ", justifyContent = "flex-start", fontSize }) {
   const values = (Array.isArray(items) ? items : []).filter(Boolean);
   return (
     <span style={{ display: "inline-flex", flexWrap: "wrap", gap: "0.2rem 0.5rem", alignItems: "center",
@@ -8031,9 +8031,9 @@ Awards: ${form.awards}`;
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 32 }}>
               {visible.map((tp, i) => (
                 <FadeIn key={tp.id} delay={i * 60}>
-                  <button onClick={() => startWithTemplate(tp, "landing_template")}
+                  <div
                     style={{ background: "transparent", border: "none", borderRadius: 0,
-                      overflow: "visible", cursor: "pointer", padding: 0, width: "100%",
+                      overflow: "visible", padding: 0, width: "100%",
                       transition: "transform 0.22s cubic-bezier(0.22,1,0.36,1)",
                       fontFamily: "inherit", textAlign: "left" }}
                     onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-7px) scale(1.015)"; }}
@@ -8046,8 +8046,14 @@ Awards: ${form.awards}`;
                     <div style={{ padding: "10px 4px 0" }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>{tp.name}</div>
                       <div style={{ fontSize: 11.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
+                      <button type="button" onClick={() => startWithTemplate(tp, "landing_template")}
+                        style={{ marginTop: 8, minHeight: 36, borderRadius: 6, border: `1px solid ${C.borderHi}`,
+                          background: `${C.accent}12`, color: C.accent2, fontSize: 12.5, fontWeight: 700,
+                          cursor: "pointer", fontFamily: "inherit", padding: "7px 11px" }}>
+                        {bu.useTemplate}
+                      </button>
                     </div>
-                  </button>
+                  </div>
                 </FadeIn>
               ))}
             </div>
@@ -8111,23 +8117,37 @@ Awards: ${form.awards}`;
                   {l2.cmp.desc}
                 </p>
               </div>
-              <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, overflow: "hidden" }}>
-                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 64px 64px" : "1fr 150px 170px",
-                  alignItems: "center", padding: isMobile ? "12px 12px" : "16px 22px",
-                  borderBottom: `1px solid ${C.border}`, gap: 8 }}>
-                  <span />
-                  <span style={{ textAlign: "center", fontSize: isMobile ? 12 : 13.5, fontWeight: 800, color: C.accent2 }}>ApplyCraft</span>
-                  <span style={{ textAlign: "center", fontSize: isMobile ? 11 : 12.5, fontWeight: 700, color: C.text3, lineHeight: 1.2 }}>{l2.cmp.col2}</span>
-                </div>
-                {l2.cmp.rows.map(([label, other], i, arr) => (
-                  <div key={label} style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 64px 64px" : "1fr 150px 170px",
-                    alignItems: "center", padding: isMobile ? "11px 12px" : "13px 22px", gap: 8,
-                    borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : "none" }}>
-                    <span style={{ fontSize: isMobile ? 13 : 14.5, color: C.text1, fontWeight: 600 }}>{label}</span>
-                    <span style={{ textAlign: "center", color: SECTION_TOKENS.statusComplete, fontSize: 17, fontWeight: 800 }} aria-label={l2.cmp.included}>✓</span>
-                    <span style={{ textAlign: "center", color: C.text3, fontSize: isMobile ? 11 : 12.5 }}>{other}</span>
-                  </div>
-                ))}
+              <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed", minWidth: isMobile ? 360 : 0 }}>
+                  <thead>
+                    <tr>
+                      <th scope="col" style={{ width: isMobile ? "46%" : "52%", padding: isMobile ? "12px" : "16px 22px", textAlign: "left", borderBottom: `1px solid ${C.border}` }}>
+                        <span style={{ color: C.text3, fontSize: 12 }}>{l2.cmp.feature || "Feature"}</span>
+                      </th>
+                      <th scope="col" style={{ width: isMobile ? "24%" : "22%", padding: isMobile ? "12px 8px" : "16px 14px", textAlign: "center", borderBottom: `1px solid ${C.border}`, color: C.accent2, fontSize: isMobile ? 12 : 13.5 }}>
+                        ApplyCraft
+                      </th>
+                      <th scope="col" style={{ width: isMobile ? "30%" : "26%", padding: isMobile ? "12px 8px" : "16px 14px", textAlign: "center", borderBottom: `1px solid ${C.border}`, color: C.text3, fontSize: isMobile ? 11 : 12.5 }}>
+                        {l2.cmp.col2}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {l2.cmp.rows.map(([label, other], i, arr) => (
+                      <tr key={label}>
+                        <th scope="row" style={{ padding: isMobile ? "11px 12px" : "13px 22px", borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : "none", textAlign: "left", color: C.text1, fontSize: isMobile ? 13 : 14.5, fontWeight: 600, lineHeight: 1.35 }}>
+                          {label}
+                        </th>
+                        <td style={{ padding: isMobile ? "11px 8px" : "13px 14px", borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : "none", textAlign: "center", color: SECTION_TOKENS.statusComplete, fontSize: 17, fontWeight: 800 }} aria-label={l2.cmp.included}>
+                          ✓
+                        </td>
+                        <td style={{ padding: isMobile ? "11px 8px" : "13px 14px", borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : "none", textAlign: "center", color: C.text3, fontSize: isMobile ? 11 : 12.5, lineHeight: 1.35 }}>
+                          {other}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
               <p style={{ textAlign: "center", fontSize: 12.5, color: C.text3, margin: "16px auto 0", maxWidth: 560 }}>
                 {l2.cmp.footnote}

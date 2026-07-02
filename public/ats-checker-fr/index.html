@@ -74,12 +74,12 @@
     {
       "@type": "Question",
       "name": "Quel score ATS viser ?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Un score de 80+ indique un CV bien structuré, prêt pour l'ATS. Entre 60 et 79, des améliorations sont possibles. En dessous de 60, des lacunes importantes peuvent vous coûter des entretiens. Lorsque vous collez aussi une fiche de poste, le pourcentage de correspondance des mots-clés est le chiffre le plus actionnable — visez 40 %+ pour un ciblage fort." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Un score plus élevé indique moins de problèmes détectés selon l’heuristique ApplyCraft. Ce n’est pas un seuil universel et cela ne prédit pas automatiquement les résultats de recrutement. Utilisez le score de correspondance comme un signal de personnalisation ApplyCraft : il indique généralement que votre CV reprend davantage le vocabulaire de l’offre, mais il ne garantit pas le passage d’un ATS, un entretien ou une embauche." }
     },
     {
       "@type": "Question",
       "name": "Cet outil garantit-il le passage de l'ATS ?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Non. Chaque ATS est différent — Greenhouse, Lever, Workday, Taleo utilisent des critères de scoring distincts. Ce vérificateur identifie les problèmes les plus courants qui nuisent aux performances ATS sur la majorité des systèmes. Améliorer votre score ici augmentera significativement vos chances, mais aucune garantie universelle n'existe." }
+      "acceptedAnswer": { "@type": "Answer", "text": "Non. Chaque ATS est différent — Greenhouse, Lever, Workday, Taleo utilisent des critères de scoring distincts. Ce vérificateur identifie des problèmes courants de structure, de contenu et de mots-clés. Améliorer votre score peut vous aider à rendre votre CV plus clair et mieux adapté à une offre, mais aucun outil ne peut garantir un entretien ou une embauche." }
     },
     {
       "@type": "Question",
@@ -283,7 +283,7 @@ Avec une fiche de poste, vous verrez aussi :
 
     <div class="fix-cta">
       <h3>Corrigez ces points dans l'éditeur →</h3>
-      <p>L'éditeur guidé d'ApplyCraft affiche votre score ATS en temps réel pendant que vous tapez. Choisissez un modèle, comblezles lacunes identifiées ci-dessus et téléchargez un PDF ou DOCX soigné — gratuit, sans compte.</p>
+      <p>L'éditeur guidé d'ApplyCraft affiche votre score ATS en temps réel pendant que vous tapez. Choisissez un modèle, comblez les lacunes identifiées ci-dessus et téléchargez un PDF ou DOCX soigné — gratuit, sans compte.</p>
       <button class="fix-btn" onclick="openInBuilder()">Ouvrir ApplyCraft — c'est gratuit →</button>
     </div>
   </div>
@@ -316,7 +316,7 @@ Avec une fiche de poste, vous verrez aussi :
       <div class="how-card">
         <div class="how-num">Mots-clés</div>
         <h3>Correspondance des mots-clés</h3>
-        <p>Lorsque vous collez une fiche de poste, nous tokenisons les deux documents et affichons les correspondances et les lacunes exactes. Visez 40 %+ pour les postes compétitifs.</p>
+        <p>Lorsque vous collez une fiche de poste, nous tokenisons les deux documents et affichons les correspondances et les lacunes exactes. Utilisez le score de correspondance comme un signal de personnalisation ApplyCraft. Un score plus élevé signifie généralement que votre CV reprend davantage le vocabulaire de l’offre, mais il ne garantit pas le passage d’un ATS, un entretien ou une embauche.</p>
       </div>
     </div>
   </div>
@@ -333,11 +333,11 @@ Avec une fiche de poste, vous verrez aussi :
     </details>
     <details>
       <summary>Quel score ATS viser ?</summary>
-      <p>Un score de 80+ indique un CV bien structuré, prêt pour l'ATS. Entre 60 et 79, des améliorations sont possibles. En dessous de 60, des lacunes importantes peuvent vous coûter des entretiens. Lorsque vous collez aussi une fiche de poste, le pourcentage de correspondance des mots-clés est le chiffre le plus actionnable — visez 40 %+ pour un ciblage fort.</p>
+      <p>Un score plus élevé indique moins de problèmes détectés selon l’heuristique ApplyCraft. Ce n’est pas un seuil universel et cela ne prédit pas automatiquement les résultats de recrutement.</p>
     </details>
     <details>
       <summary>Cet outil garantit-il le passage de l'ATS ?</summary>
-      <p>Non. Chaque ATS est différent — Greenhouse, Lever, Workday, Taleo utilisent des critères de scoring distincts. Ce vérificateur identifie les problèmes les plus courants qui nuisent aux performances ATS sur la majorité des systèmes. Améliorer votre score ici augmentera significativement vos chances, mais aucune garantie universelle n'existe.</p>
+      <p>Non. Chaque ATS est différent — Greenhouse, Lever, Workday, Taleo utilisent des critères de scoring distincts. Ce vérificateur identifie des problèmes courants de structure, de contenu et de mots-clés. Améliorer votre score peut vous aider à rendre votre CV plus clair et mieux adapté à une offre, mais aucun outil ne peut garantir un entretien ou une embauche.</p>
     </details>
     <details>
       <summary>Comment utiliser l'analyse des mots-clés ?</summary>
@@ -356,7 +356,7 @@ Avec une fiche de poste, vous verrez aussi :
     <div class="footer-top">
       <div class="footer-brand">
         <a href="/" class="footer-logo">ApplyCraft</a>
-        <p>Créateur de CV et de lettres de motivation gratuit pour le marché mondial. Rédigez dans n’importe quelle langue, avec une prise en charge complète en anglais, français et arabe, 22 modèles, sans inscription requise.</p>
+        <p>Créateur de CV et de lettres de motivation gratuit pour le marché mondial. Rédigez dans n’importe quelle langue, avec une prise en charge complète en anglais, français et arabe, 46 modèles, sans inscription requise.</p>
         <a href="mailto:hello@applycraft.io">hello@applycraft.io</a>
       </div>
       <nav class="footer-grid" aria-label="Footer">
@@ -430,7 +430,7 @@ const LOCALE = {
     longLines:   n => ({ title: `${n} ligne${n > 1 ? 's' : ''} de plus de 180 caractères`,            detail: 'Les lignes très longues sont souvent tronquées par les parseurs ATS. Divisez chaque point en une phrase ciblée — visez 80 à 140 caractères.' }),
     tooShort:   wc => ({ title: `CV trop court (${wc} mots)`,                                        detail: `Un CV solide compte généralement 350 à 800 mots. Ajoutez des détails dans votre section expérience : projets, technologies utilisées, résultats mesurables.` }),
     tooLong:    wc => ({ title: `CV peut-être trop long (${wc} mots)`,                               detail: `La plupart des ATS et des recruteurs préfèrent les CV de moins de 2 pages (~800 mots). Condensez en vous concentrant sur l'expérience récente la plus pertinente.` }),
-    kwLow:     pct => ({ title: `Correspondance de mots-clés faible : ${pct} %`,                     detail: `Votre CV correspond à ${pct} % des mots-clés de la fiche de poste. La plupart des ATS classent plus haut les candidats atteignant 40 %+. Consultez la section Mots-clés manquants.` }),
+    kwLow:     pct => ({ title: `Correspondance de mots-clés faible : ${pct} %`,                     detail: `Votre CV correspond à ${pct} % des mots-clés de la fiche de poste. Un score plus élevé signifie généralement que votre CV reprend davantage le vocabulaire de l’offre, sans garantir le passage d’un ATS, un entretien ou une embauche. Consultez la section Mots-clés manquants.` }),
     kwMed:     pct => ({ title: `Correspondance de mots-clés : ${pct} %`,                            detail: `Vous correspondez à ${pct} % des mots-clés du poste. Les candidats ATS performants atteignent généralement 45 à 70 %. Ajoutez les mots-clés manquants naturellement.` }),
   }
 };

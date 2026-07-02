@@ -246,7 +246,7 @@ ${footer()}
 
 // ── Resume card templates ──────────────────────────────────────────────────────
 function inlineList(items) {
-  return `<span class="inline-list">${items.map((item, index) => `${index > 0 ? '<span aria-hidden="true">·</span>' : ''}<span>${item}</span>`).join("")}</span>`;
+  return `<span class="inline-list">${items.map((item, index) => `${index > 0 ? '<span class="inline-separator" aria-hidden="true"> · </span>' : ''}<span class="inline-list-item">${item}</span>`).join("")}</span>`;
 }
 
 function rcGeneric({ name, title, email, city, skills, jobs, edu }) {
@@ -255,7 +255,7 @@ function rcGeneric({ name, title, email, city, skills, jobs, edu }) {
     <div class="rc-name">${name}</div>
     <div class="rc-title">${title}</div>
     <div class="rc-contact">
-      <bdi dir="auto">${email}</bdi><span aria-hidden="true">·</span><bdi dir="auto">${city}</bdi>
+      <bdi dir="auto">${email}</bdi><span class="contact-separator" aria-hidden="true"> · </span><bdi dir="auto">${city}</bdi>
     </div>
   </div>
   <div class="rc-body">
@@ -308,7 +308,7 @@ const PAGES = [
       heading: "Why use ApplyCraft for your resume?",
       intro: "ApplyCraft combines polished templates, live editing, and practical export options in a browser-first resume builder.",
       ctaHeading: "Ready to build your resume?",
-      ctaSub: "Join thousands of job seekers who landed interviews using ApplyCraft templates.",
+      ctaSub: "Create a polished resume without signup, watermark, or download paywall.",
       items: [
         { icon: "🎨", title: "46 Professional Templates", body: "From minimalist to creative, find the perfect template for your industry and seniority level." },
         { icon: "⚡", title: "Live Preview", body: "See exactly how your resume looks as you type. No more guessing — what you see is what you get." },
@@ -372,10 +372,10 @@ const PAGES = [
   {
     slug: "ats-resume-builder",
     canonicalPath: "/ats-resume-builder/",
-    title: "ATS Resume Builder — Beat Applicant Tracking Systems | ApplyCraft",
-    description: "Build an ATS-optimised resume that passes automated screening. Clean formatting, keyword-rich content, and 22 ATS-friendly templates. Free.",
+    title: "ATS Resume Builder — ATS-Conscious Resume Templates | ApplyCraft",
+    description: "Build an ATS-conscious resume with clear formatting, keyword guidance, 46 templates, and free PDF/DOCX export. No signup or watermark.",
     eyebrow: "ATS Optimised",
-    h1: "ATS Resume Builder — Get Past the Bots",
+    h1: "ATS Resume Builder for Cleaner Parsing",
     sub: "ApplyCraft templates are designed with clear headings, readable typography, and ATS-conscious layouts to improve parsing compatibility.",
     keywords: "ATS resume builder, ATS friendly resume, applicant tracking system resume, ATS optimized cv, beat ATS",
     resumeCard: rcGeneric({
@@ -419,13 +419,13 @@ const PAGES = [
     description: "Write a compelling cover letter in minutes with 6 professional templates. Personalise for any role, download as PDF or DOCX. Free, no sign-up.",
     eyebrow: "Cover Letter Builder",
     h1: "Free Cover Letter Builder",
-    sub: "6 professionally designed cover letter templates. Personalise your letter for any role in minutes and download as PDF or DOCX — completely free.",
+    sub: "18 professionally designed cover letter styles. Personalise your letter for any role in minutes and download as PDF or DOCX — completely free.",
     keywords: "cover letter builder, free cover letter, cover letter template, professional cover letter, cover letter maker",
     resumeCard: `<div class="resume-card">
   <div class="rc-header">
     <div class="rc-name">Sarah Chen</div>
     <div class="rc-title">UX Designer</div>
-    <div class="rc-contact"><span>sarah.chen@email.com</span><span>London, UK</span></div>
+    <div class="rc-contact"><span>sarah.chen@email.com</span><span class="contact-separator" aria-hidden="true"> · </span><span>London, UK</span></div>
   </div>
   <div style="padding:24px 32px;background:#fff;color:#333;line-height:1.7;font-size:13px">
     <p style="margin-bottom:10px;color:#888;font-size:11.5px">14 June 2026</p>
@@ -442,7 +442,7 @@ const PAGES = [
       heading: "What makes a great cover letter?",
       intro: "A cover letter is your first impression. ApplyCraft's builder guides you through writing a compelling, personalised letter that complements your resume.",
       ctaHeading: "Write your cover letter now",
-      ctaSub: "6 templates, live preview, PDF & DOCX export — all free.",
+      ctaSub: "18 styles, live preview, PDF & DOCX export — all free.",
       items: [
         { icon: "✍️", title: "6 Professional Templates", body: "From formal to modern, choose a layout that matches the tone of the company you're applying to." },
         { icon: "🔄", title: "Match Your Resume Style", body: "Cover letter templates are designed to complement your resume so both documents look like a cohesive package." },
@@ -510,21 +510,24 @@ const PAGES = [
     description: "Créez un CV professionnel en français avec 46 modèles. Prévisualisation en direct, export PDF et DOCX. Gratuit, sans inscription.",
     eyebrow: "CV en Français",
     h1: "Créez votre CV en Français",
-    sub: "22 modèles professionnels, prévisualisation en direct, et export PDF ou DOCX — entièrement gratuit. Rédigez votre CV en français en quelques minutes.",
+    sub: "46 modèles professionnels, prévisualisation en direct, et export PDF ou DOCX — entièrement gratuit. Rédigez votre CV en français en quelques minutes.",
     keywords: "cv en français, faire son cv en français, modèle cv français, créer cv gratuit, cv professionnel français",
     resumeCard: `<div class="resume-card">
   <div class="rc-header" style="border-color:#6366F1">
     <div class="rc-name">Marie Dupont</div>
     <div class="rc-title">Responsable Marketing Digital</div>
-    <div class="rc-contact"><span>marie.dupont@email.fr</span><span>Paris, France</span></div>
+    <div class="rc-contact"><span>marie.dupont@email.fr</span><span class="contact-separator" aria-hidden="true"> · </span><span>Paris, France</span></div>
   </div>
   <div class="rc-body">
     <div class="rc-side">
       <div class="rc-section-title" style="margin-top:0">Compétences</div>
       <div class="rc-skills">
-        <span class="rc-skill">SEO/SEM</span><span class="rc-skill">Google Analytics</span>
-        <span class="rc-skill">HubSpot</span><span class="rc-skill">Réseaux sociaux</span>
-        <span class="rc-skill">Rédaction web</span><span class="rc-skill">E-mailing</span>
+        <span class="rc-skill">SEO/SEM</span>
+        <span class="rc-skill">Google Analytics</span>
+        <span class="rc-skill">HubSpot</span>
+        <span class="rc-skill">Réseaux sociaux</span>
+        <span class="rc-skill">Rédaction web</span>
+        <span class="rc-skill">E-mailing</span>
       </div>
       <div class="rc-section-title" style="margin-top:16px">Langues</div>
       <div class="rc-item-desc">${inlineList(["Français (natif)", "Anglais (courant)", "Espagnol (intermédiaire)"])}</div>
@@ -587,7 +590,7 @@ const PAGES = [
   <div class="rc-header" style="border-color:#6366F1">
     <div class="rc-name">أحمد محمد الرشيد</div>
     <div class="rc-title">مهندس برمجيات أول</div>
-    <div class="rc-contact" style="justify-content:flex-end"><span>ahmed.alrashid@email.com</span><span>دبي، الإمارات</span></div>
+    <div class="rc-contact" style="justify-content:flex-end"><span>ahmed.alrashid@email.com</span><span class="contact-separator" aria-hidden="true"> · </span><span>دبي، الإمارات</span></div>
   </div>
   <div class="rc-body" style="direction:rtl">
     <div class="rc-main" style="border-right:none;border-left:1px solid #eee">
@@ -614,9 +617,12 @@ const PAGES = [
     <div class="rc-side" style="border-right:none;border-left:1px solid #eee">
       <div class="rc-section-title" style="margin-top:0">المهارات</div>
       <div class="rc-skills" style="justify-content:flex-end">
-        <span class="rc-skill">Python</span><span class="rc-skill">React</span>
-        <span class="rc-skill">Node.js</span><span class="rc-skill">AWS</span>
-        <span class="rc-skill">SQL</span><span class="rc-skill">Docker</span>
+        <span class="rc-skill">Python</span>
+        <span class="rc-skill">React</span>
+        <span class="rc-skill">Node.js</span>
+        <span class="rc-skill">AWS</span>
+        <span class="rc-skill">SQL</span>
+        <span class="rc-skill">Docker</span>
       </div>
       <div class="rc-section-title" style="margin-top:16px">اللغات</div>
       <div class="rc-item-desc">العربية (لغة أم)<br/>الإنجليزية (متقدم)</div>
@@ -1086,15 +1092,18 @@ const EXAMPLES = [
   <div class="rc-header" style="border-color:#6366F1">
     <div class="rc-name">Thomas Lecomte</div>
     <div class="rc-title">Ingénieur Logiciel Senior</div>
-    <div class="rc-contact"><span>thomas.lecomte@email.fr</span><span>+33 6 12 34 56 78</span><span>Lyon, France</span></div>
+    <div class="rc-contact"><span>thomas.lecomte@email.fr</span><span class="contact-separator" aria-hidden="true"> · </span><span>+33 6 12 34 56 78</span><span class="contact-separator" aria-hidden="true"> · </span><span>Lyon, France</span></div>
   </div>
   <div class="rc-body">
     <div class="rc-side">
       <div class="rc-section-title" style="margin-top:0">Compétences Techniques</div>
       <div class="rc-skills">
-        <span class="rc-skill">Python</span><span class="rc-skill">React</span>
-        <span class="rc-skill">PostgreSQL</span><span class="rc-skill">Docker</span>
-        <span class="rc-skill">AWS</span><span class="rc-skill">CI/CD</span>
+        <span class="rc-skill">Python</span>
+        <span class="rc-skill">React</span>
+        <span class="rc-skill">PostgreSQL</span>
+        <span class="rc-skill">Docker</span>
+        <span class="rc-skill">AWS</span>
+        <span class="rc-skill">CI/CD</span>
       </div>
       <div class="rc-section-title" style="margin-top:16px">Langues</div>
       <div class="rc-item-desc">${inlineList(["Français (langue maternelle)", "Anglais (C1 — TOEIC 960)", "Espagnol (B1)"])}</div>

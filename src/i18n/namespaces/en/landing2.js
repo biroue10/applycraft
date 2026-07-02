@@ -49,6 +49,7 @@ const landing2 = {
     "eyebrow": "How we compare",
     "title": "No paywall at the download button.",
     "desc": "Most builders let you design a resume, then ask for your card the moment you click download. ApplyCraft never does.",
+    "feature": "Feature",
     "col2": "Typical builders",
     "included": "Included",
     "rows": [
@@ -117,7 +118,7 @@ const landing2 = {
   "priv": {
     "eyebrow": "Privacy & trust",
     "title": "Your resume data stays yours. Always.",
-    "desc": "Resume data is personal. ApplyCraft is designed around browser-first editing and export by default, with optional online features only when you deliberately use them.",
+    "desc": "Core editing and export happen in your browser by default. Optional AI helpers or sync features only process selected data when you choose to use them.",
     "cards": [
       {
         "t": "No account required",
