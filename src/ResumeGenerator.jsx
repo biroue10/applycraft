@@ -10,6 +10,7 @@ import * as resumes from "./resumes.js";
 import { buildPrivateShareUrl } from "./share.js";
 import { linkifyText, normalizeLinkHref } from "./utils/linkify.js";
 import { ResumePaper, CoverLetterPaper, structureSectionItems } from "./documents/DocumentPapers.jsx";
+import { analyzeResumeQuality, isPlaceholderOnly, normalizeDateRange } from "./resumeQuality.js";
 import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
@@ -888,6 +889,54 @@ const SHARE_LINK_UI = {
   },
 };
 
+const QUALITY_REVIEW_UI = {
+  en: {
+    title: "Review before download",
+    intro: "Before downloading, ApplyCraft found a few things you may want to review.",
+    review: "Review résumé",
+    download: "Download anyway",
+    placeholder: (d) => `Placeholder text found: ${d || "placeholder"}`,
+    headlineMismatch: () => "Your headline may not match your experience.",
+    hiddenEmail: () => "Your email may not be visible in the main contact section.",
+    emptyBullet: (d) => `Empty bullet found: ${d || "incomplete bullet"}`,
+    dateDash: (d) => `Date range should use a dash: ${d || "2020 – 2025"}`,
+    capitalization: (d) => `Possible capitalization: ${d || "review spelling"}`,
+    longSections: () => "Several sections are long. Consider keeping 3–5 bullets per role.",
+  },
+  fr: {
+    title: "Relire avant le téléchargement",
+    intro: "Avant le téléchargement, ApplyCraft a trouvé quelques points à vérifier.",
+    review: "Relire le CV",
+    download: "Télécharger quand même",
+    placeholder: (d) => `Texte provisoire trouvé : ${d || "placeholder"}`,
+    headlineMismatch: () => "L'intitulé peut ne pas correspondre à votre expérience.",
+    hiddenEmail: () => "Votre e-mail peut ne pas être visible dans la section contact principale.",
+    emptyBullet: (d) => `Puce incomplète trouvée : ${d || "puce incomplète"}`,
+    dateDash: (d) => `La période doit utiliser un tiret : ${d || "2020 – 2025"}`,
+    capitalization: (d) => `Capitalisation possible : ${d || "à vérifier"}`,
+    longSections: () => "Plusieurs sections sont longues. Essayez de garder 3 à 5 puces par poste.",
+  },
+  ar: {
+    title: "المراجعة قبل التنزيل",
+    intro: "قبل التنزيل، وجد ApplyCraft بعض النقاط التي قد ترغب في مراجعتها.",
+    review: "مراجعة السيرة الذاتية",
+    download: "التنزيل على أي حال",
+    placeholder: (d) => `تم العثور على نص مؤقت: ${d || "placeholder"}`,
+    headlineMismatch: () => "قد لا يتطابق العنوان المهني مع محتوى سيرتك الذاتية.",
+    hiddenEmail: () => "قد لا يكون بريدك الإلكتروني ظاهرًا في قسم معلومات الاتصال الرئيسي.",
+    emptyBullet: (d) => `تم العثور على نقطة غير مكتملة: ${d || "نقطة غير مكتملة"}`,
+    dateDash: (d) => `يجب أن يستخدم نطاق التاريخ شرطة: ${d || "2020 – 2025"}`,
+    capitalization: (d) => `قد تحتاج بعض الأسماء إلى تصحيح الكتابة: ${d || "مراجعة الكتابة"}`,
+    longSections: () => "بعض الأقسام طويلة. حاول إبقاء كل دور بين 3 و5 نقاط.",
+  },
+};
+
+function qualityReviewText(language, warning) {
+  const ui = QUALITY_REVIEW_UI[language] || QUALITY_REVIEW_UI.en;
+  const render = ui[warning.type];
+  return render ? render(warning.detail) : warning.short || warning.message;
+}
+
 function hasDangerousKey(value) {
   if (!value || typeof value !== "object") return false;
   if (Array.isArray(value)) return value.some(hasDangerousKey);
@@ -1038,10 +1087,10 @@ function entryHeader(key, e) {
   const parts = [e[s.primary], s.secondary ? e[s.secondary] : ""].map((x) => (x || "").trim()).filter(Boolean);
   let head = parts.join(" — ");
   if (s.type === "role") {
-    const d = [e.startDate, e.endDate].map((x) => (x || "").trim()).filter(Boolean).join(" – ");
+    const d = normalizeDateRange([e.startDate, e.endDate].map((x) => (x || "").trim()).filter(Boolean).join(" – "));
     if (d) head += (head ? " | " : "") + d;
   } else if (key === "education" && (e.year || "").trim()) {
-    head += (head ? " | " : "") + e.year.trim();
+    head += (head ? " | " : "") + normalizeDateRange(e.year.trim());
   }
   return head;
 }
@@ -1052,15 +1101,18 @@ function entryToLines(key, e) {
   if (s.type === "tag") return [(e.name || "").trim()].filter(Boolean);
   if (s.type === "line") return [entryHeader(key, e)].filter(Boolean);
   if (s.type === "edu") {
-    // Conditional layout: "Title | Start – End" / Subtitle / Location / Description.
+    // Render education professionally: degree/program as the title, school/location/date as metadata.
     // Separators are only added around present values (no stray "—"/"|").
     const out = [];
-    const dates = [e.startDate, e.endDate].map((x) => (x || "").trim()).filter(Boolean).join(" – ");
-    const head = [(e.title || "").trim(), dates].filter(Boolean).join("  |  ");
+    const dates = normalizeDateRange([e.startDate, e.endDate].map((x) => (x || "").trim()).filter(Boolean).join(" – "));
+    const degree = (e.subtitle || "").trim();
+    const school = (e.title || "").trim();
+    const head = degree || school;
     if (head) out.push(head);
-    const sub = (e.subtitle || "").trim(); if (sub) out.push(sub);
+    if (school && school !== head) out.push(school);
     const loc = (e.location || "").trim(); if (loc) out.push(loc);
-    (e.description || "").split("\n").forEach((l) => { if (l.trim()) out.push(l); });
+    if (dates) out.push(dates);
+    (e.description || "").split("\n").forEach((l) => { if (l.trim() && !isPlaceholderOnly(l)) out.push(l); });
     return out;
   }
   const out = [];
@@ -2789,6 +2841,7 @@ export default function ResumeGenerator() {
   const [mobileResumeMode, setMobileResumeMode] = useState("edit");
   const [exporting, setExporting] = useState("");
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [reviewModal, setReviewModal] = useState({ open: false, format: "", warnings: [] });
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [guidanceDismissed, setGuidanceDismissed] = useState(false);
   const [exportSuccess, setExportSuccess] = useState("");
@@ -3112,6 +3165,7 @@ export default function ResumeGenerator() {
   const tk = TRACKER_UI[lang] || TRACKER_UI.en; // job tracker strings
   const ms = MASTER_UI[lang] || MASTER_UI.en; // master profile strings
   const st = STATUS_UI[lang] || STATUS_UI.en; // toast / status messages
+  const reviewUi = QUALITY_REVIEW_UI[lang] || QUALITY_REVIEW_UI.en;
   const l2 = LANDING2_UI[lang] || LANDING2_UI.en; // landing marketing body
   const why = l2.why || LANDING2_UI.en.why;
   const rtl = isRtlLang(interfaceLanguage);
@@ -3231,6 +3285,13 @@ export default function ResumeGenerator() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [form, fullPhone, photoUrl, docLang, lang]
   );
+  const shouldReviewBeforeExport = useCallback((format, skipReview = false) => {
+    if (skipReview) return false;
+    const warnings = analyzeResumeQuality(result || liveData, { ...form, phone: fullPhone }, { lang: docLang });
+    if (!warnings.length) return false;
+    setReviewModal({ open: true, format, warnings });
+    return true;
+  }, [result, liveData, form, fullPhone, docLang]);
   const isMobile = useIsMobile();
   const rPage  = isMobile ? rPageMobile  : rPageDesktop;
   const rShell = isMobile ? rShellMobile : rShellDesktop;
@@ -3630,9 +3691,11 @@ Awards: ${form.awards}`;
   }
 
   async function downloadPDF() {
+    const options = arguments[0] || {};
     if (exporting) return;
     const src = result || liveData;
     if (!src) return;
+    if (shouldReviewBeforeExport("pdf", options.skipReview)) return;
     if (!form.name.trim() || !form.experience.trim() || !form.skills.trim()) {
       setStatusMsg(st.incompleteDownload);
       setTimeout(() => setStatusMsg(""), 3500);
@@ -3705,8 +3768,7 @@ Awards: ${form.awards}`;
 
     // Contact line — split long contact into two rows if needed
     const pdfEmail = safe(form.email || "");
-    // Email lives in the page footer (centered), so keep it out of the top contact line.
-    const contactItems = (src.contact || []).filter(Boolean).map(safe).filter(Boolean).filter((c) => c !== pdfEmail);
+    const contactItems = (src.contact || []).filter(Boolean).map(safe).filter(Boolean);
     if (contactItems.length) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9.5);
@@ -3757,20 +3819,55 @@ Awards: ${form.awards}`;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.setTextColor(55, 55, 55);
-      for (const item of section.items) {
-        const lines = doc.splitTextToSize(`- ${safe(item)}`, colW - 3);
+      const tagSection = /skill|compét|habilidad|مهارات|fähig|^language|^langue|^idioma|^sprach/i.test(`${section.key || ""} ${section.heading || ""}`);
+      if (tagSection) {
+        const lines = doc.splitTextToSize((section.items || []).map((item) => safe(normalizeDateRange(item, docLang))).filter(Boolean).join("  •  "), colW);
         checkY(lines.length * 5 + 2);
-        const link = eduLinks.find((l) => item.startsWith(l.title));
-        const itemHref = normalizeLinkHref(String(item).split(/\s+/).find((token) => normalizeLinkHref(token)) || "");
-        if (link || itemHref) {
-          doc.setTextColor(ar, ag, ab);
-          doc.textWithLink(lines[0], margin, y, { url: link?.url || itemHref });
-          if (lines.length > 1) { doc.setTextColor(55, 55, 55); doc.text(lines.slice(1), margin, y + 5); }
-          doc.setTextColor(55, 55, 55);
-        } else {
-          doc.text(lines, margin, y);
-        }
+        doc.text(lines, margin, y);
         y += lines.length * 5 + 2;
+      } else {
+        for (const entry of structureSectionItems(section, docLang)) {
+          if (entry.title) {
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10.5);
+            doc.setTextColor(30, 30, 30);
+            const lines = doc.splitTextToSize(safe(entry.title), colW);
+            checkY(lines.length * 5 + 2);
+            const link = eduLinks.find((l) => entry.title.startsWith(l.title) || l.title.startsWith(entry.title));
+            if (link) doc.textWithLink(lines[0], margin, y, { url: link.url });
+            else doc.text(lines, margin, y);
+            y += lines.length * 5 + 1;
+          }
+          if (entry.meta?.length) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9.2);
+            doc.setTextColor(95, 95, 95);
+            const meta = entry.meta.map((item) => safe(normalizeDateRange(item, docLang))).filter(Boolean).join("  ·  ");
+            const lines = doc.splitTextToSize(meta, colW);
+            checkY(lines.length * 4.5 + 2);
+            doc.text(lines, margin, y);
+            y += lines.length * 4.5 + 1.5;
+          }
+          for (const bullet of entry.bullets || []) {
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(55, 55, 55);
+            const lines = doc.splitTextToSize(safe(normalizeDateRange(bullet, docLang)), colW - 7);
+            checkY(lines.length * 5 + 2);
+            doc.text("•", margin, y);
+            const itemHref = normalizeLinkHref(String(bullet).split(/\s+/).find((token) => normalizeLinkHref(token)) || "");
+            if (itemHref) {
+              doc.setTextColor(ar, ag, ab);
+              doc.textWithLink(lines[0], margin + 5, y, { url: itemHref });
+              if (lines.length > 1) { doc.setTextColor(55, 55, 55); doc.text(lines.slice(1), margin + 5, y + 5); }
+              doc.setTextColor(55, 55, 55);
+            } else {
+              doc.text(lines, margin + 5, y);
+            }
+            y += lines.length * 5 + 2;
+          }
+          y += 1;
+        }
       }
       y += 4;
     }
@@ -3809,9 +3906,11 @@ Awards: ${form.awards}`;
   }
 
   async function downloadDOCX() {
+    const options = arguments[0] || {};
     if (exporting) return;
     const src = result || liveData;
     if (!src) return;
+    if (shouldReviewBeforeExport("docx", options.skipReview)) return;
     if (!form.name.trim() || !form.experience.trim() || !form.skills.trim()) {
       setStatusMsg(st.incompleteDownload);
       setTimeout(() => setStatusMsg(""), 3500);
@@ -3897,12 +3996,12 @@ Awards: ${form.awards}`;
       }));
       if (isDocxTagSection(section)) {
         children.push(makeParagraph({
-          children: makeLinkedRuns((section.items || []).filter(Boolean).join("   •   "), { size: 20 }),
+          children: makeLinkedRuns((section.items || []).map((item) => normalizeDateRange(item, docLang)).filter(Boolean).join("   •   "), { size: 20 }),
           spacing: { after: 100 },
         }));
         continue;
       }
-      for (const entry of structureSectionItems(section)) {
+      for (const entry of structureSectionItems(section, docLang)) {
         if (entry.title) {
           children.push(makeParagraph({
             children: makeLinkedRuns(entry.title, { bold: true, size: 21, color: "111111" }),
@@ -5559,6 +5658,51 @@ Awards: ${form.awards}`;
           </div>
         </div>
       </div>
+      {reviewModal.open && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="resume-export-review-title"
+          onClick={() => setReviewModal({ open: false, format: "", warnings: [] })}
+          style={{ position: "fixed", inset: 0, zIndex: 9500, background: "rgba(0,0,0,0.62)",
+            display: "flex", alignItems: "center", justifyContent: "center", padding: 18 }}
+        >
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ width: "min(520px, 100%)", background: C.surface, color: C.text1, borderRadius: 14,
+              boxShadow: "0 26px 80px rgba(0,0,0,0.52)", padding: 20, direction: rtl ? "rtl" : "ltr" }}>
+            <h2 id="resume-export-review-title" style={{ margin: 0, fontSize: 18, lineHeight: 1.25 }}>
+              {reviewUi.title}
+            </h2>
+            <p style={{ margin: "10px 0 14px", color: C.text2, fontSize: 13.5, lineHeight: 1.5 }}>
+              {reviewUi.intro}
+            </p>
+            <ul style={{ margin: "0 0 18px", paddingInlineStart: 20, color: C.text2, fontSize: 13, lineHeight: 1.55 }}>
+              {reviewModal.warnings.map((warning, index) => (
+                <li key={`${warning.type}-${index}`}>{qualityReviewText(lang, warning)}</li>
+              ))}
+            </ul>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", flexWrap: "wrap" }}>
+              <button type="button" onClick={() => {
+                setReviewModal({ open: false, format: "", warnings: [] });
+                setMobileResumeMode("edit");
+                setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 0);
+              }} style={{ border: "none", background: C.elevated, color: C.text1, borderRadius: 9,
+                padding: "10px 14px", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                {reviewUi.review}
+              </button>
+              <button type="button" onClick={() => {
+                const format = reviewModal.format;
+                setReviewModal({ open: false, format: "", warnings: [] });
+                if (format === "docx") downloadDOCX({ skipReview: true });
+                else downloadPDF({ skipReview: true });
+              }} style={{ border: "none", background: C.grad, color: "#fff", borderRadius: 9,
+                padding: "10px 14px", fontSize: 13, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
+                {reviewUi.download}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {isMobile && (
         <div style={{ position: "sticky", bottom: 0, zIndex: 20, margin: "12px -4px -8px",
           padding: "10px 12px", background: `${C.bg}f2`, backdropFilter: "blur(10px)",

@@ -17,6 +17,7 @@
     "test:product": "node scripts/product-tests.mjs",
     "test:ats": "node scripts/ats-tests.mjs",
     "test:pdf": "node scripts/pdf-tests.mjs",
+    "test:resume-quality": "node scripts/resume-quality-tests.mjs",
     "test:gallery": "node scripts/gallery-tests.mjs",
     "test:seo:hreflang": "node scripts/seo-hreflang-tests.mjs",
     "test:e2e:static": "node scripts/e2e-static-tests.mjs",

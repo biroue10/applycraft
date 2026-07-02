@@ -1,5 +1,6 @@
 import React from "react";
 import LinkifiedText, { LinkifyLinksProvider } from "../components/LinkifiedText.jsx";
+import { isPlaceholderOnly, normalizeDateRange } from "../resumeQuality.js";
 
 function ContactLine({ items, separator = " · ", style }) {
   const values = (Array.isArray(items) ? items : []).filter(Boolean);
@@ -42,15 +43,33 @@ function stripLeadingBullet(value) {
   return String(value || "").replace(LEADING_BULLET_RE, "").trim();
 }
 
-function splitHeaderLine(value) {
+function splitHeaderLine(value, lang = "en", kind = "generic") {
   const raw = stripLeadingBullet(value);
   const [leftRaw, ...dateParts] = raw.split("|");
   const left = (leftRaw || "").trim();
-  const date = dateParts.join("|").trim();
-  const parts = left.split(/\s+[—–-]\s+/).map((part) => part.trim()).filter(Boolean);
-  const title = parts.shift() || left;
-  const meta = [...parts, date].map((part) => part.trim()).filter(Boolean);
+  const date = normalizeDateRange(dateParts.join("|").trim(), lang);
+  let parts = left.split(/\s+[—–-]\s+/).map((part) => part.trim()).filter(Boolean);
+  if (parts.length === 1 && kind === "experience") {
+    const inferred = inferCompactExperienceHeader(left);
+    if (inferred) parts = inferred;
+  }
+  const title = normalizeDateRange(parts.shift() || left, lang);
+  const meta = [...parts, date].map((part) => normalizeDateRange(part, lang)).filter(Boolean);
+  if (kind === "education" && meta.length > 0 && isEducationTitle(meta[0])) {
+    return { title: meta.shift(), meta: [title, ...meta].filter(Boolean) };
+  }
   return { title: title.trim(), meta };
+}
+
+function inferCompactExperienceHeader(value) {
+  const text = String(value || "").trim();
+  const match = text.match(/^([A-Z0-9][A-Z0-9\s/&+.#-]{5,}[A-Z0-9])\s+([\p{Lu}][\p{L}0-9&.'-]*(?:\s+[\p{Lu}][\p{L}0-9&.'-]*){0,3})$/u);
+  if (!match || !/[a-z]/.test(match[2])) return null;
+  return [match[1].trim(), match[2].trim()];
+}
+
+function isEducationTitle(value) {
+  return /\b(?:b\.?s\.?|m\.?s\.?|bachelor|master|mba|phd|doctorat|licence|maîtrise|dipl[oô]me|degree|computer science|engineering|arts?|science|sciences|informatique|management)\b/i.test(String(value || ""));
 }
 
 function sectionKind(section) {
@@ -67,7 +86,7 @@ function isHeaderLikeLine(line) {
   return /\s+[—–-]\s+|\|/.test(value);
 }
 
-export function structureSectionItems(section) {
+export function structureSectionItems(section, lang = "en") {
   const kind = sectionKind(section);
   const entries = [];
   let current = null;
@@ -76,17 +95,18 @@ export function structureSectionItems(section) {
     const raw = String(item || "").trim();
     if (!raw) return;
     const bullet = LEADING_BULLET_RE.test(raw);
-    const headerLike = isHeaderLikeLine(raw);
     const clean = stripLeadingBullet(raw);
+    const headerLike = isHeaderLikeLine(raw) || isHeaderLikeLine(clean);
+    if (isPlaceholderOnly(clean)) return;
 
-    if (!current && bullet) {
+    if (!current && bullet && !headerLike) {
       current = { title: "", meta: [], bullets: [clean] };
       entries.push(current);
       return;
     }
 
     if (!current || headerLike) {
-      current = { ...splitHeaderLine(raw), bullets: [] };
+      current = { ...splitHeaderLine(clean, lang, kind), bullets: [] };
       entries.push(current);
       return;
     }
@@ -94,11 +114,16 @@ export function structureSectionItems(section) {
     if (!clean) return;
 
     if (kind === "education" && !bullet && current.bullets.length === 0 && current.meta.length < 3) {
-      current.meta.push(clean);
+      if (!isEducationTitle(current.title) && isEducationTitle(clean)) {
+        current.meta = [current.title, ...current.meta].filter(Boolean);
+        current.title = normalizeDateRange(clean, lang);
+        return;
+      }
+      current.meta.push(normalizeDateRange(clean, lang));
       return;
     }
 
-    current.bullets.push(clean);
+    current.bullets.push(normalizeDateRange(clean, lang));
   });
 
   return entries.filter((entry) => entry.title || entry.meta.length || entry.bullets.length);
@@ -124,12 +149,12 @@ function TagList({ items, style, tagStyle }) {
   );
 }
 
-function ResumeSectionBody({ section, sidebar = false, accent = "#2563eb", tagStyle, tagListStyle, itemStyle, titleStyle, metaStyle, bulletStyle, bulletListStyle }) {
+function ResumeSectionBody({ section, lang = "en", sidebar = false, accent = "#2563eb", tagStyle, tagListStyle, itemStyle, titleStyle, metaStyle, bulletStyle, bulletListStyle }) {
   if (sidebar) {
     return <TagList items={section.items} style={tagListStyle} tagStyle={tagStyle} />;
   }
 
-  const entries = structureSectionItems(section);
+  const entries = structureSectionItems(section, lang);
   if (!entries.length) return null;
 
   return (
@@ -238,7 +263,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
             <div key={i} style={{ marginBottom: 14 }}>
               <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px",
                 color: "#111", marginBottom: 5 }}>{s.heading}</div>
-              <ResumeSectionBody section={s} accent={tpl.accent}
+                <ResumeSectionBody section={s} lang={lang} accent={tpl.accent}
                 tagStyle={{ fontSize: 11, padding: "3px 9px", borderRadius: 3, background: "#f3f4f6", color: "#374151" }}
                 titleStyle={{ fontSize: 13, color: "#222" }}
                 metaStyle={{ fontSize: 11, color: "#666" }}
@@ -253,7 +278,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
   // Whether a section belongs in a sidebar (skills, languages)
   const isSidebar = (s) => /skill|compét|habilidad|مهارات|لغة|لغات|اللغات|fähig|^language|^langue|^idioma|^sprach/i.test(`${s.key || ""} ${s.heading || ""}`);
   const renderSectionBody = (s, options = {}) => (
-    <ResumeSectionBody section={s} sidebar={isSidebar(s)} accent={tpl.accent} {...options} />
+    <ResumeSectionBody section={s} lang={lang} sidebar={isSidebar(s)} accent={tpl.accent} {...options} />
   );
 
   // ── CLASSIC (Mercury Flow — centered serif, accent rule) ─────────
