@@ -27,6 +27,7 @@
     "test:i18n": "node scripts/i18n-tests.mjs",
     "test:share": "node scripts/share-tests.mjs",
     "test:linkify": "node scripts/linkify-tests.mjs",
+    "test:contact-links": "node scripts/contact-link-tests.mjs",
     "test:free-exports": "node scripts/free-export-tests.mjs",
     "test:i18n-strings": "node scripts/check-hardcoded-strings.mjs",
     "test:ux": "node scripts/ux-tests.mjs",

@@ -22,6 +22,14 @@ assert.deepEqual(
   hrefs("Portfolio: www.applycraft.io and hello@applycraft.io"),
   ["https://www.applycraft.io/", "mailto:hello@applycraft.io"],
 );
+{
+  const parts = linkifyText("Email me at hello@example.com or visit applycraft.io");
+  assert.deepEqual(parts.map((part) => part.type), ["text", "link", "text", "link"]);
+  assert.equal(parts[0].text, "Email me at ");
+  assert.equal(parts[1].href, "mailto:hello@example.com");
+  assert.equal(parts[2].text, " or visit ");
+  assert.equal(parts[3].href, "https://applycraft.io/");
+}
 assert.deepEqual(
   hrefs("رابط LinkedIn: https://www.linkedin.com/in/isaac-biroue ورقم +212 600 000 000"),
   ["https://www.linkedin.com/in/isaac-biroue", "tel:+212600000000"],

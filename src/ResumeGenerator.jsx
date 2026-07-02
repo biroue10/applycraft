@@ -9,6 +9,7 @@ import { useFocusTrap } from "./a11y/useFocusTrap.js";
 import * as resumes from "./resumes.js";
 import { buildPrivateShareUrl } from "./share.js";
 import { linkifyText, normalizeLinkHref } from "./utils/linkify.js";
+import { getContactHref, normalizeContactItems } from "./utils/contactLinks.js";
 import { ResumePaper, CoverLetterPaper, structureSectionItems } from "./documents/DocumentPapers.jsx";
 import { analyzeResumeQuality, isPlaceholderOnly, normalizeDateRange } from "./resumeQuality.js";
 import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
@@ -982,6 +983,56 @@ function sanitizeFilename(value, fallback = "resume") {
     .slice(0, 80)
     .toLowerCase();
   return cleaned || fallback;
+}
+
+function drawPdfContactItems(doc, items, options = {}) {
+  const {
+    x,
+    y,
+    maxWidth,
+    separator = "  |  ",
+    lineHeight = 4.5,
+    color = [90, 90, 90],
+    safe = (value) => String(value || ""),
+  } = options;
+  const contactItems = normalizeContactItems(items)
+    .map((item) => ({ ...item, value: safe(item.value) }))
+    .filter((item) => item.value);
+  if (!contactItems.length) return 0;
+
+  const rows = [[]];
+  let rowWidth = 0;
+  contactItems.forEach((item, index) => {
+    const prefix = index > 0 ? separator : "";
+    const width = doc.getTextWidth(prefix + item.value);
+    if (rowWidth && rowWidth + width > maxWidth) {
+      rows.push([{ item, prefix: "" }]);
+      rowWidth = doc.getTextWidth(item.value);
+    } else {
+      rows[rows.length - 1].push({ item, prefix });
+      rowWidth += width;
+    }
+  });
+
+  rows.forEach((row, rowIndex) => {
+    const rowText = row.map((part) => `${part.prefix}${part.item.value}`).join("");
+    let cursor = x - doc.getTextWidth(rowText) / 2;
+    const rowY = y + rowIndex * lineHeight;
+    row.forEach(({ item, prefix }) => {
+      if (prefix) {
+        doc.setTextColor(...color);
+        doc.text(prefix, cursor, rowY);
+        cursor += doc.getTextWidth(prefix);
+      }
+      const href = getContactHref(item);
+      doc.setTextColor(...color);
+      if (href) doc.textWithLink(item.value, cursor, rowY, { url: href });
+      else doc.text(item.value, cursor, rowY);
+      cursor += doc.getTextWidth(item.value);
+    });
+  });
+
+  return rows.length * lineHeight;
 }
 
 function validateProfilePhoto(file) {
@@ -3766,19 +3817,19 @@ Awards: ${form.awards}`;
       y += 7;
     }
 
-    // Contact line — split long contact into two rows if needed
     const pdfEmail = safe(form.email || "");
-    const contactItems = (src.contact || []).filter(Boolean).map(safe).filter(Boolean);
-    if (contactItems.length) {
+    if ((src.contact || []).filter(Boolean).length) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9.5);
-      doc.setTextColor(90, 90, 90);
-      const contactLine = contactItems.join("  |  ");
-      const contactWrapped = doc.splitTextToSize(contactLine, colW);
-      const contactHref = contactItems.map(normalizeLinkHref).find(Boolean);
-      if (contactHref && contactWrapped.length === 1) doc.textWithLink(contactWrapped[0], pageW / 2, y, { align: "center", url: contactHref });
-      else doc.text(contactWrapped, pageW / 2, y, { align: "center" }); // centered contact (incl. email)
-      y += contactWrapped.length * 4.5 + 2;
+      y += drawPdfContactItems(doc, src.contact, {
+        x: pageW / 2,
+        y,
+        maxWidth: colW,
+        separator: "  |  ",
+        lineHeight: 4.5,
+        color: [90, 90, 90],
+        safe,
+      }) + 2;
     }
 
     // Accent rule
@@ -5788,13 +5839,17 @@ Awards: ${form.awards}`;
       doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.setTextColor(17,17,17);
       doc.text(safe(d.name), margin, y); y += 7;
       if (d.jobTitle) { doc.setFont("helvetica","italic"); doc.setFontSize(11); doc.setTextColor(ar,ag,ab); doc.text(safe(d.jobTitle), margin, y); y += 5; }
-      const contact = [d.email, d.phone, d.location].filter(Boolean).join("   ·   ");
-      if (contact) {
+      if ([d.email, d.phone, d.location].filter(Boolean).length) {
         doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(120,120,120);
-        const contactHref = [d.email, d.phone, d.location].filter(Boolean).map(normalizeLinkHref).find(Boolean);
-        if (contactHref) doc.textWithLink(safe(contact), pageW / 2, y, { align: "center", url: contactHref });
-        else doc.text(safe(contact), pageW / 2, y, { align: "center" });
-        y += 5;
+        y += drawPdfContactItems(doc, [d.email, d.phone, d.location], {
+          x: pageW / 2,
+          y,
+          maxWidth: pageW - margin * 2,
+          separator: "   ·   ",
+          lineHeight: 4.5,
+          color: [120, 120, 120],
+          safe,
+        }) + 0.5;
       }
       doc.setDrawColor(ar,ag,ab); doc.setLineWidth(0.4); doc.line(margin, y, pageW-margin, y); y += 7;
       if (d.date) { doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(100,100,100); doc.text(safe(d.date), margin, y); y += 6; }

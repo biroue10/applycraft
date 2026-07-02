@@ -1,18 +1,41 @@
 import React from "react";
 import LinkifiedText, { LinkifyLinksProvider } from "../components/LinkifiedText.jsx";
 import { isPlaceholderOnly, normalizeDateRange } from "../resumeQuality.js";
+import { getContactHref, normalizeContactItems } from "../utils/contactLinks.js";
+
+function ContactLink({ item, style }) {
+  const href = getContactHref(item);
+  const content = (
+    <bdi dir="auto" className="contact-item" style={{ unicodeBidi: "isolate", overflowWrap: "anywhere", wordBreak: "normal" }}>
+      {item.value}
+    </bdi>
+  );
+  if (!href) {
+    return <span className="contact-link contact-link--plain" style={{ color: "inherit", textDecoration: "none", ...style }}>{content}</span>;
+  }
+  const isExternal = /^https?:\/\//i.test(href);
+  return (
+    <a
+      className="contact-link"
+      href={href}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noopener noreferrer" : undefined}
+      style={{ color: "inherit", textDecoration: "none", ...style }}
+    >
+      {content}
+    </a>
+  );
+}
 
 function ContactLine({ items, separator = " · ", style }) {
-  const values = (Array.isArray(items) ? items : []).filter(Boolean);
+  const values = normalizeContactItems(items);
   if (!values.length) return null;
   return (
     <span className="resume-contact-row" style={{ display: "inline-flex", flexWrap: "wrap", alignItems: "baseline", gap: "0.15rem 0.35rem", lineHeight: 1.35, ...style }}>
       {values.map((item, index) => (
-        <React.Fragment key={index}>
-          {index > 0 && <span aria-hidden="true">{separator}</span>}
-          <bdi dir="auto" style={{ unicodeBidi: "isolate", overflowWrap: "anywhere", wordBreak: "normal" }}>
-            <LinkifiedText text={item} />
-          </bdi>
+        <React.Fragment key={`${item.type}-${item.value}-${index}`}>
+          {index > 0 && <span className="contact-separator" aria-hidden="true" style={{ color: "currentColor", opacity: 0.55 }}>{separator}</span>}
+          <ContactLink item={item} />
         </React.Fragment>
       ))}
     </span>
@@ -20,14 +43,12 @@ function ContactLine({ items, separator = " · ", style }) {
 }
 
 function ContactStack({ items, style, itemStyle }) {
-  const values = (Array.isArray(items) ? items : []).filter(Boolean);
+  const values = normalizeContactItems(items);
   if (!values.length) return null;
   return (
     <div className="resume-contact-block" style={{ display: "flex", flexDirection: "column", gap: "0.18rem", lineHeight: 1.38, ...style }}>
       {values.map((item, index) => (
-        <bdi key={index} dir="auto" className="contact-item" style={{ unicodeBidi: "isolate", overflowWrap: "anywhere", wordBreak: "normal", ...itemStyle }}>
-          <LinkifiedText text={item} />
-        </bdi>
+        <ContactLink key={`${item.type}-${item.value}-${index}`} item={item} style={itemStyle} />
       ))}
     </div>
   );
@@ -1347,7 +1368,7 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
           <div style={{ marginBottom: 20 }}>
             {d.name && <div style={{ fontWeight: 600 }}><LinkifiedText text={d.name} /></div>}
             {d.jobTitle && <div><LinkifiedText text={d.jobTitle} /></div>}
-            {[d.email, d.phone, d.location].filter(Boolean).map((c, i) => <div key={i}><LinkifiedText text={c} /></div>)}
+            <ContactStack items={[d.email, d.phone, d.location]} />
           </div>
           {d.date && <div style={{ marginBottom: 20 }}><LinkifiedText text={d.date} /></div>}
           {(d.recipientName || d.company) && (
@@ -1479,10 +1500,8 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
         <div style={{ background: tpl.accent, padding: "24px 28px 20px" }}>
           <div style={{ fontSize: 24, fontWeight: 800, color: "#fff" }}><LinkifiedText text={d.name} /></div>
           {d.jobTitle && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 4 }}><LinkifiedText text={d.jobTitle} /></div>}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "3px 14px", marginTop: 9 }}>
-            {[d.email, d.phone, d.location].filter(Boolean).map((c, i) => (
-              <span key={i} style={{ fontSize: 10.5, color: "rgba(255,255,255,0.68)" }}><LinkifiedText text={c} /></span>
-            ))}
+          <div style={{ marginTop: 9 }}>
+            <ContactLine items={[d.email, d.phone, d.location]} separator="   ·   " style={{ fontSize: 10.5, color: "rgba(255,255,255,0.68)" }} />
           </div>
         </div>
         <div style={{ padding: "24px 28px" }}>

@@ -96,7 +96,7 @@ assert.ok(sharedSource.includes("ResumePaper"), "shared viewer should import/use
 assert.ok(sharedSource.includes("CoverLetterPaper"), "shared viewer should import/use CoverLetterPaper");
 assert.ok(documentPapersSource.includes("LinkifiedText"), "shared document renderer should linkify resume and cover-letter text");
 assert.ok(/لغة\|لغات\|اللغات/.test(documentPapersSource), "Arabic language sections should render as compact tag/sidebar sections");
-assert.ok(/<LinkifiedText text=\{item\}/.test(documentPapersSource), "contact items should render with linkified text");
+assert.ok(documentPapersSource.includes("function ContactLink"), "contact items should render through dedicated contact links");
 assert.ok(/<LinkifiedText text=\{bullet\}/.test(documentPapersSource), "resume bullets should render with linkified text");
 assert.ok(/<LinkifiedText text=\{p\}/.test(documentPapersSource), "cover-letter paragraphs should render with linkified text");
 assert.ok(!/function\s+ResumeView\b/.test(sharedSource), "generic ResumeView renderer should be removed");
