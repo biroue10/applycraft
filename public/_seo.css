@@ -35,10 +35,9 @@ img{max-width:100%;height:auto}
 .nav{position:sticky;top:0;z-index:100;background:#06080Fdd;backdrop-filter:blur(12px);
   padding:0 32px;height:68px;
   display:flex;align-items:center;justify-content:space-between}
-.nav-logo{font-size:22px;font-weight:800;letter-spacing:-0.6px;
-  background:linear-gradient(135deg,var(--color-accent-primary),#3B82F6);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  text-decoration:none}
+.nav-logo{display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;line-height:1;flex-shrink:0}
+.brand-logo-img{display:block;height:32px;width:auto;max-width:160px;object-fit:contain;
+  border-radius:6px;background:#fff}
 .nav-logo:hover,.nav-logo:focus{text-decoration:none}
 .nav-cta{background:linear-gradient(135deg,var(--color-accent-primary),#3B82F6);color:#fff;border:none;
   border-radius:var(--radius-sm);padding:9px 20px;font-size:14px;font-weight:700;cursor:pointer;
@@ -137,10 +136,8 @@ details p{padding:0 20px 16px;font-size:13.5px;color:var(--color-text-secondary)
 .footer-shell{max-width:var(--content-wide);margin:0 auto}
 .footer-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;margin-bottom:44px}
 .footer-brand{max-width:280px}
-.footer-logo{display:block;width:max-content;font-size:20px;font-weight:800;letter-spacing:-.5px;
-  background:linear-gradient(135deg,var(--color-accent-primary),#3B82F6);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  text-decoration:none;margin-bottom:12px}
+.footer-logo{display:inline-flex;align-items:center;width:max-content;text-decoration:none;margin-bottom:12px;line-height:1}
+.footer-logo .brand-logo-img{height:34px;max-width:168px}
 .footer-logo:hover,.footer-logo:focus{text-decoration:none}
 .footer-brand p{font-size:13px;line-height:1.75;color:var(--color-text-muted);margin:0 0 14px}
 .footer-brand a{font-size:13px;color:var(--color-text-secondary);text-decoration:none}
@@ -158,6 +155,7 @@ details p{padding:0 20px 16px;font-size:13.5px;color:var(--color-text-secondary)
 }
 @media(max-width:640px){
   .nav{padding:0 16px}
+  .brand-logo-img{height:28px;max-width:140px}
   .hero{padding:48px 0 36px}
   .rc-body{grid-template-columns:1fr}
   .rc-header{padding:24px 24px 18px}

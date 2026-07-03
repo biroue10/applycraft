@@ -14,21 +14,39 @@ export const SITE_COLORS = {
 
 const AUTHOR_EMAIL = "hello@applycraft.io";
 const AUTHOR_GITHUB = "https://github.com/biroue10";
+const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
 
-function Logo({ size = 21 }) {
+function BrandLogoImage({ compact = false, style = {} }) {
   return (
-    <a href="/" style={{
-      fontSize: size,
-      fontWeight: 900,
-      letterSpacing: "-0.5px",
+    <img
+      className="ac-brand-logo-img"
+      src={BRAND_LOGO_SRC}
+      alt="ApplyCraft"
+      width="221"
+      height="68"
+      style={{
+        display: "block",
+        height: compact ? 28 : 32,
+        width: "auto",
+        maxWidth: compact ? 138 : 160,
+        objectFit: "contain",
+        borderRadius: 6,
+        background: "#fff",
+        ...style,
+      }}
+    />
+  );
+}
+
+function Logo({ compact = false }) {
+  return (
+    <a href="/" aria-label="ApplyCraft home" style={{
       textDecoration: "none",
-      background: SITE_COLORS.grad,
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      display: "inline-block",
-      lineHeight: 1.1,
+      display: "inline-flex",
+      alignItems: "center",
+      lineHeight: 1,
     }}>
-      ApplyCraft
+      <BrandLogoImage compact={compact} />
     </a>
   );
 }
@@ -92,8 +110,9 @@ export function SiteHeader({
           padding: 0 16px !important;
         }
         .ac-nav-logo {
-          font-size: 20px !important;
+          max-width: 142px !important;
         }
+        .ac-brand-logo-img { height: 28px !important; max-width: 142px !important; }
         .ac-site-nav-links {
           display: none !important;
         }
@@ -131,21 +150,19 @@ export function SiteHeader({
         <LogoTag
           {...(onLogoClick ? { type: "button", onClick: onLogoClick } : { href: "/" })}
           className="ac-nav-logo"
+          aria-label="ApplyCraft home"
           style={{
-            background: SITE_COLORS.grad,
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
             border: "none",
             cursor: "pointer",
             padding: 0,
             flexShrink: 0,
-            fontSize: 26,
-            fontWeight: 800,
-            letterSpacing: "-0.8px",
             fontFamily: "inherit",
             textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            lineHeight: 1,
           }}>
-          ApplyCraft
+          <BrandLogoImage style={{ height: 34, maxWidth: 170 }} />
         </LogoTag>
         <nav aria-label="Primary tools" className="ac-site-nav-links" style={{ display: "flex", gap: 4, marginInlineStart: 18 }}>
           {items.map((item) => {
@@ -204,7 +221,7 @@ export function SiteHeader({
             className="ac-site-mobile-menu-button"
             style={{ marginInlineStart: 8, width: 40, height: 40, borderRadius: 10, border: `1px solid ${SITE_COLORS.border}`,
               background: SITE_COLORS.surface, color: SITE_COLORS.text1, cursor: "pointer", flexShrink: 0, fontFamily: "inherit",
-              display: "none", alignItems: "center", justifyContent: "center", fontSize: 18, lineHeight: 1 }}>
+          display: "none", alignItems: "center", justifyContent: "center", fontSize: 18, lineHeight: 1 }}>
             {menuOpen ? "✕" : "☰"}
           </button>
       </div>
@@ -252,7 +269,7 @@ export function SiteFooter({ lang = "en", className = "" }) {
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 40, marginBottom: 48 }}>
           <div style={{ maxWidth: 280 }}>
-            <Logo size={20} />
+            <Logo />
             <p style={{ fontSize: 13, color: SITE_COLORS.text3, lineHeight: 1.75, margin: "12px 0 16px" }}>
               {footerText(f.brand)}
             </p>

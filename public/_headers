@@ -12,6 +12,21 @@
 /favicon.svg
   Cache-Control: public, max-age=86400
 
+/favicon.png
+  Cache-Control: public, max-age=86400
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=86400
+
+/android-chrome-192x192.png
+  Cache-Control: public, max-age=86400
+
+/android-chrome-512x512.png
+  Cache-Control: public, max-age=86400
+
+/site.webmanifest
+  Cache-Control: public, max-age=86400
+
 # OG image — social cards cache aggressively in crawlers; use a short TTL
 # so we can refresh the card without a cache-bust.
 /og.png

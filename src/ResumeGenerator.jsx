@@ -44,6 +44,28 @@ const SITE_LANGUAGE_CODES = new Set(INTERFACE_LANGUAGES);
 // by scripts/product-tests.mjs.
 const LOCALIZED_DOCUMENT_LANGUAGE_COUNT = PRODUCT.localizedDocumentLanguageCount;
 const UI_LANGUAGE_COUNT = PRODUCT.interfaceLanguageCount;
+const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
+
+function AppBrandLogo({ compact = false, style = {} }) {
+  return (
+    <img
+      src={BRAND_LOGO_SRC}
+      alt="ApplyCraft"
+      width="221"
+      height="68"
+      style={{
+        display: "block",
+        height: compact ? 28 : 32,
+        width: "auto",
+        maxWidth: compact ? 138 : 160,
+        objectFit: "contain",
+        borderRadius: 6,
+        background: "#fff",
+        ...style,
+      }}
+    />
+  );
+}
 
 // ── All world languages for the picker ────────────────────────────
 const WORLD_LANGUAGES = [
@@ -4182,8 +4204,7 @@ Awards: ${form.awards}`;
         <button type="button" onClick={() => setAppView("landing")}
           style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer",
             display: "flex", flexDirection: "column", alignItems: rtl ? "flex-end" : "flex-start", fontFamily: "inherit" }}>
-          <span style={{ fontSize: isMobile ? 18 : 21, fontWeight: 900, letterSpacing: "-0.5px",
-            background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ApplyCraft</span>
+          <AppBrandLogo compact={isMobile} />
           {!isMobile && <span style={{ fontSize: 11.5, color: C.text3, marginTop: 1 }}>{toolName}</span>}
         </button>
         {!isMobile && (
@@ -4238,8 +4259,7 @@ Awards: ${form.awards}`;
           <button type="button" onClick={() => setAppView("landing")}
             style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer",
               display: "flex", flexDirection: "column", alignItems: rtl ? "flex-end" : "flex-start", fontFamily: "inherit" }}>
-            <span style={{ fontSize: isMobile ? 18 : 21, fontWeight: 900, letterSpacing: "-0.5px",
-              background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>ApplyCraft</span>
+            <AppBrandLogo compact={isMobile} />
             {!isMobile && <span style={{ fontSize: 11.5, color: C.text3, marginTop: 1 }}>{bu.toolName}</span>}
           </button>
           {!isMobile && (
@@ -8559,10 +8579,7 @@ Awards: ${form.awards}`;
               <button onClick={() => setAppView("landing")}
                 style={{ overflow: "hidden", whiteSpace: "nowrap", background: "none",
                   border: "none", cursor: "pointer", padding: 0, textAlign: "left" }}>
-                <div style={{ fontSize: 21, fontWeight: 800, letterSpacing: "-0.5px",
-                  background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                  ApplyCraft
-                </div>
+                <AppBrandLogo />
                 <div style={{ fontSize: 12, color: C.text3, marginTop: 2 }}>{l2.toolkit}</div>
               </button>
             )}
@@ -8795,10 +8812,7 @@ Awards: ${form.awards}`;
                 padding: "20px 16px", borderBottom: `1px solid ${C.border}` }}>
                 <button onClick={() => { setAppView("landing"); setSidebarOpen(false); }}
                   style={{ background: "none", border: "none", cursor: "pointer", padding: 0, textAlign: "left" }}>
-                  <div style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.5px",
-                    background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                    ApplyCraft
-                  </div>
+                  <AppBrandLogo compact />
                   <div style={{ fontSize: 10.5, color: C.text3, marginTop: 1 }}>{l2.toolkit}</div>
                 </button>
                 <button onClick={() => setSidebarOpen(false)} aria-label={builderText("closeMenu")}
@@ -9427,9 +9441,8 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin, at = ACCT_UI.
         {/* ── Header ── */}
         <div style={{ padding: "24px 28px 20px", borderBottom: `1px solid ${C.border}`,
           display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div id="auth-modal-title" style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.5px",
-            background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            ApplyCraft
+          <div id="auth-modal-title">
+            <AppBrandLogo />
           </div>
           <button onClick={onClose} aria-label={at.close}
             style={{ width: 30, height: 30, borderRadius: "50%", border: `1px solid ${C.border}`,

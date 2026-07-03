@@ -34,7 +34,10 @@ function shell(title, description, canonicalPath, content, extraHead = "") {
 <meta name="twitter:description" content="${description}"/>
 <meta name="twitter:image" content="${SOCIAL_IMAGE}"/>
 <meta name="twitter:image:alt" content="${SOCIAL_IMAGE_ALT}"/>
-<link rel="icon" href="/favicon.svg"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+<link rel="icon" href="/favicon.png" type="image/png"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+<link rel="manifest" href="/site.webmanifest"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="../_seo.css"/>
@@ -76,7 +79,7 @@ ${extraHead}
 </head>
 <body>
 <nav class="nav">
-  <a href="/" class="nav-logo">ApplyCraft</a>
+  <a href="/" class="nav-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="eager" decoding="async"></a>
   <a href="/" class="nav-cta">Build My Resume Free →</a>
 </nav>
 <main>
@@ -88,7 +91,7 @@ ${content}
   <div class="footer-shell">
     <div class="footer-top">
       <div class="footer-brand">
-        <a href="/" class="footer-logo">ApplyCraft</a>
+        <a href="/" class="footer-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="lazy" decoding="async"></a>
         <p>Free resume and cover letter builder with 46 templates, free PDF and DOCX exports, no watermark, no signup, browser-first editing, and production-ready English, French, and Arabic localization.</p>
         <a href="mailto:${EMAIL}">${EMAIL}</a>
       </div>
