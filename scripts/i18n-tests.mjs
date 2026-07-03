@@ -189,7 +189,8 @@ test("direct RTL PDF export avoids popup print flow and preserves visual metadat
 
 test("content translation remains explicit and opt-in", () => {
   assert.match(app, /callAi\("translate-resume"/);
-  assert.match(app, /window\.confirm\(translateLabel\(bu\.translateContentConfirm/);
+  assert.match(app, /translateContentConfirm/);
+  assert.match(app, /translateContentConfirmButton/);
   assert.match(app, /translateContentButton/);
   assert.match(app, /translateContentHint/);
   assert.match(app, /docLang !== "en"/);

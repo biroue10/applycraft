@@ -62,7 +62,7 @@ const docxBody = app.slice(app.indexOf("async function downloadDOCX"), app.index
 
 assert.match(pdfBody, /structureSectionItems\(section, docLang\)/, "PDF export should render structured experience and education entries");
 assert.doesNotMatch(pdfBody, /`- \$\{safe\(item\)\}`/, "PDF export must not prefix every section item with a bullet");
-assert.match(pdfBody, /const contactItems = \(src\.contact \|\| \[\]\)\.filter\(Boolean\)/, "email should remain in the main PDF contact row");
+assert.match(pdfBody, /drawPdfContactItems\(doc, src\.contact/, "email should remain in the main PDF contact row");
 assert.match(docxBody, /structureSectionItems\(section, docLang\)/, "DOCX export should render structured experience and education entries");
 
 assert.match(app, /Review before download/, "export warnings modal should exist");

@@ -12,6 +12,15 @@ import { linkifyText, normalizeLinkHref } from "./utils/linkify.js";
 import { getContactHref, normalizeContactItems } from "./utils/contactLinks.js";
 import { ResumePaper, CoverLetterPaper, structureSectionItems } from "./documents/DocumentPapers.jsx";
 import { analyzeResumeQuality, isPlaceholderOnly, normalizeDateRange } from "./resumeQuality.js";
+import {
+  assertProtectedTermsPreserved,
+  buildResumeTranslationRequest,
+  createTranslatedResumeCopy,
+  extractProtectedTerms,
+  parseTranslationJson,
+  TRANSLATABLE_RESUME_FIELDS,
+  TRANSLATION_STATUSES,
+} from "./translation.js";
 import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
@@ -2848,6 +2857,8 @@ export default function ResumeGenerator() {
   const [exportSuccess, setExportSuccess] = useState("");
   const [aiPolished, setAiPolished] = useState(false);
   const [translating, setTranslating] = useState(false);
+  const [translationConfirm, setTranslationConfirm] = useState({ open: false, target: null });
+  const [translationReview, setTranslationReview] = useState({ open: false, original: null, translated: null, fields: [] });
   const [photoUrl, setPhotoUrl] = useState(null);
   const [authModal, setAuthModal] = useState(false);
   const [authModalTab, setAuthModalTab] = useState("login");
@@ -3582,50 +3593,86 @@ export default function ResumeGenerator() {
     if (phoneError) setPhoneError(validatePhone(e.target.value));
   }
 
+  function requestResumeTranslation() {
+    if (translating) return;
+    const langCode = docLang || "en";
+    if (langCode === "en") return;
+    setTranslationConfirm({ open: true, target: selectedDocumentLang || languageByCode(langCode), kind: "resume" });
+  }
+
+  function markTranslatedFields(status) {
+    setForm((f) => ({
+      ...f,
+      translationMeta: {
+        ...(f.translationMeta || {}),
+        fields: Object.fromEntries(Object.entries(f.translationMeta?.fields || {}).map(([key, meta]) => [
+          key,
+          { ...meta, translationStatus: status },
+        ])),
+      },
+    }));
+  }
+
   async function translateCV() {
     if (translating) return;
     const langCode = docLang || "en";
     if (langCode === "en") return;
     const targetName = selectedDocumentLang?.native || selectedDocumentLang?.name || langCode;
-    const confirmed = typeof window === "undefined"
-      ? true
-      : window.confirm(translateLabel(bu.translateContentConfirm, { language: targetName }));
-    if (!confirmed) return;
+    setTranslationConfirm({ open: false, target: null });
     setTranslating(true);
-    setStatusMsg(st.translateStarted || "Translating resume content...");
+    setStatusMsg(statusText("translateStarted"));
     try {
-      const fieldKeys = ["title", "summary", "experience", "education", "skills",
-        "languages", "certifications", "projects", "volunteer", "awards", "extracurricular"];
-      const toTranslate = Object.fromEntries(
-        fieldKeys.filter(k => form[k]?.trim()).map(k => [k, form[k]])
-      );
-      if (Object.keys(toTranslate).length === 0) {
-        setStatusMsg(st.translateNoContent || "Add resume content before translating.");
+      const request = buildResumeTranslationRequest(form, {
+        sourceLanguage: "auto",
+        targetLanguage: langCode,
+        targetLanguageName: targetName,
+      });
+      if (Object.keys(request.content).length === 0) {
+        setStatusMsg(statusText("translateNoContent"));
         setTimeout(() => setStatusMsg(""), 3000);
         return;
       }
-      const text = await callAi("translate-resume", JSON.stringify(toTranslate), langCode);
-      const clean = text.replace(/```json|```/g, "").trim();
-      const translated = JSON.parse(clean);
-      setForm(f => {
-        const next = { ...f, ...translated };
+      const text = await callAi("translate-resume", JSON.stringify(request), langCode);
+      const translated = parseTranslationJson(text);
+      const missingProtected = assertProtectedTermsPreserved(request.content, translated);
+      const translatedAt = new Date().toISOString();
+      const originalSnapshot = { ...form };
+      const translatedCopy = createTranslatedResumeCopy(form, translated, {
+        sourceLanguage: request.sourceLanguage,
+        targetLanguage: langCode,
+        targetLanguageName: targetName,
+        translatedAt,
+      });
+      const nextForm = (() => {
+        const next = { ...translatedCopy };
         // Re-sync entry arrays for any translated section (preserve visibility by position).
         SECTION_KEYS.forEach((key) => {
           if (typeof translated[key] === "string") {
-            const old = f[key + "Entries"] || [];
+            const old = form[key + "Entries"] || [];
             const parsed = parseEntries(key, translated[key]).map((e, i) => ({ ...e, visible: old[i] ? old[i].visible !== false : true }));
             next[key + "Entries"] = parsed;
             next[key] = entriesToText(key, parsed);
           }
         });
         return next;
-      });
+      })();
+      const copyTitle = `${builderText("reviewTranslatedTitle")} — ${targetName}`;
+      const newId = resumes.upsertResume({ title: copyTitle, data: nextForm });
+      setForm(migrateForm({ ...emptyResumeForm, ...nextForm }));
+      setCurrentResumeId(newId);
+      refreshResumes();
       setResult(null);
       setAiPolished(false);
-      setStatusMsg(st.translateSuccess || "Resume content translated. Review the text before exporting.");
+      setTranslationReview({
+        open: true,
+        original: originalSnapshot,
+        translated: nextForm,
+        fields: TRANSLATABLE_RESUME_FIELDS.filter((key) => typeof translated[key] === "string"),
+      });
+      setStatusMsg(missingProtected.length ? statusText("translateProtectedTermsMissing") : statusText("translateSuccess"));
       setTimeout(() => setStatusMsg(""), 4500);
-    } catch {
-      setStatusMsg(st.translateFail || "Translation failed. Your original resume content is unchanged.");
+    } catch (error) {
+      setStatusMsg(error?.message === "api-error" ? statusText("translateUnavailable") : statusText("translateFail"));
       setTimeout(() => setStatusMsg(""), 3500);
     } finally {
       setTranslating(false);
@@ -5045,6 +5092,12 @@ Awards: ${form.awards}`;
               fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resumeTitle}</h1>
             <span title={builderText("savedLocalTooltip")}
               style={{ color: C.text3, fontSize: 11.5, whiteSpace: "nowrap" }}>· {savedLabel}</span>
+            {form.translationMeta?.fields && (
+              <span style={{ color: C.accent2, background: `${C.accent}18`, border: `1px solid ${C.accent}35`,
+                borderRadius: 999, padding: "2px 7px", fontSize: 10.5, fontWeight: 900, whiteSpace: "nowrap" }}>
+                {bu.translatedBadge}
+              </span>
+            )}
           </div>
           {!isMobile && (
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 3, color: C.text3, fontSize: 12 }}>
@@ -5103,7 +5156,7 @@ Awards: ${form.awards}`;
                   <div style={{ marginTop: 10 }}>
                     <button
                       type="button"
-                      onClick={translateCV}
+                      onClick={requestResumeTranslation}
                       disabled={translating}
                       style={{
                         width: "100%",
@@ -5687,6 +5740,112 @@ Awards: ${form.awards}`;
           </div>
         </div>
       </div>
+      {translationConfirm.open && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="resume-translation-confirm-title"
+          onClick={() => setTranslationConfirm({ open: false, target: null })}
+          style={{ position: "fixed", inset: 0, zIndex: 9600, background: "rgba(0,0,0,0.62)",
+            display: "flex", alignItems: "center", justifyContent: "center", padding: 18 }}
+        >
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ width: "min(540px, 100%)", background: C.surface, color: C.text1, borderRadius: 14,
+              boxShadow: "0 26px 80px rgba(0,0,0,0.52)", padding: 20, direction: rtl ? "rtl" : "ltr" }}>
+            <h2 id="resume-translation-confirm-title" style={{ margin: 0, fontSize: 18, lineHeight: 1.25 }}>
+              {translateLabel(translationConfirm.kind === "cover" ? cu.translateContentButton : bu.translateContentButton, { language: translationConfirm.target?.native || translationConfirm.target?.name || docLang })}
+            </h2>
+            <p style={{ margin: "10px 0 16px", color: C.text2, fontSize: 13.5, lineHeight: 1.55 }}>
+              {translationConfirm.kind === "cover" ? cu.translateContentConfirm : bu.translateContentConfirm}
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", flexWrap: "wrap" }}>
+              <button type="button" onClick={() => setTranslationConfirm({ open: false, target: null })}
+                style={{ border: "none", background: C.elevated, color: C.text1, borderRadius: 9,
+                  padding: "10px 14px", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                {bu.translateContentCancelButton}
+              </button>
+              <button type="button" onClick={translationConfirm.kind === "cover" ? translateCoverLetter : translateCV} disabled={translating}
+                style={{ border: "none", background: C.grad, color: "#fff", borderRadius: 9,
+                  padding: "10px 14px", fontSize: 13, fontWeight: 900, cursor: translating ? "wait" : "pointer", fontFamily: "inherit" }}>
+                {translating ? bu.translatingContentButton : bu.translateContentConfirmButton}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {translationReview.open && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="resume-translation-review-title"
+          onClick={() => setTranslationReview({ open: false, original: null, translated: null, fields: [] })}
+          style={{ position: "fixed", inset: 0, zIndex: 9550, background: "rgba(0,0,0,0.62)",
+            display: "flex", alignItems: "center", justifyContent: "center", padding: 18 }}
+        >
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ width: "min(860px, 100%)", maxHeight: "88vh", overflowY: "auto", background: C.surface, color: C.text1,
+              borderRadius: 14, boxShadow: "0 26px 80px rgba(0,0,0,0.52)", padding: 20, direction: rtl ? "rtl" : "ltr" }}>
+            <h2 id="resume-translation-review-title" style={{ margin: 0, fontSize: 18, lineHeight: 1.25 }}>
+              {bu.reviewTranslatedTitle}
+            </h2>
+            <p style={{ margin: "10px 0 14px", color: C.text2, fontSize: 13.5, lineHeight: 1.5 }}>
+              {bu.reviewTranslatedIntro}
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
+              {translationReview.fields.slice(0, 4).map((key) => (
+                <React.Fragment key={key}>
+                  <div style={{ background: C.elevated, borderRadius: 10, padding: 12 }}>
+                    <div style={{ color: C.text3, fontSize: 11.5, fontWeight: 900, marginBottom: 6 }}>
+                      {bu.originalText} · {sectionName(key)}
+                    </div>
+                    <pre style={{ margin: 0, whiteSpace: "pre-wrap", color: C.text2, fontFamily: "inherit", fontSize: 12.5, lineHeight: 1.55 }}>
+                      {translationReview.original?.[key] || ""}
+                    </pre>
+                  </div>
+                  <div style={{ background: `${C.accent}10`, border: `1px solid ${C.accent}22`, borderRadius: 10, padding: 12 }}>
+                    <div style={{ color: C.accent2, fontSize: 11.5, fontWeight: 900, marginBottom: 6 }}>
+                      {bu.translatedText} · {sectionName(key)}
+                    </div>
+                    <pre style={{ margin: 0, whiteSpace: "pre-wrap", color: C.text2, fontFamily: "inherit", fontSize: 12.5, lineHeight: 1.55 }}>
+                      {translationReview.translated?.[key] || ""}
+                    </pre>
+                  </div>
+                </React.Fragment>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", flexWrap: "wrap", marginTop: 16 }}>
+              <button type="button" onClick={() => setTranslationReview({ open: false, original: null, translated: null, fields: [] })}
+                style={{ border: "none", background: C.elevated, color: C.text1, borderRadius: 9,
+                  padding: "10px 14px", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                {bu.acceptTranslation}
+              </button>
+              <button type="button" onClick={() => { setTranslationReview({ open: false, original: null, translated: null, fields: [] }); setMobileResumeMode("edit"); }}
+                style={{ border: "none", background: C.elevated, color: C.text1, borderRadius: 9,
+                  padding: "10px 14px", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                {bu.editTranslation}
+              </button>
+              <button type="button" onClick={() => {
+                  if (translationReview.original) setForm(migrateForm({ ...emptyResumeForm, ...translationReview.original }));
+                  setTranslationReview({ open: false, original: null, translated: null, fields: [] });
+                }}
+                style={{ border: "none", background: C.elevated, color: C.text1, borderRadius: 9,
+                  padding: "10px 14px", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                {bu.restoreOriginal}
+              </button>
+              <button type="button" onClick={() => { setTranslationReview({ open: false, original: null, translated: null, fields: [] }); requestResumeTranslation(); }}
+                style={{ border: "none", background: C.elevated, color: C.text1, borderRadius: 9,
+                  padding: "10px 14px", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                {bu.retranslate}
+              </button>
+              <button type="button" onClick={() => { markTranslatedFields(TRANSLATION_STATUSES.humanReviewed); setTranslationReview({ open: false, original: null, translated: null, fields: [] }); }}
+                style={{ border: "none", background: C.grad, color: "#fff", borderRadius: 9,
+                  padding: "10px 14px", fontSize: 13, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
+                {bu.markReviewed}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {reviewModal.open && (
         <div
           role="dialog"
@@ -5772,6 +5931,60 @@ Awards: ${form.awards}`;
     );
     return icon && !multiline ? <IconInput icon={icon}>{control}</IconInput> : control;
   };
+
+  async function translateCoverLetter() {
+    if (translating) return;
+    const langCode = docLang || "en";
+    if (langCode === "en") return;
+    const targetName = selectedDocumentLang?.native || selectedDocumentLang?.name || langCode;
+    const contentKeys = ["jobTitle", "subject", "opening", "body", "closing", "signoff"];
+    const content = Object.fromEntries(contentKeys.filter((key) => coverForm[key]?.trim()).map((key) => [key, coverForm[key]]));
+    if (!Object.keys(content).length) {
+      setStatusMsg(statusText("translateNoContent"));
+      setTimeout(() => setStatusMsg(""), 3000);
+      return;
+    }
+    setTranslationConfirm({ open: false, target: null });
+    setTranslating(true);
+    setStatusMsg(statusText("translateStarted"));
+    try {
+      const protectedTerms = Array.from(new Set(Object.values(content).flatMap((value) => extractProtectedTerms(value))));
+      const request = {
+        type: "cover_letter",
+        sourceLanguage: "auto",
+        targetLanguage: langCode,
+        targetLanguageName: targetName,
+        preserveTerms: protectedTerms,
+        content,
+      };
+      const text = await callAi("translate-resume", JSON.stringify(request), langCode);
+      const translated = parseTranslationJson(text, contentKeys);
+      const translatedAt = new Date().toISOString();
+      setCoverForm((f) => ({
+        ...f,
+        ...translated,
+        translationMeta: {
+          sourceLanguage: "auto",
+          targetLanguage: langCode,
+          targetLanguageName: targetName,
+          translatedAt,
+          fields: Object.fromEntries(Object.keys(translated).map((key) => [key, {
+            translationStatus: TRANSLATION_STATUSES.aiTranslated,
+            sourceLanguage: "auto",
+            targetLanguage: langCode,
+            translatedAt,
+          }])),
+        },
+      }));
+      setStatusMsg(statusText("translateSuccess"));
+      setTimeout(() => setStatusMsg(""), 4500);
+    } catch (error) {
+      setStatusMsg(error?.message === "api-error" ? statusText("translateUnavailable") : statusText("translateFail"));
+      setTimeout(() => setStatusMsg(""), 3500);
+    } finally {
+      setTranslating(false);
+    }
+  }
 
   async function downloadCoverPDF() {
     if (!coverTpl) return;
@@ -6207,6 +6420,20 @@ Awards: ${form.awards}`;
                 ariaLabel={bu.chooseDocumentLanguage}
               />
             </div>
+            {docLang !== "en" && (
+              <button type="button" onClick={() => setTranslationConfirm({ open: true, target: selectedDocumentLang || languageByCode(docLang), kind: "cover" })}
+                disabled={translating}
+                title={cu.translateContentHint}
+                style={{ ...softBtn, color: C.accent2, borderColor: `${C.accent}40`, fontWeight: 850 }}>
+                {translating ? cu.translatingContentButton : translateLabel(cu.translateContentButton, { language: selectedDocumentLang.native || selectedDocumentLang.name })}
+              </button>
+            )}
+            {coverForm.translationMeta?.fields && (
+              <span style={{ color: C.accent2, background: `${C.accent}18`, border: `1px solid ${C.accent}35`,
+                borderRadius: 999, padding: "6px 8px", fontSize: 10.5, fontWeight: 900, whiteSpace: "nowrap" }}>
+                {cu.translatedBadge}
+              </span>
+            )}
             {isMobile && (
               <button onClick={() => setMobileCoverMode(mobileCoverMode === "edit" ? "preview" : "edit")}
                 style={{ ...softBtn }}>

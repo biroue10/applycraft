@@ -40,7 +40,12 @@ const cover = {
   "phSignoff": "مع خالص التقدير",
   "nextStep": "الخطوة التالية الموصى بها",
   "nextStepBody": "أضف اسمك قبل تصدير خطاب التقديم.",
-  "comingSoon": "أقسام خطاب التقديم المخصصة قادمة قريباً."
+  "comingSoon": "أقسام خطاب التقديم المخصصة قادمة قريباً.",
+  "translateContentButton": "ترجمة محتوى خطاب التقديم إلى {language}",
+  "translatingContentButton": "جارٍ ترجمة المحتوى...",
+  "translateContentConfirm": "لترجمة خطاب التقديم، يحتاج ApplyCraft إلى معالجة النص الذي كتبته. ستبقى بيانات الاتصال وبيانات المستلم دون تغيير.",
+  "translateContentHint": "يترجم هذا نص الخطاب فقط. تبقى بيانات الاتصال وبيانات المستلم دون تغيير.",
+  "translatedBadge": "مترجم بالذكاء الاصطناعي — يُنصح بالمراجعة"
 };
 
 export default cover;
