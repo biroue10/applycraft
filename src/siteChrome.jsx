@@ -28,10 +28,9 @@ function BrandLogoImage({ compact = false, style = {} }) {
         display: "block",
         height: compact ? 28 : 32,
         width: "auto",
-        maxWidth: compact ? 138 : 160,
+        maxWidth: compact ? 145 : 180,
         objectFit: "contain",
-        borderRadius: 6,
-        background: "#fff",
+        filter: "drop-shadow(0 6px 12px rgba(37, 99, 235, 0.16))",
         ...style,
       }}
     />
@@ -112,7 +111,7 @@ export function SiteHeader({
         .ac-nav-logo {
           max-width: 142px !important;
         }
-        .ac-brand-logo-img { height: 28px !important; max-width: 142px !important; }
+        .ac-brand-logo-img { height: 28px !important; max-width: 145px !important; }
         .ac-site-nav-links {
           display: none !important;
         }
@@ -162,7 +161,7 @@ export function SiteHeader({
             alignItems: "center",
             lineHeight: 1,
           }}>
-          <BrandLogoImage style={{ height: 34, maxWidth: 170 }} />
+          <BrandLogoImage style={{ height: 34, maxWidth: 180 }} />
         </LogoTag>
         <nav aria-label="Primary tools" className="ac-site-nav-links" style={{ display: "flex", gap: 4, marginInlineStart: 18 }}>
           {items.map((item) => {

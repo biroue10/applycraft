@@ -57,10 +57,9 @@ function AppBrandLogo({ compact = false, style = {} }) {
         display: "block",
         height: compact ? 28 : 32,
         width: "auto",
-        maxWidth: compact ? 138 : 160,
+        maxWidth: compact ? 145 : 180,
         objectFit: "contain",
-        borderRadius: 6,
-        background: "#fff",
+        filter: "drop-shadow(0 6px 12px rgba(37, 99, 235, 0.16))",
         ...style,
       }}
     />
