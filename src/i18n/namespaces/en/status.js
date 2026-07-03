@@ -26,7 +26,17 @@ const status = {
   "translateStarted": "Translating resume content...",
   "translateSuccess": "Resume content translated. Review the text before exporting.",
   "translateFail": "Translation failed. Your original resume content is unchanged.",
-  "translateNoContent": "Add resume content before translating."
+  "translateNoContent": "Add resume content before translating.",
+  "shareCreate": "Create private offline link",
+  "shareCreating": "Creating link...",
+  "shareEmail": "Email private offline link",
+  "shareCopyPrivate": "Copy private link",
+  "shareOpen": "Open",
+  "shareReady": "Private offline share link ready.",
+  "shareCanView": "Anyone with the full link can view this document.",
+  "shareStored": "This link keeps the document data inside the URL, so it can be long.",
+  "shareFailed": "Private offline link could not be created. Please try again.",
+  "shareEmailBody": "Here's my document, viewable in any browser:\n\n{url}\n\nMade free with ApplyCraft — applycraft.io"
 };
 
 export default status;

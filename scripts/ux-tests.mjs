@@ -17,7 +17,8 @@ assert.match(templateRegistry, /RECOMMENDED_TEMPLATE_ID = "modern"/, "resume flo
 assert.match(builder, /Use template/, "template selector should expose a clear use action");
 assert.match(builder, /Recommended/, "template selector should call out the default");
 assert.match(app, /mobileResumeMode/, "mobile edit and preview modes should be explicit");
-assert.match(app, /Saved locally in this browser/, "editor should explain local save state");
+assert.match(builder, /Saved locally in this browser/, "editor should explain local save state");
+assert.match(app, /savedLocalTooltip|savedLocalHeaderTooltip/, "editor should read local save state from translations");
 assert.match(app, /ac_resume_draft/, "main resume draft should be saved locally");
 assert.match(common, /Download PDF/, "PDF export should remain obvious");
 assert.match(common, /Download DOCX/, "DOCX export should remain obvious");

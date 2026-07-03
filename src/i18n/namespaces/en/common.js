@@ -47,7 +47,14 @@ const common = {
   "placeholderAwards": "Award name, issuer, year — one per line",
   "emailError": "Please enter a valid email address",
   "phoneError": "Invalid number",
-  "phoneDigits": "digits required"
+  "phoneDigits": "digits required",
+  "nameRequired": "Full name is required.",
+  "titleRequired": "Job title is required.",
+  "locationRequired": "Location is required.",
+  "summaryRequired": "Professional summary is required.",
+  "experienceRequired": "Work experience is required.",
+  "educationRequired": "Education is required.",
+  "skillsRequired": "Skills are required."
 };
 
 export default common;

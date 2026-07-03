@@ -30,7 +30,7 @@ export function createTranslator(resources, options = {}) {
       const id = `${lang}.${namespace}.${key}`;
       if (dev && !warnedMissing.has(id)) {
         warnedMissing.add(id);
-        console.warn(`[i18n] Missing translation key: ${id}`);
+        console.warn(`Missing translation key: ${namespace}.${key} for language ${lang}`);
       }
       return key || "";
     }

@@ -50,10 +50,22 @@ test("translation fallback, missing key, interpolation, plural, and namespaces w
     assert.equal(translate({ language: "fr", namespace: "common", key: "files", count: 2 }), "2 files");
     assert.equal(translate({ language: "ar", namespace: "builder", key: "save" }), "Save");
     assert.equal(translate({ language: "fr", namespace: "missing", key: "unknown" }), "unknown");
-    assert.ok(warnings.some((message) => message.includes("fr.missing.unknown")));
+    assert.ok(warnings.some((message) => message.includes("Missing translation key: missing.unknown for language fr")));
   } finally {
     console.warn = originalWarn;
   }
+});
+
+test("missing production translations fall back safely without crashing", () => {
+  const translate = createTranslator(resources, { dev: false });
+  assert.equal(
+    translate({ language: "fr", namespace: "common", key: "definitelyMissingKey" }),
+    "definitelyMissingKey"
+  );
+  assert.equal(
+    translate({ language: "zz", namespace: "builder", key: "exportBtn" }),
+    resources.en.builder.exportBtn
+  );
 });
 
 test("production namespaces resolve for English, French, Arabic, Spanish, and German", () => {
@@ -97,6 +109,28 @@ test("direction can differ between application root and document preview", () =>
   assert.match(app, /dir=\{documentRtl \? "rtl" : "ltr"\}/);
 });
 
+test("English, French, and Arabic UI namespaces do not leak common interface strings from other languages", () => {
+  const namespaces = ["common", "account", "landing", "builder", "cover", "ats", "tracker", "master", "status", "modal", "landing2", "footer"];
+  const flatten = (value) => {
+    if (typeof value === "string") return [value];
+    if (Array.isArray(value)) return value.flatMap(flatten);
+    if (value && typeof value === "object") return Object.values(value).flatMap(flatten);
+    return [];
+  };
+  const textFor = (language) => namespaces.flatMap((namespace) => flatten(resources[language][namespace])).join("\n");
+  const leakChecks = {
+    en: [/Télécharger/i, /Créer mon CV/i, /Erreur/i, /Paramètres/i, /جارٍ/, /خطأ/, /تنزيل/],
+    fr: [/\bDownload\b/i, /\bExporting\b/i, /Create my resume/i, /\bSettings\b/i, /\bTry again\b/i, /\bSaved\b/],
+    ar: [/\bDownload\b/i, /\bExporting\b/i, /Create my resume/i, /\bSettings\b/i, /Erreur/i, /Télécharger/i, /Créer mon CV/i],
+  };
+  for (const [language, patterns] of Object.entries(leakChecks)) {
+    const text = textFor(language);
+    for (const pattern of patterns) {
+      assert.doesNotMatch(text, pattern, `${language} UI leaked ${pattern}`);
+    }
+  }
+});
+
 test("document section labels localize and fall back safely", () => {
   assert.equal(sectionLabel("en", "experience"), "Work Experience");
   assert.equal(sectionLabel("fr", "experience"), "Expérience professionnelle");
@@ -108,7 +142,7 @@ test("document section labels localize and fall back safely", () => {
 test("custom section label behavior is present and protected", () => {
   assert.match(app, /sectionTitles/);
   assert.match(app, /heading !== defaultHeading/);
-  assert.match(app, /Restore default label/);
+  assert.match(app, /restoreDefaultLabel/);
   assert.match(app, /delete nextTitles\[key\]/);
   assert.match(app, /headingOf = \(key, def\) => \(form\.sectionTitles && form\.sectionTitles\[key\]\) \|\| def/);
 });

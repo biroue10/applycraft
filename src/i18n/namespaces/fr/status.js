@@ -26,7 +26,17 @@ const status = {
   "translateStarted": "Traduction du contenu du CV...",
   "translateSuccess": "Contenu du CV traduit. Relisez le texte avant l'export.",
   "translateFail": "La traduction a échoué. Le contenu original de votre CV est conservé.",
-  "translateNoContent": "Ajoutez du contenu au CV avant de le traduire."
+  "translateNoContent": "Ajoutez du contenu au CV avant de le traduire.",
+  "shareCreate": "Créer un lien privé hors ligne",
+  "shareCreating": "Création du lien...",
+  "shareEmail": "Envoyer le lien privé hors ligne",
+  "shareCopyPrivate": "Copier le lien privé",
+  "shareOpen": "Ouvrir",
+  "shareReady": "Lien de partage privé hors ligne prêt.",
+  "shareCanView": "Toute personne disposant du lien complet peut consulter ce document.",
+  "shareStored": "Ce lien conserve les données du document dans l'URL ; il peut donc être long.",
+  "shareFailed": "Impossible de créer le lien privé hors ligne. Veuillez réessayer.",
+  "shareEmailBody": "Voici mon document, consultable dans n'importe quel navigateur :\n\n{url}\n\nCréé gratuitement avec ApplyCraft — applycraft.io"
 };
 
 export default status;

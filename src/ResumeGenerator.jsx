@@ -839,56 +839,6 @@ const ALLOWED_RESUME_IMPORT_TYPES = new Set([
 ]);
 const DANGEROUS_KEYS = new Set(["__proto__", "prototype", "constructor"]);
 const UX_MEASUREMENT_ENABLED = false;
-const SHARE_LINK_UI = {
-  en: {
-    create: "Create private offline link",
-    creating: "Creating link...",
-    cancel: "Cancel",
-    email: "Email private offline link",
-    copyShort: "Copy private link",
-    privateLink: "Use private offline link",
-    ready: "Private offline share link ready.",
-    canView: "Anyone with the full link can view this document.",
-    expiresIn: "",
-    stored: "This link keeps the document data inside the URL, so it can be long.",
-    confirm: "",
-    failed: "Private offline link could not be created. Please try again.",
-    storageMissing: "",
-    privateReady: "Private offline share link ready.",
-  },
-  fr: {
-    create: "Créer un lien privé hors ligne",
-    creating: "Création du lien...",
-    cancel: "Annuler",
-    email: "Envoyer le lien privé hors ligne",
-    copyShort: "Copier le lien privé",
-    privateLink: "Utiliser un lien privé hors ligne",
-    ready: "Lien privé hors ligne prêt.",
-    canView: "Toute personne disposant du lien complet peut consulter ce document.",
-    expiresIn: "",
-    stored: "Ce lien conserve les données du document dans l'URL ; il peut donc être long.",
-    confirm: "",
-    failed: "Impossible de créer le lien privé hors ligne. Veuillez réessayer.",
-    storageMissing: "",
-    privateReady: "Lien privé hors ligne prêt.",
-  },
-  ar: {
-    create: "إنشاء رابط خاص دون اتصال",
-    creating: "جار إنشاء الرابط...",
-    cancel: "إلغاء",
-    email: "إرسال الرابط الخاص دون اتصال",
-    copyShort: "نسخ الرابط الخاص",
-    privateLink: "استخدام رابط خاص دون اتصال",
-    ready: "رابط المشاركة الخاص دون اتصال جاهز.",
-    canView: "يمكن لأي شخص لديه الرابط الكامل عرض هذا المستند.",
-    expiresIn: "",
-    stored: "يحتفظ هذا الرابط ببيانات المستند داخل عنوان URL، لذلك قد يكون طويلًا.",
-    confirm: "",
-    failed: "تعذر إنشاء الرابط الخاص دون اتصال. حاول مرة أخرى.",
-    storageMissing: "",
-    privateReady: "رابط المشاركة الخاص دون اتصال جاهز.",
-  },
-};
 
 const QUALITY_REVIEW_UI = {
   en: {
@@ -1572,19 +1522,19 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, c
                 style={{ display: "block", width: "100%", padding: "10px 12px", textAlign: "left",
                   background: "none", border: "none", color: C.text1, fontSize: 13, fontWeight: 700,
                   cursor: "pointer", fontFamily: "inherit" }}>
-                Rename section
+                {builderText("renameSection")}
               </button>
               {heading !== defaultHeading && (
                 <button type="button" onClick={(e) => { e.stopPropagation(); setMenuOpen(false); setHeadingDraft(defaultHeading); onRestoreDefault?.(); }}
                   style={{ display: "block", width: "100%", padding: "10px 12px", textAlign: "left",
                     background: "none", border: "none", color: C.text1, fontSize: 13, fontWeight: 700,
                     cursor: "pointer", fontFamily: "inherit", boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}` }}>
-                  Restore default label
+                  {builderText("restoreDefaultLabel")}
                 </button>
               )}
               <div style={{ padding: "9px 12px", boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}`, color: C.text3,
                 fontSize: 11.5, lineHeight: 1.4 }}>
-                Reorder, hide, and delete are available on individual entries.
+                {builderText("sectionEntryActionsHint")}
               </div>
             </div>
           )}
@@ -2213,7 +2163,7 @@ function InteractiveResumeDemo({ isMobile, onContinue }) {
               padding: isMobile ? 14 : 20, boxShadow: "0 28px 80px rgba(0,0,0,0.55)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, gap: 12 }}>
               <h3 id="demo-preview-dialog-title" style={{ margin: 0, fontSize: 18, color: C.text1 }}>Expanded resume preview</h3>
-              <button type="button" onClick={() => setExpanded(false)} aria-label="Close expanded preview"
+              <button type="button" onClick={() => setExpanded(false)} aria-label={builderText("closeExpandedPreview")}
                 style={{ minWidth: 44, minHeight: 44, borderRadius: 10, border: `1px solid ${C.border}`,
                   background: C.elevated, color: C.text1, cursor: "pointer", fontSize: 22 }}>×</button>
             </div>
@@ -2667,7 +2617,7 @@ function AddContentModal({ open, onClose, addedSet, onAdd, sectionName, eui, rtl
   );
 }
 
-function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, kind = "resume" }) {
+function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, kind = "resume", labels = {} }) {
   const dialogRef = useRef(null);
   useEffect(() => {
     if (!template || typeof document === "undefined") return;
@@ -2717,7 +2667,7 @@ function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, k
           display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: "1.2px", textTransform: "uppercase",
-              color: C.accent2, marginBottom: 4 }}>Template preview</div>
+              color: C.accent2, marginBottom: 4 }}>{labels.previewEyebrow || "Template preview"}</div>
             <h2 id="template-preview-title" style={{ margin: 0, color: C.text1, fontSize: isMobile ? 20 : 24,
               letterSpacing: "-0.3px", lineHeight: 1.15 }}>{template.name}</h2>
           </div>
@@ -2725,9 +2675,9 @@ function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, k
             style={{ minHeight: 42, background: C.grad, color: "#fff", border: "none", borderRadius: 9,
               padding: isMobile ? "0 12px" : "0 18px", fontSize: 13.5, fontWeight: 900,
               cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
-            Use this template
+            {labels.useTemplate || "Use this template"}
           </button>
-          <button type="button" onClick={onClose} aria-label="Close template preview"
+          <button type="button" onClick={onClose} aria-label={labels.close || "Close template preview"}
             style={{ width: 42, height: 42, borderRadius: 9, border: `1px solid ${C.border}`,
               background: "transparent", color: C.text2, cursor: "pointer", fontSize: 22, lineHeight: 1,
               fontFamily: "inherit" }}>×</button>
@@ -3223,6 +3173,18 @@ export default function ResumeGenerator() {
   const translateLabel = useCallback((template, values = {}) => (
     String(template || "").replace(/\{(\w+)\}/g, (_, key) => values[key] ?? "")
   ), []);
+  const builderText = useCallback((key, values = {}) => (
+    translateLabel(bu[key] || BUILDER_UI.en[key] || key, values)
+  ), [bu, translateLabel]);
+  const statusText = useCallback((key, values = {}) => (
+    translateLabel(st[key] || STATUS_UI.en[key] || key, values)
+  ), [st, translateLabel]);
+  const accountText = useCallback((key, values = {}) => (
+    translateLabel(at[key] || ACCT_UI.en[key] || key, values)
+  ), [at, translateLabel]);
+  const commonText = useCallback((key, values = {}) => (
+    translateLabel(t[key] || UI.en[key] || key, values)
+  ), [t, translateLabel]);
   const set = useCallback((k) => (e) => setForm(f => ({ ...f, [k]: e.target.value })), []);
   const setField = useCallback((k, v) => setForm(f => ({ ...f, [k]: v })), []);
 
@@ -3429,7 +3391,18 @@ export default function ResumeGenerator() {
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [coverMoreOpen, setCoverMoreOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
-  const shareCopy = SHARE_LINK_UI[lang] || SHARE_LINK_UI.en;
+  const shareCopy = useMemo(() => ({
+    create: statusText("shareCreate"),
+    email: statusText("shareEmail"),
+    copyShort: statusText("shareCopyPrivate"),
+    open: statusText("shareOpen"),
+    ready: statusText("shareReady"),
+    canView: statusText("shareCanView"),
+    stored: statusText("shareStored"),
+    failed: statusText("shareFailed"),
+    privateReady: statusText("shareReady"),
+    emailBody: (url) => statusText("shareEmailBody", { url }),
+  }), [statusText]);
   const shareLink = useCallback((getPayload) => {
     try {
       const url = buildPrivateShareUrl(getPayload());
@@ -3447,9 +3420,9 @@ export default function ResumeGenerator() {
   const emailLink = useCallback((getPayload, subject) => {
     const url = shareLink(getPayload);
     if (!url) return;
-    const body = encodeURIComponent(`Here's my document, viewable in any browser:\n\n${url}\n\nMade free with ApplyCraft — applycraft.io`);
+    const body = encodeURIComponent(shareCopy.emailBody(url));
     if (typeof window !== "undefined") window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${body}`;
-  }, [shareLink]);
+  }, [shareCopy, shareLink]);
   const resumeSharePayload = useCallback(() => {
     const d = { name: liveData.name };
     if (liveData.title) d.title = liveData.title;
@@ -3468,7 +3441,7 @@ export default function ResumeGenerator() {
   // Reusable ⋮ menu (email + shareable link) for either editor.
   const renderMoreMenu = (open, setOpen, getPayload, subject) => (
     <div style={{ position: "relative" }}>
-      <button type="button" aria-label="More options" aria-expanded={open}
+      <button type="button" aria-label={builderText("moreOptions")} aria-expanded={open}
         onClick={() => { setOpen((o) => !o); setShareUrl(""); }}
         style={{ ...softBtn, padding: "7px 11px", fontWeight: 800 }}>⋮</button>
       {open && (
@@ -3499,7 +3472,7 @@ export default function ResumeGenerator() {
                 <button type="button" onClick={() => { try { navigator.clipboard && navigator.clipboard.writeText(shareUrl); } catch { /* noop */ } setStatusMsg(st.copied); setTimeout(() => setStatusMsg(""), 1500); }}
                   style={{ flex: 1, background: `${C.accent}18`, border: `1px solid ${C.accent}40`, borderRadius: 7, padding: "6px", fontSize: 12, fontWeight: 700, color: C.accent2, cursor: "pointer", fontFamily: "inherit" }}>{shareCopy.copyShort}</button>
                 <a href={shareUrl} target="_blank" rel="noreferrer"
-                  style={{ flex: 1, textAlign: "center", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 7, padding: "6px", fontSize: 12, fontWeight: 700, color: C.text2, textDecoration: "none", fontFamily: "inherit" }}>Open ↗</a>
+                  style={{ flex: 1, textAlign: "center", background: "transparent", border: `1px solid ${C.border}`, borderRadius: 7, padding: "6px", fontSize: 12, fontWeight: 700, color: C.text2, textDecoration: "none", fontFamily: "inherit" }}>{shareCopy.open} ↗</a>
               </div>
             </div>
           )}
@@ -3680,15 +3653,15 @@ export default function ResumeGenerator() {
   };
 
   async function generate() {
-    const nErr  = !form.name.trim()       ? "Full name is required."           : "";
+    const nErr  = !form.name.trim()       ? commonText("nameRequired")       : "";
     const eErr  = validateEmail(form.email);
     const pErr  = validatePhone(form.phone);
-    const tErr  = !form.title.trim()      ? "Job title is required."           : "";
-    const lErr  = !form.location.trim()   ? "Location is required."            : "";
-    const sErr  = !form.summary.trim()    ? "Professional summary is required.": "";
-    const xErr  = !form.experience.trim() ? "Work experience is required."     : "";
-    const edErr = !form.education.trim()  ? "Education is required."           : "";
-    const skErr = !form.skills.trim()     ? "Skills are required."             : "";
+    const tErr  = !form.title.trim()      ? commonText("titleRequired")      : "";
+    const lErr  = !form.location.trim()   ? commonText("locationRequired")   : "";
+    const sErr  = !form.summary.trim()    ? commonText("summaryRequired")    : "";
+    const xErr  = !form.experience.trim() ? commonText("experienceRequired") : "";
+    const edErr = !form.education.trim()  ? commonText("educationRequired")  : "";
+    const skErr = !form.skills.trim()     ? commonText("skillsRequired")     : "";
     setNameError(nErr); setEmailError(eErr); setPhoneError(pErr);
     setTitleError(tErr); setLocationError(lErr); setSummaryError(sErr);
     setExperienceError(xErr); setEducationError(edErr); setSkillsError(skErr);
@@ -4167,7 +4140,7 @@ Awards: ${form.awards}`;
           {!isMobile && <span style={{ fontSize: 11.5, color: C.text3, marginTop: 1 }}>{toolName}</span>}
         </button>
         {!isMobile && (
-          <nav aria-label="Primary tools" style={{ display: "flex", gap: 4, marginLeft: rtl ? 0 : 18, marginRight: rtl ? 18 : 0 }}>
+          <nav aria-label={builderText("primaryToolsNav")} style={{ display: "flex", gap: 4, marginLeft: rtl ? 0 : 18, marginRight: rtl ? 18 : 0 }}>
             {primaryToolNav.map((item) => (
               <button key={item.id} type="button" onClick={() => {
                   setNavPage(item.id);
@@ -4186,7 +4159,7 @@ Awards: ${form.awards}`;
         )}
         <div style={{ flex: 1 }} />
         {!isMobile && (
-          <span title="Saved locally in this browser and not backed up to the cloud."
+          <span title={builderText("savedLocalHeaderTooltip")}
             style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
             <LineIcon name="check" size={14} color={C.text3} /> {bu.savedLocally}
           </span>
@@ -4197,7 +4170,7 @@ Awards: ${form.awards}`;
           siteOnly
         />
         {isMobile && (
-          <button type="button" onClick={() => setSidebarOpen(true)} aria-label="Open tools menu"
+          <button type="button" onClick={() => setSidebarOpen(true)} aria-label={builderText("openToolsMenu")}
             style={{ width: 44, height: 44, borderRadius: 10, border: `1px solid ${C.border}`,
               background: C.surface, color: C.text2, cursor: "pointer", fontFamily: "inherit",
               display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>
@@ -4223,7 +4196,7 @@ Awards: ${form.awards}`;
             {!isMobile && <span style={{ fontSize: 11.5, color: C.text3, marginTop: 1 }}>{bu.toolName}</span>}
           </button>
           {!isMobile && (
-            <nav aria-label="Primary tools" style={{ display: "flex", gap: 4, marginLeft: rtl ? 0 : 18, marginRight: rtl ? 18 : 0 }}>
+            <nav aria-label={builderText("primaryToolsNav")} style={{ display: "flex", gap: 4, marginLeft: rtl ? 0 : 18, marginRight: rtl ? 18 : 0 }}>
               {primaryToolNav.map((item) => (
                 <button key={item.id} type="button" onClick={() => {
                     setNavPage(item.id);
@@ -4242,7 +4215,7 @@ Awards: ${form.awards}`;
           )}
           <div style={{ flex: 1 }} />
           {!isMobile && (
-            <span title="Saved locally in this browser and not backed up to the cloud."
+            <span title={builderText("savedLocalHeaderTooltip")}
               style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
               <LineIcon name="check" size={14} color={C.text3} /> {bu.savedLocally}
             </span>
@@ -4253,7 +4226,7 @@ Awards: ${form.awards}`;
             siteOnly
           />
           {isMobile && (
-            <button type="button" onClick={() => setSidebarOpen(true)} aria-label="Open tools menu"
+            <button type="button" onClick={() => setSidebarOpen(true)} aria-label={builderText("openToolsMenu")}
               style={{ width: 44, height: 44, borderRadius: 10, border: `1px solid ${C.border}`,
                 background: C.surface, color: C.text2, cursor: "pointer", fontFamily: "inherit",
                 display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>
@@ -4264,7 +4237,7 @@ Awards: ${form.awards}`;
       </header>
 
       {savedResumes.length > 0 && (
-        <section aria-label="My resumes" style={{ maxWidth: 1180, margin: "0 auto 6px", padding: isMobile ? "0 4px" : "0 28px" }}>
+        <section aria-label={builderText("myResumesRegion")} style={{ maxWidth: 1180, margin: "0 auto 6px", padding: isMobile ? "0 4px" : "0 28px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
             <h2 style={{ margin: 0, fontSize: isMobile ? 18 : 22, fontWeight: 900, color: C.text1 }}>
               {bu.myResumes}
@@ -4460,13 +4433,13 @@ Awards: ${form.awards}`;
                         opacity: isMobile ? 0 : active ? 1 : 0, pointerEvents: isMobile ? "none" : active ? "auto" : "none",
                         transition: "opacity 0.18s ease, background 0.18s ease" }}>
                         <button type="button" onClick={() => { track(EVENTS.TEMPLATE_PREVIEW_OPENED, { template: tp.id }); setTemplatePreview(tp); }}
-                          aria-label={`Preview ${tp.name} template`}
+                          aria-label={builderText("previewTemplate", { template: tp.name })}
                           style={{ minHeight: 40, padding: "0 14px", background: "rgba(15,23,42,0.82)",
                             color: "#fff", border: "1px solid rgba(255,255,255,0.28)", borderRadius: 9,
                             fontSize: 13, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
                           {bu.preview}
                         </button>
-                        <button type="button" aria-label={recommended ? "Use recommended template" : `Use ${tp.name} template`}
+                        <button type="button" aria-label={recommended ? builderText("useRecommendedTemplate") : builderText("useTemplateNamed", { template: tp.name })}
                           onClick={() => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery")}
                           style={{ minHeight: 40, padding: "0 15px", background: C.grad, color: "#fff",
                             border: "none", borderRadius: 9, fontSize: 13, fontWeight: 900,
@@ -4494,13 +4467,13 @@ Awards: ${form.awards}`;
                     {isMobile && (
                     <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
                       <button type="button" onClick={() => { track(EVENTS.TEMPLATE_PREVIEW_OPENED, { template: tp.id }); setTemplatePreview(tp); }}
-                        aria-label={`Preview ${tp.name} template`}
+                        aria-label={builderText("previewTemplate", { template: tp.name })}
                         style={{ flex: 1, minHeight: 44, padding: "0 13px", background: "transparent",
                           color: C.text2, border: `1px solid ${C.border}`, borderRadius: 9,
                           fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
                         {bu.preview}
                       </button>
-                      <button type="button" aria-label={recommended ? "Use recommended template" : `Use ${tp.name} template`}
+                      <button type="button" aria-label={recommended ? builderText("useRecommendedTemplate") : builderText("useTemplateNamed", { template: tp.name })}
                         onClick={() => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery")}
                         style={{ flex: 1, minHeight: 44, background: C.grad,
                           color: "#fff", border: "none",
@@ -4523,6 +4496,11 @@ Awards: ${form.awards}`;
         onUse={(template) => startWithTemplate(template, "template_preview")}
         isMobile={isMobile}
         rtl={rtl}
+        labels={{
+          previewEyebrow: builderText("templatePreviewEyebrow"),
+          useTemplate: builderText("useThisTemplate"),
+          close: builderText("closeTemplatePreview"),
+        }}
       />
     </div>
   ) : null;
@@ -5065,7 +5043,7 @@ Awards: ${form.awards}`;
           <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
             <h1 style={{ margin: 0, color: C.text1, fontSize: isMobile ? 16 : 18, lineHeight: 1.15,
               fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resumeTitle}</h1>
-            <span title="Saved locally in this browser. Your resume is not backed up to the cloud."
+            <span title={builderText("savedLocalTooltip")}
               style={{ color: C.text3, fontSize: 11.5, whiteSpace: "nowrap" }}>· {savedLabel}</span>
           </div>
           {!isMobile && (
@@ -5078,7 +5056,7 @@ Awards: ${form.awards}`;
           )}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-          <button type="button" onClick={saveCurrentResume} title="Save this resume to My Resumes"
+          <button type="button" onClick={saveCurrentResume} title={builderText("saveResumeTooltip")}
             style={{ ...softBtn, fontWeight: 700 }}>
             💾 {currentResumeId ? bu.save : bu.saveResume}
           </button>
@@ -5216,7 +5194,7 @@ Awards: ${form.awards}`;
               Go there
             </button>
           )}
-          <button onClick={() => setGuidanceDismissed(true)} aria-label="Dismiss recommendation"
+          <button onClick={() => setGuidanceDismissed(true)} aria-label={builderText("dismissRecommendation")}
             style={{ border: "none", background: "transparent", color: C.text3, cursor: "pointer",
               fontSize: 18, lineHeight: 1, padding: 4 }}>×</button>
         </div>
@@ -5313,7 +5291,7 @@ Awards: ${form.awards}`;
             <div style={{ flex: 1 }} data-field-wrap="">
               <label htmlFor="field-phone" style={lbl}>{t.phone}</label>
               <div style={{ display: "flex", gap: 6 }}>
-                <select aria-label="Country code" value={phoneCode} onChange={(e) => {
+                <select aria-label={builderText("countryCode")} value={phoneCode} onChange={(e) => {
                   const newCode = e.target.value;
                   setPhoneCode(newCode);
                   if (form.phone.trim()) setPhoneError(validatePhone(form.phone, newCode));
@@ -5400,7 +5378,7 @@ Awards: ${form.awards}`;
                       "{coachBullet.trim()}"
                     </div>
                   </div>
-                  <button onClick={() => setCoachOpen(false)} aria-label="Close achievement coach"
+                  <button onClick={() => setCoachOpen(false)} aria-label={builderText("closeAchievementCoach")}
                     style={{ background: "none", border: "none", color: C.text3,
                       cursor: "pointer", fontSize: 16, padding: "0 0 0 12px", lineHeight: 1 }}>✕</button>
                 </div>
@@ -5552,7 +5530,7 @@ Awards: ${form.awards}`;
                       An ApplyCraft heuristic for resume structure, content, and keywords. It does not reproduce any specific ATS (Workday, Greenhouse, Taleo, Lever…) and does not guarantee interviews.
                     </div>
                   </div>
-                  <button onClick={() => setAtsOpen(false)} aria-label="Close ATS checker"
+                  <button onClick={() => setAtsOpen(false)} aria-label={builderText("closeAtsChecker")}
                     style={{ background: "none", border: "none", color: C.text3,
                       cursor: "pointer", fontSize: 16, padding: "0 0 0 12px", lineHeight: 1 }}>✕</button>
                 </div>
@@ -5658,17 +5636,17 @@ Awards: ${form.awards}`;
               color: aiPolished ? tpl.accent : C.text2 }}>
               {aiPolished ? `✦ ${bu.aiPolished}` : `● ${bu.livePreview}`}
             </span>
-            <div aria-label="Preview controls" style={{ display: "flex", alignItems: "center", gap: 4,
+            <div aria-label={builderText("previewControls")} style={{ display: "flex", alignItems: "center", gap: 4,
               background: C.surface, borderRadius: 10, padding: 3 }}>
               <button type="button" onClick={() => setPreviewZoom(z => Math.max(60, z - 10))}
-                aria-label="Zoom preview out" style={{ ...previewToolBtn }}>−</button>
+                aria-label={builderText("zoomPreviewOut")} style={{ ...previewToolBtn }}>−</button>
               <span style={{ color: C.text3, fontSize: 12, minWidth: 42, textAlign: "center" }}>{previewZoom}%</span>
               <button type="button" onClick={() => setPreviewZoom(z => Math.min(120, z + 10))}
-                aria-label="Zoom preview in" style={{ ...previewToolBtn }}>+</button>
+                aria-label={builderText("zoomPreviewIn")} style={{ ...previewToolBtn }}>+</button>
               <button type="button" onClick={() => setPreviewZoom(86)}
                 style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>Fit</button>
               <button type="button" onClick={() => setZoomed(true)}
-                style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>Full</button>
+                style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>{builderText("full")}</button>
             </div>
           </div>
           <div
@@ -5764,14 +5742,14 @@ Awards: ${form.awards}`;
               borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
               cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center",
               justifyContent: "center", gap: 4 }}>
-            {mobileResumeMode === "edit" ? "Preview" : "Edit"}
+            {mobileResumeMode === "edit" ? bu.preview : bu.edit}
           </button>
           <button onClick={() => setExportMenuOpen(o => !o)} disabled={!!exporting}
             style={{ border: "none", background: C.grad, color: "#fff",
               borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
               cursor: exporting ? "not-allowed" : "pointer", fontFamily: "inherit",
               opacity: exporting ? 0.7 : 1 }}>
-            {exporting ? "Exporting..." : "Export"}
+            {exporting ? bu.exportingBtn : bu.exportBtn}
           </button>
         </div>
       )}
@@ -6111,13 +6089,13 @@ Awards: ${form.awards}`;
                         opacity: isMobile ? 0 : active ? 1 : 0, pointerEvents: isMobile ? "none" : active ? "auto" : "none",
                         transition: "opacity 0.18s ease, background 0.18s ease" }}>
                         <button type="button" onClick={() => { track(EVENTS.TEMPLATE_PREVIEW_OPENED, { template: tp.id }); setCoverTemplatePreview(tp); }}
-                          aria-label={`Preview ${tp.name} cover letter template`}
+                          aria-label={builderText("previewCoverTemplate", { template: tp.name })}
                           style={{ minHeight: 40, padding: "0 14px", background: "rgba(15,23,42,0.82)",
                             color: "#fff", border: "1px solid rgba(255,255,255,0.28)", borderRadius: 9,
                             fontSize: 13, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
                           {bu.preview}
                         </button>
-                        <button type="button" aria-label={recommended ? "Use recommended cover letter template" : `Use ${tp.name} cover letter template`}
+                        <button type="button" aria-label={recommended ? builderText("useRecommendedCoverTemplate") : builderText("useCoverTemplateNamed", { template: tp.name })}
                           onClick={() => { track(EVENTS.COVER_STARTED, { template: tp.id }); setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); }}
                           style={{ minHeight: 40, padding: "0 15px", background: C.grad, color: "#fff",
                             border: "none", borderRadius: 9, fontSize: 13, fontWeight: 900,
@@ -6141,13 +6119,13 @@ Awards: ${form.awards}`;
                     {isMobile && (
                       <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
                         <button type="button" onClick={() => { track(EVENTS.TEMPLATE_PREVIEW_OPENED, { template: tp.id }); setCoverTemplatePreview(tp); }}
-                          aria-label={`Preview ${tp.name} cover letter template`}
+                          aria-label={builderText("previewCoverTemplate", { template: tp.name })}
                           style={{ flex: 1, minHeight: 44, padding: "0 13px", background: "transparent",
                             color: C.text2, border: `1px solid ${C.border}`, borderRadius: 9,
                             fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
                           {bu.preview}
                         </button>
-                        <button type="button" aria-label={recommended ? "Use recommended cover letter template" : `Use ${tp.name} cover letter template`}
+                        <button type="button" aria-label={recommended ? builderText("useRecommendedCoverTemplate") : builderText("useCoverTemplateNamed", { template: tp.name })}
                           onClick={() => { track(EVENTS.COVER_STARTED, { template: tp.id }); setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); }}
                           style={{ flex: 1, minHeight: 44, background: C.grad, color: "#fff", border: "none",
                             borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
@@ -6170,6 +6148,11 @@ Awards: ${form.awards}`;
         isMobile={isMobile}
         rtl={rtl}
         kind="cover"
+        labels={{
+          previewEyebrow: builderText("templatePreviewEyebrow"),
+          useTemplate: builderText("useThisTemplate"),
+          close: builderText("closeTemplatePreview"),
+        }}
       />
     </div>
   );
@@ -6355,13 +6338,13 @@ Awards: ${form.awards}`;
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12,
               marginTop: isMobile ? 8 : 0, flexWrap: "wrap" }}>
               <span style={{ ...badge, ...badgeLive, background: C.elevated, color: C.text2 }}>● {bu.livePreview}</span>
-              <div aria-label="Preview controls" style={{ display: "flex", alignItems: "center", gap: 4,
+              <div aria-label={builderText("previewControls")} style={{ display: "flex", alignItems: "center", gap: 4,
                 background: C.surface, borderRadius: 10, padding: 3 }}>
                 <button type="button" onClick={() => setPreviewZoom(z => Math.max(60, z - 10))}
-                  aria-label="Zoom preview out" style={{ ...previewToolBtn }}>−</button>
+                  aria-label={builderText("zoomPreviewOut")} style={{ ...previewToolBtn }}>−</button>
                 <span style={{ color: C.text3, fontSize: 12, minWidth: 42, textAlign: "center" }}>{previewZoom}%</span>
                 <button type="button" onClick={() => setPreviewZoom(z => Math.min(120, z + 10))}
-                  aria-label="Zoom preview in" style={{ ...previewToolBtn }}>+</button>
+                  aria-label={builderText("zoomPreviewIn")} style={{ ...previewToolBtn }}>+</button>
                 <button type="button" onClick={() => setPreviewZoom(86)}
                   style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>{bu.fit}</button>
               </div>
@@ -6408,34 +6391,34 @@ Awards: ${form.awards}`;
 
   // ── Sidebar nav items ──────────────────────────────────────────────
   const NAV = [
-    { id: "resume",    icon: "📄", label: "Resume" },
-    { id: "master",    icon: "⭐", label: "Master Profile" },
-    { id: "cover",     icon: "✉️",  label: "Cover Letter" },
-    { id: "tracker",   icon: "📋", label: "Job Tracker" },
-    { id: "ats",       icon: "🎯", label: "ATS Checker" },
-    { id: "signature", icon: "✍️",  label: "Email Signature", soon: true },
-    { id: "website",   icon: "🌐", label: "Personal Website", soon: true },
-    { id: "about",     icon: "ℹ️",  label: "About" },
+    { id: "resume",    icon: "📄", label: builderText("resumeNav") },
+    { id: "master",    icon: "⭐", label: builderText("masterProfileNav") },
+    { id: "cover",     icon: "✉️",  label: builderText("coverLetterNav") },
+    { id: "tracker",   icon: "📋", label: builderText("jobTrackerNav") },
+    { id: "ats",       icon: "🎯", label: builderText("atsCheckerNav") },
+    { id: "signature", icon: "✍️",  label: builderText("emailSignatureNav"), soon: true },
+    { id: "website",   icon: "🌐", label: builderText("personalWebsiteNav"), soon: true },
+    { id: "about",     icon: "ℹ️",  label: builderText("aboutNav") },
   ];
 
   const COMING_SOON_COPY = {
     signature: {
-      title: "Email Signature",
-      sub: "Professional, multilingual email signatures — matching your resume style.",
-      cta: "Want it the moment it launches?",
+      title: builderText("emailSignatureNav"),
+      sub: builderText("emailSignatureSub"),
+      cta: builderText("emailSignatureCta"),
     },
     website: {
-      title: "Personal Website",
-      sub: "Turn your resume into a shareable personal site in one click.",
-      cta: "Want early access?",
+      title: builderText("personalWebsiteNav"),
+      sub: builderText("personalWebsiteSub"),
+      cta: builderText("personalWebsiteCta"),
     },
   };
 
   const ComingSoon = ({ id, label }) => {
-    const copy = COMING_SOON_COPY[id] || { title: label, sub: "This feature is on its way.", cta: "Stay tuned:" };
+    const copy = COMING_SOON_COPY[id] || { title: label, sub: builderText("featureOnWay"), cta: builderText("stayTuned") };
     return (
       <div style={{ padding: isMobile ? 20 : 40, maxWidth: 560 }}>
-        <PageHeader eyebrow="Coming Soon" icon="🚧" title={copy.title} sub={copy.sub} isMobile={isMobile} />
+        <PageHeader eyebrow={builderText("comingSoon")} icon="🚧" title={copy.title} sub={copy.sub} isMobile={isMobile} />
         <div style={{ marginTop: 8, fontSize: 14.5, color: C.text2 }}>
           {copy.cta}{" "}
           <a href={`mailto:${AUTHOR.email}?subject=${encodeURIComponent(copy.title + " — early access")}`}
@@ -7689,7 +7672,7 @@ Awards: ${form.awards}`;
             { id: "ats", label: footerNav.atsChecker, onClick: () => { setLandingMenuOpen(false); setAppView("app"); setNavPage("ats"); } },
           ]}
         />
-        <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)}
+        <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)} at={at}
           onLogin={user => {
             try { localStorage.setItem("ac_account", JSON.stringify(user)); } catch { /* noop */ }
             setCurrentUser(user); setAuthModal(false);
@@ -8375,7 +8358,7 @@ Awards: ${form.awards}`;
                 <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)",
                   color: C.text3, fontSize: 13, pointerEvents: "none" }}>🔍</span>
                 <input
-                  aria-label="Search features"
+                  aria-label={builderText("searchFeatures")}
                   value={sideSearch}
                   onChange={e => setSideSearch(e.target.value)}
                   placeholder={l2.searchFeatures}
@@ -8387,7 +8370,7 @@ Awards: ${form.awards}`;
                   onBlur={e => { e.target.style.borderColor = C.border; }}
                 />
                 {sideSearch && (
-                  <button onClick={() => setSideSearch("")} aria-label="Clear search"
+                  <button onClick={() => setSideSearch("")} aria-label={builderText("clearSearch")}
                     style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
                       background: "none", border: "none", color: C.text3, cursor: "pointer",
                       fontSize: 13, padding: 0, lineHeight: 1, fontFamily: "inherit" }}>✕</button>
@@ -8397,7 +8380,7 @@ Awards: ${form.awards}`;
           )}
 
           {/* Main nav */}
-          <nav aria-label="Main navigation" style={{ padding: "10px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          <nav aria-label={builderText("mainNavigation")} style={{ padding: "10px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
             {(sideSearch ? NAV.filter(n => n.label.toLowerCase().includes(sideSearch.toLowerCase())) : NAV).map((item) => (
               <button key={item.id} onClick={() => setNavPage(item.id)}
                 aria-label={!sidebarOpen ? item.label : undefined}
@@ -8414,7 +8397,7 @@ Awards: ${form.awards}`;
                   boxShadow: navPage === item.id ? `inset 2px 0 0 ${C.accent}` : "none" }}>
                 <span style={{ fontSize: 19, flexShrink: 0 }}>{item.icon}</span>
                 {sidebarOpen && <span style={{ overflow: "hidden", textOverflow: "ellipsis", flex: 1 }}>{item.label}</span>}
-                {sidebarOpen && item.soon && <span style={{ fontSize: 9, fontWeight: 700, color: C.accent2, background: `${C.accent}20`, borderRadius: 999, padding: "2px 6px", flexShrink: 0 }}>SOON</span>}
+                {sidebarOpen && item.soon && <span style={{ fontSize: 9, fontWeight: 700, color: C.accent2, background: `${C.accent}20`, borderRadius: 999, padding: "2px 6px", flexShrink: 0 }}>{builderText("soon")}</span>}
               </button>
             ))}
           </nav>
@@ -8425,9 +8408,9 @@ Awards: ${form.awards}`;
               <div style={{ padding: "10px 12px", background: `${C.accent}0E`,
                 border: `1px solid ${C.accent}30`, borderRadius: 10 }}>
                 <div style={{ fontSize: 13, fontWeight: 800, color: C.accent2, marginBottom: 4,
-                  letterSpacing: "0.4px" }}>100% FREE</div>
+                  letterSpacing: "0.4px" }}>{builderText("freeBadge")}</div>
                 <div style={{ fontSize: 12, color: C.text3, lineHeight: 1.55 }}>
-                  Templates, language options, and downloads are available without an account.
+                  {builderText("freeBadgeBody")}
                 </div>
                 {AUTHOR.github && (
                   <a href={AUTHOR.github} target="_blank" rel="noopener noreferrer"
@@ -8485,7 +8468,7 @@ Awards: ${form.awards}`;
                     style={{ display: "block", width: "100%", padding: "10px 14px", textAlign: "left",
                       background: "none", border: "none", color: "#f87171", fontSize: 13,
                       fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
-                    Sign out
+                    {at.signOut}
                   </button>
                 </div>
               )}
@@ -8498,7 +8481,7 @@ Awards: ${form.awards}`;
             </span>
           )}
         </div>
-        <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)}
+        <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)} at={at}
           onLogin={user => {
             try { localStorage.setItem("ac_account", JSON.stringify(user)); } catch { /* noop */ }
             setCurrentUser(user); setAuthModal(false);
@@ -8509,27 +8492,27 @@ Awards: ${form.awards}`;
 
         {/* Subscription upsell — shown when the free resume limit is reached */}
         {subModalOpen && (
-          <div onClick={() => setSubModalOpen(false)} role="dialog" aria-modal="true" aria-label="Subscribe for more resumes" dir={rtl ? "rtl" : "ltr"}
+          <div onClick={() => setSubModalOpen(false)} role="dialog" aria-modal="true" aria-label={accountText("subscribeMoreAria")} dir={rtl ? "rtl" : "ltr"}
             style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
             <div onClick={(e) => e.stopPropagation()}
               style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: "30px 28px", maxWidth: 420, width: "100%", boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}>
-              <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase", color: C.accent2, marginBottom: 10 }}>Unlock more resumes</div>
-              <h3 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 800, color: C.text1 }}>You've reached {resumes.FREE_RESUME_LIMIT} free resumes</h3>
+              <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: "1.5px", textTransform: "uppercase", color: C.accent2, marginBottom: 10 }}>{accountText("unlockMoreResumes")}</div>
+              <h3 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 800, color: C.text1 }}>{accountText("freeLimitReached", { count: resumes.FREE_RESUME_LIMIT })}</h3>
               <p style={{ margin: "0 0 18px", fontSize: 13.5, color: C.text2, lineHeight: 1.6 }}>
-                The first {resumes.FREE_RESUME_LIMIT} resumes are free. Subscribe for <strong style={{ color: C.text1 }}>${resumes.SUBSCRIPTION.priceUsd}/{resumes.SUBSCRIPTION.period}</strong> to create and save unlimited resumes — all still editable and exportable as PDF &amp; DOCX.
+                {accountText("freeLimitBody", { count: resumes.FREE_RESUME_LIMIT, price: `$${resumes.SUBSCRIPTION.priceUsd}`, period: resumes.SUBSCRIPTION.period })}
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
-                {["Unlimited saved resumes", "Switch between versions anytime", "Cancel anytime"].map((b) => (
+                {[accountText("unlimitedSavedResumes"), accountText("switchVersions"), accountText("cancelAnytime")].map((b) => (
                   <div key={b} style={{ fontSize: 13, color: C.text2, display: "flex", gap: 8 }}><span style={{ color: SECTION_TOKENS.statusComplete }}>✓</span>{b}</div>
                 ))}
               </div>
               <button type="button" onClick={handleSubscribe}
                 style={{ width: "100%", background: C.grad, color: "#fff", border: "none", borderRadius: 10, padding: "12px", fontSize: 14.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
-                Subscribe — ${resumes.SUBSCRIPTION.priceUsd}/{resumes.SUBSCRIPTION.period}
+                {accountText("subscribeButton", { price: `$${resumes.SUBSCRIPTION.priceUsd}`, period: resumes.SUBSCRIPTION.period })}
               </button>
               <button type="button" onClick={() => setSubModalOpen(false)}
                 style={{ width: "100%", background: "transparent", color: C.text3, border: "none", padding: "8px", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
-                Not now
+                {at.notNow}
               </button>
             </div>
           </div>
@@ -8543,7 +8526,7 @@ Awards: ${form.awards}`;
             <div style={{ display: "flex", alignItems: "center", gap: 6, overflowX: "auto",
               flex: 1, padding: "4px 0 0", scrollbarWidth: "none" }}>
               {/* Hamburger */}
-              <button onClick={() => setSidebarOpen(o => !o)} aria-label="Open menu" aria-expanded={sidebarOpen}
+              <button onClick={() => setSidebarOpen(o => !o)} aria-label={builderText("openMenu")} aria-expanded={sidebarOpen}
                 style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 8, background: C.surface,
                   border: `1px solid ${C.border}`, color: C.text2, cursor: "pointer",
                   fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center",
@@ -8557,7 +8540,7 @@ Awards: ${form.awards}`;
                     borderRadius: 8, border: `1px solid ${C.border}`, cursor: "pointer", fontSize: 12,
                     background: navPage === item.id ? `${C.accent}18` : "transparent",
                     color: navPage === item.id ? C.accent2 : C.text2, fontFamily: "inherit" }}>
-                  {item.icon} {item.label}{item.soon && <span style={{ fontSize: 9, fontWeight: 700, color: C.accent2, background: `${C.accent}20`, borderRadius: 999, padding: "1px 5px", marginLeft: 2 }}>SOON</span>}
+                  {item.icon} {item.label}{item.soon && <span style={{ fontSize: 9, fontWeight: 700, color: C.accent2, background: `${C.accent}20`, borderRadius: 999, padding: "1px 5px", marginLeft: 2 }}>{builderText("soon")}</span>}
                 </button>
               ))}
             </div>
@@ -8589,15 +8572,15 @@ Awards: ${form.awards}`;
                     background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                     ApplyCraft
                   </div>
-                  <div style={{ fontSize: 10.5, color: C.text3, marginTop: 1 }}>Career toolkit</div>
+                  <div style={{ fontSize: 10.5, color: C.text3, marginTop: 1 }}>{l2.toolkit}</div>
                 </button>
-                <button onClick={() => setSidebarOpen(false)} aria-label="Close menu"
+                <button onClick={() => setSidebarOpen(false)} aria-label={builderText("closeMenu")}
                   style={{ width: 30, height: 30, borderRadius: 8, background: C.surface,
                     border: `1px solid ${C.border}`, color: C.text2, cursor: "pointer",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 14, fontFamily: "inherit" }}>✕</button>
               </div>
-              <nav aria-label="Main navigation" style={{ padding: "10px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+              <nav aria-label={builderText("mainNavigation")} style={{ padding: "10px 8px", flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
                 {NAV.map((item) => (
                   <button key={item.id} onClick={() => { setNavPage(item.id); setSidebarOpen(false); }}
                     aria-current={navPage === item.id ? "page" : undefined}
@@ -8609,14 +8592,14 @@ Awards: ${form.awards}`;
                       boxShadow: navPage === item.id ? `inset 2px 0 0 ${C.accent}` : "none" }}>
                     <span style={{ fontSize: 17 }}>{item.icon}</span>
                     {item.label}
-                    {item.soon && <span style={{ fontSize: 9, fontWeight: 700, color: C.accent2, background: `${C.accent}20`, borderRadius: 999, padding: "2px 6px", marginLeft: "auto", flexShrink: 0 }}>SOON</span>}
+                    {item.soon && <span style={{ fontSize: 9, fontWeight: 700, color: C.accent2, background: `${C.accent}20`, borderRadius: 999, padding: "2px 6px", marginLeft: "auto", flexShrink: 0 }}>{builderText("soon")}</span>}
                   </button>
                 ))}
               </nav>
               <div style={{ padding: "10px 12px", borderTop: `1px solid ${C.border}` }}>
                 <div style={{ padding: "10px 12px", background: `${C.accent}0E`, border: `1px solid ${C.accent}30`, borderRadius: 10 }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: C.accent2, marginBottom: 4 }}>100% FREE</div>
-                  <div style={{ fontSize: 12, color: C.text3, lineHeight: 1.55 }}>Templates, language options, and downloads are available without an account.</div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: C.accent2, marginBottom: 4 }}>{builderText("freeBadge")}</div>
+                  <div style={{ fontSize: 12, color: C.text3, lineHeight: 1.55 }}>{builderText("freeBadgeBody")}</div>
                   {AUTHOR.github && (
                     <a href={AUTHOR.github} target="_blank" rel="noopener noreferrer"
                       style={{ display: "inline-block", marginTop: 7, fontSize: 12, fontWeight: 700, color: C.accent2, textDecoration: "none" }}>
@@ -9068,7 +9051,7 @@ function UpsellModal({ feature, onClose, onGetPass, at, rtl, C }) {
   );
 }
 
-function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
+function AuthModal({ open, initialTab = "login", onClose, onLogin, at = ACCT_UI.en }) {
   const [tab, setTab] = useState(initialTab);
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
   const [errors, setErrors] = useState({});
@@ -9092,7 +9075,7 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
       setShowCf(false);
       setCaptchaQ({ a: Math.ceil(Math.random() * 9), b: Math.ceil(Math.random() * 9) });
       setTimeout(() => {
-        const first = dialogRef.current?.querySelector('input, button:not([aria-label="Close"])');
+        const first = dialogRef.current?.querySelector(`input, button:not([aria-label="${at.close || "Close"}"])`);
         first?.focus();
       }, 50);
     }
@@ -9130,15 +9113,15 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
     return s;
   }
   const strength = pwStrength(form.password);
-  const strengthLabel = ["", "Weak", "Fair", "Good", "Strong"][strength];
+  const strengthLabel = ["", at.weak, at.fair, at.good, at.strong][strength];
   const strengthColor = ["", "#f87171", "#fbbf24", "#34d399", "#4ade80"][strength];
 
   async function handleLogin(e) {
     e.preventDefault();
     const er = {};
-    if (!form.email.trim()) er.email = "Email is required.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) er.email = "Enter a valid email address.";
-    if (!form.password) er.password = "Password is required.";
+    if (!form.email.trim()) er.email = at.emailRequired;
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) er.email = at.emailInvalid;
+    if (!form.password) er.password = at.passwordRequired;
     if (Object.keys(er).length) { setErrors(er); return; }
     setLoading(true);
     await new Promise(r => setTimeout(r, 900));
@@ -9149,15 +9132,15 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
   async function handleSignup(e) {
     e.preventDefault();
     const er = {};
-    if (!form.name.trim()) er.name = "Full name is required.";
-    if (!form.email.trim()) er.email = "Email is required.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) er.email = "Enter a valid email address.";
-    if (!form.password) er.password = "Password is required.";
-    else if (form.password.length < 8) er.password = "Must be at least 8 characters.";
-    if (form.confirm !== form.password) er.confirm = "Passwords don't match.";
-    if (!captchaInput.trim()) er.captcha = "Please complete the security check.";
+    if (!form.name.trim()) er.name = at.fullNameRequired;
+    if (!form.email.trim()) er.email = at.emailRequired;
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) er.email = at.emailInvalid;
+    if (!form.password) er.password = at.passwordRequired;
+    else if (form.password.length < 8) er.password = at.passwordMin;
+    if (form.confirm !== form.password) er.confirm = at.passwordMismatch;
+    if (!captchaInput.trim()) er.captcha = at.securityRequired;
     else if (parseInt(captchaInput, 10) !== captchaQ.a + captchaQ.b) {
-      er.captcha = "Incorrect answer — try again.";
+      er.captcha = at.securityIncorrect;
       setCaptchaQ({ a: Math.ceil(Math.random() * 9), b: Math.ceil(Math.random() * 9) });
       setCaptchaInput("");
     }
@@ -9187,7 +9170,7 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
   const merr = { color: "#f87171", fontSize: 11.5, margin: "5px 0 0", lineHeight: 1.4 };
 
   const SocialBtn = ({ icon, label }) => (
-    <button type="button" title="Coming soon — social login will be available soon"
+    <button type="button" title={at.socialSoonTitle}
       style={{ display: "flex", alignItems: "center", gap: 10, width: "100%",
         padding: "10px 14px", background: C.elevated, border: `1px solid ${C.border}`,
         borderRadius: 8, color: C.text2, fontSize: 13.5, fontWeight: 500, cursor: "not-allowed",
@@ -9198,7 +9181,7 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
       {label}
       <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 700, color: C.text3,
         background: C.surface, padding: "2px 7px", borderRadius: 999,
-        border: `1px solid ${C.border}`, letterSpacing: "0.3px" }}>Soon</span>
+        border: `1px solid ${C.border}`, letterSpacing: "0.3px" }}>{at.soon}</span>
     </button>
   );
 
@@ -9221,7 +9204,7 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
             background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
             ApplyCraft
           </div>
-          <button onClick={onClose} aria-label="Close"
+          <button onClick={onClose} aria-label={at.close}
             style={{ width: 30, height: 30, borderRadius: "50%", border: `1px solid ${C.border}`,
               background: C.elevated, color: C.text2, cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
@@ -9230,9 +9213,9 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
 
         {/* ── Tabs ── */}
         <div style={{ padding: "16px 28px 0" }}>
-          <div role="tablist" aria-label="Sign in options" style={{ display: "flex", background: C.elevated, borderRadius: 8,
+          <div role="tablist" aria-label={at.signInOptions} style={{ display: "flex", background: C.elevated, borderRadius: 8,
             padding: 3, border: `1px solid ${C.border}` }}>
-            {[["login", "Log In"], ["signup", "Create Account"]].map(([id, label]) => (
+            {[["login", at.loginTab], ["signup", at.createAccountTab]].map(([id, label]) => (
               <button key={id} type="button" role="tab" aria-selected={tab === id} aria-controls={`auth-panel-${id}`}
                 id={`auth-tab-${id}`} onClick={() => { setTab(id); setErrors({}); }}
                 style={{ flex: 1, padding: "9px 12px", borderRadius: 6, border: "none",
@@ -9255,10 +9238,10 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
             <div style={{ textAlign: "center", padding: "36px 0" }}>
               <div style={{ fontSize: 44, marginBottom: 14 }}>🎉</div>
               <div style={{ fontSize: 17, fontWeight: 700, color: "#4ade80", marginBottom: 8 }}>
-                Account created!
+                {at.accountCreated}
               </div>
               <div style={{ fontSize: 13.5, color: C.text2, lineHeight: 1.6 }}>
-                Welcome to ApplyCraft. Redirecting you to log in…
+                {at.welcomeRedirect}
               </div>
             </div>
           )}
@@ -9267,15 +9250,15 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
 
             {/* Social buttons */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
-              <SocialBtn icon="G" label="Continue with Google" />
-              <SocialBtn icon="f" label="Continue with Facebook" />
-              <SocialBtn icon="in" label="Continue with LinkedIn" />
+              <SocialBtn icon="G" label={at.continueGoogle} />
+              <SocialBtn icon="f" label={at.continueFacebook} />
+              <SocialBtn icon="in" label={at.continueLinkedIn} />
             </div>
 
             {/* Divider */}
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
               <div style={{ flex: 1, height: 1, background: C.border }} />
-              <span style={{ fontSize: 11.5, color: C.text3, fontWeight: 600, letterSpacing: "0.5px" }}>OR</span>
+              <span style={{ fontSize: 11.5, color: C.text3, fontWeight: 600, letterSpacing: "0.5px" }}>{at.or}</span>
               <div style={{ flex: 1, height: 1, background: C.border }} />
             </div>
 
@@ -9283,7 +9266,7 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
             {tab === "login" && (
               <form id="auth-panel-login" role="tabpanel" aria-labelledby="auth-tab-login" onSubmit={handleLogin} noValidate>
                 <div style={{ marginBottom: 14 }}>
-                  <label htmlFor="auth-login-email" style={mlbl}>Email address</label>
+                  <label htmlFor="auth-login-email" style={mlbl}>{at.emailLabel}</label>
                   <input id="auth-login-email" type="email" autoComplete="email" value={form.email} onChange={setF("email")}
                     placeholder="you@example.com"
                     aria-invalid={!!errors.email} aria-describedby={errors.email ? "auth-login-email-err" : undefined}
@@ -9293,7 +9276,7 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
                   {errors.email && <p id="auth-login-email-err" role="alert" style={merr}>{errors.email}</p>}
                 </div>
                 <div style={{ marginBottom: 22 }}>
-                  <label htmlFor="auth-login-password" style={mlbl}>Password</label>
+                  <label htmlFor="auth-login-password" style={mlbl}>{at.password}</label>
                   <div style={{ position: "relative" }}>
                     <input id="auth-login-password" type={showPw ? "text" : "password"} autoComplete="current-password"
                       value={form.password} onChange={setF("password")} placeholder="••••••••"
@@ -9302,7 +9285,7 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
                       onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
                       onBlur={e => { e.target.style.borderColor = errors.password ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
                     <button type="button" onClick={() => setShowPw(v => !v)}
-                      aria-label={showPw ? "Hide password" : "Show password"}
+                      aria-label={showPw ? at.hidePassword : at.showPassword}
                       style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
                         background: "none", border: "none", cursor: "pointer", color: C.text3,
                         fontSize: 16, padding: 0, lineHeight: 1 }}>{showPw ? "🙈" : "👁"}</button>
@@ -9316,14 +9299,14 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
                     opacity: loading ? 0.7 : 1,
                     boxShadow: loading ? "none" : "0 4px 20px rgba(99,102,241,0.45)",
                     transition: "opacity 0.15s" }}>
-                  {loading ? "Signing in…" : "Log In"}
+                  {loading ? at.signingIn : at.loginTab}
                 </button>
                 <p style={{ textAlign: "center", fontSize: 13, color: C.text3, margin: "16px 0 0" }}>
-                  No account yet?{" "}
+                  {at.noAccount}{" "}
                   <button type="button" onClick={() => { setTab("signup"); setErrors({}); }}
                     style={{ color: C.accent2, background: "none", border: "none",
                       cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700 }}>
-                    Create one free →
+                    {at.createOneFree}
                   </button>
                 </p>
               </form>
@@ -9333,7 +9316,7 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
             {tab === "signup" && (
               <form id="auth-panel-signup" role="tabpanel" aria-labelledby="auth-tab-signup" onSubmit={handleSignup} noValidate>
                 <div style={{ marginBottom: 14 }}>
-                  <label htmlFor="auth-signup-name" style={mlbl}>Full Name</label>
+                  <label htmlFor="auth-signup-name" style={mlbl}>{at.fullName}</label>
                   <input id="auth-signup-name" autoComplete="name" value={form.name} onChange={setF("name")}
                     placeholder="Jane Doe"
                     aria-invalid={!!errors.name} aria-describedby={errors.name ? "auth-signup-name-err" : undefined}
@@ -9343,7 +9326,7 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
                   {errors.name && <p id="auth-signup-name-err" role="alert" style={merr}>{errors.name}</p>}
                 </div>
                 <div style={{ marginBottom: 14 }}>
-                  <label htmlFor="auth-signup-email" style={mlbl}>Email address</label>
+                  <label htmlFor="auth-signup-email" style={mlbl}>{at.emailLabel}</label>
                   <input id="auth-signup-email" type="email" autoComplete="email" value={form.email} onChange={setF("email")}
                     placeholder="you@example.com"
                     style={{ ...minp(), ...(errors.email ? { borderColor: "#f87171" } : {}) }}
@@ -9352,16 +9335,16 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
                   {errors.email && <p id="auth-signup-email-err" role="alert" style={merr}>{errors.email}</p>}
                 </div>
                 <div style={{ marginBottom: 14 }}>
-                  <label htmlFor="auth-signup-password" style={mlbl}>Password</label>
+                  <label htmlFor="auth-signup-password" style={mlbl}>{at.password}</label>
                   <div style={{ position: "relative" }}>
                     <input id="auth-signup-password" type={showPw ? "text" : "password"} autoComplete="new-password"
-                      value={form.password} onChange={setF("password")} placeholder="Min. 8 characters"
+                      value={form.password} onChange={setF("password")} placeholder={at.minPassword}
                       aria-invalid={!!errors.password} aria-describedby={errors.password ? "auth-signup-pw-err" : undefined}
                       style={{ ...minp({ paddingRight: 42 }), ...(errors.password ? { borderColor: "#f87171" } : {}) }}
                       onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
                       onBlur={e => { e.target.style.borderColor = errors.password ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
                     <button type="button" onClick={() => setShowPw(v => !v)}
-                      aria-label={showPw ? "Hide password" : "Show password"}
+                      aria-label={showPw ? at.hidePassword : at.showPassword}
                       style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
                         background: "none", border: "none", cursor: "pointer",
                         color: C.text3, fontSize: 16, padding: 0, lineHeight: 1 }}>{showPw ? "🙈" : "👁"}</button>
@@ -9380,16 +9363,16 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
                   {errors.password && <p id="auth-signup-pw-err" role="alert" style={merr}>{errors.password}</p>}
                 </div>
                 <div style={{ marginBottom: 18 }}>
-                  <label htmlFor="auth-signup-confirm" style={mlbl}>Confirm Password</label>
+                  <label htmlFor="auth-signup-confirm" style={mlbl}>{at.confirmPassword}</label>
                   <div style={{ position: "relative" }}>
                     <input id="auth-signup-confirm" type={showCf ? "text" : "password"} autoComplete="new-password"
-                      value={form.confirm} onChange={setF("confirm")} placeholder="Repeat your password"
+                      value={form.confirm} onChange={setF("confirm")} placeholder={at.repeatPassword}
                       aria-invalid={!!errors.confirm} aria-describedby={errors.confirm ? "auth-signup-confirm-err" : undefined}
                       style={{ ...minp({ paddingRight: 42 }), ...(errors.confirm ? { borderColor: "#f87171" } : {}) }}
                       onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
                       onBlur={e => { e.target.style.borderColor = errors.confirm ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
                     <button type="button" onClick={() => setShowCf(v => !v)}
-                      aria-label={showCf ? "Hide confirm password" : "Show confirm password"}
+                      aria-label={showCf ? at.hideConfirmPassword : at.showConfirmPassword}
                       style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
                         background: "none", border: "none", cursor: "pointer",
                         color: C.text3, fontSize: 16, padding: 0, lineHeight: 1 }}>{showCf ? "🙈" : "👁"}</button>
@@ -9403,10 +9386,10 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
                   <div style={{ fontSize: 11, fontWeight: 800, color: C.accent2,
                     textTransform: "uppercase", letterSpacing: "1px", marginBottom: 10,
                     display: "flex", alignItems: "center", gap: 6 }}>
-                    <span aria-hidden="true">🔒</span> Security Check
+                    <span aria-hidden="true">🔒</span> {at.securityCheck}
                   </div>
                   <div style={{ fontSize: 12.5, color: C.text2, marginBottom: 10 }}>
-                    Solve this to verify you're human:
+                    {at.securityPrompt}
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div id="auth-captcha-question" style={{ fontFamily: "monospace", fontSize: 18, fontWeight: 700,
@@ -9416,10 +9399,10 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
                       {captchaQ.a} + {captchaQ.b} = ?
                     </div>
                     <input id="auth-captcha-answer" type="number" inputMode="numeric" value={captchaInput}
-                      aria-label={`Security check: ${captchaQ.a} plus ${captchaQ.b} equals?`}
+                      aria-label={String(at.securityAria || "").replace("{a}", captchaQ.a).replace("{b}", captchaQ.b)}
                       aria-invalid={!!errors.captcha} aria-describedby={errors.captcha ? "auth-captcha-err" : undefined}
                       onChange={e => { setCaptchaInput(e.target.value); if (errors.captcha) setErrors(er => ({ ...er, captcha: "" })); }}
-                      placeholder="Answer"
+                      placeholder={at.answer}
                       style={{ ...minp({ width: 100, flexShrink: 0 }), ...(errors.captcha ? { borderColor: "#f87171" } : {}) }}
                       onFocus={e => { e.target.style.borderColor = C.accent; e.target.style.boxShadow = `0 0 0 3px ${C.accent}22`; }}
                       onBlur={e => { e.target.style.borderColor = errors.captcha ? "#f87171" : C.border; e.target.style.boxShadow = "none"; }} />
@@ -9434,20 +9417,20 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin }) {
                     opacity: loading ? 0.7 : 1,
                     boxShadow: loading ? "none" : "0 4px 20px rgba(99,102,241,0.45)",
                     transition: "opacity 0.15s" }}>
-                  {loading ? "Creating account…" : "Create Account — Free"}
+                  {loading ? at.creatingAccount : at.createAccountFree}
                 </button>
                 <p style={{ textAlign: "center", fontSize: 12.5, color: C.text3, margin: "14px 0 0", lineHeight: 1.5 }}>
-                  By creating an account you agree to our{" "}
-                  <span style={{ color: C.text2, textDecoration: "underline", cursor: "pointer" }}>Terms</span>
-                  {" "}and{" "}
-                  <span style={{ color: C.text2, textDecoration: "underline", cursor: "pointer" }}>Privacy Policy</span>.
+                  {at.termsAgree}{" "}
+                  <span style={{ color: C.text2, textDecoration: "underline", cursor: "pointer" }}>{at.terms}</span>
+                  {" "}{at.and}{" "}
+                  <span style={{ color: C.text2, textDecoration: "underline", cursor: "pointer" }}>{at.privacyPolicy}</span>.
                 </p>
                 <p style={{ textAlign: "center", fontSize: 13, color: C.text3, margin: "10px 0 0" }}>
-                  Already have an account?{" "}
+                  {at.alreadyAccount}{" "}
                   <button type="button" onClick={() => { setTab("login"); setErrors({}); }}
                     style={{ color: C.accent2, background: "none", border: "none",
                       cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700 }}>
-                    Log in →
+                    {at.logInArrow}
                   </button>
                 </p>
               </form>

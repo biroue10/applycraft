@@ -47,7 +47,14 @@ const common = {
   "placeholderAwards": "اسم الجائزة، المانح، السنة — سطر لكل إدخال",
   "emailError": "يرجى إدخال عنوان بريد إلكتروني صحيح",
   "phoneError": "رقم غير صحيح",
-  "phoneDigits": "أرقام مطلوبة"
+  "phoneDigits": "أرقام مطلوبة",
+  "nameRequired": "الاسم الكامل مطلوب.",
+  "titleRequired": "المسمى الوظيفي مطلوب.",
+  "locationRequired": "الموقع مطلوب.",
+  "summaryRequired": "الملخص المهني مطلوب.",
+  "experienceRequired": "الخبرة العملية مطلوبة.",
+  "educationRequired": "التعليم مطلوب.",
+  "skillsRequired": "المهارات مطلوبة."
 };
 
 export default common;

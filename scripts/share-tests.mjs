@@ -106,12 +106,15 @@ assert.ok(/dir=\{resolved\.rtl \? "rtl" : "ltr"\}/.test(sharedSource), "shared d
 assert.ok(/@media print/.test(sharedSource), "shared viewer should include print styles");
 
 const generatorSource = fs.readFileSync("src/ResumeGenerator.jsx", "utf8");
+const enStatusSource = fs.readFileSync("src/i18n/namespaces/en/status.js", "utf8");
 assert.ok(/v:\s*2,\s*k:\s*"resume"/.test(generatorSource), "resume share payload should use schema v2");
 assert.ok(/v:\s*2,\s*k:\s*"cover"/.test(generatorSource), "cover share payload should use schema v2");
 assert.ok(/l:\s*docLang/.test(generatorSource), "share payloads should include document language");
 assert.ok(/isCustom: Boolean\(form\.sectionTitles\?\.\[key\]\)/.test(generatorSource), "live sections should preserve custom-label metadata");
-assert.ok(generatorSource.includes("Create private offline link"), "share UI should label hash links as private/offline");
-assert.ok(generatorSource.includes("This link keeps the document data inside the URL"), "share UI should explain why hash links can be long");
+assert.ok(generatorSource.includes("shareCreate"), "share UI should read private/offline labels from translations");
+assert.ok(generatorSource.includes("shareStored"), "share UI should read long-link explanation from translations");
+assert.ok(enStatusSource.includes("Create private offline link"), "share UI should label hash links as private/offline");
+assert.ok(enStatusSource.includes("This link keeps the document data inside the URL"), "share UI should explain why hash links can be long");
 assert.ok(!generatorSource.includes("createShortShareLink"), "default share menu should not call the paused short-link API");
 assert.ok(!generatorSource.includes("Create short public link"), "default share menu should not present short public links as active");
 

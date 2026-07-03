@@ -47,7 +47,14 @@ const common = {
   "placeholderAwards": "Nom du prix, organisme, année — une par ligne",
   "emailError": "Veuillez saisir une adresse e-mail valide",
   "phoneError": "Numéro invalide",
-  "phoneDigits": "chiffres requis"
+  "phoneDigits": "chiffres requis",
+  "nameRequired": "Le nom complet est obligatoire.",
+  "titleRequired": "L'intitulé du poste est obligatoire.",
+  "locationRequired": "La localisation est obligatoire.",
+  "summaryRequired": "Le résumé professionnel est obligatoire.",
+  "experienceRequired": "L'expérience professionnelle est obligatoire.",
+  "educationRequired": "La formation est obligatoire.",
+  "skillsRequired": "Les compétences sont obligatoires."
 };
 
 export default common;
