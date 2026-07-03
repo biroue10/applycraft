@@ -14,7 +14,7 @@ export const SITE_COLORS = {
 
 const AUTHOR_EMAIL = "hello@applycraft.io";
 const AUTHOR_GITHUB = "https://github.com/biroue10";
-const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
+const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-light.png";
 
 function BrandLogoImage({ compact = false, style = {} }) {
   return (
@@ -28,10 +28,9 @@ function BrandLogoImage({ compact = false, style = {} }) {
         display: "block",
         height: compact ? 28 : 32,
         width: "auto",
-        maxWidth: compact ? 138 : 160,
+        maxWidth: compact ? 148 : 178,
         objectFit: "contain",
-        borderRadius: 6,
-        background: "#fff",
+        filter: "drop-shadow(0 1px 0 rgba(255,255,255,0.08)) drop-shadow(0 8px 18px rgba(37,99,235,0.18))",
         ...style,
       }}
     />
@@ -112,7 +111,7 @@ export function SiteHeader({
         .ac-nav-logo {
           max-width: 142px !important;
         }
-        .ac-brand-logo-img { height: 28px !important; max-width: 142px !important; }
+        .ac-brand-logo-img { height: 28px !important; max-width: 148px !important; }
         .ac-site-nav-links {
           display: none !important;
         }
@@ -162,7 +161,7 @@ export function SiteHeader({
             alignItems: "center",
             lineHeight: 1,
           }}>
-          <BrandLogoImage style={{ height: 34, maxWidth: 170 }} />
+          <BrandLogoImage style={{ height: 34, maxWidth: 182 }} />
         </LogoTag>
         <nav aria-label="Primary tools" className="ac-site-nav-links" style={{ display: "flex", gap: 4, marginInlineStart: 18 }}>
           {items.map((item) => {
