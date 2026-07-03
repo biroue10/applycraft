@@ -44,7 +44,7 @@ const SITE_LANGUAGE_CODES = new Set(INTERFACE_LANGUAGES);
 // by scripts/product-tests.mjs.
 const LOCALIZED_DOCUMENT_LANGUAGE_COUNT = PRODUCT.localizedDocumentLanguageCount;
 const UI_LANGUAGE_COUNT = PRODUCT.interfaceLanguageCount;
-const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-light.png";
+const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
 
 function AppBrandLogo({ compact = false, style = {} }) {
   return (
@@ -57,9 +57,10 @@ function AppBrandLogo({ compact = false, style = {} }) {
         display: "block",
         height: compact ? 28 : 32,
         width: "auto",
-        maxWidth: compact ? 148 : 178,
+        maxWidth: compact ? 138 : 160,
         objectFit: "contain",
-        filter: "drop-shadow(0 1px 0 rgba(255,255,255,0.08)) drop-shadow(0 8px 18px rgba(37,99,235,0.18))",
+        borderRadius: 6,
+        background: "#fff",
         ...style,
       }}
     />
