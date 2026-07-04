@@ -653,6 +653,26 @@ const THUMB_SAMPLES = {
   },
 };
 
+const THUMB_SAMPLE_LANG = {
+  classic: "ar",
+  modern: "fr",
+  minimal: "en",
+  bold: "fr",
+  elegant: "es",
+  executive: "en",
+  creative: "ar",
+  tech: "en",
+  sharp: "en",
+  nordic: "no",
+  slate: "en",
+  horizon: "fr",
+  prism: "en",
+};
+
+function sampleLangForTemplate(template) {
+  return THUMB_SAMPLES[template?.id]?.lang || THUMB_SAMPLE_LANG[template?.id] || "en";
+}
+
 // ── Sample data used in template thumbnail previews ───────────────
 const SAMPLE_RESUME = {
   name: "Alexandra Johnson",
@@ -2782,6 +2802,7 @@ function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, k
   };
   const sample = kind === "cover" ? {} : (THUMB_SAMPLES[template.id] || {});
   const isRtlPreview = sample.rtl || rtl;
+  const sampleLang = sampleLangForTemplate(template);
   return (
     <div onClick={onClose} dir={rtl ? "rtl" : "ltr"}
       style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,0.68)",
@@ -2826,6 +2847,7 @@ function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, k
                 <ResumePaper tpl={template}
                   result={sample.result || SAMPLE_RESUME}
                   rtl={isRtlPreview}
+                  lang={sampleLang}
                   placeholder={false} />
               </div>
             )}
@@ -3275,6 +3297,9 @@ export default function ResumeGenerator() {
   const builderText = useCallback((key, values = {}) => (
     translateLabel(bu[key] || BUILDER_UI.en[key] || key, values)
   ), [bu, translateLabel]);
+  const templateTagText = useCallback((template) => (
+    l2.templateTags?.[template?.id] || template?.tag || ""
+  ), [l2]);
   const statusText = useCallback((key, values = {}) => (
     translateLabel(st[key] || STATUS_UI.en[key] || key, values)
   ), [st, translateLabel]);
@@ -4434,7 +4459,7 @@ Awards: ${form.awards}`;
   const getTemplateMeta = (template) => {
     const baseMeta = TEMPLATE_GALLERY_META[template.id] || (template.variant ? TEMPLATE_GALLERY_META[template.variant] : null);
     return {
-      description: template.tag || baseMeta?.description || "Professional layout with clear sections and export support.",
+      description: templateTagText(template) || baseMeta?.description || "Professional layout with clear sections and export support.",
       bestFor: baseMeta?.bestFor || "Best for general professional applications.",
       attributes: baseMeta?.attributes || ["Professional", "Flexible"],
       layout: baseMeta?.layout || "Flexible",
@@ -4451,7 +4476,7 @@ Awards: ${form.awards}`;
     if (!q) return true;
     return [
       template.name,
-      template.tag,
+      templateTagText(template),
       meta.description,
       meta.bestFor,
       meta.layout,
@@ -8688,7 +8713,7 @@ Awards: ${form.awards}`;
                     </div>
                     <div style={{ padding: "10px 4px 0" }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>{tp.name}</div>
-                      <div style={{ fontSize: 11.5, color: C.text2, marginTop: 2 }}>{tp.tag}</div>
+                      <div style={{ fontSize: 11.5, color: C.text2, marginTop: 2 }}>{templateTagText(tp)}</div>
                       <button type="button" onClick={() => startWithTemplate(tp, "landing_template")}
                         style={{ marginTop: 8, minHeight: 36, borderRadius: 6, border: `1px solid ${C.borderHi}`,
                           background: `${C.accent}12`, color: C.accent2, fontSize: 12.5, fontWeight: 700,
@@ -10626,6 +10651,7 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
               <ResumePaper tpl={template}
                 result={THUMB_SAMPLES[template.id]?.result || SAMPLE_RESUME}
                 rtl={rtl}
+                lang={sampleLangForTemplate(template)}
                 placeholder={false}
                 preview />
             )}

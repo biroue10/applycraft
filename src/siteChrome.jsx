@@ -299,9 +299,9 @@ export function SiteFooter({ lang = "en", className = "" }) {
           <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
             <div>
               <div style={col}>{f.product}</div>
-              <a href="/resume/templates" style={lk}>{f.resumeBuilder}</a>
-              <a href="/fr/" style={lk}>Créateur de CV</a>
-              <a href="/ar/" style={lk}>منشئ السيرة الذاتية</a>
+              <a href="/resume/templates" style={lk}>{f.resumeTemplates || f.resumeBuilder}</a>
+              <a href="/fr/" style={lk}>{f.frenchResumeBuilder || "Créateur de CV"}</a>
+              <a href="/ar/" style={lk}>{f.arabicResumeBuilder || "منشئ السيرة الذاتية بالعربية"}</a>
               <a href="/cover-letter/templates" style={lk}>{f.coverLetter}</a>
               <a href="/ats-checker/" style={lk}>{f.atsChecker}</a>
               <a href="/ats-checker-fr/" style={lk}>Vérificateur ATS</a>
@@ -321,7 +321,7 @@ export function SiteFooter({ lang = "en", className = "" }) {
               <div style={col}>{f.resources}</div>
               <a href="/blog/" style={lk}>{f.blog}</a>
               <a href="/help/" style={lk}>{f.help}</a>
-              <a href="/examples/" style={lk}>Examples</a>
+              <a href="/examples/" style={lk}>{f.examples || "Examples"}</a>
               <a href="/resume/templates" style={lk}>{f.resumeGuide}</a>
               <a href="/ats-resume-builder/" style={lk}>{f.atsGuide}</a>
               <a href="/cover-letter-builder/" style={lk}>{f.coverGuide}</a>

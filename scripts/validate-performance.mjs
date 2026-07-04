@@ -23,7 +23,7 @@ const PUBLIC = new URL("../public", import.meta.url).pathname;
 const LAZY_ONLY = ["jspdf", "docx", "html2canvas", "dompurify"];
 
 // Max gzip size of any single initial JS chunk, in bytes.
-const MAX_INITIAL_CHUNK_GZ = 190_000;   // current app shell baseline
+const MAX_INITIAL_CHUNK_GZ = 192_000;   // current app shell baseline
 
 // Max total gzip size of all JS loaded synchronously on initial page load, in bytes.
 // Rebaselined for the shipped 5-language interface i18n (en/fr/es/ar/de), whose

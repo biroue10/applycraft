@@ -49,6 +49,7 @@ const landing2 = {
     "eyebrow": "Comparaison",
     "title": "Aucun paywall au moment du téléchargement.",
     "desc": "La plupart des outils vous laissent concevoir un CV, puis réclament votre carte dès que vous cliquez sur télécharger. ApplyCraft ne le fait jamais.",
+    "feature": "Fonctionnalité",
     "col2": "Outils habituels",
     "included": "Inclus",
     "rows": [
@@ -86,6 +87,42 @@ const landing2 = {
       ]
     ],
     "footnote": "« Outils habituels » reflète les pratiques courantes des principaux créateurs de CV payants. Les options ApplyCraft (adaptation IA, synchronisation) sont un pass unique de 7 jours — jamais un abonnement."
+  },
+  "why": {
+    "eyebrow": "Pourquoi ApplyCraft",
+    "title": "Pourquoi les candidats choisissent ApplyCraft",
+    "items": [
+      {
+        "icon": "document",
+        "t": "PDF et DOCX gratuits",
+        "d": "Téléchargez des fichiers professionnels sans paywall à l'export."
+      },
+      {
+        "icon": "check",
+        "t": "Aucune inscription requise",
+        "d": "Commencez immédiatement sans adresse e-mail ni compte."
+      },
+      {
+        "icon": "check",
+        "t": "Aucun filigrane",
+        "d": "Votre CV et votre lettre exportés restent propres et prêts à envoyer."
+      },
+      {
+        "icon": "lock",
+        "t": "Confidentialité côté navigateur",
+        "d": "L'édition principale et l'export se font dans votre navigateur par défaut."
+      },
+      {
+        "icon": "globe",
+        "t": "Anglais, français et arabe",
+        "d": "Interface, libellés de document et mises en page RTL prêts pour la production."
+      },
+      {
+        "icon": "spark",
+        "t": "Pass unique",
+        "d": "Les options payantes facultatives utilisent un pass ponctuel, pas un abonnement piégeux."
+      }
+    ]
   },
   "ml": {
     "eyebrow": "Super-pouvoirs multilingues",
@@ -236,6 +273,14 @@ const landing2 = {
     "demoReset": "Démo réinitialisée.",
     "exportReady": "Votre brouillon {format} est prêt. Continuez dans l’éditeur complet pour le personnaliser et l’exporter.",
     "exportAvailable": "L’export {format} est disponible dans l’éditeur complet."
+  },
+  "templateTags": {
+    "classic": "Intemporel, serif, une colonne",
+    "modern": "Sans-serif épuré avec barre latérale",
+    "minimal": "Beaucoup d'espace blanc, discret",
+    "bold": "Bandeau d'en-tête fort, contraste élevé",
+    "elegant": "Raffiné, filets fins, léger",
+    "executive": "En-tête fractionné, sections en barre latérale, doré"
   },
   "toolkit": "Boîte à outils carrière",
   "searchFeatures": "Rechercher des fonctions..."
