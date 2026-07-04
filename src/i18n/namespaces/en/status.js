@@ -32,6 +32,7 @@ const status = {
   "translateLimitReached": "You have reached your free translation limit.",
   "translateProtectedTermsMissing": "Translation needs review because some protected terms changed.",
   "translatePartial": "Some fields could not be translated and were kept from the original.",
+  "translateSectionsPartial": "Some sections could not be translated and were kept from the original.",
   "translateNoContent": "Add resume content before translating.",
   "shareCreate": "Create private offline link",
   "shareCreating": "Creating link...",

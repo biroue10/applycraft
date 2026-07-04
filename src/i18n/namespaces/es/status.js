@@ -31,6 +31,7 @@ const status = {
   "translateRateLimited": "Demasiadas solicitudes de traducción. Inténtalo de nuevo más tarde.",
   "translateLimitReached": "Has alcanzado tu límite de traducción gratuita.",
   "translatePartial": "Algunos campos no se pudieron traducir y se conservaron del original.",
+  "translateSectionsPartial": "Algunas secciones no se pudieron traducir y se conservaron del original.",
   "translateNoContent": "Agrega contenido al currículum antes de traducir."
 };
 

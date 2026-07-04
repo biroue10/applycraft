@@ -32,6 +32,7 @@ const status = {
   "translateLimitReached": "لقد وصلت إلى حد الترجمة المجانية.",
   "translateProtectedTermsMissing": "تحتاج الترجمة إلى مراجعة لأن بعض المصطلحات المحمية تغيّرت.",
   "translatePartial": "تعذر ترجمة بعض الحقول، لذلك تم الاحتفاظ بها من النسخة الأصلية.",
+  "translateSectionsPartial": "تعذر ترجمة بعض الأقسام، لذلك تم الاحتفاظ بها من النسخة الأصلية.",
   "translateNoContent": "أضف محتوى إلى السيرة الذاتية قبل الترجمة.",
   "shareCreate": "إنشاء رابط خاص دون اتصال",
   "shareCreating": "جارٍ إنشاء الرابط...",

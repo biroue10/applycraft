@@ -448,6 +448,7 @@ Rules:
 - Do not invent facts, achievements, employers, schools, dates, certifications, metrics, or skills.
 - Preserve names, emails, phone numbers, URLs, LinkedIn links, company names, product names, certifications, acronyms, and technical terms when they are normally used in English.
 - Preserve dates, numbers, bullet structure, and field order.
+- Preserve section boundaries, blank-line entry breaks, and the number of entries in each section.
 - Translate professional summaries, responsibilities, achievements, education descriptions, project descriptions, and cover-letter paragraphs naturally.
 - Use professional résumé language in the target language.
 - For Arabic, use professional Modern Standard Arabic.

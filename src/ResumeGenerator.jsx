@@ -1303,6 +1303,38 @@ function migrateForm(form) {
   return out;
 }
 
+function mergeTranslatedEntries(key, originalEntries = [], translatedText = "") {
+  const original = Array.isArray(originalEntries) ? originalEntries : [];
+  const parsed = parseEntries(key, translatedText);
+  if (!original.length) return { entries: parsed, preservedOriginal: false };
+  if (!translatedText || !String(translatedText).trim() || parsed.length < original.length) {
+    return { entries: original.map((entry) => ({ ...entry })), preservedOriginal: true };
+  }
+  const schema = ENTRY_SCHEMAS[key];
+  const entries = original.map((oldEntry, index) => {
+    const incoming = parsed[index] || {};
+    const next = { ...oldEntry };
+    schema.fields.forEach((field) => {
+      const translatedValue = typeof incoming[field] === "string" ? incoming[field].trim() : incoming[field];
+      if (translatedValue) next[field] = translatedValue;
+    });
+    next.id = oldEntry.id || incoming.id || uid();
+    next.visible = oldEntry.visible !== false;
+    if (key === "education") {
+      next.titleUrl = oldEntry.titleUrl || incoming.titleUrl || "";
+      next.startDate = oldEntry.startDate || incoming.startDate || "";
+      next.endDate = oldEntry.endDate || incoming.endDate || "";
+    }
+    if (schema.type === "role") {
+      next.startDate = oldEntry.startDate || incoming.startDate || "";
+      next.endDate = oldEntry.endDate || incoming.endDate || "";
+    }
+    return next;
+  });
+  if (parsed.length > original.length) entries.push(...parsed.slice(original.length));
+  return { entries, preservedOriginal: false };
+}
+
 // Build resume data straight from the form so the preview updates as the user types.
 // Reads the entry arrays directly so hidden entries are excluded from the output.
 function buildLiveData(form, t) {
@@ -3876,22 +3908,43 @@ export default function ResumeGenerator() {
       const nextForm = (() => {
         const next = { ...translatedCopy };
         next.documentLanguage = langCode;
-        // Re-sync entry arrays for any translated section (preserve visibility by position).
+        const preservedSections = [];
         SECTION_KEYS.forEach((key) => {
-          if (typeof translated[key] === "string") {
-            const old = sourceForm[key + "Entries"] || [];
-            const parsed = parseEntries(key, translated[key]).map((e, i) => ({ ...e, visible: old[i] ? old[i].visible !== false : true }));
-            next[key + "Entries"] = parsed;
-            next[key] = entriesToText(key, parsed);
+          const old = sourceForm[key + "Entries"] || [];
+          if (!old.length && typeof translated[key] !== "string") return;
+          const merged = mergeTranslatedEntries(key, old, translated[key]);
+          if (merged.preservedOriginal) preservedSections.push(key);
+          next[key + "Entries"] = merged.entries;
+          next[key] = entriesToText(key, merged.entries);
+          if (merged.preservedOriginal) {
+            next.translationMeta = {
+              ...(next.translationMeta || {}),
+              fields: {
+                ...(next.translationMeta?.fields || {}),
+                [key]: {
+                  translationStatus: TRANSLATION_STATUSES.needsReview,
+                  sourceLanguage: request.sourceLanguage,
+                  targetLanguage: langCode,
+                  translatedAt,
+                },
+              },
+            };
           }
         });
+        next.translationMeta = {
+          ...(next.translationMeta || {}),
+          translationStatus: preservedSections.length ? TRANSLATION_STATUSES.needsReview : next.translationMeta?.translationStatus,
+          reviewed: false,
+          preservedSections,
+        };
         return next;
       })();
+      const preservedSections = nextForm.translationMeta?.preservedSections || [];
       setTranslationReview({
         open: true,
         original: originalSnapshot,
         translated: nextForm,
-        fields: TRANSLATABLE_RESUME_FIELDS.filter((key) => typeof translated[key] === "string"),
+        fields: TRANSLATABLE_RESUME_FIELDS.filter((key) => typeof translated[key] === "string" || preservedSections.includes(key)),
         meta: {
           sourceLanguage: request.sourceLanguage,
           targetLanguage: langCode,
@@ -3899,10 +3952,12 @@ export default function ResumeGenerator() {
           sourceVersionId: sourceVersionId || "",
           translatedAt,
         },
-        warning: missingProtected.length || untranslatedFields.length ? statusText("translatePartial") : "",
+        warning: missingProtected.length || untranslatedFields.length || preservedSections.length
+          ? statusText(preservedSections.length ? "translateSectionsPartial" : "translatePartial")
+          : "",
       });
-      if (missingProtected.length || untranslatedFields.length) {
-        setStatusMsg(statusText("translatePartial"));
+      if (missingProtected.length || untranslatedFields.length || preservedSections.length) {
+        setStatusMsg(statusText(preservedSections.length ? "translateSectionsPartial" : "translatePartial"));
         setTimeout(() => setStatusMsg(""), 4500);
       }
     } catch (error) {

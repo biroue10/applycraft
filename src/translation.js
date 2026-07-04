@@ -73,6 +73,7 @@ export function buildResumeTranslationRequest(form, { sourceLanguage = "auto", t
       "Do not invent achievements or add experience.",
       "Use natural, concise, professional resume language in the target language.",
       "Keep bullet points as bullet points and preserve dates and numbers.",
+      "Preserve section boundaries, blank-line entry breaks, and the number of entries in each section.",
       "Return valid JSON only with the same top-level field keys.",
     ],
     preserveTerms: protectedTerms,

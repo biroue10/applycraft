@@ -90,6 +90,10 @@ assert.match(app, /alreadyTranslatedTo/, "already translated state should be sho
 assert.match(app, /retranslateFromOriginal/, "translated versions should offer deliberate retranslation from original");
 assert.match(app, /findExistingTranslatedVersion/, "existing translated versions should be detected");
 assert.match(app, /openExistingTranslation/, "duplicate translation flow should prefer opening the existing version");
+assert.match(app, /function mergeTranslatedEntries/, "translated sections should be merged into original entry structure");
+assert.match(app, /parsed\.length < original\.length/, "missing translated entries should fall back to original sections");
+assert.match(app, /preservedSections/, "translation metadata should track preserved original sections");
+assert.match(app, /translateSectionsPartial/, "users should be warned when sections are kept from the original");
 assert.match(app, /EVENTS\.TRANSLATION_STARTED/, "translation analytics should track safe metadata only");
 assert.match(app, /EVENTS\.TRANSLATION_COPY_CREATED/, "copy-created analytics should track safe metadata only");
 assert.match(translationSource, /\/api\/translate-document/, "translation must call the dedicated backend endpoint");

@@ -242,6 +242,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
     maxHeight: undefined,
     padding: preview ? 12 : 0,
     fontFamily: rtl ? "'Noto Sans Arabic', 'Tahoma', 'Arial', sans-serif" : tpl.font,
+    lineHeight: rtl ? 1.55 : undefined,
     direction: rtl ? "rtl" : "ltr",
     textAlign: "start",
     unicodeBidi: "plaintext",
@@ -355,19 +356,19 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
     const mainS = data.sections.filter(s => !isSidebar(s));
     return (
       <div className="resume-paper" lang={lang} dir={rtl ? "rtl" : "ltr"} style={paper}>
-        <div style={{ display: "flex", minHeight: "100%" }}>
+        <div style={{ display: "flex", minHeight: preview ? "100%" : 900, alignItems: "stretch" }}>
           <div style={{ width: "32%", background: tpl.accent, color: "#fff", padding: "28px 16px",
-            flexShrink: 0 }}>
+            flexShrink: 0, alignSelf: "stretch", minHeight: "inherit", boxSizing: "border-box" }}>
             {data.photo && (
               <div style={{ width: 72, height: 72, borderRadius: "50%", overflow: "hidden",
                 margin: "0 auto 14px", border: "2px solid rgba(255,255,255,0.4)", flexShrink: 0 }}>
                 <img src={data.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
             )}
-            <div style={{ fontSize: 19, fontWeight: 800, lineHeight: 1.2, marginBottom: 4 }}>{data.name}</div>
-            <div style={{ fontSize: 11, opacity: 0.72, marginBottom: 18, fontStyle: "italic" }}>{data.title}</div>
+            <div style={{ fontSize: 19, fontWeight: 800, lineHeight: rtl ? 1.35 : 1.2, marginBottom: 4 }}>{data.name}</div>
+            <div style={{ fontSize: 11, opacity: 0.72, marginBottom: 18, fontStyle: "italic", lineHeight: rtl ? 1.45 : undefined }}>{data.title}</div>
             <div style={{ height: 1, background: "rgba(255,255,255,0.22)", marginBottom: 14 }} />
-            <ContactStack items={data.contact} style={{ fontSize: 10.5, opacity: 0.82, marginBottom: 7 }} />
+            <ContactStack items={data.contact} style={{ fontSize: 10.5, opacity: 0.86, marginBottom: 10, gap: rtl ? "0.3rem" : "0.18rem" }} />
             {sideS.map((s, i) => (
               <div key={i} style={{ marginTop: 20 }}>
                 <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px",
