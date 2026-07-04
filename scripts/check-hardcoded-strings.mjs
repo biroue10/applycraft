@@ -16,6 +16,15 @@ async function listSourceFiles(dir) {
 
 const sourceFiles = await listSourceFiles("src");
 
+const forbiddenVisibleStrings = [
+  "No sign-up required to start. Save or export when ready.",
+  "Continue with this resume",
+  "Try a sample profile",
+  "Reset demo",
+  "Resume template",
+  "Accent color",
+];
+
 const allowLine = [
   /ApplyCraft/,
   /GitHub|LinkedIn|React|Vite|Cloudflare|DOCX|PDF|ATS|URL|GDPR|AI|SEO|API/,
@@ -45,9 +54,15 @@ const userVisiblePatterns = [
 ];
 
 const findings = [];
+const forbiddenFindings = [];
 
 for (const file of sourceFiles) {
   const text = await readFile(file, "utf8");
+  for (const value of forbiddenVisibleStrings) {
+    if (text.includes(value)) {
+      forbiddenFindings.push({ file, value });
+    }
+  }
   const lines = text.split(/\r?\n/);
   for (const [index, line] of lines.entries()) {
     if (allowLine.some((rule) => rule.test(line))) continue;
@@ -64,6 +79,12 @@ for (const file of sourceFiles) {
     }
   }
 }
+
+assert.equal(
+  forbiddenFindings.length,
+  0,
+  forbiddenFindings.map((f) => `${f.file}: forbidden hard-coded UI string: ${JSON.stringify(f.value)}`).join("\n")
+);
 
 const report = findings.slice(0, 80).map((f) => `${f.file}:${f.line} ${f.type}: ${JSON.stringify(f.value)}`).join("\n");
 if (findings.length) {

@@ -1914,6 +1914,10 @@ const DEMO_SAMPLE = {
 };
 const DEMO_AI_SUGGESTION = "Redesigned the checkout experience, increasing conversion by 23% and reducing customer drop-off.";
 
+function formatDemoText(template, values = {}) {
+  return String(template || "").replace(/\{(\w+)\}/g, (_, key) => values[key] ?? "");
+}
+
 function demoAtsScore({ name, title, achievement, aiAccepted }) {
   const text = achievement.trim();
   const strongVerb = /^(redesigned|improved|launched|built|led|increased|reduced|created|delivered|optimized|managed)\b/i.test(text);
@@ -1929,7 +1933,7 @@ function demoAtsScore({ name, title, achievement, aiAccepted }) {
   );
 }
 
-function InteractiveResumeDemo({ isMobile, onContinue }) {
+function InteractiveResumeDemo({ isMobile, onContinue, copy }) {
   const [demo, setDemo] = useState(DEMO_INITIAL);
   const [activeField, setActiveField] = useState("");
   const [view, setView] = useState("edit");
@@ -1952,6 +1956,7 @@ function InteractiveResumeDemo({ isMobile, onContinue }) {
   const completed = Boolean(demo.name.trim() && demo.title.trim() && demo.achievement.trim());
   const progress = Math.round(([demo.name, demo.title, demo.achievement].filter(v => v.trim()).length / 3) * 100);
   const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  const text = { ...(LANDING2_UI.en.demo || {}), ...(copy || {}) };
 
   const clearTimers = () => {
     timersRef.current.forEach(clearTimeout);
@@ -2051,29 +2056,29 @@ function InteractiveResumeDemo({ isMobile, onContinue }) {
   const handleAi = () => {
     touchDemo();
     setAiState("loading");
-    setMessage("Creating a deterministic demo suggestion.");
+    setMessage(text.creatingSuggestion);
     window.setTimeout(() => {
       setAiDraft(DEMO_AI_SUGGESTION);
       setAiState("ready");
-      setMessage("Demo suggestion ready.");
+      setMessage(text.suggestionReady);
     }, 650);
   };
 
   const acceptAi = () => {
     updateDemo({ achievement: aiDraft, aiAccepted: true }, "achievement");
     setAiState("accepted");
-    setMessage("Demo suggestion accepted.");
+    setMessage(text.suggestionAccepted);
   };
   const undoAi = () => {
     updateDemo({ achievement: "Helped improve the checkout process.", aiAccepted: false }, "achievement");
     setAiState("ready");
-    setMessage("Suggestion undone.");
+    setMessage(text.suggestionUndone);
   };
   const useSample = () => {
     updateDemo(DEMO_SAMPLE, "achievement");
     setAiState("idle");
     setAiDraft("");
-    setMessage("Sample profile loaded.");
+    setMessage(text.sampleLoaded);
   };
   const resetDemo = () => {
     touchDemo();
@@ -2081,14 +2086,14 @@ function InteractiveResumeDemo({ isMobile, onContinue }) {
     setActiveField("");
     setAiState("idle");
     setAiDraft("");
-    setMessage("Demo reset.");
+    setMessage(text.demoReset);
     setExportMessage("");
     setView("edit");
   };
   const demoExport = (format) => {
     touchDemo();
-    setExportMessage(`Your ${format} draft is ready. Continue to the full builder to customize and export it.`);
-    setMessage(`${format} export is available in the full builder.`);
+    setExportMessage(formatDemoText(text.exportReady, { format }));
+    setMessage(formatDemoText(text.exportAvailable, { format }));
     setActiveField("cta");
     window.setTimeout(() => ctaRef.current?.focus?.(), 80);
   };
@@ -2121,12 +2126,13 @@ function InteractiveResumeDemo({ isMobile, onContinue }) {
       onUndoAi={undoAi}
       onSample={useSample}
       onReset={resetDemo}
+      copy={text}
     />
   );
   const preview = (
     <div style={isMobile ? {} : { position: "sticky", top: 96 }}>
-      <ResumePreviewActions onExport={demoExport} onExpand={() => { touchDemo(); setExpanded(true); }} accent={accent} />
-      <ResumeLivePreview demo={demo} tpl={tpl} lang={lang} accent={accent} activeField={activeField} compact={isMobile} />
+      <ResumePreviewActions onExport={demoExport} onExpand={() => { touchDemo(); setExpanded(true); }} accent={accent} copy={text} />
+      <ResumeLivePreview demo={demo} tpl={tpl} lang={lang} accent={accent} activeField={activeField} compact={isMobile} copy={text} />
       {exportMessage && <div role="status" style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10,
         background: `${accent}14`, border: `1px solid ${accent}34`, color: C.text2, fontSize: 12.5, lineHeight: 1.5 }}>{exportMessage}</div>}
       <ATSCompatibilityCard score={score} demo={demo} accent={accent} />
@@ -2141,13 +2147,13 @@ function InteractiveResumeDemo({ isMobile, onContinue }) {
       <div style={{ maxWidth: 1120, margin: "0 auto" }}>
         <FadeIn style={{ textAlign: "center", marginBottom: 42 }}>
           <p style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase",
-            letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>Interactive demo</p>
+            letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>{text.eyebrow}</p>
           <h2 id="interactive-demo-title" style={{ fontSize: "clamp(24px, 3.4vw, 40px)", fontWeight: 800,
             letterSpacing: "-0.8px", color: C.text1, margin: "0 0 12px" }}>
-            Build your first resume draft in 30 seconds
+            {text.title}
           </h2>
           <p style={{ fontSize: 15.5, color: C.text2, margin: "0 auto", maxWidth: 660, lineHeight: 1.65 }}>
-            Add three details and watch your resume take shape instantly. Improve your achievement, customize the design, and continue when you are ready.
+            {text.desc}
           </p>
         </FadeIn>
 
@@ -2158,7 +2164,7 @@ function InteractiveResumeDemo({ isMobile, onContinue }) {
                 style={{ minHeight: 44, borderRadius: 10, border: `1.5px solid ${view === mode ? accent : C.border}`,
                   background: view === mode ? `${accent}18` : C.surface, color: view === mode ? C.text1 : C.text2,
                   fontWeight: 800, fontFamily: "inherit", cursor: "pointer" }}>
-                {mode === "edit" ? "Edit" : "Preview"}
+                {mode === "edit" ? text.edit : text.preview}
               </button>
             ))}
           </div>
@@ -2177,10 +2183,10 @@ function InteractiveResumeDemo({ isMobile, onContinue }) {
               fontSize: 15, fontWeight: 800, cursor: "pointer", fontFamily: "inherit",
               boxShadow: activeField === "cta" ? `0 0 0 4px ${accent}24, 0 14px 40px ${accent}32` : `0 12px 32px ${accent}24`,
               transition: "box-shadow 0.22s, transform 0.22s" }}>
-            {completed ? "Continue with this resume" : "Continue to the full builder"}
+            {completed ? text.continueResume : text.continueBuilder}
           </button>
           <p style={{ margin: 0, color: completed ? "#86efac" : C.text3, fontSize: 12.5 }}>
-            {completed ? "No sign-up required to start. Save or export when ready." : "PDF and DOCX export are available in the full builder."}
+            {completed ? text.noSignupSaveExport : text.fullBuilderExportAvailable}
           </p>
         </div>
         <div aria-live="polite" aria-atomic="true" className="sr-only">{message}</div>
@@ -2195,12 +2201,12 @@ function InteractiveResumeDemo({ isMobile, onContinue }) {
               background: C.surface, border: `1px solid ${C.border}`, borderRadius: isMobile ? "18px 18px 0 0" : 18,
               padding: isMobile ? 14 : 20, boxShadow: "0 28px 80px rgba(0,0,0,0.55)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, gap: 12 }}>
-              <h3 id="demo-preview-dialog-title" style={{ margin: 0, fontSize: 18, color: C.text1 }}>Expanded resume preview</h3>
+              <h3 id="demo-preview-dialog-title" style={{ margin: 0, fontSize: 18, color: C.text1 }}>{text.expandedPreview}</h3>
               <button type="button" onClick={() => setExpanded(false)} aria-label={builderText("closeExpandedPreview")}
                 style={{ minWidth: 44, minHeight: 44, borderRadius: 10, border: `1px solid ${C.border}`,
                   background: C.elevated, color: C.text1, cursor: "pointer", fontSize: 22 }}>×</button>
             </div>
-            <ResumeLivePreview demo={demo} tpl={tpl} lang={lang} accent={accent} activeField={activeField} compact={false} expanded />
+            <ResumeLivePreview demo={demo} tpl={tpl} lang={lang} accent={accent} activeField={activeField} compact={false} expanded copy={text} />
           </div>
         </div>
       )}
@@ -2209,21 +2215,21 @@ function InteractiveResumeDemo({ isMobile, onContinue }) {
 }
 
 function DemoEditor({ demo, setDemo, activeField, setActiveField, inputStyle, tpl, accent, progress,
-  completed, aiState, aiDraft, onAi, onAcceptAi, onUndoAi, onSample, onReset }) {
+  completed, aiState, aiDraft, onAi, onAcceptAi, onUndoAi, onSample, onReset, copy }) {
   const steps = [
-    { id: "identity", label: "Identity", done: demo.name.trim() && demo.title.trim() },
-    { id: "achievement", label: "Achievement", done: demo.achievement.trim() },
-    { id: "customize", label: "Customize", done: demo.template >= 0 && demo.color && demo.lang },
+    { id: "identity", label: copy.identity, done: demo.name.trim() && demo.title.trim() },
+    { id: "achievement", label: copy.achievement, done: demo.achievement.trim() },
+    { id: "customize", label: copy.customize, done: demo.template >= 0 && demo.color && demo.lang },
   ];
   return (
     <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: 22,
       boxShadow: "0 18px 54px rgba(0,0,0,0.22)" }}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 16, alignItems: "center", marginBottom: 18 }}>
         <div>
-          <div style={{ color: C.text3, fontSize: 11, fontWeight: 800, letterSpacing: "1.4px", textTransform: "uppercase" }}>Guided resume draft</div>
-          <div style={{ color: C.text2, fontSize: 13, marginTop: 4 }}>Step {progress < 34 ? 1 : progress < 67 ? 2 : 3} of 3</div>
+          <div style={{ color: C.text3, fontSize: 11, fontWeight: 800, letterSpacing: "1.4px", textTransform: "uppercase" }}>{copy.guidedDraft}</div>
+          <div style={{ color: C.text2, fontSize: 13, marginTop: 4 }}>{formatDemoText(copy.stepOf, { step: progress < 34 ? 1 : progress < 67 ? 2 : 3 })}</div>
         </div>
-        <div aria-label={`${progress}% complete`} style={{ width: 84, height: 84, borderRadius: "50%",
+        <div aria-label={formatDemoText(copy.complete, { progress })} style={{ width: 84, height: 84, borderRadius: "50%",
           background: `conic-gradient(${accent} ${progress}%, ${C.elevated} 0)`, display: "grid", placeItems: "center", flexShrink: 0 }}>
           <div style={{ width: 68, height: 68, borderRadius: "50%", background: C.surface, display: "grid", placeItems: "center",
             color: completed ? "#86efac" : C.text1, fontSize: 18, fontWeight: 900 }}>{progress}%</div>
@@ -2240,14 +2246,14 @@ function DemoEditor({ demo, setDemo, activeField, setActiveField, inputStyle, tp
       </div>
 
       <fieldset style={{ border: "none", padding: 0, margin: "0 0 20px" }}>
-        <legend style={{ color: C.text1, fontSize: 15, fontWeight: 900, marginBottom: 12 }}>1. Identity</legend>
-        <DemoField id="demo-name" label="Full name" help="Used in the resume header.">
+        <legend style={{ color: C.text1, fontSize: 15, fontWeight: 900, marginBottom: 12 }}>1. {copy.identity}</legend>
+        <DemoField id="demo-name" label={copy.fullName} help={copy.fullNameHelp}>
           <input id="demo-name" value={demo.name} placeholder="Sarah Okonkwo"
             onFocus={() => setActiveField("name")}
             onChange={e => setDemo({ name: e.target.value }, "name")}
             style={inputStyle("name")} />
         </DemoField>
-        <DemoField id="demo-title" label="Job title" help="Match the role you are applying for.">
+        <DemoField id="demo-title" label={copy.jobTitle} help={copy.jobTitleHelp}>
           <input id="demo-title" value={demo.title} placeholder="Senior Product Designer"
             onFocus={() => setActiveField("title")}
             onChange={e => setDemo({ title: e.target.value }, "title")}
@@ -2256,8 +2262,8 @@ function DemoEditor({ demo, setDemo, activeField, setActiveField, inputStyle, tp
       </fieldset>
 
       <fieldset style={{ border: "none", padding: 0, margin: "0 0 20px" }}>
-        <legend style={{ color: C.text1, fontSize: 15, fontWeight: 900, marginBottom: 12 }}>2. Achievement</legend>
-        <DemoField id="demo-achievement" label="One professional achievement" help="Add a result, number, or business impact when possible.">
+        <legend style={{ color: C.text1, fontSize: 15, fontWeight: 900, marginBottom: 12 }}>2. {copy.achievement}</legend>
+        <DemoField id="demo-achievement" label={copy.oneAchievement} help={copy.achievementHelp}>
           <textarea id="demo-achievement" value={demo.achievement}
             placeholder="Redesigned the checkout flow and increased conversion by 23%."
             rows={3}
@@ -2268,41 +2274,41 @@ function DemoEditor({ demo, setDemo, activeField, setActiveField, inputStyle, tp
         <div style={{ marginTop: 10, padding: 12, borderRadius: 12, background: C.elevated, border: `1px solid ${C.border}` }}>
           <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "center" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, color: C.text1, fontSize: 13, fontWeight: 900 }}>
-              <LineIcon name="spark" size={15} color={accent} /> Demo suggestion
+              <LineIcon name="spark" size={15} color={accent} /> {copy.demoSuggestion}
             </div>
             <button type="button" disabled={!demo.achievement.trim() || aiState === "loading"} onClick={onAi}
               style={{ minHeight: 38, borderRadius: 9, border: `1px solid ${accent}55`,
                 background: demo.achievement.trim() ? `${accent}18` : "transparent", color: demo.achievement.trim() ? C.text1 : C.text3,
                 fontWeight: 800, fontSize: 12, cursor: demo.achievement.trim() ? "pointer" : "not-allowed", fontFamily: "inherit", padding: "0 12px" }}>
-              {aiState === "loading" ? "Improving..." : "Improve with AI"}
+              {aiState === "loading" ? copy.improving : copy.improveWithAi}
             </button>
           </div>
           {aiDraft && (
             <div style={{ marginTop: 10, color: C.text2, fontSize: 12.5, lineHeight: 1.55 }}>
-              <div style={{ color: "#86efac", fontWeight: 800, marginBottom: 4 }}>Suggested rewrite</div>
+              <div style={{ color: "#86efac", fontWeight: 800, marginBottom: 4 }}>{copy.suggestedRewrite}</div>
               <div style={{ padding: 10, borderRadius: 9, background: "#ffffff0a", border: `1px solid ${C.border}` }}>{aiDraft}</div>
               <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                <button type="button" onClick={onAcceptAi} style={miniBtn(accent, true)}>Accept</button>
-                <button type="button" onClick={onUndoAi} style={miniBtn(accent, false)}>Undo</button>
+                <button type="button" onClick={onAcceptAi} style={miniBtn(accent, true)}>{copy.accept}</button>
+                <button type="button" onClick={onUndoAi} style={miniBtn(accent, false)}>{copy.undo}</button>
               </div>
             </div>
           )}
           <p style={{ margin: "9px 0 0", color: C.text3, fontSize: 11.5, lineHeight: 1.45 }}>
-            This is a deterministic demo suggestion. The public demo does not call a paid AI service.
+            {copy.deterministicNote}
           </p>
         </div>
       </fieldset>
 
       <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-        <legend style={{ color: C.text1, fontSize: 15, fontWeight: 900, marginBottom: 12 }}>3. Customize</legend>
-        <TemplateSelector value={demo.template} onChange={i => setDemo({ template: i }, "template")} accent={accent} />
-        <AccentColorSelector value={demo.color} onChange={color => setDemo({ color }, "theme")} />
-        <LanguageSelector value={demo.lang} onChange={code => setDemo({ lang: code }, "language")} />
+        <legend style={{ color: C.text1, fontSize: 15, fontWeight: 900, marginBottom: 12 }}>3. {copy.customize}</legend>
+        <TemplateSelector value={demo.template} onChange={i => setDemo({ template: i }, "template")} accent={accent} copy={copy} />
+        <AccentColorSelector value={demo.color} onChange={color => setDemo({ color }, "theme")} copy={copy} />
+        <LanguageSelector value={demo.lang} onChange={code => setDemo({ lang: code }, "language")} copy={copy} />
       </fieldset>
 
       <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 20 }}>
-        <button type="button" onClick={onSample} style={miniBtn(accent, true)}>Try a sample profile</button>
-        <button type="button" onClick={onReset} style={miniBtn(accent, false)}>Reset demo</button>
+        <button type="button" onClick={onSample} style={miniBtn(accent, true)}>{copy.trySampleProfile}</button>
+        <button type="button" onClick={onReset} style={miniBtn(accent, false)}>{copy.resetDemo}</button>
       </div>
     </div>
   );
@@ -2333,10 +2339,10 @@ function miniBtn(accent, primary) {
   };
 }
 
-function TemplateSelector({ value, onChange, accent }) {
+function TemplateSelector({ value, onChange, accent, copy }) {
   return (
     <div style={{ marginBottom: 16 }}>
-      <div style={{ color: C.text3, fontSize: 11, fontWeight: 800, letterSpacing: "1.2px", textTransform: "uppercase", marginBottom: 9 }}>Resume template</div>
+      <div style={{ color: C.text3, fontSize: 11, fontWeight: 800, letterSpacing: "1.2px", textTransform: "uppercase", marginBottom: 9 }}>{copy.resumeTemplate}</div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(118px, 1fr))", gap: 8 }}>
         {DEMO_TEMPLATES.map((tpl, i) => (
           <button key={tpl.name} type="button" aria-pressed={value === i} onClick={() => onChange(i)}
@@ -2351,7 +2357,7 @@ function TemplateSelector({ value, onChange, accent }) {
             </span>
             <span style={{ flex: 1, minWidth: 0 }}>
               <span style={{ display: "block", fontSize: 12.5, fontWeight: 900 }}>{tpl.name}</span>
-              <span style={{ display: "block", color: C.text3, fontSize: 10.5 }}>{value === i ? "Selected" : "ATS friendly"}</span>
+              <span style={{ display: "block", color: C.text3, fontSize: 10.5 }}>{value === i ? copy.selected : copy.atsFriendly}</span>
             </span>
             {value === i && <LineIcon name="check" size={15} color={accent} />}
           </button>
@@ -2361,13 +2367,13 @@ function TemplateSelector({ value, onChange, accent }) {
   );
 }
 
-function AccentColorSelector({ value, onChange }) {
+function AccentColorSelector({ value, onChange, copy }) {
   return (
     <div style={{ marginBottom: 16 }}>
-      <div style={{ color: C.text3, fontSize: 11, fontWeight: 800, letterSpacing: "1.2px", textTransform: "uppercase", marginBottom: 9 }}>Accent color</div>
+      <div style={{ color: C.text3, fontSize: 11, fontWeight: 800, letterSpacing: "1.2px", textTransform: "uppercase", marginBottom: 9 }}>{copy.accentColor}</div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {DEMO_COLORS.map(color => (
-          <button key={color.value} type="button" aria-label={`Use ${color.name} accent`} aria-pressed={value === color.value}
+          <button key={color.value} type="button" aria-label={formatDemoText(copy.useAccent, { color: color.name })} aria-pressed={value === color.value}
             onClick={() => onChange(color.value)}
             style={{ minWidth: 44, minHeight: 44, borderRadius: 999, border: `2px solid ${value === color.value ? color.value : C.border}`,
               background: C.elevated, cursor: "pointer", display: "grid", placeItems: "center" }}>
@@ -2382,10 +2388,10 @@ function AccentColorSelector({ value, onChange }) {
   );
 }
 
-function LanguageSelector({ value, onChange }) {
+function LanguageSelector({ value, onChange, copy }) {
   return (
     <div>
-      <div style={{ color: C.text3, fontSize: 11, fontWeight: 800, letterSpacing: "1.2px", textTransform: "uppercase", marginBottom: 9 }}>Language</div>
+      <div style={{ color: C.text3, fontSize: 11, fontWeight: 800, letterSpacing: "1.2px", textTransform: "uppercase", marginBottom: 9 }}>{copy.language}</div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {Object.entries(DEMO_LANGUAGES).map(([code, lang]) => (
           <button key={code} type="button" aria-pressed={value === code} onClick={() => onChange(code)}
@@ -2400,12 +2406,12 @@ function LanguageSelector({ value, onChange }) {
   );
 }
 
-function ResumePreviewActions({ onExport, onExpand, accent }) {
+function ResumePreviewActions({ onExport, onExpand, accent, copy }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10, marginBottom: 12 }}>
       <div style={{ display: "inline-flex", alignItems: "center", gap: 7, color: C.text2, fontSize: 12, fontWeight: 900, letterSpacing: "1px", textTransform: "uppercase" }}>
         <span aria-hidden style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e", boxShadow: "0 0 14px #22c55e" }} />
-        Live preview
+        {copy.livePreview}
       </div>
       <div style={{ display: "flex", gap: 7, flexWrap: "wrap", justifyContent: "flex-end" }}>
         {["PDF", "DOCX"].map(format => (
@@ -2419,14 +2425,14 @@ function ResumePreviewActions({ onExport, onExpand, accent }) {
         <button type="button" onClick={onExpand}
           style={{ minHeight: 38, borderRadius: 9, border: `1px solid ${C.border}`, background: C.surface,
             color: C.text2, cursor: "pointer", fontFamily: "inherit", fontWeight: 800, fontSize: 11.5, padding: "0 10px" }}>
-          Expand
+          {copy.expand}
         </button>
       </div>
     </div>
   );
 }
 
-function ResumeLivePreview({ demo, tpl, lang, accent, activeField, compact, expanded = false }) {
+function ResumeLivePreview({ demo, tpl, lang, accent, activeField, compact, expanded = false, copy }) {
   const name = demo.name.trim() || "Sarah Okonkwo";
   const title = demo.title.trim() || "Senior Product Designer";
   const achievement = demo.achievement.trim() || "Redesigned onboarding research into three product experiments, improving activation by 18%.";
@@ -2434,7 +2440,7 @@ function ResumeLivePreview({ demo, tpl, lang, accent, activeField, compact, expa
   const isRTL = lang.dir === "rtl";
   const bodyColumns = compact ? "1fr" : tpl.layout === "minimal" ? "1fr" : "0.84fr 1.36fr";
   return (
-    <article dir={lang.dir} aria-label="Live generated resume preview"
+    <article dir={lang.dir} aria-label={copy.livePreviewAria}
       style={{ background: "#fff", borderRadius: 14, overflow: "hidden", color: "#172033",
         fontFamily: tpl.font, boxShadow: expanded ? "none" : "0 26px 70px rgba(0,0,0,0.42)",
         border: `1px solid ${activeField ? accent : "#dbe5f2"}`, transition: "border-color 0.2s, box-shadow 0.2s" }}>
@@ -8110,6 +8116,7 @@ Awards: ${form.awards}`;
 
         <InteractiveResumeDemo
           isMobile={isMobile}
+          copy={l2.demo}
           onContinue={(demo) => {
             setForm(f => {
               const expStr = demo.achievement || f.experience;

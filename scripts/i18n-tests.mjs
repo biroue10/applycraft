@@ -119,9 +119,9 @@ test("English, French, and Arabic UI namespaces do not leak common interface str
   };
   const textFor = (language) => namespaces.flatMap((namespace) => flatten(resources[language][namespace])).join("\n");
   const leakChecks = {
-    en: [/Télécharger/i, /Créer mon CV/i, /Erreur/i, /Paramètres/i, /جارٍ/, /خطأ/, /تنزيل/],
-    fr: [/\bDownload\b/i, /\bExporting\b/i, /Create my resume/i, /\bSettings\b/i, /\bTry again\b/i, /\bSaved\b/],
-    ar: [/\bDownload\b/i, /\bExporting\b/i, /Create my resume/i, /\bSettings\b/i, /Erreur/i, /Télécharger/i, /Créer mon CV/i],
+    en: [/Aucune inscription/i, /Enregistrer/i, /Télécharger/i, /Créer mon CV/i, /Erreur/i, /Paramètres/i, /Exportation/i, /Modèle de CV/i, /جارٍ/, /خطأ/, /تنزيل/],
+    fr: [/No sign-up required/i, /Save or export/i, /Continue with this resume/i, /Try a sample profile/i, /Reset demo/i, /Resume template/i, /Accent color/i, /\bSelected\b/i, /\bDownload\b/i, /\bExporting\b/i, /Create my resume/i, /\bSettings\b/i, /\bTry again\b/i, /\bSaved\b/],
+    ar: [/No sign-up required/i, /Save or export/i, /Continue with this resume/i, /Try a sample profile/i, /Reset demo/i, /Resume template/i, /Accent color/i, /\bSelected\b/i, /\bDownload\b/i, /\bExporting\b/i, /Create my resume/i, /\bSettings\b/i, /Aucune inscription/i, /Erreur/i, /Télécharger/i, /Créer mon CV/i, /Paramètres/i],
   };
   for (const [language, patterns] of Object.entries(leakChecks)) {
     const text = textFor(language);
@@ -129,6 +129,30 @@ test("English, French, and Arabic UI namespaces do not leak common interface str
       assert.doesNotMatch(text, pattern, `${language} UI leaked ${pattern}`);
     }
   }
+});
+
+test("interactive demo interface copy is translated through landing2 instead of JSX literals", () => {
+  for (const language of ["en", "fr", "ar"]) {
+    for (const key of [
+      "continueResume",
+      "noSignupSaveExport",
+      "trySampleProfile",
+      "resetDemo",
+      "resumeTemplate",
+      "accentColor",
+      "language",
+      "atsFriendly",
+      "selected",
+    ]) {
+      assert.equal(typeof resources[language]?.landing2?.demo?.[key], "string", `${language}.landing2.demo.${key} missing`);
+    }
+  }
+  assert.doesNotMatch(app, />\s*No sign-up required to start\. Save or export when ready\.\s*</);
+  assert.doesNotMatch(app, />\s*Continue with this resume\s*</);
+  assert.doesNotMatch(app, />\s*Try a sample profile\s*</);
+  assert.doesNotMatch(app, />\s*Reset demo\s*</);
+  assert.doesNotMatch(app, />\s*Resume template\s*</);
+  assert.doesNotMatch(app, />\s*Accent color\s*</);
 });
 
 test("document section labels localize and fall back safely", () => {
