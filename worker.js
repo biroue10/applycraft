@@ -504,22 +504,32 @@ async function handleTranslateDocument(request, env) {
   }
 
   const promptParts = buildTranslationPrompt(validation.value);
+  const requestedModel = env.ANTHROPIC_TRANSLATION_MODEL || "claude-sonnet-5";
+  const modelCandidates = Array.from(new Set([requestedModel, "claude-sonnet-5", "claude-haiku-4-5"]));
   const aiRequest = {
-    model: env.ANTHROPIC_TRANSLATION_MODEL || "claude-sonnet-5",
+    model: requestedModel,
     max_tokens: 2600,
     temperature: 0.1,
     system: promptParts.system,
     messages: [{ role: "user", content: [{ type: "text", text: promptParts.prompt }] }],
   };
   const started = Date.now();
-  const upstream = await callAnthropic(apiKey, aiRequest);
+  let upstream = null;
+  let usedModel = requestedModel;
+  for (const model of modelCandidates) {
+    usedModel = model;
+    upstream = await callAnthropic(apiKey, { ...aiRequest, model });
+    if (upstream.ok) break;
+    if (upstream.status !== 400 && upstream.status !== 404) break;
+  }
   console.log(JSON.stringify({
     ts: new Date().toISOString(),
     action: "translate-document",
     document_type: validation.value.documentType,
     target_language: validation.value.targetLanguage,
-    ok: upstream.ok,
-    status: upstream.status,
+    ok: upstream?.ok,
+    status: upstream?.status,
+    model: usedModel,
     duration_ms: Date.now() - started,
     size_bucket: validation.value.chars < 1000 ? "small" : validation.value.chars < 4000 ? "medium" : "large",
   }));
