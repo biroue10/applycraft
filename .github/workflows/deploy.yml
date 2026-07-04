@@ -68,3 +68,17 @@ jobs:
           echo "The key file did not return the expected value at $key_url." >> "$GITHUB_STEP_SUMMARY"
           exit 1
       - run: npm run seo:indexnow
+      - name: Purge Cloudflare cache
+        run: |
+          RESPONSE=$(curl -s -X POST \
+            "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}')
+          echo "$RESPONSE"
+          if ! echo "$RESPONSE" | grep -q '"success":\s*true'; then
+            echo "::error::Cloudflare cache purge failed"
+            exit 1
+          fi
+          echo "### Cloudflare cache" >> $GITHUB_STEP_SUMMARY
+          echo "Cache purged successfully after deploy." >> $GITHUB_STEP_SUMMARY
