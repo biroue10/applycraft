@@ -181,6 +181,28 @@ async function testTranslateDocumentEndpoint() {
     const response = await worker.fetch(request("/api/translate-document", {
       body: JSON.stringify(translationBody),
     }), env());
+    assert.equal(response.status, 200);
+    const json = await readJson(response);
+    assert.equal(json.document.summary, "حللت حوادث Microsoft Intune و Active Directory.");
+  }, async () => new Response(JSON.stringify({
+    content: [{ type: "text", text: JSON.stringify({
+      documentType: "resume",
+      sourceLanguage: "en",
+      targetLanguage: "ar",
+      document: {
+        title: "محلل دعم فني من المستوى الثاني",
+        summary: "حللت حوادث Microsoft Intune و Active Directory.",
+        email: "changed@example.com",
+        url: "https://changed.example",
+        certifications: "شهادة RHCSA — Red Hat",
+      },
+    }) }],
+  }), { headers: { "Content-Type": "application/json" } }));
+
+  await withMockFetch(async () => {
+    const response = await worker.fetch(request("/api/translate-document", {
+      body: JSON.stringify(translationBody),
+    }), env());
     assert.equal(response.status, 502);
     assert.deepEqual(await readJson(response), { ok: false, error: "translation_failed" });
   }, async () => new Response(JSON.stringify({ content: [{ type: "text", text: "not-json" }] }), { headers: { "Content-Type": "application/json" } }));

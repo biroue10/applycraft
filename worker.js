@@ -539,7 +539,10 @@ async function handleTranslateDocument(request, env) {
   }
   try {
     const parsed = parseAnthropicJson(upstream.output);
-    const translatedDocument = mergeValidatedTranslation(validation.value.document, parsed);
+    const candidate = parsed && typeof parsed === "object" && !Array.isArray(parsed) && parsed.document && typeof parsed.document === "object"
+      ? parsed.document
+      : parsed;
+    const translatedDocument = mergeValidatedTranslation(validation.value.document, candidate);
     return jsonResponse({
       ok: true,
       documentType: validation.value.documentType,
