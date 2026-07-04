@@ -54,7 +54,6 @@ import esTracker from "./namespaces/es/tracker.js";
 import esMaster from "./namespaces/es/master.js";
 import esStatus from "./namespaces/es/status.js";
 import esModal from "./namespaces/es/modal.js";
-import esLanding2 from "./namespaces/es/landing2.js";
 import esFooter from "./namespaces/es/footer.js";
 
 import deCommon from "./namespaces/de/common.js";
@@ -68,15 +67,14 @@ import deTracker from "./namespaces/de/tracker.js";
 import deMaster from "./namespaces/de/master.js";
 import deStatus from "./namespaces/de/status.js";
 import deModal from "./namespaces/de/modal.js";
-import deLanding2 from "./namespaces/de/landing2.js";
 import deFooter from "./namespaces/de/footer.js";
 
 export const resources = {
   en: { common: enCommon, entry: enEntry, account: enAccount, landing: enLanding, builder: enBuilder, cover: enCover, ats: enAts, tracker: enTracker, master: enMaster, status: enStatus, modal: enModal, landing2: enLanding2, footer: enFooter },
   fr: { common: frCommon, entry: frEntry, account: frAccount, landing: frLanding, builder: frBuilder, cover: frCover, ats: frAts, tracker: frTracker, master: frMaster, status: frStatus, modal: frModal, landing2: frLanding2, footer: frFooter },
   ar: { common: arCommon, entry: arEntry, account: arAccount, landing: arLanding, builder: arBuilder, cover: arCover, ats: arAts, tracker: arTracker, master: arMaster, status: arStatus, modal: arModal, landing2: arLanding2, footer: arFooter },
-  es: { common: esCommon, entry: esEntry, account: esAccount, landing: esLanding, builder: esBuilder, cover: esCover, ats: esAts, tracker: esTracker, master: esMaster, status: esStatus, modal: esModal, landing2: esLanding2, footer: esFooter },
-  de: { common: deCommon, entry: deEntry, account: deAccount, landing: deLanding, builder: deBuilder, cover: deCover, ats: deAts, tracker: deTracker, master: deMaster, status: deStatus, modal: deModal, landing2: deLanding2, footer: deFooter },
+  es: { common: esCommon, entry: esEntry, account: esAccount, landing: esLanding, builder: esBuilder, cover: esCover, ats: esAts, tracker: esTracker, master: esMaster, status: esStatus, modal: esModal, landing2: enLanding2, footer: esFooter },
+  de: { common: deCommon, entry: deEntry, account: deAccount, landing: deLanding, builder: deBuilder, cover: deCover, ats: deAts, tracker: deTracker, master: deMaster, status: deStatus, modal: deModal, landing2: enLanding2, footer: deFooter },
 };
 
 export const translate = createTranslator(resources);

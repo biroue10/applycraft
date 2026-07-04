@@ -41,6 +41,11 @@ import {
 import { LANGUAGE_SCHEMA_VERSION, LANGUAGE_SCHEMA_VERSION_KEY } from "./i18n/config.js";
 import { documentLabelsFor } from "./i18n/documentLabels.js";
 
+const LANDING2_LOADERS = {
+  es: () => import("./i18n/namespaces/es/landing2.js"),
+  de: () => import("./i18n/namespaces/de/landing2.js"),
+};
+
 // ── UI translation codes (languages with full UI translation) ──────
 const UI_LANGS = new Set(["en", "fr", "es", "ar", "de"]);
 const SITE_LANGUAGE_CODES = new Set(INTERFACE_LANGUAGES);
@@ -3021,6 +3026,7 @@ export default function ResumeGenerator() {
   const [step, setStep] = useState(initialRoute.step);
   const [interfaceLanguage, setInterfaceLanguage] = useState(() => isInterfaceLang(initialInterfaceLang) ? initialInterfaceLang : initialInterfaceLanguage());
   const [documentLanguage, setDocumentLanguage] = useState(() => isDocumentLang(initialDocumentLang) ? initialDocumentLang : initialDocumentLanguage());
+  const [lazyLanding2, setLazyLanding2] = useState(null);
   const selectedLang = languageByCode(interfaceLanguage);
   const selectedDocumentLang = languageByCode(documentLanguage);
   const lang = UI_LANGS.has(interfaceLanguage) ? interfaceLanguage : "en";
@@ -3109,6 +3115,25 @@ export default function ResumeGenerator() {
     });
     if (isRtlLang(nextCode)) track(EVENTS.RTL_DOCUMENT_ENABLED, { language: nextCode });
   }, []);
+
+  useEffect(() => {
+    const loader = LANDING2_LOADERS[lang];
+    if (!loader) {
+      setLazyLanding2(null);
+      return undefined;
+    }
+    let cancelled = false;
+    loader()
+      .then((module) => {
+        if (!cancelled) setLazyLanding2({ language: lang, dictionary: module.default });
+      })
+      .catch(() => {
+        if (!cancelled) setLazyLanding2(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [lang]);
 
   const exportVisualPdf = useCallback(async (ref, fileNameBase, type = "resume") => {
     const node = ref.current;
@@ -3349,7 +3374,7 @@ export default function ResumeGenerator() {
   const ms = MASTER_UI[lang] || MASTER_UI.en; // master profile strings
   const st = STATUS_UI[lang] || STATUS_UI.en; // toast / status messages
   const reviewUi = QUALITY_REVIEW_UI[lang] || QUALITY_REVIEW_UI.en;
-  const l2 = LANDING2_UI[lang] || LANDING2_UI.en; // landing marketing body
+  const l2 = lazyLanding2?.language === lang ? lazyLanding2.dictionary : (LANDING2_UI[lang] || LANDING2_UI.en); // landing marketing body
   const why = l2.why || LANDING2_UI.en.why;
   const rtl = isRtlLang(interfaceLanguage);
   const translateLabel = useCallback((template, values = {}) => (

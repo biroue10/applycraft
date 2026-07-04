@@ -187,6 +187,12 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          if (
+            id.includes("/src/i18n/namespaces/es/landing2.js") ||
+            id.includes("/src/i18n/namespaces/de/landing2.js")
+          ) {
+            return;
+          }
           if (id.includes("/src/i18n/")) return "i18n";
           if (!id.includes("node_modules")) return;
           // React and router: always needed, extract once so SSG + app share it.
