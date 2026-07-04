@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { footerHtml } from "./shared-footer.mjs";
+import { buildResumeStarterUrl } from "../src/data/resumeStarters/index.js";
 
 const ROOT = new URL("../public/", import.meta.url);
 const SITE = "https://applycraft.io";
@@ -72,6 +73,10 @@ function page(config) {
   const canonical = `${SITE}${config.path}`;
   const image = `${SITE}${config.image}`;
   const imageAlt = config.imageAlt || "ApplyCraft resume builder and cover letter maker preview";
+  const builderUrl = buildResumeStarterUrl("", {
+    interfaceLanguage: config.lang === "en" ? "" : config.lang,
+    documentLanguage: config.dir === "rtl" ? config.lang : "",
+  });
   return `<!doctype html>
 <html lang="${config.lang}"${config.dir ? ` dir="${config.dir}"` : ""}>
 <head>
@@ -105,7 +110,7 @@ ${localeAlternates(config.ogAlternateLocales)}
 ${config.software ? `<script type="application/ld+json">${appSchema(config.lang)}</script>` : ""}
 </head>
 <body>
-<nav class="nav"><a href="/" class="nav-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="eager" decoding="async"></a><a href="/" class="nav-cta">${config.cta}</a></nav>
+<nav class="nav"><a href="/" class="nav-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="eager" decoding="async"></a><a href="${builderUrl}" class="nav-cta">${config.cta}</a></nav>
 <main>
   <div class="page">
     ${languageSwitcher(config.alternates)}
@@ -113,7 +118,7 @@ ${config.software ? `<script type="application/ld+json">${appSchema(config.lang)
       <div class="hero-eyebrow">${config.eyebrow}</div>
       <h1>${config.h1}</h1>
       <p>${config.sub}</p>
-      <div class="hero-btns"><a href="/" class="btn-primary">${config.primary}</a><a href="${config.secondaryHref}" class="btn-secondary">${config.secondary}</a></div>
+      <div class="hero-btns"><a href="${builderUrl}" class="btn-primary">${config.primary}</a><a href="${config.secondaryHref}" class="btn-secondary">${config.secondary}</a></div>
       <div class="trust">${config.trust.map((item) => `<span>${item}</span>`).join("")}</div>
     </section>
   </div>

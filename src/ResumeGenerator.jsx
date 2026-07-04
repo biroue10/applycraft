@@ -34,6 +34,8 @@ import {
   initialDocumentLanguage,
   persistInterfaceLanguage,
   persistDocumentLanguage,
+  isInterfaceLang,
+  isDocumentLang,
   isRtlLang,
 } from "./i18n/languages.js";
 import { LANGUAGE_SCHEMA_VERSION, LANGUAGE_SCHEMA_VERSION_KEY } from "./i18n/config.js";
@@ -67,6 +69,20 @@ const INTERFACE_LANGUAGE_DROPDOWN_COPY = {
     ariaLabel: "Sprache der Benutzeroberfläche auswählen",
     searchPlaceholder: "Sprache der Benutzeroberfläche suchen...",
     emptyLabel: "Keine Sprache der Benutzeroberfläche gefunden",
+  },
+};
+const STARTER_STATUS_COPY = {
+  en: {
+    loaded: "{role} example loaded. Replace the sample text with your own details.",
+    invalid: "Template could not be loaded. Starting with a blank résumé.",
+  },
+  fr: {
+    loaded: "Exemple de {role} chargé. Remplacez le texte d’exemple par vos propres informations.",
+    invalid: "Le modèle n’a pas pu être chargé. Un CV vide a été ouvert.",
+  },
+  ar: {
+    loaded: "تم تحميل مثال {role}. استبدل النص التجريبي بمعلوماتك الخاصة.",
+    invalid: "تعذر تحميل القالب. تم فتح سيرة ذاتية فارغة.",
   },
 };
 // Centralized in src/product.js; verified against WORLD_LANGUAGES / UI_LANGS
@@ -2939,7 +2955,7 @@ function routeFromAppPath(pathname = "/", hash = "") {
   if (!clean) return { ...DEFAULT_APP_ROUTE };
   const route = { ...DEFAULT_APP_ROUTE, appView: "app" };
   if (clean === "resume" || clean === "resume/templates") return { ...route, navPage: "resume", step: "templates" };
-  if (clean === "resume/builder") return { ...route, navPage: "resume", step: "form" };
+  if (clean === "resume-builder" || clean === "resume/builder") return { ...route, navPage: "resume", step: "form" };
   if (clean === "cover-letter" || clean === "cover-letter/templates") return { ...route, navPage: "cover", coverStep: "templates" };
   if (clean === "cover-letter/builder") return { ...route, navPage: "cover", coverStep: "form" };
   if (clean === "job-tracker") return { ...route, navPage: "tracker" };
@@ -2953,7 +2969,7 @@ function routeFromAppPath(pathname = "/", hash = "") {
 
 function pathFromRoute({ appView, navPage, step, coverStep }) {
   if (appView !== "app") return "/";
-  if (navPage === "resume") return step === "form" ? "/resume/builder" : "/resume/templates";
+  if (navPage === "resume") return step === "form" ? "/resume-builder" : "/resume/templates";
   if (navPage === "cover") return coverStep === "form" ? "/cover-letter/builder" : "/cover-letter/templates";
   if (navPage === "tracker") return "/job-tracker";
   if (navPage === "ats") return "/app/ats-checker";
@@ -2980,6 +2996,9 @@ export default function ResumeGenerator() {
   const location = useLocation();
   const initialRoute = getInitialAppRoute(location.pathname, location.hash);
   const routeLang = routeLanguageOverride(location.pathname);
+  const initialSearchParams = new URLSearchParams(location.search || "");
+  const initialInterfaceLang = initialSearchParams.get("ui") || routeLang;
+  const initialDocumentLang = initialSearchParams.get("docLang") || routeLang;
   const [navPage, setNavPage] = useState(initialRoute.navPage);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sideSearch, setSideSearch] = useState("");
@@ -2993,8 +3012,8 @@ export default function ResumeGenerator() {
   const [coverTemplateHover, setCoverTemplateHover] = useState("");
   const [coverTemplateFocus, setCoverTemplateFocus] = useState("");
   const [step, setStep] = useState(initialRoute.step);
-  const [interfaceLanguage, setInterfaceLanguage] = useState(() => routeLang || initialInterfaceLanguage());
-  const [documentLanguage, setDocumentLanguage] = useState(() => routeLang || initialDocumentLanguage());
+  const [interfaceLanguage, setInterfaceLanguage] = useState(() => isInterfaceLang(initialInterfaceLang) ? initialInterfaceLang : initialInterfaceLanguage());
+  const [documentLanguage, setDocumentLanguage] = useState(() => isDocumentLang(initialDocumentLang) ? initialDocumentLang : initialDocumentLanguage());
   const selectedLang = languageByCode(interfaceLanguage);
   const selectedDocumentLang = languageByCode(documentLanguage);
   const lang = UI_LANGS.has(interfaceLanguage) ? interfaceLanguage : "en";
@@ -3005,13 +3024,13 @@ export default function ResumeGenerator() {
       ? TEMPLATES.find((template) => template.id === RECOMMENDED_TEMPLATE_ID) || TEMPLATES.find((template) => !template.blank) || null
       : null
   ));
-  const emptyResumeForm = migrateForm({
+  const emptyResumeForm = useMemo(() => migrateForm({
     name: "", title: "", email: "", phone: "", location: "",
     linkedin: "", website: "",
     summary: "", experience: "", education: "", skills: "",
     certifications: "", languages: "", projects: "", volunteer: "", awards: "",
     sectionTitles: {},
-  });
+  }), []);
   const [form, setForm] = useState(() => emptyResumeForm);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -3683,13 +3702,98 @@ export default function ResumeGenerator() {
 
   const startWithTemplate = useCallback((template, source = "template") => {
     setTpl(template);
+    setForm(emptyResumeForm);
+    setCurrentResumeId(null);
     setStep("form");
     setNavPage("resume");
     setAppView("app");
     setMobileResumeMode("edit");
     trackUxEvent("resume_editor_started", { source, template: template.id });
     track(EVENTS.TEMPLATE_SELECTED, { template: template.id });
-  }, []);
+  }, [emptyResumeForm]);
+
+  const starterQueryAppliedRef = useRef("");
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const params = new URLSearchParams(location.search || window.location.search || "");
+    const starterId = params.get("starter") || "";
+    const templateId = params.get("template") || "";
+    const queryUi = params.get("ui") || "";
+    const queryDocLang = params.get("docLang") || "";
+    const key = `${location.pathname}?${params.toString()}`;
+    if (starterQueryAppliedRef.current === key) return undefined;
+    starterQueryAppliedRef.current = key;
+
+    if (isInterfaceLang(queryUi) && queryUi !== interfaceLanguage) {
+      setSiteLanguage(languageByCode(queryUi));
+    }
+    if (isDocumentLang(queryDocLang) && queryDocLang !== documentLanguage) {
+      setDocumentLanguagePreference(languageByCode(queryDocLang));
+    }
+
+    if (!starterId && templateId) {
+      const template = TEMPLATES.find((item) => item.id === templateId) || recommendedTemplate;
+      setForm(emptyResumeForm);
+      setCurrentResumeId(null);
+      setTpl(template || null);
+      setNavPage("resume");
+      setStep("form");
+      setAppView("app");
+      setMobileResumeMode("edit");
+      return undefined;
+    }
+    if (!starterId) return undefined;
+
+    let cancelled = false;
+    (async () => {
+      const copy = STARTER_STATUS_COPY[lang] || STARTER_STATUS_COPY.en;
+      try {
+        const { loadResumeStarter } = await import("./data/resumeStarters/index.js");
+        const starter = await loadResumeStarter(starterId);
+        if (cancelled) return;
+        if (!starter) {
+          setForm(emptyResumeForm);
+          setCurrentResumeId(null);
+          setTpl(recommendedTemplate || null);
+          setNavPage("resume");
+          setStep("form");
+          setAppView("app");
+          setMobileResumeMode("edit");
+          setStatusMsg(copy.invalid);
+          setTimeout(() => setStatusMsg(""), 3500);
+          return;
+        }
+        const nextDocLang = isDocumentLang(queryDocLang) ? queryDocLang : starter.documentLanguage;
+        if (isDocumentLang(nextDocLang) && nextDocLang !== documentLanguage) {
+          setDocumentLanguagePreference(languageByCode(nextDocLang));
+        }
+        const template = TEMPLATES.find((item) => item.id === starter.templateId) || recommendedTemplate;
+        setForm(migrateForm({ ...emptyResumeForm, ...starter.data }));
+        setCurrentResumeId(null);
+        setTpl(template || null);
+        setNavPage("resume");
+        setStep("form");
+        setAppView("app");
+        setMobileResumeMode("edit");
+        const role = starter.labels?.[lang] || starter.labels?.en || starter.id;
+        setStatusMsg(translateLabel(copy.loaded, { role }));
+        setTimeout(() => setStatusMsg(""), 4500);
+        track(EVENTS.TEMPLATE_SELECTED, { template: template?.id || "", starter: starter.id });
+      } catch {
+        if (cancelled) return;
+        setForm(emptyResumeForm);
+        setCurrentResumeId(null);
+        setTpl(recommendedTemplate || null);
+        setNavPage("resume");
+        setStep("form");
+        setAppView("app");
+        setMobileResumeMode("edit");
+        setStatusMsg(copy.invalid);
+        setTimeout(() => setStatusMsg(""), 3500);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [location.pathname, location.search, interfaceLanguage, documentLanguage, emptyResumeForm, lang, recommendedTemplate, setDocumentLanguagePreference, setSiteLanguage, translateLabel]);
 
   // ── Optional account / sync / paid-pass handlers ──────────────────────────
   const handleSyncNow = useCallback(async () => {
@@ -4458,7 +4562,6 @@ Awards: ${form.awards}`;
     const docFile = new Document({
       creator: "ApplyCraft",
       description: `${docLang || "en"} resume export`,
-      fonts: [{ name: "Noto Sans Arabic" }, { name: "Arial" }, { name: "Aptos" }],
       sections: [{
         properties: {
           page: {
@@ -4482,7 +4585,8 @@ Awards: ${form.awards}`;
     if (docLang !== lang) track(EVENTS.MULTILINGUAL_RESUME_EXPORTED, { language: docLang, interface_language: lang, export_type: "docx", template: tpl?.id || "" });
     track(EVENTS.RESUME_EXPORTED, { format: "docx", template: tpl?.id || "" });
     setTimeout(() => { setExportSuccess(""); setStatusMsg(""); }, 4500);
-    } catch {
+    } catch (error) {
+      console.error("Resume DOCX export failed", error);
       setStatusMsg(st.docxFail);
       track(EVENTS.DOCX_EXPORT_FAILED, { document_type: "resume", language: docLang, template: tpl?.id || "" });
       setTimeout(() => setStatusMsg(""), 3500);
@@ -6681,7 +6785,6 @@ Awards: ${form.awards}`;
       const docFile = new Document({
         creator: "ApplyCraft",
         description: `${docLang || "en"} cover letter export`,
-        fonts: [{ name: "Noto Sans Arabic" }, { name: "Arial" }, { name: "Aptos" }],
         sections: [{
           properties: {
             page: {

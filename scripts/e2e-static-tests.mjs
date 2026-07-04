@@ -17,7 +17,7 @@ if (!existsSync(DIST)) { console.error("dist/ not found — run `npm run build` 
 
 // Internal paths that are served but have no standalone file (SPA client routes).
 const SPA_ROUTES = new Set([
-  "/", "/r", "/resume/templates", "/resume/builder", "/cover-letter/templates",
+  "/", "/r", "/resume-builder", "/resume/templates", "/resume/builder", "/cover-letter/templates",
   "/cover-letter/builder", "/job-tracker", "/app/ats-checker", "/master-profile",
   "/email-signature", "/personal-website",
 ]);

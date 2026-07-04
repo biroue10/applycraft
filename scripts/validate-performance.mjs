@@ -43,6 +43,10 @@ function gzSize(filePath) {
   return gzipSync(src, { level: 9 }).length;
 }
 
+function formatBytes(bytes) {
+  return `${(bytes / 1024).toFixed(2)} KB (${bytes} bytes)`;
+}
+
 function allFiles(dir) {
   return readdirSync(dir).map((f) => join(dir, f));
 }
@@ -96,11 +100,11 @@ for (const file of initialFiles) {
     totalInitialGz += gz;
     if (gz > MAX_INITIAL_CHUNK_GZ) {
       errors.push(
-        `FAIL [chunk-size] ${basename(file)}: ${(gz / 1024).toFixed(1)} KB gz ` +
-        `> budget ${(MAX_INITIAL_CHUNK_GZ / 1024).toFixed(0)} KB gz`
+        `FAIL [chunk-size] ${basename(file)}: ${formatBytes(gz)} gz ` +
+        `> budget ${formatBytes(MAX_INITIAL_CHUNK_GZ)} gz`
       );
     } else {
-      console.log(`  ok  ${basename(file)}: ${(gz / 1024).toFixed(1)} KB gz`);
+      console.log(`  ok  ${basename(file)}: ${formatBytes(gz)} gz`);
     }
   } catch {
     warnings.push(`WARN could not read ${file}`);
@@ -110,11 +114,11 @@ for (const file of initialFiles) {
 // 3. Total initial JS gzip.
 if (totalInitialGz > MAX_INITIAL_TOTAL_GZ) {
   errors.push(
-    `FAIL [total-initial] Total initial JS: ${(totalInitialGz / 1024).toFixed(1)} KB gz ` +
-    `> budget ${(MAX_INITIAL_TOTAL_GZ / 1024).toFixed(0)} KB gz`
+    `FAIL [total-initial] Total initial JS: ${formatBytes(totalInitialGz)} gz ` +
+    `> budget ${formatBytes(MAX_INITIAL_TOTAL_GZ)} gz`
   );
 } else {
-  console.log(`  ok  Total initial JS: ${(totalInitialGz / 1024).toFixed(1)} KB gz`);
+  console.log(`  ok  Total initial JS: ${formatBytes(totalInitialGz)} gz`);
 }
 
 // 4. No unoptimised raster image > MAX_IMAGE_SIZE.

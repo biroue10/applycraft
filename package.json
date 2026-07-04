@@ -33,6 +33,7 @@
     "test:contact-links": "node scripts/contact-link-tests.mjs",
     "test:free-exports": "node scripts/free-export-tests.mjs",
     "test:i18n-strings": "node scripts/check-hardcoded-strings.mjs",
+    "test:starters": "node scripts/starter-tests.mjs",
     "test:ux": "node scripts/ux-tests.mjs",
     "test:visual": "node scripts/visual-regression.mjs",
     "audit:high": "npm audit --audit-level=high"

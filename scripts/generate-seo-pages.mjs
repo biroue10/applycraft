@@ -2,6 +2,7 @@ import { writeFileSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { footerHtml } from "./shared-footer.mjs";
+import { buildResumeStarterUrl, starterIdForSlug } from "../src/data/resumeStarters/index.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..", "public");
@@ -25,10 +26,19 @@ const FREE_BUILDER_ALTERNATES = [
 ];
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
-function nav() {
+function nav(lang = "en") {
+  const label = lang === "fr"
+    ? "Créer mon CV gratuitement →"
+    : lang === "ar"
+      ? "أنشئ سيرتي الذاتية مجانًا ←"
+      : "Build My Resume Free →";
+  const href = buildResumeStarterUrl("", {
+    interfaceLanguage: lang === "en" ? "" : lang,
+    documentLanguage: lang === "ar" ? "ar" : "",
+  });
   return `<nav class="nav">
   <a href="/" class="nav-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="eager" decoding="async"></a>
-  <a href="/" class="nav-cta">Build My Resume Free →</a>
+  <a href="${href}" class="nav-cta">${label}</a>
 </nav>`;
 }
 
@@ -44,11 +54,11 @@ function languageSwitcher(alternates = []) {
   return `<div class="language-switcher" aria-label="Language versions">${links.map(({ hreflang, href }) => `<a href="${href.replace(SITE, "")}">${labels[hreflang] || hreflang}</a>`).join("")}</div>`;
 }
 
-function ctaStrip(heading, sub) {
+function ctaStrip(heading, sub, href = "/resume-builder", label = "Start Building — It's Free →") {
   return `<div class="cta-strip">
   <h2>${heading}</h2>
   <p>${sub}</p>
-  <a href="/" class="btn-primary">Start Building — It's Free →</a>
+  <a href="${href}" class="btn-primary">${label}</a>
 </div>`;
 }
 
@@ -106,6 +116,25 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
   const canonical = `${SITE}${canonicalPath}`;
   const cssRel = _cssPath || CSS_PATH;
   const htmlAttrs = dir ? `lang="${lang}" dir="${dir}"` : `lang="${lang}"`;
+  const starterId = starterIdForSlug(slug);
+  const documentLanguage = starterId === "arabic-resume" ? "ar" : starterId === "french-cv" ? "fr" : undefined;
+  const genericBuilderUrl = buildResumeStarterUrl("", {
+    interfaceLanguage: lang === "en" ? "" : lang,
+    documentLanguage: lang === "ar" ? "ar" : "",
+  });
+  const starterUrl = starterId
+    ? buildResumeStarterUrl(starterId, { interfaceLanguage: lang === "en" ? "" : lang, documentLanguage })
+    : genericBuilderUrl;
+  const ctaLabels = {
+    en: { build: "Build My Resume Free →", use: "Use This Template Free →", start: "Start Building — It's Free →", templates: "See Templates" },
+    fr: { build: "Créer mon CV gratuitement →", use: "Utiliser ce modèle gratuitement →", start: "Créer mon CV gratuitement →", templates: "Voir les modèles" },
+    ar: { build: "أنشئ سيرتي الذاتية مجانًا ←", use: "استخدم هذا القالب مجانًا ←", start: "أنشئ سيرتي الذاتية مجانًا ←", templates: "عرض القوالب" },
+  }[lang] || {
+    build: "Build My Resume Free →",
+    use: "Use This Template Free →",
+    start: "Start Building — It's Free →",
+    templates: "See Templates",
+  };
   const alternateLinks = alternates.length
     ? `\n${alternates.map((a) => `<link rel="alternate" hreflang="${a.hreflang}" href="${a.href}"/>`).join("\n")}`
     : "";
@@ -157,7 +186,7 @@ ${ogAlternateLocales.map((locale) => `<meta property="og:locale:alternate" conte
   })}</script>
 </head>
 <body>
-${nav()}
+${nav(lang)}
 <main>
   <div class="page">
     ${languageSwitcher(alternates)}
@@ -166,8 +195,8 @@ ${nav()}
       <h1>${h1}</h1>
       <p>${sub}</p>
       <div class="hero-btns">
-        <a href="/" class="btn-primary">Build My Resume Free →</a>
-        <a href="/resume/templates" class="btn-secondary">See Templates</a>
+        <a href="${genericBuilderUrl}" class="btn-primary">${ctaLabels.build}</a>
+        <a href="/resume/templates" class="btn-secondary">${ctaLabels.templates}</a>
       </div>
       <div class="trust">
         <span>🔒 Browser-first editing</span>
@@ -183,7 +212,7 @@ ${nav()}
       <h2>Resume example — edit it in one click</h2>
       ${resumeCard}
       <div style="text-align:center;margin-top:24px">
-        <a href="/" class="btn-primary">Use This Template Free →</a>
+        <a href="${starterUrl}" class="btn-primary">${ctaLabels.use}</a>
       </div>
     </div>
   </div>
@@ -201,7 +230,7 @@ ${nav()}
   ${faqHtml(faqs)}
 
   <div class="page">
-    ${ctaStrip(features.ctaHeading || "Ready to land your next job?", features.ctaSub || "Create a professional resume in minutes — free, no sign-up required.")}
+    ${ctaStrip(features.ctaHeading || "Ready to land your next job?", features.ctaSub || "Create a professional resume in minutes — free, no sign-up required.", starterUrl, ctaLabels.start)}
   </div>
 </main>
 ${footerHtml(lang)}
@@ -477,6 +506,8 @@ const PAGES = [
   {
     slug: "resume-in-french",
     canonicalPath: "/resume-in-french/",
+    lang: "fr",
+    ogLocale: "fr_FR",
     title: "CV en Français — Créez votre CV en ligne gratuitement | ApplyCraft",
     description: "Créez un CV professionnel en français avec 46 modèles. Prévisualisation en direct, export PDF et DOCX. Gratuit, sans inscription.",
     eyebrow: "CV en Français",
@@ -552,6 +583,9 @@ const PAGES = [
   {
     slug: "resume-in-arabic",
     canonicalPath: "/resume-in-arabic/",
+    lang: "ar",
+    dir: "rtl",
+    ogLocale: "ar_MA",
     title: "إنشاء سيرة ذاتية بالعربية — مجاناً | ApplyCraft",
     description: "أنشئ سيرة ذاتية احترافية باللغة العربية مع دعم الكتابة من اليمين إلى اليسار. 46 قالباً مجانياً، تصدير PDF و DOCX.",
     eyebrow: "السيرة الذاتية بالعربية",

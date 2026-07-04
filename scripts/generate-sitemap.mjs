@@ -11,6 +11,7 @@ const STATIC_APP_ROUTES = [
   "/",
   "/fr/",
   "/ar/",
+  "/resume-builder",
   "/resume/templates",
   "/cover-letter/templates",
   "/cover-letter/builder",
@@ -20,9 +21,7 @@ const STATIC_APP_ROUTES = [
   "/email-signature",
   "/personal-website",
 ];
-const REDIRECTED_PATHS = new Set([
-  "/resume-builder/",
-]);
+const REDIRECTED_PATHS = new Set();
 
 function walk(dir, files = []) {
   for (const entry of readdirSync(dir)) {

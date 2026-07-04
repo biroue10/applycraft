@@ -46,6 +46,13 @@ const ROUTE_META = {
     imageAlt: "ApplyCraft resume template gallery preview",
     locale: "en_US",
   },
+  "/resume-builder": {
+    title: "Resume Builder — Start a Free Editable Resume | ApplyCraft",
+    description: "Open the ApplyCraft resume builder with a blank resume or starter example, edit in your browser, and export PDF or DOCX without an account.",
+    image: "https://applycraft.io/og/home.png",
+    imageAlt: "ApplyCraft resume builder editor preview",
+    locale: "en_US",
+  },
   "/cover-letter/templates": {
     title: "Cover Letter Template Gallery — Matching Styles | ApplyCraft",
     description: "Choose a professional cover letter template that matches your resume style, then export as PDF or DOCX.",
@@ -180,6 +187,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          if (id.includes("/src/i18n/")) return "i18n";
           if (!id.includes("node_modules")) return;
           // React and router: always needed, extract once so SSG + app share it.
           if (

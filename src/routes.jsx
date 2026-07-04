@@ -20,6 +20,7 @@ export const routes = [
   { path: "/ar/", element: <ResumeGenerator /> },
   { path: "/r", element: <SharedResumeRoute /> },
   { path: "/r/:shareId", element: <SharedResumeRoute /> },
+  { path: "/resume-builder", element: <ResumeGenerator /> },
   { path: "/resume/templates", element: <ResumeGenerator /> },
   { path: "/resume/builder", element: <ResumeGenerator /> },
   { path: "/cover-letter/templates", element: <ResumeGenerator /> },
