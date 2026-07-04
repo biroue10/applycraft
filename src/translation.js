@@ -80,6 +80,39 @@ export function buildResumeTranslationRequest(form, { sourceLanguage = "auto", t
   };
 }
 
+export async function translateDocumentContent({
+  documentType,
+  sourceLanguage = "auto",
+  targetLanguage,
+  payload,
+  protectedTerms = [],
+} = {}) {
+  const res = await fetch("/api/translate-document", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      documentType,
+      sourceLanguage,
+      targetLanguage,
+      protectedTerms,
+      payload,
+    }),
+  });
+  let data = null;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error("translation-failed");
+  }
+  if (!res.ok || !data?.ok) {
+    if (data?.error === "translation_unavailable") throw new Error("translation-unavailable");
+    if (data?.error === "rate_limited") throw new Error("translation-rate-limited");
+    throw new Error("translation-failed");
+  }
+  if (!data.document || typeof data.document !== "object") throw new Error("translation-failed");
+  return data;
+}
+
 export function parseTranslationJson(raw, allowedKeys = TRANSLATABLE_RESUME_FIELDS) {
   const clean = String(raw || "").replace(/```json|```/gi, "").trim();
   let parsed;

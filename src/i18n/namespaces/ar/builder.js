@@ -32,7 +32,7 @@ const builder = {
   "languageSeparationNote": "تغيير لغة المستند يحدّث عناوين الأقسام وتنسيق التواريخ واتجاه الصفحة والتخطيط، لكنه لا يترجم محتوى السيرة الذاتية الذي كتبته.",
   "translateContentButton": "ترجمة محتوى السيرة الذاتية إلى {language}",
   "translatingContentButton": "جارٍ ترجمة المحتوى...",
-  "translateContentConfirm": "لترجمة سيرتك الذاتية، يحتاج ApplyCraft إلى معالجة النص الذي كتبته. ستبقى سيرتك الأصلية دون تغيير، وسيتم إنشاء النسخة المترجمة كنسخة منفصلة.",
+  "translateContentConfirm": "لترجمة سيرتك الذاتية، يحتاج ApplyCraft إلى معالجة النص الذي كتبته باستخدام مساعد الترجمة. ستبقى سيرتك الأصلية دون تغيير وسيتم إنشاء نسخة مترجمة.",
   "translateContentConfirmButton": "إنشاء نسخة مترجمة",
   "translateContentCancelButton": "إلغاء",
   "translateContentHint": "ينشئ هذا نسخة مترجمة منفصلة. تبقى سيرتك الأصلية دون تغيير.",

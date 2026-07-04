@@ -26,6 +26,8 @@ const status = {
   "translateStarted": "Lebenslauf-Inhalt wird übersetzt...",
   "translateSuccess": "Lebenslauf-Inhalt übersetzt. Prüfe den Text vor dem Export.",
   "translateFail": "Übersetzung fehlgeschlagen. Dein ursprünglicher Lebenslauf-Inhalt bleibt unverändert.",
+  "translateUnavailable": "Der Übersetzungsassistent ist vorübergehend nicht verfügbar.",
+  "translateRateLimited": "Zu viele Übersetzungsanfragen. Bitte versuche es später erneut.",
   "translateNoContent": "Füge Lebenslauf-Inhalt hinzu, bevor du übersetzt."
 };
 

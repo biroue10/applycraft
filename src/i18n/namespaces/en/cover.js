@@ -43,7 +43,7 @@ const cover = {
   "comingSoon": "Custom cover-letter sections are coming soon.",
   "translateContentButton": "Translate cover letter content to {language}",
   "translatingContentButton": "Translating content...",
-  "translateContentConfirm": "To translate your cover letter, ApplyCraft needs to process the text you wrote. Your contact details and recipient details will be kept unchanged.",
+  "translateContentConfirm": "To translate your cover letter, ApplyCraft needs to process the text you wrote using the translation assistant. Your contact details and recipient details will be kept unchanged.",
   "translateContentHint": "This translates the letter text only. Your contact details and recipient details stay unchanged.",
   "translatedBadge": "AI translated — review recommended"
 };

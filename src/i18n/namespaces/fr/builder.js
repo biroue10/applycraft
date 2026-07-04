@@ -32,7 +32,7 @@ const builder = {
   "languageSeparationNote": "Changer la langue du document met à jour les titres de section, les formats de date, la direction et la mise en page. Cela ne traduit pas automatiquement le contenu que vous avez rédigé.",
   "translateContentButton": "Traduire le contenu du CV en {language}",
   "translatingContentButton": "Traduction en cours...",
-  "translateContentConfirm": "Pour traduire votre CV, ApplyCraft doit traiter le texte que vous avez rédigé. Votre CV original restera inchangé et la version traduite sera créée comme copie séparée.",
+  "translateContentConfirm": "Pour traduire votre CV, ApplyCraft doit traiter le texte que vous avez rédigé avec l’assistant de traduction. Votre CV original restera inchangé et une copie traduite sera créée.",
   "translateContentConfirmButton": "Créer une copie traduite",
   "translateContentCancelButton": "Annuler",
   "translateContentHint": "Cette action crée une copie traduite séparée. Votre CV original reste inchangé.",

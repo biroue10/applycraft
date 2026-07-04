@@ -32,7 +32,7 @@ const builder = {
   "languageSeparationNote": "Changing the document language updates section labels, date formatting, direction, and layout. It does not translate your written resume content.",
   "translateContentButton": "Translate resume content to {language}",
   "translatingContentButton": "Translating content...",
-  "translateContentConfirm": "To translate your resume, ApplyCraft needs to process the text you wrote. Your original resume will be kept unchanged, and the translated version will be created as a separate copy.",
+  "translateContentConfirm": "To translate your résumé, ApplyCraft needs to process the text you wrote using the translation assistant. Your original résumé will stay unchanged, and a translated copy will be created.",
   "translateContentConfirmButton": "Create translated copy",
   "translateContentCancelButton": "Cancel",
   "translateContentHint": "This creates a separate translated copy. Your original resume remains unchanged.",

@@ -10,6 +10,7 @@ import {
 } from "../src/translation.js";
 
 const app = await readFile(new URL("../src/ResumeGenerator.jsx", import.meta.url), "utf8");
+const translationSource = await readFile(new URL("../src/translation.js", import.meta.url), "utf8");
 
 const original = {
   name: "ISAAC BIROUE",
@@ -73,6 +74,8 @@ assert.match(app, /setDocumentLanguagePreference[\s\S]{0,500}setDocumentLanguage
 assert.doesNotMatch(app, /setDocumentLanguagePreference[\s\S]{0,700}callAi\("translate-resume"/, "changing document language must not call translation");
 assert.match(app, /setTranslationConfirm\(\{ open: true/, "translation must require explicit confirmation");
 assert.match(app, /resumes\.upsertResume\(\{ title: copyTitle, data: nextForm \}\)/, "translation should create a separate resume copy");
+assert.match(translationSource, /\/api\/translate-document/, "translation must call the dedicated backend endpoint");
+assert.doesNotMatch(app, /callAi\("translate-resume"/, "translation must not use the generic frontend AI endpoint");
 assert.match(app, /translatedBadge/, "AI translated fields should show a review badge");
 
 console.log("translation tests passed.");

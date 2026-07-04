@@ -43,7 +43,7 @@ const cover = {
   "comingSoon": "Les sections personnalisées de lettre arrivent bientôt.",
   "translateContentButton": "Traduire le contenu de la lettre en {language}",
   "translatingContentButton": "Traduction en cours...",
-  "translateContentConfirm": "Pour traduire votre lettre de motivation, ApplyCraft doit traiter le texte que vous avez rédigé. Vos coordonnées et les informations du destinataire resteront inchangées.",
+  "translateContentConfirm": "Pour traduire votre lettre de motivation, ApplyCraft doit traiter le texte que vous avez rédigé avec l’assistant de traduction. Vos coordonnées et les informations du destinataire resteront inchangées.",
   "translateContentHint": "Cette action traduit uniquement le texte de la lettre. Vos coordonnées et les informations du destinataire restent inchangées.",
   "translatedBadge": "Traduit par IA — relecture recommandée"
 };

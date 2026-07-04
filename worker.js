@@ -4,6 +4,7 @@ const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_VERSION = "2023-06-01";
 const MODEL = "claude-3-5-haiku-20241022";
 const MAX_BODY_BYTES = 16 * 1024;
+const MAX_TRANSLATION_BODY_BYTES = 64 * 1024;
 const MAX_SHARE_BODY_BYTES = 128 * 1024;
 const MAX_SHARE_PAYLOAD_BYTES = 96 * 1024;
 const SHARE_TTL_DEFAULT_DAYS = 30;
@@ -77,6 +78,29 @@ ${text}`,
     }),
   },
 };
+
+const TRANSLATION_DOCUMENT_TYPES = new Set(["resume", "coverLetter"]);
+const TRANSLATION_PROTECTED_TERMS = [
+  "Microsoft Intune",
+  "Jamf Pro",
+  "JFrog Artifactory",
+  "Active Directory",
+  "RHCSA",
+  "RHCE",
+  "Red Hat",
+  "Kandji",
+  "Intelligent Hub",
+  "Docker",
+  "Jenkins",
+  "SonarQube",
+  "Nexus",
+  "Microsoft 365",
+  "Windows",
+  "Linux",
+  "PHP",
+  "HTML",
+  "React",
+];
 
 const LANGUAGE_NAMES = {
   en: "English", fr: "French", es: "Spanish", ar: "Arabic", de: "German",
@@ -283,6 +307,239 @@ function validatePayload(payload) {
       context: (payload.context || "").trim(),
     },
   };
+}
+
+function extractProtectedTermsFromDocument(value, glossary = TRANSLATION_PROTECTED_TERMS) {
+  const textParts = [];
+  const walk = (node) => {
+    if (typeof node === "string") textParts.push(node);
+    else if (Array.isArray(node)) node.forEach(walk);
+    else if (node && typeof node === "object") Object.values(node).forEach(walk);
+  };
+  walk(value);
+  const text = textParts.join("\n");
+  const found = new Set();
+  for (const term of glossary) {
+    if (term && text.toLowerCase().includes(String(term).toLowerCase())) found.add(term);
+  }
+  const patterns = [
+    /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi,
+    /\b(?:https?:\/\/|www\.)[^\s<>"']+/gi,
+    /(?:\+?\d[\d\s().-]{6,}\d)/g,
+  ];
+  for (const pattern of patterns) {
+    for (const match of text.matchAll(pattern)) found.add(match[0]);
+  }
+  return Array.from(found).slice(0, 80);
+}
+
+function countDocumentChars(value) {
+  if (typeof value === "string") return value.length;
+  if (Array.isArray(value)) return value.reduce((sum, item) => sum + countDocumentChars(item), 0);
+  if (value && typeof value === "object") return Object.values(value).reduce((sum, item) => sum + countDocumentChars(item), 0);
+  return 0;
+}
+
+function sanitizeTranslationPayload(value, depth = 0) {
+  if (depth > 8) return undefined;
+  if (value == null) return value;
+  if (typeof value === "string") return value.slice(0, 12000);
+  if (typeof value === "number") return Number.isFinite(value) ? value : undefined;
+  if (typeof value === "boolean") return value;
+  if (Array.isArray(value)) return value.slice(0, 200).map((item) => sanitizeTranslationPayload(item, depth + 1)).filter((item) => item !== undefined);
+  if (typeof value === "object") {
+    const out = {};
+    for (const [key, item] of Object.entries(value).slice(0, 80)) {
+      if (!key || key.length > 80 || key === "__proto__" || key === "prototype" || key === "constructor") continue;
+      const safe = sanitizeTranslationPayload(item, depth + 1);
+      if (safe !== undefined) out[key] = safe;
+    }
+    return out;
+  }
+  return undefined;
+}
+
+function parseAnthropicJson(raw) {
+  const clean = String(raw || "").replace(/```json|```/gi, "").trim();
+  return JSON.parse(clean);
+}
+
+function shouldPreserveTranslationField(key = "", original = "") {
+  const normalized = String(key).toLowerCase();
+  if (/^(name|email|phone|url|linkedin|website|portfolio|github)$/.test(normalized)) return true;
+  if (/(email|phone|url|linkedin|website|certification|certifications)/.test(normalized)) return true;
+  const value = String(original || "");
+  return /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i.test(value)
+    || /\b(?:https?:\/\/|www\.)[^\s<>"']+/i.test(value)
+    || /(?:\+?\d[\d\s().-]{6,}\d)/.test(value);
+}
+
+function mergeValidatedTranslation(original, translated, key = "") {
+  if (shouldPreserveTranslationField(key, original)) return original;
+  if (typeof original === "string") return typeof translated === "string" ? translated : original;
+  if (Array.isArray(original)) {
+    if (!Array.isArray(translated)) return original;
+    return original.map((item, index) => mergeValidatedTranslation(item, translated[index], key));
+  }
+  if (original && typeof original === "object") {
+    if (!translated || typeof translated !== "object" || Array.isArray(translated)) return original;
+    const out = {};
+    for (const [key, value] of Object.entries(original)) {
+      out[key] = mergeValidatedTranslation(value, translated[key], key);
+    }
+    return out;
+  }
+  return original;
+}
+
+function validateTranslationRequest(payload) {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return { error: ["INVALID_JSON", "Expected a JSON object.", 400] };
+  }
+  if (hasUnsafeKey(payload)) return { error: ["INVALID_JSON", "Expected a safe JSON object.", 400] };
+  const allowedKeys = new Set(["documentType", "sourceLanguage", "targetLanguage", "payload", "protectedTerms"]);
+  if (Object.keys(payload).some((key) => !allowedKeys.has(key))) {
+    return { error: ["UNKNOWN_FIELD", "The request contains unsupported fields.", 400] };
+  }
+  if (!TRANSLATION_DOCUMENT_TYPES.has(payload.documentType)) {
+    return { error: ["UNSUPPORTED_DOCUMENT_TYPE", "This document type is not supported.", 400] };
+  }
+  const sourceLanguage = payload.sourceLanguage || "auto";
+  const targetLanguage = payload.targetLanguage || "";
+  if (typeof sourceLanguage !== "string" || sourceLanguage.length > 32) {
+    return { error: ["UNSUPPORTED_LANGUAGE", "This source language is not supported.", 400] };
+  }
+  if (typeof targetLanguage !== "string" || !Object.prototype.hasOwnProperty.call(LANGUAGE_NAMES, targetLanguage)) {
+    return { error: ["UNSUPPORTED_LANGUAGE", "This target language is not supported.", 400] };
+  }
+  const document = sanitizeTranslationPayload(payload.payload);
+  if (!document || typeof document !== "object" || Array.isArray(document)) {
+    return { error: ["INVALID_DOCUMENT", "Document payload is required.", 400] };
+  }
+  const chars = countDocumentChars(document);
+  if (!chars) return { error: ["INVALID_DOCUMENT", "Document payload is empty.", 400] };
+  if (chars > MAX_TRANSLATE_CHARS) return { error: ["PAYLOAD_TOO_LARGE", "The document is too large to translate.", 413] };
+  const suppliedProtectedTerms = Array.isArray(payload.protectedTerms)
+    ? payload.protectedTerms.filter((term) => typeof term === "string" && term.trim()).map((term) => term.slice(0, 120))
+    : [];
+  const protectedTerms = Array.from(new Set([...TRANSLATION_PROTECTED_TERMS, ...extractProtectedTermsFromDocument(document), ...suppliedProtectedTerms])).slice(0, 120);
+  return {
+    value: {
+      documentType: payload.documentType,
+      sourceLanguage,
+      targetLanguage,
+      sourceLanguageName: LANGUAGE_NAMES[sourceLanguage] || sourceLanguage,
+      targetLanguageName: LANGUAGE_NAMES[targetLanguage],
+      document,
+      chars,
+      protectedTerms,
+    },
+  };
+}
+
+function buildTranslationPrompt({ documentType, sourceLanguageName, targetLanguageName, sourceLanguage, targetLanguage, document, protectedTerms }) {
+  const system = `You are a professional résumé and cover-letter translator.
+
+Translate the provided structured document from ${sourceLanguageName || sourceLanguage} to ${targetLanguageName || targetLanguage}.
+
+Rules:
+- Return valid JSON only.
+- Preserve the input JSON structure.
+- Do not invent facts, achievements, employers, schools, dates, certifications, metrics, or skills.
+- Preserve names, emails, phone numbers, URLs, LinkedIn links, company names, product names, certifications, acronyms, and technical terms when they are normally used in English.
+- Preserve dates, numbers, bullet structure, and field order.
+- Translate professional summaries, responsibilities, achievements, education descriptions, project descriptions, and cover-letter paragraphs naturally.
+- Use professional résumé language in the target language.
+- For Arabic, use professional Modern Standard Arabic.
+- For French, use professional CV French.
+- Keep translations concise and suitable for job applications.
+- If a field is empty, keep it empty.
+- Do not output Markdown.
+- Do not output explanations.`;
+  const prompt = JSON.stringify({
+    documentType,
+    sourceLanguage,
+    targetLanguage,
+    protectedTerms,
+    document,
+  });
+  return { system, prompt };
+}
+
+async function handleTranslateDocument(request, env) {
+  const cors = corsFor(request, env);
+  if (request.method === "OPTIONS") {
+    if (!cors.allowed) return new Response(null, { status: 403, headers: { "Vary": "Origin", ...SECURITY_HEADERS } });
+    return new Response(null, { status: 204, headers: { ...cors.headers, ...SECURITY_HEADERS } });
+  }
+  if (request.method !== "POST") {
+    return errorResponse("METHOD_NOT_ALLOWED", "Method not allowed.", 405, cors.headers, { Allow: "POST, OPTIONS" });
+  }
+  if (!cors.allowed) return errorResponse("FORBIDDEN_ORIGIN", "This origin is not allowed.", 403, cors.headers);
+  const contentType = request.headers.get("Content-Type") || "";
+  if (!contentType.toLowerCase().startsWith("application/json")) {
+    return errorResponse("UNSUPPORTED_MEDIA_TYPE", "Content-Type must be application/json.", 415, cors.headers);
+  }
+  const rate = await checkRateLimitKV(env, request);
+  if (!rate.allowed) {
+    return jsonResponse({ ok: false, error: "rate_limited" }, 429, {
+      ...cors.headers,
+      "Retry-After": String(Math.max(1, rate.retryAfter || 60)),
+    });
+  }
+  const apiKey = env.ANTHROPIC_API_KEY;
+  if (!apiKey) return jsonResponse({ ok: false, error: "translation_unavailable" }, 503, cors.headers);
+  const limitedBody = await readLimitedBody(request, MAX_TRANSLATION_BODY_BYTES);
+  if (limitedBody.tooLarge) return jsonResponse({ ok: false, error: "payload_too_large" }, 413, cors.headers);
+  let body;
+  try {
+    body = JSON.parse(limitedBody.body);
+  } catch {
+    return jsonResponse({ ok: false, error: "invalid_json" }, 400, cors.headers);
+  }
+  const validation = validateTranslationRequest(body);
+  if (validation.error) {
+    const [, , status] = validation.error;
+    return jsonResponse({ ok: false, error: status === 413 ? "payload_too_large" : "invalid_request" }, status, cors.headers);
+  }
+
+  const promptParts = buildTranslationPrompt(validation.value);
+  const aiRequest = {
+    model: env.ANTHROPIC_TRANSLATION_MODEL || "claude-3-5-sonnet-latest",
+    max_tokens: 2600,
+    temperature: 0.1,
+    system: promptParts.system,
+    messages: [{ role: "user", content: [{ type: "text", text: promptParts.prompt }] }],
+  };
+  const started = Date.now();
+  const upstream = await callAnthropic(apiKey, aiRequest);
+  console.log(JSON.stringify({
+    ts: new Date().toISOString(),
+    action: "translate-document",
+    document_type: validation.value.documentType,
+    target_language: validation.value.targetLanguage,
+    ok: upstream.ok,
+    status: upstream.status,
+    duration_ms: Date.now() - started,
+    size_bucket: validation.value.chars < 1000 ? "small" : validation.value.chars < 4000 ? "medium" : "large",
+  }));
+  if (!upstream.ok) {
+    const status = upstream.code === "AI_TIMEOUT" ? 504 : 502;
+    return jsonResponse({ ok: false, error: upstream.code === "AI_TIMEOUT" ? "translation_timeout" : "translation_failed" }, status, cors.headers);
+  }
+  try {
+    const parsed = parseAnthropicJson(upstream.output);
+    const translatedDocument = mergeValidatedTranslation(validation.value.document, parsed);
+    return jsonResponse({
+      ok: true,
+      documentType: validation.value.documentType,
+      sourceLanguage: validation.value.sourceLanguage,
+      targetLanguage: validation.value.targetLanguage,
+      document: translatedDocument,
+    }, 200, cors.headers);
+  } catch {
+    return jsonResponse({ ok: false, error: "translation_failed" }, 502, cors.headers);
+  }
 }
 
 function shareStore(env) {
@@ -644,6 +901,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/api/ai") return handleAi(request, env);
+    if (url.pathname === "/api/translate-document") return handleTranslateDocument(request, env);
     if (url.pathname === "/api/feedback") return handleFeedback(request, env);
     if (url.pathname === "/api/share" || url.pathname.startsWith("/api/share/")) return handleShare(request, env, url);
     if (request.method === "GET" && /^\/r\/[A-Za-z0-9_-]{8,24}$/.test(url.pathname)) {
@@ -656,6 +914,8 @@ export default {
 
 export const __securityTest = {
   validatePayload,
+  validateTranslationRequest,
+  mergeValidatedTranslation,
   validateSharePayload,
   generateShareId,
   checkRateLimit,

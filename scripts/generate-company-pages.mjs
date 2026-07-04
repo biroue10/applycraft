@@ -181,7 +181,7 @@ const PAGES = {
 <p>Cloudflare, our CDN provider, may set a technical cookie (<code>__cf_bm</code>) for bot protection. This is a strictly necessary security cookie that does not track you for advertising purposes.</p>
 
 <h2>4. AI features and your data</h2>
-<p>Some optional AI helpers — such as achievement coaching or AI tailoring to a job description — depend on external AI providers when you choose to use them. User-written résumé or cover-letter content is not translated, uploaded, or processed by AI unless you explicitly choose an AI-powered action. Do not use optional AI helpers with sensitive content unless you are comfortable with the relevant provider processing the submitted text. The core builder and export do not use AI.</p>
+<p>Some optional AI helpers — such as achievement coaching, AI tailoring to a job description, or the translation assistant — depend on external AI providers when you choose to use them. Changing the document language only updates labels, dates, direction, and layout. If you choose the translation assistant, the text you wrote is processed to create a translated copy. Your original résumé remains unchanged. Review AI translations before sending applications. Do not use optional AI helpers with sensitive content unless you are comfortable with the relevant provider processing the submitted text. The core builder and export do not use AI.</p>
 
 <h2 id="payments">4a. Payments (optional paid pass)</h2>
 <p>Power-ups (AI tailoring and Master Profile cloud sync) are available via an optional one-time "Active Search Pass." Payments are processed by <strong>Lemon Squeezy</strong>, which acts as the merchant of record and handles billing and applicable taxes. We do not receive or store your full card details; we record only whether your pass is active and when it expires. Lemon Squeezy's handling of payment data is governed by its own privacy policy.</p>
@@ -321,7 +321,7 @@ const PAGES = {
 <p>Arabic is production-ready for interface text, document labels, and RTL-aware layouts. Other RTL languages use the same direction-aware rendering where available, but English, French, and Arabic are the currently production-ready localized languages.</p>
 
 <h3>Does changing document language translate my existing resume?</h3>
-<p>Changing document language does not automatically translate your professional summary, experience descriptions, job titles, skills, education details, or cover-letter paragraphs. User-written content is not translated, uploaded, or processed by AI unless you explicitly choose an AI-powered action.</p>
+<p>Changing the document language only updates labels, dates, direction, and layout. It does not automatically translate your professional summary, experience descriptions, job titles, skills, education details, or cover-letter paragraphs. If you choose the translation assistant, the text you wrote is processed to create a translated copy. Your original résumé remains unchanged. Review AI translations before sending applications.</p>
 
 <h2>Downloading</h2>
 
@@ -340,7 +340,7 @@ const PAGES = {
 <p>Free builder data is stored in your browser by default. If you use optional features such as cloud sync, accounts, AI helpers, or private offline sharing, selected data may be stored or processed so those features can work. ApplyCraft does not send résumé content to analytics.</p>
 
 <h3>Is my data used to train AI?</h3>
-<p>User-written résumé or cover-letter content is not translated, uploaded, or processed by AI unless you explicitly choose an AI-powered action. Avoid optional AI helpers for sensitive content unless you are comfortable with that processing.</p>
+<p>User-written résumé or cover-letter content is not translated, uploaded, or processed by AI unless you explicitly choose an AI-powered action. If you choose the translation assistant, the text you wrote is processed to create a translated copy. Your original résumé remains unchanged. Review AI translations before sending applications. Avoid optional AI helpers for sensitive content unless you are comfortable with that processing.</p>
 
 <h3>How do I delete my data?</h3>
 <p>Use the local data controls in the app or clear this site's browser storage. Closing a tab does not always remove local drafts stored by your browser.</p>

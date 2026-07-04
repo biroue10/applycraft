@@ -26,6 +26,8 @@ const status = {
   "translateStarted": "Traduciendo el contenido del currículum...",
   "translateSuccess": "Contenido del currículum traducido. Revisa el texto antes de exportar.",
   "translateFail": "La traducción falló. El contenido original del currículum no cambió.",
+  "translateUnavailable": "El asistente de traducción no está disponible temporalmente.",
+  "translateRateLimited": "Demasiadas solicitudes de traducción. Inténtalo de nuevo más tarde.",
   "translateNoContent": "Agrega contenido al currículum antes de traducir."
 };
 

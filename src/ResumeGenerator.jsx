@@ -19,6 +19,7 @@ import {
   createTranslatedResumeCopy,
   extractProtectedTerms,
   parseTranslationJson,
+  translateDocumentContent,
   TRANSLATABLE_RESUME_FIELDS,
   TRANSLATION_STATUSES,
 } from "./translation.js";
@@ -3666,8 +3667,14 @@ export default function ResumeGenerator() {
         setTimeout(() => setStatusMsg(""), 3000);
         return;
       }
-      const text = await callAi("translate-resume", JSON.stringify(request), langCode);
-      const translated = parseTranslationJson(text);
+      const response = await translateDocumentContent({
+        documentType: "resume",
+        sourceLanguage: request.sourceLanguage,
+        targetLanguage: langCode,
+        protectedTerms: request.preserveTerms,
+        payload: request.content,
+      });
+      const translated = parseTranslationJson(JSON.stringify(response.document));
       const missingProtected = assertProtectedTermsPreserved(request.content, translated);
       const translatedAt = new Date().toISOString();
       const originalSnapshot = { ...form };
@@ -3706,7 +3713,9 @@ export default function ResumeGenerator() {
       setStatusMsg(missingProtected.length ? statusText("translateProtectedTermsMissing") : statusText("translateSuccess"));
       setTimeout(() => setStatusMsg(""), 4500);
     } catch (error) {
-      setStatusMsg(error?.message === "api-error" ? statusText("translateUnavailable") : statusText("translateFail"));
+      setStatusMsg(error?.message === "translation-unavailable" ? statusText("translateUnavailable")
+        : error?.message === "translation-rate-limited" ? statusText("translateRateLimited")
+        : statusText("translateFail"));
       setTimeout(() => setStatusMsg(""), 3500);
     } finally {
       setTranslating(false);
@@ -5997,8 +6006,14 @@ Awards: ${form.awards}`;
         preserveTerms: protectedTerms,
         content,
       };
-      const text = await callAi("translate-resume", JSON.stringify(request), langCode);
-      const translated = parseTranslationJson(text, contentKeys);
+      const response = await translateDocumentContent({
+        documentType: "coverLetter",
+        sourceLanguage: request.sourceLanguage,
+        targetLanguage: langCode,
+        protectedTerms,
+        payload: content,
+      });
+      const translated = parseTranslationJson(JSON.stringify(response.document), contentKeys);
       const translatedAt = new Date().toISOString();
       setCoverForm((f) => ({
         ...f,
@@ -6019,7 +6034,9 @@ Awards: ${form.awards}`;
       setStatusMsg(statusText("translateSuccess"));
       setTimeout(() => setStatusMsg(""), 4500);
     } catch (error) {
-      setStatusMsg(error?.message === "api-error" ? statusText("translateUnavailable") : statusText("translateFail"));
+      setStatusMsg(error?.message === "translation-unavailable" ? statusText("translateUnavailable")
+        : error?.message === "translation-rate-limited" ? statusText("translateRateLimited")
+        : statusText("translateFail"));
       setTimeout(() => setStatusMsg(""), 3500);
     } finally {
       setTranslating(false);

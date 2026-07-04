@@ -125,6 +125,79 @@ async function testUpstreamFailures() {
   });
 }
 
+async function testTranslateDocumentEndpoint() {
+  const translationBody = {
+    documentType: "resume",
+    sourceLanguage: "en",
+    targetLanguage: "ar",
+    payload: {
+      title: "Service Desk Analyst L2",
+      summary: "Resolved Microsoft Intune and Active Directory incidents.",
+      email: "isaac@example.com",
+      url: "https://www.linkedin.com/in/isaac-biroue",
+      certifications: "RHCSA — Red Hat",
+    },
+  };
+
+  await withMockFetch(async () => {
+    const response = await worker.fetch(request("/api/translate-document", {
+      body: JSON.stringify(translationBody),
+    }), { ASSETS: env().ASSETS });
+    assert.equal(response.status, 503);
+    assert.deepEqual(await readJson(response), { ok: false, error: "translation_unavailable" });
+  }, async () => new Response("{}"));
+
+  let upstreamBody;
+  await withMockFetch(async () => {
+    const response = await worker.fetch(request("/api/translate-document", {
+      body: JSON.stringify(translationBody),
+    }), env());
+    assert.equal(response.status, 200);
+    const json = await readJson(response);
+    assert.equal(json.ok, true);
+    assert.equal(json.document.summary, "حللت حوادث Microsoft Intune و Active Directory.");
+    assert.equal(json.document.email, "isaac@example.com");
+    assert.equal(json.document.url, "https://www.linkedin.com/in/isaac-biroue");
+    assert.equal(json.document.certifications, "RHCSA — Red Hat");
+    assert.equal(upstreamBody.model, "claude-3-5-sonnet-latest");
+    assert.ok(upstreamBody.system.includes("Return valid JSON only"));
+    assert.ok(upstreamBody.messages[0].content[0].text.includes("Microsoft Intune"));
+    assert.ok(!("metadata" in upstreamBody));
+  }, async (_url, init) => {
+    upstreamBody = JSON.parse(init.body);
+    return new Response(JSON.stringify({
+      content: [{ type: "text", text: JSON.stringify({
+        title: "محلل دعم فني من المستوى الثاني",
+        summary: "حللت حوادث Microsoft Intune و Active Directory.",
+        email: "changed@example.com",
+        url: "https://changed.example",
+        certifications: "شهادة RHCSA — Red Hat",
+        unexpected: "<script>",
+      }) }],
+    }), { headers: { "Content-Type": "application/json" } });
+  });
+
+  await withMockFetch(async () => {
+    const response = await worker.fetch(request("/api/translate-document", {
+      body: JSON.stringify(translationBody),
+    }), env());
+    assert.equal(response.status, 502);
+    assert.deepEqual(await readJson(response), { ok: false, error: "translation_failed" });
+  }, async () => new Response(JSON.stringify({ content: [{ type: "text", text: "not-json" }] }), { headers: { "Content-Type": "application/json" } }));
+
+  await withMockFetch(async () => {
+    let response;
+    for (let i = 0; i < 9; i += 1) {
+      response = await worker.fetch(request("/api/translate-document", {
+        headers: { "X-Forwarded-For": "198.51.100.77" },
+        body: JSON.stringify(translationBody),
+      }), env());
+    }
+    assert.equal(response.status, 429);
+    assert.equal((await readJson(response)).error, "rate_limited");
+  }, async () => new Response(JSON.stringify({ content: [{ type: "text", text: JSON.stringify(translationBody.payload) }] }), { headers: { "Content-Type": "application/json" } }));
+}
+
 async function testSecurityHeaders() {
   const response = await worker.fetch(new Request("https://applycraft.io/"), env());
   assert.match(response.headers.get("Content-Security-Policy"), /default-src 'self'/);
@@ -147,6 +220,7 @@ await testWorkerValidation();
 await testWorkerUpstreamControls();
 await testRateLimit();
 await testUpstreamFailures();
+await testTranslateDocumentEndpoint();
 await testSecurityHeaders();
 await testStaticSinks();
 
