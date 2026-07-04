@@ -23,6 +23,8 @@ const builder = {
   "preview": "معاينة",
   "useTemplate": "استخدم القالب",
   "backToTemplates": "العودة إلى القوالب",
+  "suggestedNextStep": "الخطوة المقترحة",
+  "reviewAtsTips": "راجع نصائح ATS",
   "complete": "مكتمل",
   "save": "الاحتفاظ لهذه الجلسة",
   "saveResume": "الاحتفاظ لهذه الجلسة",

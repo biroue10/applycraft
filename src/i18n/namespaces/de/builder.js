@@ -23,6 +23,8 @@ const builder = {
   "preview": "Vorschau",
   "useTemplate": "Vorlage verwenden",
   "backToTemplates": "Zurück zu den Vorlagen",
+  "suggestedNextStep": "Vorgeschlagener nächster Schritt",
+  "reviewAtsTips": "ATS-Tipps ansehen",
   "complete": "abgeschlossen",
   "save": "Für diese Sitzung behalten",
   "saveResume": "Für diese Sitzung behalten",

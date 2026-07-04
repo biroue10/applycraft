@@ -1653,6 +1653,7 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, c
   const visibleCount = list.filter(entry => entry.visible !== false).length;
   const status = visibleCount > 0 ? "Complete" : "Missing";
   const countLabel = visibleCount === 0 ? status : `${visibleCount} ${visibleCount === 1 ? "entry" : "entries"} · ${status}`;
+  const statusColor = statusTone(status);
   const dnd = {
     dragging: () => dragFrom.current,
     onDragStart: (i) => { dragFrom.current = i; },
@@ -1690,9 +1691,13 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, c
             style={{ flex: 1, background: C.elevated, border: `1px solid ${C.accent}`, borderRadius: 8, padding: "6px 10px",
               color: C.text1, fontSize: 16, fontWeight: 800, fontFamily: "inherit", outline: "none" }} />
         ) : (
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 800, color: C.text1, lineHeight: 1.25 }}>{heading}</h3>
-            <div style={{ marginTop: 2, color: statusTone(status), fontSize: 12 }}>{countLabel}</div>
+          <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 8 }}>
+            <h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 800, color: C.text1, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{heading}</h3>
+            <span title={countLabel} aria-label={countLabel}
+              style={{ width: 8, height: 8, borderRadius: "50%", background: statusColor, opacity: visibleCount > 0 ? 0.95 : 0.55, flexShrink: 0 }} />
+            {visibleCount > 0 && (
+              <span aria-hidden style={{ color: C.text3, fontSize: 11.5, fontWeight: 700 }}>{visibleCount}</span>
+            )}
           </div>
         )}
         <div style={{ position: "relative" }}>
@@ -1764,6 +1769,7 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, c
 function FieldCard({ icon, title, status, children, collapsed, onToggleCollapse, rtl, eui, menu }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const statusLabel = status || (collapsed ? "Not started" : "In progress");
+  const statusColor = statusTone(statusLabel);
   return (
     <section style={{ background: collapsed ? SECTION_TOKENS.rowBg : SECTION_TOKENS.expandedBg, border: "none",
       borderRadius: 12, boxShadow: collapsed ? "none" : SECTION_TOKENS.expandedShadow,
@@ -1776,9 +1782,10 @@ function FieldCard({ icon, title, status, children, collapsed, onToggleCollapse,
           padding: collapsed ? "12px 14px" : "14px 16px",
           boxShadow: collapsed ? "none" : `inset 0 -1px 0 ${SECTION_TOKENS.rowDivider}` }}>
         <span aria-hidden style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 800, color: C.text1, textAlign: rtl ? "right" : "left", lineHeight: 1.25 }}>{title}</h3>
-          <div style={{ marginTop: 2, color: statusTone(statusLabel), fontSize: 12, textAlign: rtl ? "right" : "left" }}>{statusLabel}</div>
+        <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 8, justifyContent: rtl ? "flex-end" : "flex-start" }}>
+          <h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 800, color: C.text1, textAlign: rtl ? "right" : "left", lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</h3>
+          <span title={statusLabel} aria-label={statusLabel}
+            style={{ width: 8, height: 8, borderRadius: "50%", background: statusColor, opacity: statusColor === SECTION_TOKENS.statusComplete ? 0.95 : 0.55, flexShrink: 0 }} />
         </div>
         {menu && menu.length > 0 && (
           <div style={{ position: "relative" }}>
@@ -3646,8 +3653,8 @@ export default function ResumeGenerator() {
       .forEach((k) => { if (f[k] && String(f[k]).trim()) d[k] = f[k]; });
     return { v: 2, k: "cover", t: coverTpl?.id || "modern", l: docLang || "en", p: "a4", c: {}, d };
   }, [coverForm, coverTpl, docLang]);
-  // Reusable ⋮ menu (email + shareable link) for either editor.
-  const renderMoreMenu = (open, setOpen, getPayload, subject) => (
+  // Reusable ⋮ menu for secondary editor actions.
+  const renderMoreMenu = (open, setOpen, getPayload, subject, options = {}) => (
     <div style={{ position: "relative" }}>
       <button type="button" aria-label={builderText("moreOptions")} aria-expanded={open}
         onClick={() => { setOpen((o) => !o); setShareUrl(""); }}
@@ -3655,6 +3662,21 @@ export default function ResumeGenerator() {
       {open && (
         <div style={{ position: "absolute", top: "calc(100% + 8px)", insetInlineEnd: 0, zIndex: 120, width: 290,
           background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, boxShadow: "0 18px 54px rgba(0,0,0,0.5)", padding: 10 }}>
+          {options.content}
+          {(options.items || []).map((item, index) => (
+            <button key={`${item.label}-${index}`} type="button" onClick={() => { setOpen(false); item.onClick?.(); }}
+              disabled={item.disabled}
+              style={{ display: "block", width: "100%", textAlign: "left", background: item.primary ? `${C.accent}18` : "none",
+                border: "none", color: item.disabled ? C.text3 : item.color || C.text1,
+                padding: "10px 10px", fontSize: 13.5, fontWeight: 750, cursor: item.disabled ? "not-allowed" : "pointer",
+                fontFamily: "inherit", borderRadius: 8 }}>
+              {item.label}
+              {item.hint && <span style={{ display: "block", color: C.text3, fontSize: 11.5, marginTop: 2, fontWeight: 500 }}>{item.hint}</span>}
+            </button>
+          ))}
+          {((options.items || []).length > 0 || options.content) && (
+            <div aria-hidden style={{ height: 1, background: C.border, opacity: 0.65, margin: "6px 0" }} />
+          )}
           <button type="button" onClick={() => { emailLink(getPayload, subject); }}
             style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none",
               color: C.text1, padding: "10px 10px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", borderRadius: 8 }}>
@@ -5595,29 +5617,10 @@ Awards: ${form.awards}`;
               <span>{tpl.name}</span>
               <span>·</span>
               <span>{completedChecklist}/{resumeChecklist.length} {bu.complete}</span>
-              {savedResumes.length > 0 && (
-                <>
-                  <span>·</span>
-                  <label style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                    <span>{bu.versionLabel}</span>
-                    <select value={currentResumeId || ""} onChange={(e) => e.target.value && openResume(e.target.value)}
-                      style={{ maxWidth: 210, background: C.elevated, color: C.text2, border: `1px solid ${C.border}`,
-                        borderRadius: 7, padding: "3px 7px", fontSize: 11.5, fontFamily: "inherit" }}>
-                      <option value="" disabled>{bu.untitledResume}</option>
-                      {savedResumes.map((r) => <option key={r.id} value={r.id}>{versionOptionLabel(r)}</option>)}
-                    </select>
-                  </label>
-                </>
-              )}
             </div>
           )}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-          <button type="button" onClick={saveCurrentResume} title={builderText("sessionSaveTooltip")}
-            style={{ ...softBtn, fontWeight: 700 }}>
-            💾 {bu.keepForThisSession}
-          </button>
-          {renderMoreMenu(moreMenuOpen, setMoreMenuOpen, resumeSharePayload, `${form.name || "My"} resume`)}
           <div style={{ position: "relative" }}>
             <button type="button" onClick={() => setCustomizeOpen(o => !o)}
               aria-expanded={customizeOpen}
@@ -5714,10 +5717,6 @@ Awards: ${form.awards}`;
               </div>
             )}
           </div>
-          <button onClick={() => setAtsOpen(o => !o)} aria-expanded={atsOpen}
-            style={{ ...softBtn, fontWeight: 900 }}>
-            ATS {atsScore}
-          </button>
           {isMobile && (
             <button onClick={() => setMobileResumeMode(mobileResumeMode === "edit" ? "preview" : "edit")}
               style={{ ...softBtn }}>
@@ -5755,38 +5754,27 @@ Awards: ${form.awards}`;
               </div>
             )}
           </div>
+          {renderMoreMenu(moreMenuOpen, setMoreMenuOpen, resumeSharePayload, `${form.name || "My"} resume`, {
+            content: savedResumes.length > 0 ? (
+              <label style={{ display: "block", padding: "6px 10px 10px" }}>
+                <span style={{ display: "block", color: C.text3, fontSize: 11.5, fontWeight: 800, marginBottom: 6 }}>
+                  {bu.versionLabel}
+                </span>
+                <select value={currentResumeId || ""} onChange={(e) => e.target.value && openResume(e.target.value)}
+                  style={{ width: "100%", background: C.elevated, color: C.text2, border: `1px solid ${C.border}`,
+                    borderRadius: 8, padding: "8px 9px", fontSize: 12.5, fontFamily: "inherit" }}>
+                  <option value="" disabled>{bu.untitledResume}</option>
+                  {savedResumes.map((r) => <option key={r.id} value={r.id}>{versionOptionLabel(r)}</option>)}
+                </select>
+              </label>
+            ) : null,
+            items: [
+              { label: bu.keepForThisSession, hint: bu.notSavedAutomatically, onClick: saveCurrentResume },
+              { label: `ATS ${atsScore}`, hint: atsOpen ? bu.closeAtsChecker : builderText("reviewAtsTips"), onClick: () => setAtsOpen((o) => !o), primary: atsOpen },
+            ],
+          })}
         </div>
       </div>
-
-      <div role="note" style={{ background: `${C.accent}10`, border: `1px solid ${C.accent}28`, borderRadius: 10,
-        color: C.text2, fontSize: 12.5, lineHeight: 1.5, padding: "9px 12px", marginBottom: 12 }}>
-        {bu.noAutosaveReminder}
-      </div>
-
-      {!guidanceDismissed && (
-        <div style={{ background: readyForReview ? "rgba(74,222,128,0.08)" : C.surface,
-          borderLeft: `3px solid ${readyForReview ? "#4ade80" : C.accent}`, borderRadius: 12,
-          padding: "10px 13px", marginBottom: 14, display: "flex",
-          alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <div style={{ flex: 1, minWidth: 220 }}>
-            <div style={{ fontSize: 13, fontWeight: 900, color: readyForReview ? "#86efac" : C.text1 }}>
-              {readyForReview ? "Ready for final review" : "Next recommended step"}
-            </div>
-            <div style={{ fontSize: 12.5, color: C.text2, marginTop: 3 }}>
-              {readyForReview ? "Review the preview, then export when ready." : nextChecklistItem?.label || "Review your resume."}
-            </div>
-          </div>
-          {nextChecklistItem?.target && !isMobile && (
-            <button onClick={() => scrollToError(nextChecklistItem.target)}
-              style={{ ...softBtn, minHeight: 34, padding: "0 11px", fontSize: 12 }}>
-              Go there
-            </button>
-          )}
-          <button onClick={() => setGuidanceDismissed(true)} aria-label={builderText("dismissRecommendation")}
-            style={{ border: "none", background: "transparent", color: C.text3, cursor: "pointer",
-              fontSize: 18, lineHeight: 1, padding: 4 }}>×</button>
-        </div>
-      )}
 
       {/* Uploaded resume reference banner */}
       {uploadedResume && (
@@ -5807,6 +5795,15 @@ Awards: ${form.awards}`;
         gap: 18, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
         <div className="ac-panel-noscroll" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileResumeMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
           padding: "12px 14px 28px" }) }}>
+          {!guidanceDismissed && !readyForReview && nextChecklistItem && (
+            <button type="button"
+              onClick={() => nextChecklistItem.target && scrollToError(nextChecklistItem.target)}
+              style={{ width: "100%", textAlign: rtl ? "right" : "left", background: "transparent", border: "none",
+                color: C.text3, fontSize: 12.5, lineHeight: 1.45, padding: "0 2px 8px", cursor: nextChecklistItem.target ? "pointer" : "default",
+                fontFamily: "inherit" }}>
+              <span style={{ color: C.accent2, fontWeight: 800 }}>{builderText("suggestedNextStep")}:</span> {nextChecklistItem.label}
+            </button>
+          )}
 
           {/* ── SECTION: Personal Info ── */}
           <FieldCard icon="👤" title="Personal Info" rtl={rtl} eui={eui}
@@ -6220,21 +6217,19 @@ Awards: ${form.awards}`;
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12,
             marginTop: isMobile ? 8 : 0, flexWrap: "wrap" }}>
             <span style={{ ...badge, ...(aiPolished ? badgePolished : badgeLive),
-              background: aiPolished ? `${tpl.accent}22` : C.elevated,
-              color: aiPolished ? tpl.accent : C.text2 }}>
+              background: "transparent",
+              color: aiPolished ? tpl.accent : C.text3 }}>
               {aiPolished ? `✦ ${bu.aiPolished}` : `● ${bu.livePreview}`}
             </span>
             <div aria-label={builderText("previewControls")} style={{ display: "flex", alignItems: "center", gap: 4,
-              background: C.surface, borderRadius: 10, padding: 3 }}>
+              background: "transparent", borderRadius: 10, padding: 3 }}>
               <button type="button" onClick={() => setPreviewZoom(z => Math.max(60, z - 10))}
                 aria-label={builderText("zoomPreviewOut")} style={{ ...previewToolBtn }}>−</button>
               <span style={{ color: C.text3, fontSize: 12, minWidth: 42, textAlign: "center" }}>{previewZoom}%</span>
               <button type="button" onClick={() => setPreviewZoom(z => Math.min(120, z + 10))}
                 aria-label={builderText("zoomPreviewIn")} style={{ ...previewToolBtn }}>+</button>
               <button type="button" onClick={() => setPreviewZoom(86)}
-                style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>Fit</button>
-              <button type="button" onClick={() => setZoomed(true)}
-                style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>{builderText("full")}</button>
+                style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>{bu.fit}</button>
             </div>
           </div>
           <div
@@ -7006,68 +7001,78 @@ Awards: ${form.awards}`;
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
             <button type="button" onClick={() => setCoverStep("templates")} style={{ ...softBtn }}>{bu.customize}</button>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              {!isMobile && (
-                <span style={{ color: C.text3, fontSize: 12, fontWeight: 800 }}>
-                  {bu.documentLanguage}
-                </span>
-              )}
-              <LanguageDropdown
-                selected={selectedDocumentLang}
-                onSelect={setDocumentLanguagePreference}
-                ariaLabel={bu.chooseDocumentLanguage}
-              />
-            </div>
-            {docLang !== "en" && (
-              <button type="button" onClick={() => setTranslationConfirm({ open: true, target: selectedDocumentLang || languageByCode(docLang), kind: "cover" })}
-                disabled={translating}
-                title={cu.translateContentHint}
-                style={{ ...softBtn, color: C.accent2, borderColor: `${C.accent}40`, fontWeight: 850 }}>
-                {translating ? cu.translatingContentButton : translateLabel(cu.translateContentButton, { language: selectedDocumentLang.native || selectedDocumentLang.name })}
-              </button>
-            )}
-            {coverForm.translationMeta?.fields && (
-              <span style={{ color: C.accent2, background: `${C.accent}18`, border: `1px solid ${C.accent}35`,
-                borderRadius: 999, padding: "6px 8px", fontSize: 10.5, fontWeight: 900, whiteSpace: "nowrap" }}>
-                {cu.translatedBadge}
-              </span>
-            )}
             {isMobile && (
               <button onClick={() => setMobileCoverMode(mobileCoverMode === "edit" ? "preview" : "edit")}
                 style={{ ...softBtn }}>
                 {mobileCoverMode === "edit" ? bu.preview : bu.edit}
               </button>
             )}
-            <button onClick={downloadCoverPDF} disabled={!coverReady || !!exporting}
-              style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 9, minHeight: 38,
-                padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: coverReady && !exporting ? "pointer" : "not-allowed",
-                fontFamily: "inherit", opacity: coverReady && !exporting ? 1 : 0.55 }}>
-              {t.dlPdf}
-            </button>
-            <button onClick={downloadCoverDOCX} disabled={!coverReady || !!exporting}
-              style={{ background: C.surface, color: C.text1, border: `1px solid ${C.border}`, borderRadius: 9, minHeight: 38,
-                padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: coverReady && !exporting ? "pointer" : "not-allowed",
-                fontFamily: "inherit", opacity: coverReady && !exporting ? 1 : 0.55 }}>
-              {t.dlDocx}
-            </button>
-            {renderMoreMenu(coverMoreOpen, setCoverMoreOpen, coverSharePayload, `${coverForm.name || "My"} cover letter`)}
+            <div style={{ position: "relative" }}>
+              <button onClick={() => setExportMenuOpen(o => !o)} disabled={!coverReady || !!exporting} aria-expanded={exportMenuOpen}
+                style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 9, minHeight: 38,
+                  padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: coverReady && !exporting ? "pointer" : "not-allowed",
+                  fontFamily: "inherit", opacity: coverReady && !exporting ? 1 : 0.55 }}>
+                {exporting ? bu.exportingBtn : bu.exportBtn}
+              </button>
+              {exportMenuOpen && (
+                <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
+                  minWidth: 210, background: C.surface, border: "none", borderRadius: 12,
+                  boxShadow: "0 18px 54px rgba(0,0,0,0.5)", overflow: "hidden" }}>
+                  <button onClick={() => { setExportMenuOpen(false); downloadCoverPDF(); }}
+                    style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px",
+                      background: "none", border: "none", color: C.text1, cursor: "pointer", fontFamily: "inherit" }}>
+                    <strong>{t.dlPdf}</strong>
+                  </button>
+                  <button onClick={() => { setExportMenuOpen(false); downloadCoverDOCX(); }}
+                    style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px",
+                      background: "none", border: "none", color: C.text1, cursor: "pointer", fontFamily: "inherit",
+                      boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}` }}>
+                    <strong>{t.dlDocx}</strong>
+                  </button>
+                </div>
+              )}
+            </div>
+            {renderMoreMenu(coverMoreOpen, setCoverMoreOpen, coverSharePayload, `${coverForm.name || "My"} cover letter`, {
+              content: (
+                <div style={{ padding: "6px 10px 10px" }}>
+                  <div style={{ color: C.text3, fontSize: 11.5, fontWeight: 800, marginBottom: 6 }}>
+                    {bu.documentLanguage}
+                  </div>
+                  <LanguageDropdown
+                    selected={selectedDocumentLang}
+                    onSelect={setDocumentLanguagePreference}
+                    ariaLabel={bu.chooseDocumentLanguage}
+                  />
+                  {docLang !== "en" && (
+                    <button type="button" onClick={() => setTranslationConfirm({ open: true, target: selectedDocumentLang || languageByCode(docLang), kind: "cover" })}
+                      disabled={translating}
+                      title={cu.translateContentHint}
+                      style={{ width: "100%", marginTop: 10, minHeight: 36, borderRadius: 8, border: "none",
+                        background: `${C.accent}18`, color: translating ? C.text3 : C.accent2,
+                        fontSize: 12.5, fontWeight: 850, cursor: translating ? "wait" : "pointer", fontFamily: "inherit" }}>
+                      {translating ? cu.translatingContentButton : translateLabel(cu.translateContentButton, { language: selectedDocumentLang.native || selectedDocumentLang.name })}
+                    </button>
+                  )}
+                  {coverForm.translationMeta?.fields && (
+                    <div style={{ marginTop: 8, color: C.accent2, fontSize: 11.5, fontWeight: 800 }}>
+                      {cu.translatedBadge}
+                    </div>
+                  )}
+                </div>
+              ),
+            })}
           </div>
         </div>
-
-        {!coverReady && (
-          <div style={{ background: C.surface, borderLeft: `3px solid ${C.accent}`, borderRadius: 12,
-            padding: "10px 13px", marginBottom: 14, display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 900, color: C.text1 }}>{cu.nextStep}</div>
-              <div style={{ fontSize: 12.5, color: C.text2, marginTop: 3 }}>{cu.nextStepBody}</div>
-            </div>
-          </div>
-        )}
 
         <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "minmax(420px, 45%) minmax(520px, 55%)",
           gap: 18, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
           <div className="ac-panel-noscroll" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileCoverMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
             padding: "12px 14px 28px" }) }}>
+            {!coverReady && (
+              <div style={{ color: C.text3, fontSize: 12.5, lineHeight: 1.45, padding: "0 2px 8px", textAlign: rtl ? "right" : "left" }}>
+                <span style={{ color: C.accent2, fontWeight: 800 }}>{cu.nextStep}:</span> {cu.nextStepBody}
+              </div>
+            )}
             <FieldCard icon="🏢" title={cu.cardRecipient} {...cov("recipient")}
               status={coverStatus(["company", "recipientName", "recipientTitle", "companyAddress", "date"], ["company"])}>
               <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
@@ -7162,9 +7167,9 @@ Awards: ${form.awards}`;
             padding: "12px 14px 28px" }) }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12,
               marginTop: isMobile ? 8 : 0, flexWrap: "wrap" }}>
-              <span style={{ ...badge, ...badgeLive, background: C.elevated, color: C.text2 }}>● {bu.livePreview}</span>
+              <span style={{ ...badge, ...badgeLive, background: "transparent", color: C.text3 }}>● {bu.livePreview}</span>
               <div aria-label={builderText("previewControls")} style={{ display: "flex", alignItems: "center", gap: 4,
-                background: C.surface, borderRadius: 10, padding: 3 }}>
+                background: "transparent", borderRadius: 10, padding: 3 }}>
                 <button type="button" onClick={() => setPreviewZoom(z => Math.max(60, z - 10))}
                   aria-label={builderText("zoomPreviewOut")} style={{ ...previewToolBtn }}>−</button>
                 <span style={{ color: C.text3, fontSize: 12, minWidth: 42, textAlign: "center" }}>{previewZoom}%</span>
@@ -10587,8 +10592,9 @@ const SECTION_TOKENS = {
 
 // Color for a section status label, shared across the resume + cover builders.
 function statusTone(status) {
-  if (status === "Complete") return SECTION_TOKENS.statusComplete;
-  if (status === "Missing") return SECTION_TOKENS.statusMissing;
+  const value = String(status || "").toLowerCase();
+  if (value.includes("complete") || value.includes("complet") || value.includes("termin") || value.includes("مكتمل")) return SECTION_TOKENS.statusComplete;
+  if (value.includes("missing") || value.includes("manquant") || value.includes("مفقود")) return SECTION_TOKENS.statusMissing;
   return SECTION_TOKENS.statusNeutral;
 }
 // Matching CSS custom properties for the builder root (single source of truth).
