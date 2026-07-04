@@ -83,7 +83,17 @@ assert.match(app, /setCurrentResumeId\(newId\)/, "editor should switch to the tr
 assert.match(app, /reviewedTranslationBadge/, "reviewed translations should show a reviewed badge");
 assert.match(app, /versionLabel/, "builder should expose a resume version selector");
 assert.match(app, /translatePartial/, "partial translations should show a safe warning");
+assert.match(app, /TRANSLATION_USAGE_KEY = "ac_translation_usage"/, "free translation usage should be stored locally");
+assert.match(app, /translationLimitReached/, "translation limit reached state should be enforced");
+assert.match(app, /activeTranslatedToSelected/, "same-language translated resumes should disable normal translation");
+assert.match(app, /alreadyTranslatedTo/, "already translated state should be shown in the UI");
+assert.match(app, /retranslateFromOriginal/, "translated versions should offer deliberate retranslation from original");
+assert.match(app, /findExistingTranslatedVersion/, "existing translated versions should be detected");
+assert.match(app, /openExistingTranslation/, "duplicate translation flow should prefer opening the existing version");
+assert.match(app, /EVENTS\.TRANSLATION_STARTED/, "translation analytics should track safe metadata only");
+assert.match(app, /EVENTS\.TRANSLATION_COPY_CREATED/, "copy-created analytics should track safe metadata only");
 assert.match(translationSource, /\/api\/translate-document/, "translation must call the dedicated backend endpoint");
+assert.match(translationSource, /translation_limit_reached/, "frontend should handle worker translation limits");
 assert.doesNotMatch(app, /callAi\("translate-resume"/, "translation must not use the generic frontend AI endpoint");
 assert.match(app, /translatedBadge/, "AI translated fields should show a review badge");
 assert.match(app, /bu\.acceptTranslation/, "review modal should use explicit translated-copy action copy");

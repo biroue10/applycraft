@@ -47,6 +47,27 @@ const SITE_LANGUAGE_CODES = new Set(INTERFACE_LANGUAGES);
 const LOCALIZED_DOCUMENT_LANGUAGE_COUNT = PRODUCT.localizedDocumentLanguageCount;
 const UI_LANGUAGE_COUNT = PRODUCT.interfaceLanguageCount;
 const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
+const TRANSLATION_USAGE_KEY = "ac_translation_usage";
+
+function readTranslationUsage(limit = 1) {
+  if (typeof localStorage === "undefined") return { fullResumeTranslationsUsed: 0, limit, resetAt: null };
+  try {
+    const parsed = JSON.parse(localStorage.getItem(TRANSLATION_USAGE_KEY) || "{}");
+    const used = Number(parsed.fullResumeTranslationsUsed || 0);
+    return {
+      fullResumeTranslationsUsed: Number.isFinite(used) && used > 0 ? used : 0,
+      limit,
+      resetAt: parsed.resetAt || null,
+    };
+  } catch {
+    return { fullResumeTranslationsUsed: 0, limit, resetAt: null };
+  }
+}
+
+function writeTranslationUsage(usage) {
+  if (typeof localStorage === "undefined") return;
+  try { localStorage.setItem(TRANSLATION_USAGE_KEY, JSON.stringify(usage)); } catch { /* noop */ }
+}
 
 function AppBrandLogo({ compact = false, style = {} }) {
   return (
@@ -2890,6 +2911,7 @@ export default function ResumeGenerator() {
   const [translating, setTranslating] = useState(false);
   const [translationConfirm, setTranslationConfirm] = useState({ open: false, target: null });
   const [translationReview, setTranslationReview] = useState({ open: false, original: null, translated: null, fields: [], meta: null, warning: "" });
+  const [translationDuplicate, setTranslationDuplicate] = useState({ open: false, existingId: "", target: null });
   const [photoUrl, setPhotoUrl] = useState(null);
   const [authModal, setAuthModal] = useState(false);
   const [authModalTab, setAuthModalTab] = useState("login");
@@ -2900,6 +2922,8 @@ export default function ResumeGenerator() {
   const [syncStatus, setSyncStatus] = useState("");
   const [aiTailoring, setAiTailoring] = useState(false);
   const hasPass = account.hasActivePass();
+  const translationLimit = hasPass ? 30 : currentUser ? 3 : 1;
+  const [translationUsage, setTranslationUsage] = useState(() => readTranslationUsage(translationLimit));
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
   const resumePrintRef = useRef(null);
@@ -3227,6 +3251,35 @@ export default function ResumeGenerator() {
   const commonText = useCallback((key, values = {}) => (
     translateLabel(t[key] || UI.en[key] || key, values)
   ), [t, translateLabel]);
+  const translationLanguageName = useCallback((code) => {
+    const localized = {
+      en: { en: "English", fr: "French", ar: "Arabic", es: "Spanish", de: "German" },
+      fr: { en: "anglais", fr: "français", ar: "arabe", es: "espagnol", de: "allemand" },
+      ar: { en: "الإنجليزية", fr: "الفرنسية", ar: "العربية", es: "الإسبانية", de: "الألمانية" },
+      es: { en: "inglés", fr: "francés", ar: "árabe", es: "español", de: "alemán" },
+      de: { en: "Englisch", fr: "Französisch", ar: "Arabisch", es: "Spanisch", de: "Deutsch" },
+    };
+    return localized[lang]?.[code] || languageByCode(code)?.name || code;
+  }, [lang]);
+  useEffect(() => {
+    setTranslationUsage((usage) => {
+      const next = { ...usage, limit: translationLimit };
+      writeTranslationUsage(next);
+      return next;
+    });
+  }, [translationLimit]);
+  const translationLimitReached = translationUsage.fullResumeTranslationsUsed >= translationLimit;
+  const incrementTranslationUsage = useCallback(() => {
+    setTranslationUsage((usage) => {
+      const next = {
+        ...usage,
+        fullResumeTranslationsUsed: Math.max(0, Number(usage.fullResumeTranslationsUsed || 0)) + 1,
+        limit: translationLimit,
+      };
+      writeTranslationUsage(next);
+      return next;
+    });
+  }, [translationLimit]);
   const set = useCallback((k) => (e) => setForm(f => ({ ...f, [k]: e.target.value })), []);
   const setField = useCallback((k, v) => setForm(f => ({ ...f, [k]: v })), []);
 
@@ -3628,11 +3681,64 @@ export default function ResumeGenerator() {
     if (phoneError) setPhoneError(validatePhone(e.target.value));
   }
 
-  function requestResumeTranslation() {
+  const selectedDocumentLanguageName = selectedDocumentLang?.native || selectedDocumentLang?.name || docLang;
+  const selectedDocumentLanguageLabel = translationLanguageName(docLang);
+  const activeTranslationMeta = form.translationMeta || {};
+  const activeTranslatedToSelected = Boolean(
+    activeTranslationMeta.targetLanguage
+    && activeTranslationMeta.targetLanguage === docLang
+    && activeTranslationMeta.translationStatus
+    && activeTranslationMeta.translationStatus !== TRANSLATION_STATUSES.original
+  );
+  const findExistingTranslatedVersion = useCallback((targetLanguage = docLang, sourceVersionId = currentResumeId) => (
+    savedResumes.find((resume) => {
+      if (!resume || resume.id === currentResumeId) return false;
+      const meta = resume.data?.translationMeta || {};
+      if (meta.targetLanguage !== targetLanguage) return false;
+      return sourceVersionId ? meta.sourceVersionId === sourceVersionId : true;
+    }) || null
+  ), [currentResumeId, docLang, savedResumes]);
+
+  function requestResumeTranslation({ allowDuplicate = false } = {}) {
     if (translating) return;
     const langCode = docLang || "en";
     if (langCode === "en") return;
+    if (activeTranslatedToSelected) return;
+    const existing = !allowDuplicate ? findExistingTranslatedVersion(langCode, currentResumeId) : null;
+    if (existing) {
+      setTranslationDuplicate({ open: true, existingId: existing.id, target: selectedDocumentLang || languageByCode(langCode) });
+      return;
+    }
+    if (translationLimitReached) {
+      setStatusMsg(statusText("translateLimitReached"));
+      setTimeout(() => setStatusMsg(""), 3500);
+      return;
+    }
     setTranslationConfirm({ open: true, target: selectedDocumentLang || languageByCode(langCode), kind: "resume" });
+  }
+
+  function requestResumeRetranslation() {
+    if (translating) return;
+    const langCode = docLang || "en";
+    if (translationLimitReached) {
+      setStatusMsg(statusText("translateLimitReached"));
+      setTimeout(() => setStatusMsg(""), 3500);
+      return;
+    }
+    const sourceId = form.translationMeta?.sourceVersionId;
+    const source = sourceId ? resumes.getResume(sourceId) : null;
+    if (!source?.data) {
+      setStatusMsg(statusText("translateFail"));
+      setTimeout(() => setStatusMsg(""), 3500);
+      return;
+    }
+    setTranslationConfirm({
+      open: true,
+      target: selectedDocumentLang || languageByCode(langCode),
+      kind: "resume",
+      retranslate: true,
+      sourceResumeId: sourceId,
+    });
   }
 
   function markTranslatedFields(status) {
@@ -3661,14 +3767,14 @@ export default function ResumeGenerator() {
 
   const useTranslatedResumeCopy = () => {
     if (!translationReview.translated || !translationReview.original || !translationReview.meta) return;
-    const { targetLanguage, sourceLanguage, targetLanguageName, translatedAt } = translationReview.meta;
-    const existingSource = currentResumeId ? resumes.getResume(currentResumeId) : null;
+    const { targetLanguage, sourceLanguage, targetLanguageName, translatedAt, sourceVersionId } = translationReview.meta;
+    const existingSource = sourceVersionId ? resumes.getResume(sourceVersionId) : currentResumeId ? resumes.getResume(currentResumeId) : null;
     const sourceTitle = existingSource?.title || resumeVersionTitle(translationReview.original, sourceLanguage === "auto" ? "en" : sourceLanguage, "original");
-    const sourceId = currentResumeId || resumes.upsertResume({
+    const sourceId = sourceVersionId || currentResumeId || resumes.upsertResume({
       title: sourceTitle,
       data: translationReview.original,
     });
-    if (currentResumeId) {
+    if (!sourceVersionId && currentResumeId) {
       resumes.upsertResume({
         id: currentResumeId,
         title: sourceTitle,
@@ -3679,6 +3785,7 @@ export default function ResumeGenerator() {
     const nextForm = migrateForm({
       ...emptyResumeForm,
       ...translationReview.translated,
+      documentLanguage: targetLanguage,
       translationMeta: {
         ...(translationReview.translated.translationMeta || {}),
         sourceVersionId: sourceId,
@@ -3700,7 +3807,15 @@ export default function ResumeGenerator() {
     setAiPolished(false);
     clearTranslationReview();
     setMobileResumeMode("edit");
-    setStatusMsg(translationReview.warning ? statusText("translatePartial") : statusText("translateSuccess"));
+    track(EVENTS.TRANSLATION_COPY_CREATED, {
+      documentType: "resume",
+      sourceLanguage,
+      targetLanguage,
+      translationStatus: translationReview.warning ? TRANSLATION_STATUSES.needsReview : TRANSLATION_STATUSES.aiTranslated,
+    });
+    setStatusMsg(translationReview.warning
+      ? statusText("translatePartial")
+      : statusText("translateSuccessLanguage", { language: translationLanguageName(targetLanguage) || targetLanguageName || targetLanguage }));
     setTimeout(() => setStatusMsg(""), 4500);
   };
 
@@ -3709,12 +3824,16 @@ export default function ResumeGenerator() {
     const langCode = docLang || "en";
     if (langCode === "en") return;
     const targetName = selectedDocumentLang?.native || selectedDocumentLang?.name || langCode;
+    const confirm = translationConfirm;
+    const sourceResume = confirm.retranslate && confirm.sourceResumeId ? resumes.getResume(confirm.sourceResumeId) : null;
+    const sourceForm = sourceResume?.data ? migrateForm({ ...emptyResumeForm, ...sourceResume.data }) : form;
+    const sourceVersionId = confirm.retranslate ? confirm.sourceResumeId : currentResumeId;
     setTranslationConfirm({ open: false, target: null });
     setTranslating(true);
     setStatusMsg(statusText("translateStarted"));
     try {
-      const request = buildResumeTranslationRequest(form, {
-        sourceLanguage: "auto",
+      const request = buildResumeTranslationRequest(sourceForm, {
+        sourceLanguage: sourceForm.translationMeta?.targetLanguage || sourceForm.documentLanguage || "auto",
         targetLanguage: langCode,
         targetLanguageName: targetName,
       });
@@ -3723,6 +3842,17 @@ export default function ResumeGenerator() {
         setTimeout(() => setStatusMsg(""), 3000);
         return;
       }
+      if (translationLimitReached) {
+        setStatusMsg(statusText("translateLimitReached"));
+        setTimeout(() => setStatusMsg(""), 3500);
+        return;
+      }
+      track(EVENTS.TRANSLATION_STARTED, {
+        documentType: "resume",
+        sourceLanguage: request.sourceLanguage,
+        targetLanguage: langCode,
+        translationStatus: "started",
+      });
       const response = await translateDocumentContent({
         documentType: "resume",
         sourceLanguage: request.sourceLanguage,
@@ -3730,24 +3860,26 @@ export default function ResumeGenerator() {
         protectedTerms: request.preserveTerms,
         payload: request.content,
       });
+      incrementTranslationUsage();
       const translated = parseTranslationJson(JSON.stringify(response.document));
       const missingProtected = assertProtectedTermsPreserved(request.content, translated);
       const untranslatedFields = Object.keys(request.content).filter((key) => typeof translated[key] !== "string" || !translated[key].trim());
       const translatedAt = new Date().toISOString();
-      const originalSnapshot = { ...form };
-      const translatedCopy = createTranslatedResumeCopy(form, translated, {
+      const originalSnapshot = { ...sourceForm };
+      const translatedCopy = createTranslatedResumeCopy(sourceForm, translated, {
         sourceLanguage: request.sourceLanguage,
         targetLanguage: langCode,
         targetLanguageName: targetName,
-        sourceVersionId: currentResumeId || "",
+        sourceVersionId: sourceVersionId || "",
         translatedAt,
       });
       const nextForm = (() => {
         const next = { ...translatedCopy };
+        next.documentLanguage = langCode;
         // Re-sync entry arrays for any translated section (preserve visibility by position).
         SECTION_KEYS.forEach((key) => {
           if (typeof translated[key] === "string") {
-            const old = form[key + "Entries"] || [];
+            const old = sourceForm[key + "Entries"] || [];
             const parsed = parseEntries(key, translated[key]).map((e, i) => ({ ...e, visible: old[i] ? old[i].visible !== false : true }));
             next[key + "Entries"] = parsed;
             next[key] = entriesToText(key, parsed);
@@ -3764,6 +3896,7 @@ export default function ResumeGenerator() {
           sourceLanguage: request.sourceLanguage,
           targetLanguage: langCode,
           targetLanguageName: targetName,
+          sourceVersionId: sourceVersionId || "",
           translatedAt,
         },
         warning: missingProtected.length || untranslatedFields.length ? statusText("translatePartial") : "",
@@ -5188,6 +5321,27 @@ Awards: ${form.awards}`;
   const translationReviewed = Boolean(form.translationMeta?.reviewed)
     || (translationFieldEntries.length > 0 && translationFieldEntries.every(([, meta]) => meta?.translationStatus === TRANSLATION_STATUSES.humanReviewed));
   const isTranslatedResume = Boolean(form.translationMeta?.fields);
+  const translationButtonText = translationLimitReached
+    ? bu.translationLimitReached
+    : activeTranslatedToSelected
+      ? translateLabel(bu.alreadyTranslatedTo, { language: selectedDocumentLanguageLabel })
+      : translating
+        ? bu.translatingContentButton
+        : translateLabel(bu.translateContentButton, { language: selectedDocumentLang?.native || selectedDocumentLang?.name || docLang });
+  const translationButtonDisabled = translating || translationLimitReached || activeTranslatedToSelected;
+  const versionOptionLabel = useCallback((resume) => {
+    const meta = resume?.data?.translationMeta || {};
+    const code = meta.targetLanguage || resume?.data?.documentLanguage || "en";
+    const languageName = translationLanguageName(code);
+    const status = meta.reviewed || meta.translationStatus === TRANSLATION_STATUSES.humanReviewed
+      ? bu.versionReviewed
+      : meta.translationStatus === TRANSLATION_STATUSES.editedAfterTranslation
+        ? bu.versionEditedTranslation
+        : meta.translationStatus === TRANSLATION_STATUSES.aiTranslated || meta.translationStatus === TRANSLATION_STATUSES.needsReview
+          ? bu.versionAiTranslated
+          : bu.versionOriginal;
+    return `${status} — ${languageName}`;
+  }, [bu.versionAiTranslated, bu.versionEditedTranslation, bu.versionOriginal, bu.versionReviewed, translationLanguageName]);
 
   const formContent = tpl ? (
     <div style={{ display: "flex", flexDirection: "column", height: "100%",
@@ -5231,7 +5385,7 @@ Awards: ${form.awards}`;
                       style={{ maxWidth: 210, background: C.elevated, color: C.text2, border: `1px solid ${C.border}`,
                         borderRadius: 7, padding: "3px 7px", fontSize: 11.5, fontFamily: "inherit" }}>
                       <option value="" disabled>{bu.untitledResume}</option>
-                      {savedResumes.map((r) => <option key={r.id} value={r.id}>{r.title || bu.untitledResume}</option>)}
+                      {savedResumes.map((r) => <option key={r.id} value={r.id}>{versionOptionLabel(r)}</option>)}
                     </select>
                   </label>
                 </>
@@ -5288,25 +5442,51 @@ Awards: ${form.awards}`;
                     <button
                       type="button"
                       onClick={requestResumeTranslation}
-                      disabled={translating}
+                      disabled={translationButtonDisabled}
                       style={{
                         width: "100%",
                         minHeight: 38,
                         borderRadius: 9,
-                        border: `1px solid ${C.accent}55`,
-                        background: translating ? C.elevated : `${C.accent}18`,
-                        color: C.accent2,
+                        border: `1px solid ${translationButtonDisabled ? C.border : `${C.accent}55`}`,
+                        background: translationButtonDisabled ? C.elevated : `${C.accent}18`,
+                        color: translationButtonDisabled ? C.text3 : C.accent2,
                         fontSize: 12.5,
                         fontWeight: 850,
-                        cursor: translating ? "wait" : "pointer",
+                        cursor: translating ? "wait" : translationButtonDisabled ? "not-allowed" : "pointer",
                         fontFamily: "inherit",
                         padding: "8px 10px",
                       }}
                     >
-                      {translating
-                        ? bu.translatingContentButton
-                        : translateLabel(bu.translateContentButton, { language: selectedDocumentLang.native || selectedDocumentLang.name })}
+                      {translationButtonText}
                     </button>
+                    {activeTranslatedToSelected && (
+                      <button
+                        type="button"
+                        onClick={requestResumeRetranslation}
+                        disabled={translating || translationLimitReached}
+                        style={{
+                          width: "100%",
+                          minHeight: 34,
+                          marginTop: 8,
+                          borderRadius: 9,
+                          border: `1px solid ${C.border}`,
+                          background: "transparent",
+                          color: translationLimitReached ? C.text3 : C.text2,
+                          fontSize: 12,
+                          fontWeight: 800,
+                          cursor: translating ? "wait" : translationLimitReached ? "not-allowed" : "pointer",
+                          fontFamily: "inherit",
+                          padding: "7px 10px",
+                        }}
+                      >
+                        {bu.retranslateFromOriginal}
+                      </button>
+                    )}
+                    {translationLimitReached && (
+                      <p style={{ margin: "7px 0 0", fontSize: 11, color: C.text3, lineHeight: 1.45 }}>
+                        {statusText("translateLimitReached")} {bu.upgradeTranslateMore}
+                      </p>
+                    )}
                     <p style={{ margin: "7px 0 0", fontSize: 11, color: C.text3, lineHeight: 1.45 }}>
                       {bu.translateContentHint}
                     </p>
@@ -5871,6 +6051,60 @@ Awards: ${form.awards}`;
           </div>
         </div>
       </div>
+      {translationDuplicate.open && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="resume-translation-duplicate-title"
+          onClick={() => setTranslationDuplicate({ open: false, existingId: "", target: null })}
+          style={{ position: "fixed", inset: 0, zIndex: 9600, background: "rgba(0,0,0,0.62)",
+            display: "flex", alignItems: "center", justifyContent: "center", padding: 18 }}
+        >
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ width: "min(560px, 100%)", background: C.surface, color: C.text1, borderRadius: 14,
+              boxShadow: "0 26px 80px rgba(0,0,0,0.52)", padding: 20, direction: rtl ? "rtl" : "ltr" }}>
+            <h2 id="resume-translation-duplicate-title" style={{ margin: 0, fontSize: 18, lineHeight: 1.25 }}>
+              {translateLabel(bu.existingTranslationTitle, { language: translationDuplicate.target?.name || selectedDocumentLang?.name || docLang })}
+            </h2>
+            <p style={{ margin: "10px 0 16px", color: C.text2, fontSize: 13.5, lineHeight: 1.55 }}>
+              {bu.existingTranslationBody}
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", flexWrap: "wrap" }}>
+              <button type="button" onClick={() => {
+                  const existingId = translationDuplicate.existingId;
+                  setTranslationDuplicate({ open: false, existingId: "", target: null });
+                  if (existingId) openResume(existingId);
+                }}
+                style={{ border: "none", background: C.grad, color: "#fff", borderRadius: 9,
+                  padding: "10px 14px", fontSize: 13, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
+                {bu.openExistingTranslation}
+              </button>
+              <button type="button" onClick={() => {
+                  setTranslationDuplicate({ open: false, existingId: "", target: null });
+                  requestResumeTranslation({ allowDuplicate: true });
+                }}
+                style={{ border: "none", background: C.elevated, color: C.text1, borderRadius: 9,
+                  padding: "10px 14px", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                {bu.createAnotherTranslation}
+              </button>
+              <button type="button" onClick={() => {
+                  setTranslationDuplicate({ open: false, existingId: "", target: null });
+                  setTranslationConfirm({
+                    open: true,
+                    target: translationDuplicate.target || selectedDocumentLang || languageByCode(docLang),
+                    kind: "resume",
+                    retranslate: true,
+                    sourceResumeId: currentResumeId,
+                  });
+                }}
+                style={{ border: "none", background: C.elevated, color: C.text1, borderRadius: 9,
+                  padding: "10px 14px", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                {bu.retranslateFromOriginal}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {translationConfirm.open && (
         <div
           role="dialog"
@@ -5884,10 +6118,14 @@ Awards: ${form.awards}`;
             style={{ width: "min(540px, 100%)", background: C.surface, color: C.text1, borderRadius: 14,
               boxShadow: "0 26px 80px rgba(0,0,0,0.52)", padding: 20, direction: rtl ? "rtl" : "ltr" }}>
             <h2 id="resume-translation-confirm-title" style={{ margin: 0, fontSize: 18, lineHeight: 1.25 }}>
-              {translateLabel(translationConfirm.kind === "cover" ? cu.translateContentButton : bu.translateContentButton, { language: translationConfirm.target?.native || translationConfirm.target?.name || docLang })}
+              {translationConfirm.retranslate
+                ? bu.retranslateFromOriginal
+                : translateLabel(translationConfirm.kind === "cover" ? cu.translateContentButton : bu.translateContentButton, { language: translationConfirm.target?.native || translationConfirm.target?.name || docLang })}
             </h2>
             <p style={{ margin: "10px 0 16px", color: C.text2, fontSize: 13.5, lineHeight: 1.55 }}>
-              {translationConfirm.kind === "cover" ? cu.translateContentConfirm : bu.translateContentConfirm}
+              {translationConfirm.retranslate
+                ? bu.retranslateConfirm
+                : translationConfirm.kind === "cover" ? cu.translateContentConfirm : bu.translateContentConfirm}
             </p>
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", flexWrap: "wrap" }}>
               <button type="button" onClick={() => setTranslationConfirm({ open: false, target: null })}

@@ -39,6 +39,8 @@ export const EVENTS = {
   LANGUAGE_MIGRATION_COMPLETED: "language_migration_completed",
   LANGUAGE_MIGRATION_FAILED: "language_migration_failed",
   MISSING_TRANSLATION_KEY: "missing_translation_key",
+  TRANSLATION_STARTED: "translation_started",
+  TRANSLATION_COPY_CREATED: "translation_copy_created",
 };
 
 const ALLOWED = new Set(Object.values(EVENTS));

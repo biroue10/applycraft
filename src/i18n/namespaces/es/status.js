@@ -25,9 +25,11 @@ const status = {
   "pdfNonLatin": "La exportación PDF usa fuentes latinas. Para árabe u otras escrituras no latinas, usa la exportación DOCX para conservar el texto.",
   "translateStarted": "Traduciendo el contenido del currículum...",
   "translateSuccess": "Copia traducida creada. Revísala antes de exportar.",
+  "translateSuccessLanguage": "Currículum traducido a {language} creado. Revísalo antes de exportar.",
   "translateFail": "La traducción falló. Inténtalo de nuevo.",
   "translateUnavailable": "El asistente de traducción no está disponible temporalmente.",
   "translateRateLimited": "Demasiadas solicitudes de traducción. Inténtalo de nuevo más tarde.",
+  "translateLimitReached": "Has alcanzado tu límite de traducción gratuita.",
   "translatePartial": "Algunos campos no se pudieron traducir y se conservaron del original.",
   "translateNoContent": "Agrega contenido al currículum antes de traducir."
 };

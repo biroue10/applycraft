@@ -106,7 +106,7 @@ export async function translateDocumentContent({
   }
   if (!res.ok || !data?.ok) {
     if (data?.error === "translation_unavailable") throw new Error("translation-unavailable");
-    if (data?.error === "rate_limited") throw new Error("translation-rate-limited");
+    if (data?.error === "rate_limited" || data?.error === "translation_limit_reached") throw new Error("translation-rate-limited");
     throw new Error("translation-failed");
   }
   if (!data.document || typeof data.document !== "object") throw new Error("translation-failed");

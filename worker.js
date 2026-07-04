@@ -482,7 +482,7 @@ async function handleTranslateDocument(request, env) {
   }
   const rate = await checkRateLimitKV(env, request);
   if (!rate.allowed) {
-    return jsonResponse({ ok: false, error: "rate_limited" }, 429, {
+    return jsonResponse({ ok: false, error: "translation_limit_reached" }, 429, {
       ...cors.headers,
       "Retry-After": String(Math.max(1, rate.retryAfter || 60)),
     });

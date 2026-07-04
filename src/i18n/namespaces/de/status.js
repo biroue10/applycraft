@@ -25,9 +25,11 @@ const status = {
   "pdfNonLatin": "Der PDF-Export nutzt lateinische Schriften. Für Arabisch oder andere nicht-lateinische Schriften nutze den DOCX-Export, um den Text zu erhalten.",
   "translateStarted": "Lebenslauf-Inhalt wird übersetzt...",
   "translateSuccess": "Übersetzte Kopie erstellt. Bitte prüfe sie vor dem Export.",
+  "translateSuccessLanguage": "Ins {language} übersetzter Lebenslauf erstellt. Bitte prüfe ihn vor dem Export.",
   "translateFail": "Übersetzung fehlgeschlagen. Bitte versuche es erneut.",
   "translateUnavailable": "Der Übersetzungsassistent ist vorübergehend nicht verfügbar.",
   "translateRateLimited": "Zu viele Übersetzungsanfragen. Bitte versuche es später erneut.",
+  "translateLimitReached": "Du hast dein kostenloses Übersetzungslimit erreicht.",
   "translatePartial": "Einige Felder konnten nicht übersetzt werden und wurden aus dem Original übernommen.",
   "translateNoContent": "Füge Lebenslauf-Inhalt hinzu, bevor du übersetzt."
 };

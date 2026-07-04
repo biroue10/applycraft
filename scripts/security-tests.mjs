@@ -216,7 +216,7 @@ async function testTranslateDocumentEndpoint() {
       }), env());
     }
     assert.equal(response.status, 429);
-    assert.equal((await readJson(response)).error, "rate_limited");
+    assert.equal((await readJson(response)).error, "translation_limit_reached");
   }, async () => new Response(JSON.stringify({ content: [{ type: "text", text: JSON.stringify(translationBody.payload) }] }), { headers: { "Content-Type": "application/json" } }));
 }
 
