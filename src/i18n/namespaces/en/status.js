@@ -29,6 +29,7 @@ const status = {
   "translateUnavailable": "Translation assistant is temporarily unavailable.",
   "translateRateLimited": "Too many translation requests. Please try again later.",
   "translateProtectedTermsMissing": "Translation needs review because some protected terms changed.",
+  "translatePartial": "Some fields could not be translated and were kept from the original.",
   "translateNoContent": "Add resume content before translating.",
   "shareCreate": "Create private offline link",
   "shareCreating": "Creating link...",

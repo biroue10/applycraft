@@ -142,6 +142,7 @@ export function createTranslatedResumeCopy(form, translated, {
   sourceLanguage = "auto",
   targetLanguage = "en",
   targetLanguageName = targetLanguage,
+  sourceVersionId = "",
   translatedAt = new Date().toISOString(),
 } = {}) {
   const keys = Object.keys(translated || {}).filter((key) => typeof translated[key] === "string");
@@ -153,6 +154,9 @@ export function createTranslatedResumeCopy(form, translated, {
       sourceLanguage,
       targetLanguage,
       targetLanguageName,
+      sourceVersionId,
+      translationStatus: TRANSLATION_STATUSES.aiTranslated,
+      reviewed: false,
       translatedAt,
       originalName: form?.name || "",
       fields: createTranslationMetadata(keys, { sourceLanguage, targetLanguage, translatedAt }),

@@ -56,6 +56,7 @@ const copy = createTranslatedResumeCopy(original, translated, {
   targetLanguage: "ar",
   targetLanguageName: "Arabic",
   translatedAt: "2026-07-03T00:00:00.000Z",
+  sourceVersionId: "original-en",
 });
 
 assert.equal(original.summary, "Resolved Microsoft Intune, Active Directory, and Jamf Pro incidents.");
@@ -66,6 +67,8 @@ assert.equal(copy.linkedin, original.linkedin, "URL should be preserved");
 assert.equal(copy.translationMeta.fields.summary.translationStatus, TRANSLATION_STATUSES.aiTranslated);
 assert.equal(copy.translationMeta.fields.summary.sourceLanguage, "en");
 assert.equal(copy.translationMeta.fields.summary.targetLanguage, "ar");
+assert.equal(copy.translationMeta.sourceVersionId, "original-en");
+assert.equal(copy.translationMeta.reviewed, false);
 
 assert.deepEqual(assertProtectedTermsPreserved(request.content, translated), []);
 assert.ok(assertProtectedTermsPreserved(request.content, { summary: "حللت حوادث Intune." }).includes("Microsoft Intune"));
@@ -73,9 +76,16 @@ assert.ok(assertProtectedTermsPreserved(request.content, { summary: "حللت ح
 assert.match(app, /setDocumentLanguagePreference[\s\S]{0,500}setDocumentLanguage\(nextCode\)/, "document language change should localize document settings only");
 assert.doesNotMatch(app, /setDocumentLanguagePreference[\s\S]{0,700}callAi\("translate-resume"/, "changing document language must not call translation");
 assert.match(app, /setTranslationConfirm\(\{ open: true/, "translation must require explicit confirmation");
+assert.match(app, /setTranslationReview\(\{\s*open: true/, "translation should open a review modal before applying translated content");
 assert.match(app, /resumes\.upsertResume\(\{ title: copyTitle, data: nextForm \}\)/, "translation should create a separate resume copy");
+assert.match(app, /sourceVersionId: sourceId/, "translated resume copies should retain their source version id");
+assert.match(app, /setCurrentResumeId\(newId\)/, "editor should switch to the translated resume version after acceptance");
+assert.match(app, /reviewedTranslationBadge/, "reviewed translations should show a reviewed badge");
+assert.match(app, /versionLabel/, "builder should expose a resume version selector");
+assert.match(app, /translatePartial/, "partial translations should show a safe warning");
 assert.match(translationSource, /\/api\/translate-document/, "translation must call the dedicated backend endpoint");
 assert.doesNotMatch(app, /callAi\("translate-resume"/, "translation must not use the generic frontend AI endpoint");
 assert.match(app, /translatedBadge/, "AI translated fields should show a review badge");
+assert.match(app, /bu\.acceptTranslation/, "review modal should use explicit translated-copy action copy");
 
 console.log("translation tests passed.");

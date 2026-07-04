@@ -24,10 +24,11 @@ const status = {
   "localDataDeleted": "Datos locales de ApplyCraft eliminados de este navegador.",
   "pdfNonLatin": "La exportación PDF usa fuentes latinas. Para árabe u otras escrituras no latinas, usa la exportación DOCX para conservar el texto.",
   "translateStarted": "Traduciendo el contenido del currículum...",
-  "translateSuccess": "Contenido del currículum traducido. Revisa el texto antes de exportar.",
-  "translateFail": "La traducción falló. El contenido original del currículum no cambió.",
+  "translateSuccess": "Copia traducida creada. Revísala antes de exportar.",
+  "translateFail": "La traducción falló. Inténtalo de nuevo.",
   "translateUnavailable": "El asistente de traducción no está disponible temporalmente.",
   "translateRateLimited": "Demasiadas solicitudes de traducción. Inténtalo de nuevo más tarde.",
+  "translatePartial": "Algunos campos no se pudieron traducir y se conservaron del original.",
   "translateNoContent": "Agrega contenido al currículum antes de traducir."
 };
 

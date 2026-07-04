@@ -29,6 +29,7 @@ const status = {
   "translateUnavailable": "L'assistant de traduction est temporairement indisponible.",
   "translateRateLimited": "Trop de demandes de traduction. Veuillez réessayer plus tard.",
   "translateProtectedTermsMissing": "La traduction doit être relue car certains termes protégés ont changé.",
+  "translatePartial": "Certains champs n’ont pas pu être traduits et ont été conservés depuis l’original.",
   "translateNoContent": "Ajoutez du contenu au CV avant de le traduire.",
   "shareCreate": "Créer un lien privé hors ligne",
   "shareCreating": "Création du lien...",

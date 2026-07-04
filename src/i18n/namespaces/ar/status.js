@@ -29,6 +29,7 @@ const status = {
   "translateUnavailable": "مساعد الترجمة غير متاح مؤقتاً.",
   "translateRateLimited": "طلبات ترجمة كثيرة جدًا. يرجى المحاولة لاحقًا.",
   "translateProtectedTermsMissing": "تحتاج الترجمة إلى مراجعة لأن بعض المصطلحات المحمية تغيّرت.",
+  "translatePartial": "تعذر ترجمة بعض الحقول، لذلك تم الاحتفاظ بها من النسخة الأصلية.",
   "translateNoContent": "أضف محتوى إلى السيرة الذاتية قبل الترجمة.",
   "shareCreate": "إنشاء رابط خاص دون اتصال",
   "shareCreating": "جارٍ إنشاء الرابط...",

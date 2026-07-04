@@ -24,10 +24,11 @@ const status = {
   "localDataDeleted": "Lokale ApplyCraft-Daten aus diesem Browser gelöscht.",
   "pdfNonLatin": "Der PDF-Export nutzt lateinische Schriften. Für Arabisch oder andere nicht-lateinische Schriften nutze den DOCX-Export, um den Text zu erhalten.",
   "translateStarted": "Lebenslauf-Inhalt wird übersetzt...",
-  "translateSuccess": "Lebenslauf-Inhalt übersetzt. Prüfe den Text vor dem Export.",
-  "translateFail": "Übersetzung fehlgeschlagen. Dein ursprünglicher Lebenslauf-Inhalt bleibt unverändert.",
+  "translateSuccess": "Übersetzte Kopie erstellt. Bitte prüfe sie vor dem Export.",
+  "translateFail": "Übersetzung fehlgeschlagen. Bitte versuche es erneut.",
   "translateUnavailable": "Der Übersetzungsassistent ist vorübergehend nicht verfügbar.",
   "translateRateLimited": "Zu viele Übersetzungsanfragen. Bitte versuche es später erneut.",
+  "translatePartial": "Einige Felder konnten nicht übersetzt werden und wurden aus dem Original übernommen.",
   "translateNoContent": "Füge Lebenslauf-Inhalt hinzu, bevor du übersetzt."
 };
 
