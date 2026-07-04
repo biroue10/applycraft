@@ -42,6 +42,33 @@ import { documentLabelsFor } from "./i18n/documentLabels.js";
 // ── UI translation codes (languages with full UI translation) ──────
 const UI_LANGS = new Set(["en", "fr", "es", "ar", "de"]);
 const SITE_LANGUAGE_CODES = new Set(INTERFACE_LANGUAGES);
+const INTERFACE_LANGUAGE_DROPDOWN_COPY = {
+  en: {
+    ariaLabel: "Select interface language",
+    searchPlaceholder: "Search interface language...",
+    emptyLabel: "No interface language found",
+  },
+  fr: {
+    ariaLabel: "Choisir la langue de l’interface",
+    searchPlaceholder: "Rechercher une langue d’interface...",
+    emptyLabel: "Aucune langue d’interface trouvée",
+  },
+  ar: {
+    ariaLabel: "اختيار لغة الواجهة",
+    searchPlaceholder: "ابحث عن لغة الواجهة...",
+    emptyLabel: "لم يتم العثور على لغة واجهة",
+  },
+  es: {
+    ariaLabel: "Seleccionar idioma de la interfaz",
+    searchPlaceholder: "Buscar idioma de la interfaz...",
+    emptyLabel: "No se encontró ningún idioma de interfaz",
+  },
+  de: {
+    ariaLabel: "Sprache der Benutzeroberfläche auswählen",
+    searchPlaceholder: "Sprache der Benutzeroberfläche suchen...",
+    emptyLabel: "Keine Sprache der Benutzeroberfläche gefunden",
+  },
+};
 // Centralized in src/product.js; verified against WORLD_LANGUAGES / UI_LANGS
 // by scripts/product-tests.mjs.
 const LOCALIZED_DOCUMENT_LANGUAGE_COUNT = PRODUCT.localizedDocumentLanguageCount;
@@ -4545,6 +4572,7 @@ Awards: ${form.awards}`;
           selected={selectedLang}
           onSelect={setSiteLanguage}
           siteOnly
+          {...(INTERFACE_LANGUAGE_DROPDOWN_COPY[lang] || INTERFACE_LANGUAGE_DROPDOWN_COPY.en)}
         />
         {isMobile && (
           <button type="button" onClick={() => setSidebarOpen(true)} aria-label={builderText("openToolsMenu")}
@@ -4599,6 +4627,7 @@ Awards: ${form.awards}`;
             selected={selectedLang}
             onSelect={setSiteLanguage}
             siteOnly
+            {...(INTERFACE_LANGUAGE_DROPDOWN_COPY[lang] || INTERFACE_LANGUAGE_DROPDOWN_COPY.en)}
           />
           {isMobile && (
             <button type="button" onClick={() => setSidebarOpen(true)} aria-label={builderText("openToolsMenu")}
@@ -8356,6 +8385,14 @@ Awards: ${form.awards}`;
           onLogoClick={() => setAppView("landing")}
           ctaLabel={lx.createResume}
           onCtaClick={() => startResume("nav_cta")}
+          renderLanguageSelector={() => (
+            <LanguageDropdown
+              selected={selectedLang}
+              onSelect={setSiteLanguage}
+              siteOnly
+              {...(INTERFACE_LANGUAGE_DROPDOWN_COPY[lang] || INTERFACE_LANGUAGE_DROPDOWN_COPY.en)}
+            />
+          )}
           mobileMenuOpen={landingMenuOpen}
           onMobileMenuToggle={() => setLandingMenuOpen(o => !o)}
           navItems={[
@@ -10127,7 +10164,14 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin, at = ACCT_UI.
   );
 }
 
-function LanguageDropdown({ selected, onSelect, siteOnly = false, ariaLabel = "Choose language" }) {
+function LanguageDropdown({
+  selected,
+  onSelect,
+  siteOnly = false,
+  ariaLabel = "Choose language",
+  searchPlaceholder,
+  emptyLabel,
+}) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const ref = useRef(null);
@@ -10144,10 +10188,21 @@ function LanguageDropdown({ selected, onSelect, siteOnly = false, ariaLabel = "C
     l.native.toLowerCase().includes(search.toLowerCase()) ||
     l.code.toLowerCase().includes(search.toLowerCase())
   );
+  const resolvedSearchPlaceholder = searchPlaceholder || (siteOnly ? "Search interface language..." : "Search language...");
+  const resolvedEmptyLabel = emptyLabel || "No language found";
 
   return (
-    <div ref={ref} style={{ position: "relative", zIndex: 500 }}>
-      <button onClick={() => setOpen(o => !o)} aria-label={ariaLabel} aria-expanded={open} style={{
+    <div
+      ref={ref}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          setOpen(false);
+          setSearch("");
+        }
+      }}
+      style={{ position: "relative", zIndex: 500 }}
+    >
+      <button type="button" onClick={() => setOpen(o => !o)} aria-label={ariaLabel} aria-haspopup="listbox" aria-expanded={open} style={{
         display: "flex", alignItems: "center", gap: 7, padding: "7px 12px",
         background: C.surface, border: `1px solid ${C.border}`, borderRadius: 9,
         color: C.text1, fontSize: 13.5, fontWeight: 600, cursor: "pointer",
@@ -10171,7 +10226,8 @@ function LanguageDropdown({ selected, onSelect, siteOnly = false, ariaLabel = "C
               autoFocus
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder={siteOnly ? "Search interface language…" : "Search language…"}
+              aria-label={resolvedSearchPlaceholder}
+              placeholder={resolvedSearchPlaceholder}
               style={{
                 width: "100%", boxSizing: "border-box",
                 padding: "8px 10px", background: C.elevated,
@@ -10183,14 +10239,14 @@ function LanguageDropdown({ selected, onSelect, siteOnly = false, ariaLabel = "C
           </div>
 
           {/* Language list */}
-          <div style={{ maxHeight: 280, overflowY: "auto" }}>
+          <div role="listbox" aria-label={ariaLabel} style={{ maxHeight: 280, overflowY: "auto" }}>
             {filtered.length === 0 && (
               <div style={{ padding: "20px 14px", color: C.text3, fontSize: 13, textAlign: "center" }}>
-                No language found
+                {resolvedEmptyLabel}
               </div>
             )}
             {filtered.map(l => (
-              <button key={l.code} onClick={() => { onSelect(l); setOpen(false); setSearch(""); }}
+              <button key={l.code} type="button" role="option" aria-selected={l.code === selected.code} onClick={() => { onSelect(l); setOpen(false); setSearch(""); }}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, width: "100%",
                   padding: "9px 14px", border: "none", background: l.code === selected.code ? `${C.accent}14` : "transparent",

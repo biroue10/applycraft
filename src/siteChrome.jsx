@@ -74,6 +74,7 @@ export function SiteHeader({
   ctaHref = "/resume/templates",
   ctaLabel,
   onCtaClick,
+  renderLanguageSelector,
   mobileMenuOpen = false,
   onMobileMenuToggle,
 }) {
@@ -126,6 +127,9 @@ export function SiteHeader({
         }
         .ac-site-mobile-menu-button {
           display: inline-flex !important;
+        }
+        .ac-site-header-language {
+          display: none !important;
         }
         .ac-site-mobile-menu {
           display: flex !important;
@@ -209,6 +213,11 @@ export function SiteHeader({
           })}
         </nav>
         <div style={{ flex: 1 }} />
+        {renderLanguageSelector && (
+          <div className="ac-site-header-language" style={{ flexShrink: 0, marginInlineEnd: 10 }}>
+            {renderLanguageSelector()}
+          </div>
+        )}
         {onCtaClick ? (
           <button className="ac-nav-cta" type="button" onClick={onCtaClick} style={{
             background: SITE_COLORS.grad,
@@ -266,6 +275,11 @@ export function SiteHeader({
               </button>
             );
           })}
+          {renderLanguageSelector && (
+            <div style={{ padding: "8px 10px 10px" }}>
+              {renderLanguageSelector()}
+            </div>
+          )}
         </nav>
       )}
     </header>
