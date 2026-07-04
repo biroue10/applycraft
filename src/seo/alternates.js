@@ -11,13 +11,24 @@
 export const ORIGIN = "https://applycraft.io";
 
 // Genuine translated clusters. Each entry is a full, reciprocal set.
-// The homepage (SPA "/") is translated by the static /resume-in-french/ and
-// /resume-in-arabic/ pages (which carry the matching reciprocal tags).
+// The homepage cluster uses crawlable localized URLs at /fr/ and /ar/.
 export const ALTERNATES = {
   "/": [
     { hreflang: "en", href: `${ORIGIN}/` },
-    { hreflang: "fr", href: `${ORIGIN}/resume-in-french/` },
-    { hreflang: "ar", href: `${ORIGIN}/resume-in-arabic/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/` },
+    { hreflang: "x-default", href: `${ORIGIN}/` },
+  ],
+  "/fr/": [
+    { hreflang: "en", href: `${ORIGIN}/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/` },
+    { hreflang: "x-default", href: `${ORIGIN}/` },
+  ],
+  "/ar/": [
+    { hreflang: "en", href: `${ORIGIN}/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/` },
     { hreflang: "x-default", href: `${ORIGIN}/` },
   ],
 };
@@ -26,6 +37,8 @@ export const ALTERNATES = {
 // exact path (no forced trailing slash — matches how the routes are served).
 export function canonicalFor(path) {
   if (!path || path === "/") return `${ORIGIN}/`;
+  if (path === "/fr" || path === "/fr/") return `${ORIGIN}/fr/`;
+  if (path === "/ar" || path === "/ar/") return `${ORIGIN}/ar/`;
   return ORIGIN + path;
 }
 

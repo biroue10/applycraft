@@ -19,7 +19,10 @@ Then open the new `index.html` and edit:
 
 - `<title>` and `<meta name="description">`
 - `<link rel="canonical">` and every `og:`/`twitter:` URL → your new slug
-- The JSON-LD block: `headline`, `description`, `datePublished`, `dateModified`, `mainEntityOfPage`
+- The JSON-LD blocks:
+  - `Article` / `BlogPosting`: `headline`, `description`, `datePublished`, `dateModified`, `mainEntityOfPage`
+  - `Person` author: `name`, `url` or `sameAs` when available
+  - `BreadcrumbList`: Home → Blog → Post title
 - The visible `<h1>`, the `.lead`, the `.post-meta` (tag / date / read time), and the body
 
 Keep the `<nav>`, `<footer>`, and the `.cta-box` — just replace the article content.

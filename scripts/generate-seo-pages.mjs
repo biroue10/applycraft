@@ -8,15 +8,20 @@ const ROOT = join(__dirname, "..", "public");
 const SITE = "https://applycraft.io";
 const TODAY = "2026-06-27";
 const CSS_PATH = "../_seo.css"; // relative from each subdir
-const SOCIAL_IMAGE = `${SITE}/og.png`;
+const SOCIAL_IMAGE = `${SITE}/og/home.png`;
 const SOCIAL_IMAGE_ALT = "ApplyCraft resume builder interface";
-
-const RESUME_LOCALE_LINKS = [
-  `<link rel="alternate" hreflang="en" href="${SITE}/"/>`,
-  `<link rel="alternate" hreflang="ar" href="${SITE}/resume-in-arabic/"/>`,
-  `<link rel="alternate" hreflang="fr" href="${SITE}/resume-in-french/"/>`,
-  `<link rel="alternate" hreflang="x-default" href="${SITE}/"/>`,
-].join("\n");
+const HOME_ALTERNATES = [
+  { hreflang: "en", href: `${SITE}/` },
+  { hreflang: "fr", href: `${SITE}/fr/` },
+  { hreflang: "ar", href: `${SITE}/ar/` },
+  { hreflang: "x-default", href: `${SITE}/` },
+];
+const FREE_BUILDER_ALTERNATES = [
+  { hreflang: "en", href: `${SITE}/free-resume-builder/` },
+  { hreflang: "fr", href: `${SITE}/fr/creer-cv-gratuit/` },
+  { hreflang: "ar", href: `${SITE}/ar/free-resume-builder/` },
+  { hreflang: "x-default", href: `${SITE}/free-resume-builder/` },
+];
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
 function nav() {
@@ -39,8 +44,13 @@ function footer() {
         <div>
           <h2>Product</h2>
           <a href="/">Resume Builder</a>
+          <a href="/fr/">Créateur de CV</a>
+          <a href="/ar/">منشئ السيرة الذاتية</a>
           <a href="/cover-letter-builder/">Cover Letter Builder</a>
           <a href="/ats-checker/">ATS Checker</a>
+          <a href="/ats-checker-fr/">Vérificateur ATS</a>
+          <a href="/ats-checker-ar/">فاحص ATS</a>
+          <a href="/pricing/">Pricing</a>
           <a href="/changelog/">Changelog</a>
           <a href="/roadmap/">Roadmap</a>
           <a href="/status/">Status</a>
@@ -53,19 +63,26 @@ function footer() {
         </div>
         <div>
           <h2>Resources</h2>
+          <a href="/blog/">Blog</a>
           <a href="/help/">Help Center</a>
           <a href="/examples/">Resume Examples</a>
-          <a href="/resume-builder/">Resume Guide</a>
+          <a href="/resume/templates">Resume Templates</a>
           <a href="/ats-resume-builder/">ATS Guide</a>
+          <a href="/cover-letter-builder/">Cover Letter Guide</a>
           <a href="/free-resume-builder/">Free Resume Builder</a>
+          <a href="/fr/creer-cv-gratuit/">Créer un CV gratuit</a>
+          <a href="/ar/free-resume-builder/">منشئ سيرة ذاتية مجاني</a>
           <a href="/student-resume-builder/">Student Resume Builder</a>
           <a href="/canadian-resume-builder/">Canadian Resume Builder</a>
         </div>
         <div>
           <h2>Legal</h2>
+          <a href="/terms/">Terms of Service</a>
           <a href="/privacy/">Privacy Policy</a>
-          <a href="/privacy/#gdpr">GDPR</a>
-          <a href="/privacy/#cookies">Cookies</a>
+          <a href="/cookies/">Cookie Policy</a>
+          <a href="/gdpr/">GDPR</a>
+          <a href="/ai-disclosure/">AI Disclosure</a>
+          <a href="/accessibility/">Accessibility</a>
         </div>
       </nav>
     </div>
@@ -75,6 +92,18 @@ function footer() {
     </div>
   </div>
 </footer>`;
+}
+
+function languageSwitcher(alternates = []) {
+  const labels = { en: "English", fr: "Français", ar: "العربية" };
+  const links = alternates.length
+    ? alternates.filter((item) => item.hreflang !== "x-default")
+    : [
+        { hreflang: "en", href: `${SITE}/` },
+        { hreflang: "fr", href: `${SITE}/fr/` },
+        { hreflang: "ar", href: `${SITE}/ar/` },
+      ];
+  return `<div class="language-switcher" aria-label="Language versions">${links.map(({ hreflang, href }) => `<a href="${href.replace(SITE, "")}">${labels[hreflang] || hreflang}</a>`).join("")}</div>`;
 }
 
 function ctaStrip(heading, sub) {
@@ -135,22 +164,14 @@ function faqHtml(items) {
 </section>`;
 }
 
-function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard, features, faqs, canonicalPath, _cssPath }) {
+function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard, features, faqs, canonicalPath, _cssPath, lang = "en", dir = "", ogLocale = "en_US", ogAlternateLocales = [], alternates = [], socialImage }) {
   const canonical = `${SITE}${canonicalPath}`;
   const cssRel = _cssPath || CSS_PATH;
-  const htmlAttrs = canonicalPath === "/resume-in-arabic/"
-    ? `lang="ar" dir="rtl"`
-    : canonicalPath === "/resume-in-french/"
-      ? `lang="fr"`
-      : `lang="en"`;
-  const ogLocale = canonicalPath === "/resume-in-arabic/"
-    ? "ar_AR"
-    : canonicalPath === "/resume-in-french/"
-      ? "fr_FR"
-      : "en_US";
-  const alternateLinks = canonicalPath === "/resume-in-arabic/" || canonicalPath === "/resume-in-french/"
-    ? `\n${RESUME_LOCALE_LINKS}`
+  const htmlAttrs = dir ? `lang="${lang}" dir="${dir}"` : `lang="${lang}"`;
+  const alternateLinks = alternates.length
+    ? `\n${alternates.map((a) => `<link rel="alternate" hreflang="${a.hreflang}" href="${a.href}"/>`).join("\n")}`
     : "";
+  const image = socialImage || SOCIAL_IMAGE;
   return `<!doctype html>
 <html ${htmlAttrs}>
 <head>
@@ -161,11 +182,12 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
 <link rel="canonical" href="${canonical}"/>${alternateLinks}
 <meta property="og:type" content="website"/>
 <meta property="og:locale" content="${ogLocale}"/>
+${ogAlternateLocales.map((locale) => `<meta property="og:locale:alternate" content="${locale}"/>`).join("\n")}
 <meta property="og:url" content="${canonical}"/>
 <meta property="og:title" content="${title}"/>
 <meta property="og:description" content="${description}"/>
-<meta property="og:image" content="${SOCIAL_IMAGE}"/>
-<meta property="og:image:secure_url" content="${SOCIAL_IMAGE}"/>
+<meta property="og:image" content="${image}"/>
+<meta property="og:image:secure_url" content="${image}"/>
 <meta property="og:image:type" content="image/png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
@@ -173,7 +195,7 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="${title}"/>
 <meta name="twitter:description" content="${description}"/>
-<meta name="twitter:image" content="${SOCIAL_IMAGE}"/>
+<meta name="twitter:image" content="${image}"/>
 <meta name="twitter:image:alt" content="${SOCIAL_IMAGE_ALT}"/>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <link rel="icon" href="/favicon.png" type="image/png"/>
@@ -199,13 +221,14 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
 ${nav()}
 <main>
   <div class="page">
+    ${languageSwitcher(alternates)}
     <div class="hero">
       <div class="hero-eyebrow">${eyebrow}</div>
       <h1>${h1}</h1>
       <p>${sub}</p>
       <div class="hero-btns">
         <a href="/" class="btn-primary">Build My Resume Free →</a>
-        <a href="/resume-builder/" class="btn-secondary">See Templates</a>
+        <a href="/resume/templates" class="btn-secondary">See Templates</a>
       </div>
       <div class="trust">
         <span>🔒 Browser-first editing</span>
@@ -285,15 +308,17 @@ function rcGeneric({ name, title, email, city, skills, jobs, edu }) {
 }
 
 // ── Page definitions ──────────────────────────────────────────────────────────
+const REDIRECTED_SLUGS = new Set(["resume-builder"]);
+
 const PAGES = [
   {
     slug: "resume-builder",
     canonicalPath: "/resume-builder/",
-    title: "Free Online Resume Builder — ApplyCraft",
-    description: "Build a professional resume online in minutes. Choose from 46 templates, get live preview, and download as PDF or DOCX. Free, no sign-up.",
-    eyebrow: "Resume Builder",
-    h1: "Free Online Resume Builder",
-    sub: "46 professional templates, live preview, AI polish, and instant PDF or DOCX download. Build your resume in minutes — no sign-up required.",
+    title: "Resume Template Guide — Formats, Layouts, and Examples | ApplyCraft",
+    description: "Compare resume template formats, layouts, and examples before choosing an ATS-friendly ApplyCraft resume style.",
+    eyebrow: "Resume Template Guide",
+    h1: "Resume Template Guide",
+    sub: "Compare professional resume layouts and learn how to choose a format before opening the ApplyCraft template gallery.",
     keywords: "resume builder, online resume builder, free resume builder, professional resume, cv builder",
     resumeCard: rcGeneric({
       name: "Alex Morgan", title: "Senior Software Engineer",
@@ -333,10 +358,13 @@ const PAGES = [
     slug: "free-resume-builder",
     canonicalPath: "/free-resume-builder/",
     title: "Free Resume Builder — No Sign-Up, No Hidden Fees | ApplyCraft",
-    description: "Create a professional resume for free. No account needed, no watermarks, no paywalls. Download PDF or DOCX instantly with ApplyCraft.",
+    description: "Create a professional resume for free with no sign-up, no hidden fees, no watermarks, and no download paywall. Export PDF or DOCX instantly.",
     eyebrow: "Free Builder",
-    h1: "Free Resume Builder — No Sign-Up Required",
-    sub: "Build your resume without signing up. Create a polished document and download it as PDF or DOCX in minutes.",
+    h1: "Free Resume Builder — No Sign-Up, No Hidden Fees",
+    sub: "Build your resume without an account, hidden fees, watermarks, or download paywalls. Create a polished document and download it as PDF or DOCX in minutes.",
+    alternates: FREE_BUILDER_ALTERNATES,
+    ogAlternateLocales: ["fr_FR", "ar_MA"],
+    socialImage: `${SITE}/og/free-resume-builder.png`,
     keywords: "free resume builder, resume builder no sign up, free cv maker, free resume download, no watermark resume builder",
     resumeCard: rcGeneric({
       name: "Jordan Lee", title: "Marketing Manager",
@@ -351,8 +379,8 @@ const PAGES = [
       edu: [{ degree: "B.A. Communications", school: "NYU", date: "2014 – 2018" }],
     }),
     features: {
-      heading: "Genuinely free — here's what you get",
-      intro: "ApplyCraft keeps the core resume-building workflow available without an account, credit card, watermark, or paid tier.",
+      heading: "Genuinely free — no sign-up, no hidden fees",
+      intro: "ApplyCraft keeps the core resume-building workflow available without an account, credit card, watermark, hidden fee, or paid download tier.",
       ctaHeading: "Start your free resume now",
       ctaSub: "No credit card. No account. No watermark. Download as PDF or DOCX in minutes.",
       items: [
@@ -365,7 +393,7 @@ const PAGES = [
       ],
     },
     faqs: [
-      { q: "Why is ApplyCraft free?", a: "ApplyCraft is built as a free resume-building tool. If pricing or premium features are introduced later, the free workflow should remain clear before you invest time in a document." },
+      { q: "Why is ApplyCraft free?", a: "ApplyCraft is built as a free resume-building tool with no hidden fees in the core workflow. If pricing or premium features are introduced later, the free workflow should remain clear before you invest time in a document." },
       { q: "Is there a free trial or do I need a credit card?", a: "No trial, no credit card. The tool is free with no time limits. Just open it and start building." },
       { q: "Are the downloaded resumes watermark-free?", a: "Yes. Downloaded PDFs and DOCX files contain no ApplyCraft branding whatsoever." },
       { q: "Can I create multiple resumes for free?", a: "Yes. Create as many versions as you need. Tailor each one to a specific job role, all for free." },
@@ -381,6 +409,7 @@ const PAGES = [
     h1: "ATS Resume Builder for Cleaner Parsing",
     sub: "ApplyCraft templates are designed with clear headings, readable typography, and ATS-conscious layouts to improve parsing compatibility.",
     keywords: "ATS resume builder, ATS friendly resume, applicant tracking system resume, ATS optimized cv, beat ATS",
+    socialImage: `${SITE}/og/ats-checker.png`,
     resumeCard: rcGeneric({
       name: "Sam Rivera", title: "Product Manager",
       email: "sam.rivera@email.com", city: "Austin, TX",
@@ -663,6 +692,7 @@ const PAGES = [
     h1: "Canadian Resume Builder — Formats & Templates",
     sub: "The Canadian resume has specific conventions that differ from UK CVs and American resumes. ApplyCraft's templates are tailored for the Canadian job market.",
     keywords: "canadian resume builder, canadian resume format, canadian cv template, resume canada, job application canada",
+    socialImage: `${SITE}/og/canadian-resume-builder.png`,
     resumeCard: rcGeneric({
       name: "Emily Tremblay", title: "Financial Analyst",
       email: "emily.tremblay@email.ca", city: "Toronto, ON",
@@ -706,6 +736,7 @@ const PAGES = [
     h1: "Student Resume Builder — No Experience Needed",
     sub: "Landing your first job or internship is tough. ApplyCraft's student templates help you showcase education, projects, and transferable skills even without work experience.",
     keywords: "student resume builder, graduate resume, resume no experience, first job resume, internship resume, entry level resume",
+    socialImage: `${SITE}/og/student-resume-builder.png`,
     resumeCard: rcGeneric({
       name: "Tyler Brooks", title: "Computer Science Graduate | Seeking Software Developer Role",
       email: "tyler.brooks@email.com", city: "Boston, MA",
@@ -1580,7 +1611,9 @@ const EXAMPLES = [
 ];
 
 // ── Generate all pages ────────────────────────────────────────────────────────
-for (const p of PAGES) {
+const GENERATED_PAGES = PAGES.filter((p) => !REDIRECTED_SLUGS.has(p.slug));
+
+for (const p of GENERATED_PAGES) {
   const dir = join(ROOT, p.slug);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "index.html"), page(p), "utf8");
@@ -1595,4 +1628,4 @@ for (const p of EXAMPLES) {
   console.log(`✓ /public/examples/${p.slug}/index.html`);
 }
 
-console.log(`\n✅ Generated ${PAGES.length + EXAMPLES.length} SEO pages`);
+console.log(`\n✅ Generated ${GENERATED_PAGES.length + EXAMPLES.length} SEO pages`);

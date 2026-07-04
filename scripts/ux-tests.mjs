@@ -11,7 +11,7 @@ const pkg = JSON.parse(await readFile(new URL("../package.json", import.meta.url
 
 assert.match(landing, /Create my resume/, "homepage needs a specific primary CTA");
 assert.match(landing, /Check my existing resume/, "homepage needs a specific secondary CTA");
-assert.match(landing, /Create a job-ready resume without signing up\./, "homepage value proposition should be direct");
+assert.match(landing, /Build an ATS-friendly resume and matching cover letter fast\./, "homepage value proposition should be direct");
 assert.match(app, /startResume\("hero_primary"\)/, "hero CTA should use the fast-start resume path");
 assert.match(templateRegistry, /RECOMMENDED_TEMPLATE_ID = "modern"/, "resume flow should preselect a recommended template");
 assert.match(builder, /Use template/, "template selector should expose a clear use action");

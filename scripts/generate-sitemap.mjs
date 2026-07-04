@@ -7,6 +7,22 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const PUBLIC_DIR = join(ROOT, "public");
 const SITE = "https://applycraft.io";
+const STATIC_APP_ROUTES = [
+  "/",
+  "/fr/",
+  "/ar/",
+  "/resume/templates",
+  "/cover-letter/templates",
+  "/cover-letter/builder",
+  "/job-tracker",
+  "/app/ats-checker",
+  "/master-profile",
+  "/email-signature",
+  "/personal-website",
+];
+const REDIRECTED_PATHS = new Set([
+  "/resume-builder/",
+]);
 
 function walk(dir, files = []) {
   for (const entry of readdirSync(dir)) {
@@ -62,10 +78,18 @@ const pages = [join(ROOT, "index.html"), ...walk(PUBLIC_DIR)]
     const html = readFileSync(filePath, "utf8");
     const loc = canonicalFromHtml(html);
     if (!loc || !loc.startsWith(`${SITE}/`) || isNoindex(html)) return null;
+    const path = new URL(loc).pathname;
+    if (REDIRECTED_PATHS.has(path)) return null;
     return { loc, lastmod: gitLastmod(filePath) };
   })
   .filter(Boolean)
   .sort((a, b) => a.loc.localeCompare(b.loc));
+
+for (const route of STATIC_APP_ROUTES) {
+  const loc = `${SITE}${route}`;
+  if (!pages.some((page) => page.loc === loc)) pages.push({ loc, lastmod: "" });
+}
+pages.sort((a, b) => a.loc.localeCompare(b.loc));
 
 const seen = new Set();
 const urls = [];

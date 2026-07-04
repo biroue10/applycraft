@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050816"/><stop offset="0.55" stop-color="#0D1424"/><stop offset="1" stop-color="#132036"/></linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#2563EB"/><stop offset="1" stop-color="#2DD4BF"/></linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1040" cy="90" r="220" fill="#2563EB" opacity="0.16"/>
+  <circle cx="180" cy="560" r="230" fill="#2DD4BF" opacity="0.10"/>
+  <rect x="72" y="72" width="1056" height="486" rx="28" fill="#0D1424" stroke="#20324E" stroke-width="2"/>
+  <text x="96" y="158" direction="ltr" text-anchor="start" fill="#93C5FD" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="800" letter-spacing="1.5">ApplyCraft</text>
+  <text x="96" y="286" direction="ltr" text-anchor="start" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="58" font-weight="900">Créateur de CV et lettre de motivation</text>
+  <text x="96" y="360" direction="ltr" text-anchor="start" fill="#B6C2D6" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="650">Rapide, compatible ATS</text>
+  <rect x="96" y="424" width="338" height="58" rx="8" fill="url(#accent)"/>
+  <text x="265" y="462" text-anchor="middle" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800">applycraft.io</text>
+</svg>

@@ -49,7 +49,6 @@ for (const file of htmlFiles) {
 }
 
 for (const path of [
-  "public/resume-builder/index.html",
   "public/free-resume-builder/index.html",
   "public/ats-resume-builder/index.html",
   "public/resume-in-french/index.html",

@@ -16,6 +16,8 @@ function SharedResumeRoute() {
 // genuine-cluster map in src/seo/alternates.js.
 export const routes = [
   { path: "/", element: <ResumeGenerator /> },
+  { path: "/fr/", element: <ResumeGenerator /> },
+  { path: "/ar/", element: <ResumeGenerator /> },
   { path: "/r", element: <SharedResumeRoute /> },
   { path: "/r/:shareId", element: <SharedResumeRoute /> },
   { path: "/resume/templates", element: <ResumeGenerator /> },

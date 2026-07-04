@@ -1,2 +1,4 @@
 # No catch-all SPA fallback.
 # Cloudflare Pages will serve /404.html for unknown URLs, avoiding soft-404s.
+/resume-builder/ /resume/templates 301
+/resume-builder /resume/templates 301

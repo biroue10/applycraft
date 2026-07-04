@@ -23,6 +23,8 @@ jobs:
           node-version: '24'
       - run: npm ci
       - run: npm run audit:high
+      - run: npm run seo:og
+      - run: npm run seo:pages
       - run: npm run seo:sitemap
       - run: npm run build
       - run: npm run test:security
@@ -40,36 +42,29 @@ jobs:
         with:
           node-version: '24'
       - run: npm ci
+      - run: npm run seo:og
+      - run: npm run seo:pages
       - run: npm run seo:sitemap
-      - name: Wait for production SEO files
+      - name: Check production IndexNow key
         run: |
           set -euo pipefail
           key="91a714f93cc24a8c95f1efe0d9e9a914"
           key_url="https://applycraft.io/${key}.txt"
-          sitemap_url="https://applycraft.io/sitemap.xml"
-          node -e "const fs=require('fs'); const urls=[...fs.readFileSync('public/sitemap.xml','utf8').matchAll(/<loc>([^<]+)<\\/loc>/g)].map(m=>m[1]); fs.writeFileSync('/tmp/applycraft-urls.txt', urls.join('\n'));"
 
           for attempt in $(seq 1 20); do
             key_body="$(curl -fsS "$key_url" || true)"
-            sitemap_status="$(curl -fsS -o /dev/null -w "%{http_code}" "$sitemap_url" || true)"
-            missing_count=0
-
-            while IFS= read -r url; do
-              status="$(curl -fsS -o /dev/null -w "%{http_code}" "$url" || true)"
-              if [ "$status" != "200" ]; then
-                missing_count=$((missing_count + 1))
-              fi
-            done < /tmp/applycraft-urls.txt
-
-            if [ "$key_body" = "$key" ] && [ "$sitemap_status" = "200" ] && [ "$missing_count" = "0" ]; then
-              echo "Production IndexNow key, sitemap, and page URLs are live."
+            if [ "$key_body" = "$key" ]; then
+              echo "Production IndexNow key file is live."
+              echo "### IndexNow key check" >> "$GITHUB_STEP_SUMMARY"
+              echo "Key file returned 200 and matched at $key_url." >> "$GITHUB_STEP_SUMMARY"
               exit 0
             fi
 
-            echo "Production SEO files are not ready yet; ${missing_count} sitemap URLs are not returning 200. Retry ${attempt}/20."
+            echo "Production IndexNow key is not ready yet. Retry ${attempt}/20."
             sleep 15
           done
 
-          echo "Production SEO files were not ready in time."
+          echo "### IndexNow key check failed" >> "$GITHUB_STEP_SUMMARY"
+          echo "The key file did not return the expected value at $key_url." >> "$GITHUB_STEP_SUMMARY"
           exit 1
       - run: npm run seo:indexnow

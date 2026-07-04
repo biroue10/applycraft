@@ -2913,9 +2913,16 @@ function getInitialAppRoute(pathname, hash) {
   return routeFromAppPath(window.location.pathname, window.location.hash);
 }
 
+function routeLanguageOverride(pathname = "") {
+  if (pathname === "/fr" || pathname === "/fr/") return "fr";
+  if (pathname === "/ar" || pathname === "/ar/") return "ar";
+  return "";
+}
+
 export default function ResumeGenerator() {
   const location = useLocation();
   const initialRoute = getInitialAppRoute(location.pathname, location.hash);
+  const routeLang = routeLanguageOverride(location.pathname);
   const [navPage, setNavPage] = useState(initialRoute.navPage);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sideSearch, setSideSearch] = useState("");
@@ -2929,8 +2936,8 @@ export default function ResumeGenerator() {
   const [coverTemplateHover, setCoverTemplateHover] = useState("");
   const [coverTemplateFocus, setCoverTemplateFocus] = useState("");
   const [step, setStep] = useState(initialRoute.step);
-  const [interfaceLanguage, setInterfaceLanguage] = useState(initialInterfaceLanguage);
-  const [documentLanguage, setDocumentLanguage] = useState(initialDocumentLanguage);
+  const [interfaceLanguage, setInterfaceLanguage] = useState(() => routeLang || initialInterfaceLanguage());
+  const [documentLanguage, setDocumentLanguage] = useState(() => routeLang || initialDocumentLanguage());
   const selectedLang = languageByCode(interfaceLanguage);
   const selectedDocumentLang = languageByCode(documentLanguage);
   const lang = UI_LANGS.has(interfaceLanguage) ? interfaceLanguage : "en";
