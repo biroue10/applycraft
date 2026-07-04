@@ -1,6 +1,7 @@
 import { writeFileSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { footerHtml } from "./shared-footer.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..", "public");
@@ -9,7 +10,7 @@ const SITE = "https://applycraft.io";
 const TODAY = "2026-06-27";
 const CSS_PATH = "../_seo.css"; // relative from each subdir
 const SOCIAL_IMAGE = `${SITE}/og/home.png`;
-const SOCIAL_IMAGE_ALT = "ApplyCraft resume builder interface";
+const SOCIAL_IMAGE_ALT = "ApplyCraft resume builder and cover letter maker preview";
 const HOME_ALTERNATES = [
   { hreflang: "en", href: `${SITE}/` },
   { hreflang: "fr", href: `${SITE}/fr/` },
@@ -29,69 +30,6 @@ function nav() {
   <a href="/" class="nav-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="eager" decoding="async"></a>
   <a href="/" class="nav-cta">Build My Resume Free →</a>
 </nav>`;
-}
-
-function footer() {
-  return `<footer class="site-footer">
-  <div class="footer-shell">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <a href="/" class="footer-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="lazy" decoding="async"></a>
-        <p>Free resume and cover letter builder with 46 templates, free PDF and DOCX exports, no watermark, no signup, browser-first editing, and production-ready English, French, and Arabic localization.</p>
-        <a href="mailto:hello@applycraft.io">hello@applycraft.io</a>
-      </div>
-      <nav class="footer-grid" aria-label="Footer">
-        <div>
-          <h2>Product</h2>
-          <a href="/">Resume Builder</a>
-          <a href="/fr/">Créateur de CV</a>
-          <a href="/ar/">منشئ السيرة الذاتية</a>
-          <a href="/cover-letter-builder/">Cover Letter Builder</a>
-          <a href="/ats-checker/">ATS Checker</a>
-          <a href="/ats-checker-fr/">Vérificateur ATS</a>
-          <a href="/ats-checker-ar/">فاحص ATS</a>
-          <a href="/pricing/">Pricing</a>
-          <a href="/changelog/">Changelog</a>
-          <a href="/roadmap/">Roadmap</a>
-          <a href="/status/">Status</a>
-        </div>
-        <div>
-          <h2>Company</h2>
-          <a href="/about/">About &amp; Founder</a>
-          <a href="/contact/">Contact</a>
-          <a href="https://github.com/biroue10" rel="noopener">GitHub</a>
-        </div>
-        <div>
-          <h2>Resources</h2>
-          <a href="/blog/">Blog</a>
-          <a href="/help/">Help Center</a>
-          <a href="/examples/">Resume Examples</a>
-          <a href="/resume/templates">Resume Templates</a>
-          <a href="/ats-resume-builder/">ATS Guide</a>
-          <a href="/cover-letter-builder/">Cover Letter Guide</a>
-          <a href="/free-resume-builder/">Free Resume Builder</a>
-          <a href="/fr/creer-cv-gratuit/">Créer un CV gratuit</a>
-          <a href="/ar/free-resume-builder/">منشئ سيرة ذاتية مجاني</a>
-          <a href="/student-resume-builder/">Student Resume Builder</a>
-          <a href="/canadian-resume-builder/">Canadian Resume Builder</a>
-        </div>
-        <div>
-          <h2>Legal</h2>
-          <a href="/terms/">Terms of Service</a>
-          <a href="/privacy/">Privacy Policy</a>
-          <a href="/cookies/">Cookie Policy</a>
-          <a href="/gdpr/">GDPR</a>
-          <a href="/ai-disclosure/">AI Disclosure</a>
-          <a href="/accessibility/">Accessibility</a>
-        </div>
-      </nav>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 ApplyCraft by Biroue Digital Ltd · applycraft.io</span>
-      <span>Browser-first editing · Optional AI helpers · No account required</span>
-    </div>
-  </div>
-</footer>`;
 }
 
 function languageSwitcher(alternates = []) {
@@ -164,7 +102,7 @@ function faqHtml(items) {
 </section>`;
 }
 
-function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard, features, faqs, canonicalPath, _cssPath, lang = "en", dir = "", ogLocale = "en_US", ogAlternateLocales = [], alternates = [], socialImage }) {
+function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard, features, faqs, canonicalPath, _cssPath, lang = "en", dir = "", ogLocale = "en_US", ogAlternateLocales = [], alternates = [], socialImage, socialImageAlt }) {
   const canonical = `${SITE}${canonicalPath}`;
   const cssRel = _cssPath || CSS_PATH;
   const htmlAttrs = dir ? `lang="${lang}" dir="${dir}"` : `lang="${lang}"`;
@@ -172,6 +110,7 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
     ? `\n${alternates.map((a) => `<link rel="alternate" hreflang="${a.hreflang}" href="${a.href}"/>`).join("\n")}`
     : "";
   const image = socialImage || SOCIAL_IMAGE;
+  const imageAlt = socialImageAlt || SOCIAL_IMAGE_ALT;
   return `<!doctype html>
 <html ${htmlAttrs}>
 <head>
@@ -191,12 +130,12 @@ ${ogAlternateLocales.map((locale) => `<meta property="og:locale:alternate" conte
 <meta property="og:image:type" content="image/png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
-<meta property="og:image:alt" content="${SOCIAL_IMAGE_ALT}"/>
+<meta property="og:image:alt" content="${imageAlt}"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="${title}"/>
 <meta name="twitter:description" content="${description}"/>
 <meta name="twitter:image" content="${image}"/>
-<meta name="twitter:image:alt" content="${SOCIAL_IMAGE_ALT}"/>
+<meta name="twitter:image:alt" content="${imageAlt}"/>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <link rel="icon" href="/favicon.png" type="image/png"/>
 <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
@@ -265,7 +204,7 @@ ${nav()}
     ${ctaStrip(features.ctaHeading || "Ready to land your next job?", features.ctaSub || "Create a professional resume in minutes — free, no sign-up required.")}
   </div>
 </main>
-${footer()}
+${footerHtml(lang)}
 </body>
 </html>`;
 }
@@ -541,6 +480,7 @@ const PAGES = [
     title: "CV en Français — Créez votre CV en ligne gratuitement | ApplyCraft",
     description: "Créez un CV professionnel en français avec 46 modèles. Prévisualisation en direct, export PDF et DOCX. Gratuit, sans inscription.",
     eyebrow: "CV en Français",
+    socialImageAlt: "Aperçu du créateur de CV ApplyCraft en français",
     h1: "Créez votre CV en Français",
     sub: "46 modèles professionnels, prévisualisation en direct, et export PDF ou DOCX — entièrement gratuit. Rédigez votre CV en français en quelques minutes.",
     keywords: "cv en français, faire son cv en français, modèle cv français, créer cv gratuit, cv professionnel français",
@@ -615,6 +555,7 @@ const PAGES = [
     title: "إنشاء سيرة ذاتية بالعربية — مجاناً | ApplyCraft",
     description: "أنشئ سيرة ذاتية احترافية باللغة العربية مع دعم الكتابة من اليمين إلى اليسار. 46 قالباً مجانياً، تصدير PDF و DOCX.",
     eyebrow: "السيرة الذاتية بالعربية",
+    socialImageAlt: "معاينة منشئ السيرة الذاتية من ApplyCraft بالعربية",
     h1: "أنشئ سيرتك الذاتية بالعربية",
     sub: "46 قالباً احترافياً مع دعم إنتاجي للعربية والكتابة من اليمين إلى اليسار. تنزيل PDF أو DOCX مجاناً — دون تسجيل.",
     keywords: "سيرة ذاتية بالعربية, نموذج سيرة ذاتية عربي, cv بالعربي, سيرة ذاتية مجانية, انشاء سيرة ذاتية",

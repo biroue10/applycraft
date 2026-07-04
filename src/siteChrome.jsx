@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FOOTER_LINK_SECTIONS } from "./footerLinks.js";
 import { FOOTER_UI, LANDING_UI } from "./i18n/index.js";
 import { PRODUCT } from "./product.js";
 
@@ -13,7 +14,6 @@ export const SITE_COLORS = {
 };
 
 const AUTHOR_EMAIL = "hello@applycraft.io";
-const AUTHOR_GITHUB = "https://github.com/biroue10";
 const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
 
 function BrandLogoImage({ compact = false, style = {} }) {
@@ -55,7 +55,8 @@ function Logo({ compact = false }) {
 }
 
 const DEFAULT_NAV_LINKS = [
-  { href: "/resume/templates", footerKey: "resumeBuilder", fallback: "Resume Builder" },
+  { href: "/", footerKey: "resumeBuilder", fallback: "Resume Builder" },
+  { href: "/resume/templates", footerKey: "resumeTemplates", fallback: "Resume Templates" },
   { href: "/cover-letter/templates", footerKey: "coverLetter", fallback: "Cover Letter" },
   { href: "/ats-checker/", footerKey: "atsChecker", fallback: "ATS Checker" },
 ];
@@ -279,7 +280,7 @@ function footerText(value) {
     .replace("{tpl}", PRODUCT.resumeTemplateCount);
 }
 
-export function SiteFooter({ lang = "en", className = "" }) {
+export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
   const f = FOOTER_UI[lang] || FOOTER_UI.en;
   const col = { fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px", color: SITE_COLORS.text3, marginBottom: 16 };
   const lk = { display: "block", fontSize: 13.5, color: SITE_COLORS.text2, textDecoration: "none", padding: "4px 0" };
@@ -296,52 +297,24 @@ export function SiteFooter({ lang = "en", className = "" }) {
             </p>
             <a href={`mailto:${AUTHOR_EMAIL}`} style={{ fontSize: 13, color: SITE_COLORS.text2, textDecoration: "none" }}>{AUTHOR_EMAIL}</a>
           </div>
-          <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
-            <div>
-              <div style={col}>{f.product}</div>
-              <a href="/resume/templates" style={lk}>{f.resumeTemplates || f.resumeBuilder}</a>
-              <a href="/fr/" style={lk}>{f.frenchResumeBuilder || "Créateur de CV"}</a>
-              <a href="/ar/" style={lk}>{f.arabicResumeBuilder || "منشئ السيرة الذاتية بالعربية"}</a>
-              <a href="/cover-letter/templates" style={lk}>{f.coverLetter}</a>
-              <a href="/ats-checker/" style={lk}>{f.atsChecker}</a>
-              <a href="/ats-checker-fr/" style={lk}>Vérificateur ATS</a>
-              <a href="/ats-checker-ar/" style={lk}>فاحص ATS</a>
-              <a href="/pricing/" style={lk}>{f.pricing}</a>
-              <a href="/changelog/" style={lk}>{f.changelog}</a>
-              <a href="/roadmap/" style={lk}>{f.roadmap}</a>
-              <a href="/status/" style={lk}>{f.status}</a>
-            </div>
-            <div>
-              <div style={col}>{f.company}</div>
-              <a href="/about/" style={lk}>{f.about}</a>
-              <a href="/contact/" style={lk}>{f.contact}</a>
-              <a href={AUTHOR_GITHUB} target="_blank" rel="noopener noreferrer" style={lk}>GitHub</a>
-            </div>
-            <div>
-              <div style={col}>{f.resources}</div>
-              <a href="/blog/" style={lk}>{f.blog}</a>
-              <a href="/help/" style={lk}>{f.help}</a>
-              <a href="/examples/" style={lk}>{f.examples || "Examples"}</a>
-              <a href="/resume/templates" style={lk}>{f.resumeGuide}</a>
-              <a href="/ats-resume-builder/" style={lk}>{f.atsGuide}</a>
-              <a href="/cover-letter-builder/" style={lk}>{f.coverGuide}</a>
-              <a href="/free-resume-builder/" style={lk}>{f.freeBuilder}</a>
-              <a href="/fr/creer-cv-gratuit/" style={lk}>Créer un CV gratuit</a>
-              <a href="/ar/free-resume-builder/" style={lk}>منشئ سيرة ذاتية مجاني</a>
-              <a href="/student-resume-builder/" style={lk}>{f.studentBuilder}</a>
-              <a href="/canadian-resume-builder/" style={lk}>{f.canadianBuilder}</a>
-            </div>
-            <div>
-              <div style={col}>{f.legal}</div>
-              <a href="/terms/" style={lk}>{f.terms}</a>
-              <a href="/privacy/" style={lk}>{f.privacy}</a>
-              <a href="/cookies/" style={lk}>{f.cookies}</a>
-              <a href="/refund-policy/" style={lk}>{f.refundPolicy}</a>
-              <a href="/gdpr/" style={lk}>{f.gdpr}</a>
-              <a href="/ai-disclosure/" style={lk}>{f.aiDisclosure}</a>
-              <a href="/accessibility/" style={lk}>{f.accessibility}</a>
-            </div>
-          </div>
+          <nav aria-label="Footer" style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
+            {FOOTER_LINK_SECTIONS.map((section) => (
+              <div key={section.key}>
+                <div style={col}>{f[section.key]}</div>
+                {section.links.map((link) => (
+                  <a
+                    key={`${link.href}-${link.labelKey}`}
+                    href={link.href}
+                    target={link.external ? "_blank" : undefined}
+                    rel={link.external ? "noopener noreferrer" : undefined}
+                    style={lk}
+                  >
+                    {f[link.labelKey] || link.labelKey}
+                  </a>
+                ))}
+              </div>
+            ))}
+          </nav>
         </div>
         <div style={{
           borderTop: `1px solid ${SITE_COLORS.border}`,

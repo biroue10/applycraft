@@ -1,6 +1,7 @@
 import { writeFileSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import { footerHtml } from "./shared-footer.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..", "public");
@@ -8,8 +9,8 @@ const ROOT = join(__dirname, "..", "public");
 const SITE = "https://applycraft.io";
 const EMAIL = "hello@applycraft.io";
 const TODAY = "2026-06-27";
-const SOCIAL_IMAGE = `${SITE}/og.png`;
-const SOCIAL_IMAGE_ALT = "ApplyCraft resume builder interface";
+const SOCIAL_IMAGE = `${SITE}/og/home.png`;
+const SOCIAL_IMAGE_ALT = "ApplyCraft resume builder and cover letter maker preview";
 
 function shell(title, description, canonicalPath, content, extraHead = "") {
   return `<!doctype html>
@@ -87,53 +88,7 @@ ${extraHead}
 ${content}
 </div>
 </main>
-<footer class="site-footer">
-  <div class="footer-shell">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <a href="/" class="footer-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="lazy" decoding="async"></a>
-        <p>Free resume and cover letter builder with 46 templates, free PDF and DOCX exports, no watermark, no signup, browser-first editing, and production-ready English, French, and Arabic localization.</p>
-        <a href="mailto:${EMAIL}">${EMAIL}</a>
-      </div>
-      <nav class="footer-grid" aria-label="Footer">
-        <div>
-          <h2>Product</h2>
-          <a href="/">Resume Builder</a>
-          <a href="/cover-letter-builder/">Cover Letter Builder</a>
-          <a href="/ats-checker/">ATS Checker</a>
-          <a href="/changelog/">Changelog</a>
-          <a href="/roadmap/">Roadmap</a>
-          <a href="/status/">Status</a>
-        </div>
-        <div>
-          <h2>Company</h2>
-          <a href="/about/">About &amp; Founder</a>
-          <a href="/contact/">Contact</a>
-          <a href="https://github.com/biroue10" rel="noopener">GitHub</a>
-        </div>
-        <div>
-          <h2>Resources</h2>
-          <a href="/help/">Help Center</a>
-          <a href="/resume/templates">Resume Templates</a>
-          <a href="/ats-resume-builder/">ATS Guide</a>
-          <a href="/free-resume-builder/">Free Resume Builder</a>
-          <a href="/student-resume-builder/">Student Resume Builder</a>
-          <a href="/canadian-resume-builder/">Canadian Resume Builder</a>
-        </div>
-        <div>
-          <h2>Legal</h2>
-          <a href="/privacy/">Privacy Policy</a>
-          <a href="/privacy/#gdpr">GDPR</a>
-          <a href="/privacy/#cookies">Cookies</a>
-        </div>
-      </nav>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 ApplyCraft by Biroue Digital Ltd · applycraft.io</span>
-      <span>Browser-first editing · Optional AI helpers · No account required</span>
-    </div>
-  </div>
-</footer>
+${footerHtml("en")}
 </body>
 </html>`;
 }

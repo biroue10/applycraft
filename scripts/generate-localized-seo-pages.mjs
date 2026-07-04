@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { footerHtml } from "./shared-footer.mjs";
 
 const ROOT = new URL("../public/", import.meta.url);
 const SITE = "https://applycraft.io";
@@ -17,27 +18,6 @@ const FREE_ALTERNATES = [
   { hreflang: "ar", href: `${SITE}/ar/free-resume-builder/` },
   { hreflang: "x-default", href: `${SITE}/free-resume-builder/` },
 ];
-
-function footer() {
-  return `<footer class="site-footer">
-  <div class="footer-shell">
-    <div class="footer-top">
-      <div class="footer-brand">
-        <a href="/" class="footer-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="lazy" decoding="async"></a>
-        <p>Resume builder and cover letter maker with multilingual pages, ATS checker, examples, and free PDF or DOCX export.</p>
-        <a href="mailto:hello@applycraft.io">hello@applycraft.io</a>
-      </div>
-      <nav class="footer-grid" aria-label="Footer">
-        <div><h2>Product</h2><a href="/">Resume Builder</a><a href="/fr/">Créateur de CV</a><a href="/ar/">منشئ السيرة الذاتية</a><a href="/cover-letter-builder/">Cover Letter Builder</a><a href="/ats-checker/">ATS Checker</a><a href="/ats-checker-fr/">Vérificateur ATS</a><a href="/ats-checker-ar/">فاحص ATS</a><a href="/pricing/">Pricing</a></div>
-        <div><h2>Resources</h2><a href="/blog/">Blog</a><a href="/examples/">Resume Examples</a><a href="/resume/templates">Resume Templates</a><a href="/cover-letter-builder/">Cover Letter Guide</a><a href="/free-resume-builder/">Free Resume Builder</a><a href="/fr/creer-cv-gratuit/">Créer un CV gratuit</a><a href="/ar/free-resume-builder/">منشئ سيرة ذاتية مجاني</a></div>
-        <div><h2>Company</h2><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/roadmap/">Roadmap</a><a href="/status/">Status</a></div>
-        <div><h2>Legal</h2><a href="/terms/">Terms</a><a href="/privacy/">Privacy</a><a href="/cookies/">Cookies</a><a href="/gdpr/">GDPR</a><a href="/ai-disclosure/">AI Disclosure</a></div>
-      </nav>
-    </div>
-    <div class="footer-bottom"><span>© 2026 ApplyCraft by Biroue Digital Ltd · applycraft.io</span><span>No account required · Optional AI helpers · Browser-first editing</span></div>
-  </div>
-</footer>`;
-}
 
 function schemaFaq(faqs) {
   return JSON.stringify({
@@ -91,6 +71,7 @@ function languageSwitcher(items) {
 function page(config) {
   const canonical = `${SITE}${config.path}`;
   const image = `${SITE}${config.image}`;
+  const imageAlt = config.imageAlt || "ApplyCraft resume builder and cover letter maker preview";
   return `<!doctype html>
 <html lang="${config.lang}"${config.dir ? ` dir="${config.dir}"` : ""}>
 <head>
@@ -111,10 +92,12 @@ ${localeAlternates(config.ogAlternateLocales)}
 <meta property="og:image:type" content="image/png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="${imageAlt}"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="${config.title}"/>
 <meta name="twitter:description" content="${config.description}"/>
 <meta name="twitter:image" content="${image}"/>
+<meta name="twitter:image:alt" content="${imageAlt}"/>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
 <link rel="stylesheet" href="${config.css || "../_seo.css"}"/>
 <script type="application/ld+json">${schemaFaq(config.faqs)}</script>
@@ -137,7 +120,7 @@ ${config.software ? `<script type="application/ld+json">${appSchema(config.lang)
   <div class="page"><section class="section"><h2>${config.sectionTitle}</h2><p>${config.sectionIntro}</p><div class="grid-2">${config.cards.map((card) => `<div class="card"><div class="card-icon">${card.icon}</div><h3>${card.title}</h3><p>${card.body}</p></div>`).join("")}</div></section></div>
   <section class="faq page"><h2>${config.faqTitle}</h2>${config.faqs.map(({ q, a }) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("")}</section>
 </main>
-${footer()}
+${footerHtml(config.lang)}
 </body>
 </html>`;
 }
@@ -151,6 +134,7 @@ const pages = [
     ogAlternateLocales: ["en_US", "ar_MA"],
     alternates: HOME_ALTERNATES,
     image: "/og/home-fr.png",
+    imageAlt: "Aperçu du créateur de CV et de lettres de motivation ApplyCraft",
     title: "Créateur de CV et lettre de motivation — rapide et compatible ATS | ApplyCraft",
     description: "Créez un CV compatible ATS et une lettre de motivation assortie avec aperçu en direct, libellés multilingues et export PDF ou DOCX.",
     eyebrow: "Créateur de CV + lettre de motivation",
@@ -186,6 +170,7 @@ const pages = [
     ogAlternateLocales: ["en_US", "fr_FR"],
     alternates: HOME_ALTERNATES,
     image: "/og/home-ar.png",
+    imageAlt: "معاينة منشئ السيرة الذاتية وخطاب التقديم من ApplyCraft",
     title: "منشئ سيرة ذاتية وخطاب تقديم — سريع ومتوافق مع ATS | ApplyCraft",
     description: "أنشئ سيرة ذاتية متوافقة مع ATS وخطاب تقديم مطابقاً مع معاينة مباشرة وتسميات متعددة اللغات وتنزيل PDF أو DOCX.",
     eyebrow: "منشئ سيرة ذاتية وخطاب تقديم",
@@ -221,6 +206,7 @@ const pages = [
     ogAlternateLocales: ["en_US", "ar_MA"],
     alternates: FREE_ALTERNATES,
     image: "/og/free-resume-builder-fr.png",
+    imageAlt: "Aperçu du créateur de CV gratuit ApplyCraft",
     title: "Créer un CV gratuit — sans inscription ni frais cachés | ApplyCraft",
     description: "Créez un CV professionnel gratuit, sans inscription, sans filigrane, sans frais cachés et sans paiement au téléchargement. Export PDF ou DOCX.",
     eyebrow: "Créateur de CV gratuit",
@@ -256,6 +242,7 @@ const pages = [
     ogAlternateLocales: ["en_US", "fr_FR"],
     alternates: FREE_ALTERNATES,
     image: "/og/free-resume-builder-ar.png",
+    imageAlt: "معاينة منشئ السيرة الذاتية المجاني من ApplyCraft",
     title: "منشئ سيرة ذاتية مجاني — بدون تسجيل أو رسوم مخفية | ApplyCraft",
     description: "أنشئ سيرة ذاتية احترافية مجاناً بدون تسجيل، بدون علامة مائية، بدون رسوم مخفية وبدون دفع عند التنزيل. تصدير PDF أو DOCX.",
     eyebrow: "منشئ سيرة ذاتية مجاني",

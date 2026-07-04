@@ -2247,8 +2247,8 @@ function InteractiveResumeDemo({ isMobile, onContinue, copy }) {
       <ResumeLivePreview demo={demo} tpl={tpl} lang={lang} accent={accent} activeField={activeField} compact={isMobile} copy={text} />
       {exportMessage && <div role="status" style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10,
         background: `${accent}14`, border: `1px solid ${accent}34`, color: C.text2, fontSize: 12.5, lineHeight: 1.5 }}>{exportMessage}</div>}
-      <ATSCompatibilityCard score={score} demo={demo} accent={accent} />
-      <DemoFeatureList />
+      <ATSCompatibilityCard score={score} demo={demo} accent={accent} copy={text} />
+      <DemoFeatureList copy={text} />
     </div>
   );
 
@@ -2649,24 +2649,25 @@ function PreviewRole({ title, company, bullets, accent, active, expanded }) {
   );
 }
 
-function ATSCompatibilityCard({ score, demo, accent }) {
+function ATSCompatibilityCard({ score, demo, accent, copy }) {
   const text = demo.achievement.trim();
   const suggestion = !demo.name.trim()
-    ? "Add a full name so recruiters can identify the resume."
+    ? copy.atsSuggestionName
     : !demo.title.trim()
-      ? "Add a target job title to improve keyword alignment."
+      ? copy.atsSuggestionTitle
       : !text
-        ? "Add one achievement to show measurable impact."
+        ? copy.atsSuggestionAchievement
         : !/(\d+|%|\$|revenue|conversion|users|customers|hours|days|drop-off)/i.test(text)
-          ? "Add a measurable result to strengthen this achievement."
+          ? copy.atsSuggestionMetric
           : !/^(redesigned|improved|launched|built|led|increased|reduced|created|delivered|optimized|managed)\b/i.test(text)
-            ? "Start your achievement with a stronger action verb."
-            : "Your resume includes the key information ATS systems expect.";
+            ? copy.atsSuggestionVerb
+            : copy.atsSuggestionReady;
+  const title = copy.atsEstimateTitle || "";
   return (
-    <aside aria-label={`Estimated ATS compatibility ${score}%`} style={{ marginTop: 14, background: C.surface,
+    <aside aria-label={`${title} ${score}%`} style={{ marginTop: 14, background: C.surface,
       border: `1px solid ${C.border}`, borderRadius: 14, padding: 14 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 8 }}>
-        <div style={{ color: C.text1, fontSize: 13.5, fontWeight: 900 }}>Estimated ATS compatibility</div>
+        <div style={{ color: C.text1, fontSize: 13.5, fontWeight: 900 }}>{title}</div>
         <div style={{ color: score >= 82 ? "#86efac" : C.accent2, fontSize: 20, fontWeight: 900 }}>{score}%</div>
       </div>
       <div style={{ height: 8, background: C.elevated, borderRadius: 999, overflow: "hidden", marginBottom: 9 }}>
@@ -2674,18 +2675,25 @@ function ATSCompatibilityCard({ score, demo, accent }) {
           borderRadius: 999, transition: "width 0.26s ease" }} />
       </div>
       <p style={{ margin: 0, color: C.text3, fontSize: 12.2, lineHeight: 1.5 }}>{suggestion}</p>
-      <p style={{ margin: "8px 0 0", color: C.text3, fontSize: 11 }}>Estimate only. It does not guarantee success with any applicant tracking system.</p>
+      <p style={{ margin: "8px 0 0", color: C.text3, fontSize: 11 }}>{copy.atsEstimateDisclaimer}</p>
     </aside>
   );
 }
 
-function DemoFeatureList() {
-  const items = [
-    ["check", "Live ATS guidance", "Estimated checks update as the draft improves."],
-    ["globe", "Multilingual resumes", "Preview section labels in supported languages."],
-    ["spark", "AI achievement coaching", "Local demo rewrite shows before/after impact."],
-    ["document", "PDF and DOCX export", "Export actions continue in the full builder."],
+function DemoFeatureList({ copy }) {
+  const featureCopy = copy.featureChips || [];
+  const fallbacks = [
+    ["check", "", ""],
+    ["globe", "", ""],
+    ["spark", "", ""],
+    ["document", "", ""],
   ];
+  const items = fallbacks.map(([icon, fallbackTitle, fallbackBody], index) => {
+    const item = featureCopy[index] || [];
+    const itemTitle = item[0];
+    const itemBody = item[1];
+    return [icon, itemTitle || fallbackTitle, itemBody || fallbackBody];
+  });
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 8, marginTop: 14 }}>
       {items.map(([icon, title, body]) => (

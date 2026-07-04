@@ -1,0 +1,54 @@
+export const FOOTER_LINK_SECTIONS = [
+  {
+    key: "product",
+    links: [
+      { href: "/", labelKey: "resumeBuilder" },
+      { href: "/resume/templates", labelKey: "resumeTemplates" },
+      { href: "/fr/", labelKey: "frenchResumeBuilder" },
+      { href: "/ar/", labelKey: "arabicResumeBuilder" },
+      { href: "/cover-letter/templates", labelKey: "coverLetter" },
+      { href: "/ats-checker/", labelKey: "atsChecker" },
+      { href: "/ats-checker-fr/", labelKey: "atsCheckerFr" },
+      { href: "/ats-checker-ar/", labelKey: "atsCheckerAr" },
+      { href: "/pricing/", labelKey: "pricing" },
+      { href: "/changelog/", labelKey: "changelog" },
+      { href: "/roadmap/", labelKey: "roadmap" },
+      { href: "/status/", labelKey: "status" },
+    ],
+  },
+  {
+    key: "resources",
+    links: [
+      { href: "/blog/", labelKey: "blog" },
+      { href: "/help/", labelKey: "help" },
+      { href: "/examples/", labelKey: "examples" },
+      { href: "/ats-resume-builder/", labelKey: "atsGuide" },
+      { href: "/cover-letter-builder/", labelKey: "coverGuide" },
+      { href: "/free-resume-builder/", labelKey: "freeBuilder" },
+      { href: "/fr/creer-cv-gratuit/", labelKey: "freeBuilderFr" },
+      { href: "/ar/free-resume-builder/", labelKey: "freeBuilderAr" },
+      { href: "/student-resume-builder/", labelKey: "studentBuilder" },
+      { href: "/canadian-resume-builder/", labelKey: "canadianBuilder" },
+    ],
+  },
+  {
+    key: "company",
+    links: [
+      { href: "/about/", labelKey: "about" },
+      { href: "/contact/", labelKey: "contact" },
+      { href: "https://github.com/biroue10", labelKey: "github", external: true },
+    ],
+  },
+  {
+    key: "legal",
+    links: [
+      { href: "/terms/", labelKey: "terms" },
+      { href: "/privacy/", labelKey: "privacy" },
+      { href: "/cookies/", labelKey: "cookies" },
+      { href: "/gdpr/", labelKey: "gdpr" },
+      { href: "/refund-policy/", labelKey: "refundPolicy" },
+      { href: "/ai-disclosure/", labelKey: "aiDisclosure" },
+      { href: "/accessibility/", labelKey: "accessibility" },
+    ],
+  },
+];

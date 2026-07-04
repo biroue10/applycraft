@@ -19,6 +19,7 @@ const ROUTE_META = {
     title: "Resume Builder & Cover Letter Maker — Fast, ATS-Friendly | ApplyCraft",
     description: "Build an ATS-friendly resume and matching cover letter with live preview, multilingual labels, and PDF or DOCX downloads in ApplyCraft.",
     image: "https://applycraft.io/og/home.png",
+    imageAlt: "ApplyCraft resume builder and cover letter maker preview",
     locale: "en_US",
     alternateLocales: ["fr_FR", "ar_MA"],
   },
@@ -26,6 +27,7 @@ const ROUTE_META = {
     title: "Créateur de CV et lettre de motivation — rapide et compatible ATS | ApplyCraft",
     description: "Créez un CV compatible ATS et une lettre de motivation assortie avec aperçu en direct, libellés multilingues et export PDF ou DOCX.",
     image: "https://applycraft.io/og/home-fr.png",
+    imageAlt: "Aperçu du créateur de CV et de lettres de motivation ApplyCraft",
     locale: "fr_FR",
     alternateLocales: ["en_US", "ar_MA"],
   },
@@ -33,6 +35,7 @@ const ROUTE_META = {
     title: "منشئ سيرة ذاتية وخطاب تقديم — سريع ومتوافق مع ATS | ApplyCraft",
     description: "أنشئ سيرة ذاتية متوافقة مع ATS وخطاب تقديم مطابقاً مع معاينة مباشرة وتسميات متعددة اللغات وتنزيل PDF أو DOCX.",
     image: "https://applycraft.io/og/home-ar.png",
+    imageAlt: "معاينة منشئ السيرة الذاتية وخطاب التقديم من ApplyCraft",
     locale: "ar_MA",
     alternateLocales: ["en_US", "fr_FR"],
   },
@@ -40,12 +43,14 @@ const ROUTE_META = {
     title: "Resume Template Gallery — Choose an ATS-Friendly Style | ApplyCraft",
     description: "Browse ApplyCraft resume templates, choose an ATS-friendly style, preview your document, and export as PDF or DOCX.",
     image: "https://applycraft.io/og/home.png",
+    imageAlt: "ApplyCraft resume template gallery preview",
     locale: "en_US",
   },
   "/cover-letter/templates": {
     title: "Cover Letter Template Gallery — Matching Styles | ApplyCraft",
     description: "Choose a professional cover letter template that matches your resume style, then export as PDF or DOCX.",
     image: "https://applycraft.io/og/home.png",
+    imageAlt: "ApplyCraft cover letter template gallery preview",
     locale: "en_US",
   },
 };
@@ -218,29 +223,37 @@ export default defineConfig({
       const title = meta.title || "ApplyCraft";
       const description = meta.description || "ApplyCraft resume builder and cover letter maker.";
       const image = meta.image || "https://applycraft.io/og/home.png";
+      const canonical = canonicalFor(path);
+      const imageAlt = meta.imageAlt || "ApplyCraft resume builder and cover letter maker preview";
       const metaTags = [
         `<title>${title}</title>`,
         `<meta name="description" content="${description}" />`,
+        `<meta property="og:url" content="${canonical}" />`,
         `<meta property="og:title" content="${title}" />`,
         `<meta property="og:description" content="${description}" />`,
         `<meta property="og:image" content="${image}" />`,
         `<meta property="og:image:secure_url" content="${image}" />`,
+        `<meta property="og:image:alt" content="${imageAlt}" />`,
         `<meta name="twitter:title" content="${title}" />`,
         `<meta name="twitter:description" content="${description}" />`,
         `<meta name="twitter:image" content="${image}" />`,
+        `<meta name="twitter:image:alt" content="${imageAlt}" />`,
       ];
       if (meta.locale) metaTags.push(`<meta property="og:locale" content="${meta.locale}" />`);
       for (const locale of meta.alternateLocales || []) metaTags.push(`<meta property="og:locale:alternate" content="${locale}" />`);
       let nextHtml = html
         .replace(/<title>[\s\S]*?<\/title>/, metaTags[0])
         .replace(/<meta name="description" content="[^"]*"\s*\/?>/, metaTags[1])
-        .replace(/<meta property="og:title" content="[^"]*"\s*\/?>/, metaTags[2])
-        .replace(/<meta property="og:description" content="[^"]*"\s*\/?>/, metaTags[3])
-        .replace(/<meta property="og:image" content="[^"]*"\s*\/?>/, metaTags[4])
-        .replace(/<meta property="og:image:secure_url" content="[^"]*"\s*\/?>/, metaTags[5])
-        .replace(/<meta name="twitter:title" content="[^"]*"\s*\/?>/, metaTags[6])
-        .replace(/<meta name="twitter:description" content="[^"]*"\s*\/?>/, metaTags[7])
-        .replace(/<meta name="twitter:image" content="[^"]*"\s*\/?>/, metaTags[8]);
+        .replace(/<meta property="og:url" content="[^"]*"\s*\/?>/, metaTags[2])
+        .replace(/<meta property="og:title" content="[^"]*"\s*\/?>/, metaTags[3])
+        .replace(/<meta property="og:description" content="[^"]*"\s*\/?>/, metaTags[4])
+        .replace(/<meta property="og:image" content="[^"]*"\s*\/?>/, metaTags[5])
+        .replace(/<meta property="og:image:secure_url" content="[^"]*"\s*\/?>/, metaTags[6])
+        .replace(/<meta property="og:image:alt" content="[^"]*"\s*\/?>/, metaTags[7])
+        .replace(/<meta name="twitter:title" content="[^"]*"\s*\/?>/, metaTags[8])
+        .replace(/<meta name="twitter:description" content="[^"]*"\s*\/?>/, metaTags[9])
+        .replace(/<meta name="twitter:image" content="[^"]*"\s*\/?>/, metaTags[10])
+        .replace(/<meta name="twitter:image:alt" content="[^"]*"\s*\/?>/, metaTags[11]);
       const faqSchema = faqSchemaFor(path);
       if (faqSchema) {
         nextHtml = nextHtml.replace(
@@ -249,7 +262,7 @@ export default defineConfig({
         );
       }
       nextHtml = nextHtml.replace(/<meta property="og:locale" content="[^"]*"\s*\/?>/g, "");
-      nextHtml = nextHtml.replace("</head>", `    ${metaTags.slice(9).join("\n    ")}\n  </head>`);
+      nextHtml = nextHtml.replace("</head>", `    ${metaTags.slice(12).join("\n    ")}\n  </head>`);
       return nextHtml
         .replace(/<html[^>]*>/, htmlTag)
         .replace("</head>", `    ${tags.join("\n    ")}\n  </head>`);
