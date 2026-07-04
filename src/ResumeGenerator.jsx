@@ -4211,17 +4211,16 @@ Awards: ${form.awards}`;
     { id: "ats", label: lx.navAts },
   ];
 
-  const AppToolHeader = ({ toolName = bu.toolName }) => (
+  const AppToolHeader = () => (
     <header style={{ position: "sticky", top: 0, zIndex: 50,
       background: `linear-gradient(180deg, ${C.bg}f7 0%, ${C.bg}e8 100%)`,
       backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)" }}>
-      <div style={{ width: "100%", minHeight: isMobile ? 64 : 72,
+      <div style={{ width: "100%", minHeight: isMobile ? 60 : 64,
         padding: isMobile ? "0 16px" : "0 32px", display: "flex", alignItems: "center", gap: 14 }}>
         <button type="button" onClick={() => setAppView("landing")}
           style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer",
-            display: "flex", flexDirection: "column", alignItems: rtl ? "flex-end" : "flex-start", fontFamily: "inherit" }}>
+            display: "inline-flex", alignItems: "center", fontFamily: "inherit" }}>
           <AppBrandLogo compact={isMobile} />
-          {!isMobile && <span style={{ fontSize: 11.5, color: C.text3, marginTop: 1 }}>{toolName}</span>}
         </button>
         {!isMobile && (
           <nav aria-label={builderText("primaryToolsNav")} style={{ display: "flex", gap: 4, marginLeft: rtl ? 0 : 18, marginRight: rtl ? 18 : 0 }}>
@@ -4270,13 +4269,12 @@ Awards: ${form.awards}`;
       <header style={{ position: "sticky", top: 0, zIndex: 50, margin: isMobile ? "0 -4px 24px" : "0 0 42px",
         background: `linear-gradient(180deg, ${C.bg}f7 0%, ${C.bg}e8 100%)`,
         backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)" }}>
-        <div style={{ width: "100%", minHeight: isMobile ? 64 : 72,
+        <div style={{ width: "100%", minHeight: isMobile ? 60 : 64,
           padding: isMobile ? "0 16px" : "0 32px", display: "flex", alignItems: "center", gap: 14 }}>
           <button type="button" onClick={() => setAppView("landing")}
             style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer",
-              display: "flex", flexDirection: "column", alignItems: rtl ? "flex-end" : "flex-start", fontFamily: "inherit" }}>
+              display: "inline-flex", alignItems: "center", fontFamily: "inherit" }}>
             <AppBrandLogo compact={isMobile} />
-            {!isMobile && <span style={{ fontSize: 11.5, color: C.text3, marginTop: 1 }}>{bu.toolName}</span>}
           </button>
           {!isMobile && (
             <nav aria-label={builderText("primaryToolsNav")} style={{ display: "flex", gap: 4, marginLeft: rtl ? 0 : 18, marginRight: rtl ? 18 : 0 }}>
@@ -6263,7 +6261,7 @@ Awards: ${form.awards}`;
 
   const coverTemplatesContent = (
     <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
-      <AppToolHeader toolName={cu.toolName} />
+      <AppToolHeader />
       <section aria-labelledby="cover-gallery-title" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "24px 4px 0" : "42px 28px 0" }}>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 0.95fr) minmax(280px, 0.42fr)",
           gap: isMobile ? 18 : 40, alignItems: "end", marginBottom: isMobile ? 22 : 30 }}>
@@ -6796,7 +6794,7 @@ Awards: ${form.awards}`;
 
     return (
       <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
-        <AppToolHeader toolName={ats.toolName} />
+        <AppToolHeader />
         <section aria-labelledby="ats-checker-title" style={{ maxWidth: 960, margin: "0 auto", padding: isMobile ? "24px 4px 0" : "42px 28px 0" }}>
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999,
@@ -7154,7 +7152,7 @@ Awards: ${form.awards}`;
 
     return (
       <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
-        <AppToolHeader toolName={tk.toolName} />
+        <AppToolHeader />
         <section aria-labelledby="job-tracker-title" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "24px 4px 0" : "34px 28px 0" }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -8590,13 +8588,12 @@ Awards: ${form.awards}`;
           {/* Logo + toggle */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: sidebarOpen ? "20px 14px 20px 20px" : "20px 0",
-            borderBottom: `1px solid ${C.border}`, minHeight: 64, transition: "padding .22s" }}>
+            borderBottom: `1px solid ${C.border}`, minHeight: 56, transition: "padding .22s" }}>
             {sidebarOpen && (
               <button onClick={() => setAppView("landing")}
                 style={{ overflow: "hidden", whiteSpace: "nowrap", background: "none",
                   border: "none", cursor: "pointer", padding: 0, textAlign: "left" }}>
                 <AppBrandLogo />
-                <div style={{ fontSize: 12, color: C.text3, marginTop: 2 }}>{l2.toolkit}</div>
               </button>
             )}
             <button onClick={() => setSidebarOpen(o => !o)}
@@ -8829,7 +8826,6 @@ Awards: ${form.awards}`;
                 <button onClick={() => { setAppView("landing"); setSidebarOpen(false); }}
                   style={{ background: "none", border: "none", cursor: "pointer", padding: 0, textAlign: "left" }}>
                   <AppBrandLogo compact />
-                  <div style={{ fontSize: 10.5, color: C.text3, marginTop: 1 }}>{l2.toolkit}</div>
                 </button>
                 <button onClick={() => setSidebarOpen(false)} aria-label={builderText("closeMenu")}
                   style={{ width: 30, height: 30, borderRadius: 8, background: C.surface,
