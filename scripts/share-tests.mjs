@@ -6,6 +6,7 @@ import {
   encodeShare,
   normalizeSharedDocument,
 } from "../src/share.js";
+import { isResumeDataEmpty, normalizeResumeData } from "../src/resumeData.js";
 import { getCoverTemplateById, getResumeTemplateById } from "../src/documents/templateRegistry.js";
 import { isRtlLang } from "../src/i18n/languages.js";
 
@@ -79,6 +80,22 @@ const oldLink = normalizeSharedDocument({ k: "resume", t: "modern", d: { name: "
 assert.equal(oldLink.v, 1, "missing version should default to v1");
 assert.equal(oldLink.l, "en", "old links without language should default to English");
 assert.equal(oldLink.p, "a4", "old links without page size should default to A4");
+assert.deepEqual(oldLink.d.contact, [], "old links missing contact should normalize contact to an empty array");
+assert.deepEqual(oldLink.d.sections, [], "old links missing sections should normalize sections to an empty array");
+
+const emptyResume = normalizeResumeData({});
+assert.deepEqual(emptyResume.contact, [], "empty resume contact should default to []");
+assert.deepEqual(emptyResume.sections, [], "empty resume sections should default to []");
+assert.deepEqual(emptyResume.skills, [], "empty resume skills should default to []");
+assert.deepEqual(emptyResume.languages, [], "empty resume languages should default to []");
+assert.deepEqual(emptyResume.certifications, [], "empty resume certifications should default to []");
+assert.deepEqual(emptyResume.projects, [], "empty resume projects should default to []");
+assert.deepEqual(emptyResume.education, [], "empty resume education should default to []");
+assert.deepEqual(emptyResume.experience, [], "empty resume experience should default to []");
+assert.equal(isResumeDataEmpty(emptyResume), true, "empty resume should be detected");
+assert.equal(isResumeDataEmpty({ name: "Isaac Biroue" }), false, "partial resume with a name should not be empty");
+assert.deepEqual(normalizeResumeData({ sections: [{ heading: "Experience" }] }).sections[0].items, [], "missing section items should default to []");
+assert.deepEqual(normalizeResumeData({ name: "Isaac", contact: undefined }).contact, [], "missing contact should default to []");
 
 const oldRtlFallback = normalizeSharedDocument({
   k: "resume",
@@ -104,6 +121,10 @@ assert.ok(!/function\s+CoverView\b/.test(sharedSource), "generic CoverView rende
 assert.ok(/lang=\{doc\.l\}/.test(sharedSource), "shared document article should receive document language");
 assert.ok(/dir=\{resolved\.rtl \? "rtl" : "ltr"\}/.test(sharedSource), "shared document article should receive document direction");
 assert.ok(/@media print/.test(sharedSource), "shared viewer should include print styles");
+assert.ok(sharedSource.includes("SharedDocumentErrorBoundary"), "shared viewer should wrap documents in an error boundary");
+assert.ok(sharedSource.includes("This shared résumé could not be displayed."), "shared viewer should include friendly English render fallback");
+assert.ok(sharedSource.includes("Ce CV partagé n’a pas pu être affiché."), "shared viewer should include friendly French render fallback");
+assert.ok(sharedSource.includes("تعذر عرض السيرة الذاتية المشتركة."), "shared viewer should include friendly Arabic render fallback");
 
 const generatorSource = fs.readFileSync("src/ResumeGenerator.jsx", "utf8");
 const enStatusSource = fs.readFileSync("src/i18n/namespaces/en/status.js", "utf8");
@@ -112,6 +133,9 @@ assert.ok(/v:\s*2,\s*k:\s*"cover"/.test(generatorSource), "cover share payload s
 assert.ok(/l:\s*docLang/.test(generatorSource), "share payloads should include document language");
 assert.ok(/isCustom: Boolean\(form\.sectionTitles\?\.\[key\]\)/.test(generatorSource), "live sections should preserve custom-label metadata");
 assert.ok(generatorSource.includes("shareCreate"), "share UI should read private/offline labels from translations");
+assert.ok(generatorSource.includes("shareEmptyResume"), "share UI should warn before sharing an empty resume");
+assert.ok(generatorSource.includes("downloadEmptyResume"), "export UI should warn before downloading an empty resume");
+assert.ok(generatorSource.includes("isResumeDataEmpty"), "resume share/export flow should check empty resume data");
 assert.ok(generatorSource.includes("shareStored"), "share UI should read long-link explanation from translations");
 assert.ok(enStatusSource.includes("Create private offline link"), "share UI should label hash links as private/offline");
 assert.ok(enStatusSource.includes("This link keeps the document data inside the URL"), "share UI should explain why hash links can be long");

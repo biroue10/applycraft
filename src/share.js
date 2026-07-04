@@ -6,6 +6,7 @@
 // ──────────────────────────────────────────────────────────────────────────
 
 import LZString from "lz-string";
+import { normalizeResumeData } from "./resumeData.js";
 
 const SUPPORTED_SHARE_LANGS = new Set(["en", "fr", "ar", "es", "de"]);
 const RTL_CONTENT_RE = /[\u0590-\u08ff\uFB1D-\uFDFF\uFE70-\uFEFF]/g;
@@ -79,7 +80,7 @@ export function normalizeSharedDocument(raw) {
     l: normalizeShareLanguage(raw.l || raw.language || raw.documentLanguage, inferredFallback),
     p: String(raw.p || raw.pageSize || "a4").toLowerCase() === "letter" ? "letter" : "a4",
     c: raw.c && typeof raw.c === "object" ? raw.c : {},
-    d: data,
+    d: kind === "resume" ? normalizeResumeData(data) : data,
   };
 }
 

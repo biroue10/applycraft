@@ -38,6 +38,8 @@ const status = {
   "shareCanView": "Toute personne disposant du lien complet peut consulter ce document.",
   "shareStored": "Ce lien conserve les données du document dans l'URL ; il peut donc être long.",
   "shareFailed": "Impossible de créer le lien privé hors ligne. Veuillez réessayer.",
+  "shareEmptyResume": "Votre CV est vide. Ajoutez des informations avant de le partager.",
+  "downloadEmptyResume": "Votre CV est vide. Ajoutez vos informations avant de le télécharger.",
   "shareEmailBody": "Voici mon document, consultable dans n'importe quel navigateur :\n\n{url}\n\nCréé gratuitement avec ApplyCraft — applycraft.io"
 };
 

@@ -8,6 +8,7 @@ import { pdfSafe, containsNonLatin1 } from "./pdf/text.js";
 import { useFocusTrap } from "./a11y/useFocusTrap.js";
 import * as resumes from "./resumes.js";
 import { buildPrivateShareUrl } from "./share.js";
+import { asArray, isResumeDataEmpty, normalizeResumeData } from "./resumeData.js";
 import { linkifyText, normalizeLinkHref } from "./utils/linkify.js";
 import { getContactHref, normalizeContactItems } from "./utils/contactLinks.js";
 import { ResumePaper, CoverLetterPaper, structureSectionItems } from "./documents/DocumentPapers.jsx";
@@ -1300,7 +1301,7 @@ function buildLiveData(form, t) {
   add("references",      headingOf("references", t.references));
   add("extracurricular", headingOf("extracurricular", t.extracurricular));
   return {
-    name: form.name || "—",
+    name: form.name || "",
     title: form.title || "",
     contact: [form.email, form.phone, form.location, form.linkedin, form.website].filter(Boolean),
     summary: form.summary || "",
@@ -3432,12 +3433,20 @@ export default function ResumeGenerator() {
     canView: statusText("shareCanView"),
     stored: statusText("shareStored"),
     failed: statusText("shareFailed"),
+    empty: statusText("shareEmptyResume"),
     privateReady: statusText("shareReady"),
     emailBody: (url) => statusText("shareEmailBody", { url }),
   }), [statusText]);
   const shareLink = useCallback((getPayload) => {
     try {
-      const url = buildPrivateShareUrl(getPayload());
+      const payload = getPayload();
+      if (payload?.k === "resume" && isResumeDataEmpty(payload.d)) {
+        setShareUrl("");
+        setStatusMsg(shareCopy.empty);
+        setTimeout(() => setStatusMsg(""), 3000);
+        return "";
+      }
+      const url = buildPrivateShareUrl(payload);
       setShareUrl(url);
       try { navigator.clipboard && navigator.clipboard.writeText(url); } catch { /* noop */ }
       setStatusMsg(shareCopy.privateReady);
@@ -3448,7 +3457,7 @@ export default function ResumeGenerator() {
       setTimeout(() => setStatusMsg(""), 2500);
       return "";
     }
-  }, [shareCopy.failed, shareCopy.privateReady]);
+  }, [shareCopy.empty, shareCopy.failed, shareCopy.privateReady]);
   const emailLink = useCallback((getPayload, subject) => {
     const url = shareLink(getPayload);
     if (!url) return;
@@ -3456,11 +3465,7 @@ export default function ResumeGenerator() {
     if (typeof window !== "undefined") window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${body}`;
   }, [shareCopy, shareLink]);
   const resumeSharePayload = useCallback(() => {
-    const d = { name: liveData.name };
-    if (liveData.title) d.title = liveData.title;
-    if (liveData.contact && liveData.contact.length) d.contact = liveData.contact;
-    if (liveData.summary) d.summary = liveData.summary;
-    if (liveData.sections && liveData.sections.length) d.sections = liveData.sections;
+    const d = normalizeResumeData(liveData);
     return { v: 2, k: "resume", t: tpl?.id || "modern", l: docLang || "en", p: "a4", c: {}, d };
   }, [tpl, liveData, docLang]);
   const coverSharePayload = useCallback(() => {
@@ -3771,11 +3776,11 @@ Awards: ${form.awards}`;
   }
 
   function copyOut() {
-    const src = result || liveData;
+    const src = normalizeResumeData(result || liveData);
     if (!src) return;
-    const flat = [src.name, src.title, (src.contact || []).join("  •  "), "",
+    const flat = [src.name, src.title, asArray(src.contact).join("  •  "), "",
       src.summary, "",
-      ...(src.sections || []).flatMap((s) => [s.heading, ...s.items, ""])].join("\n");
+      ...asArray(src.sections).flatMap((s) => [s.heading, ...asArray(s.items), ""])].join("\n");
     navigator.clipboard.writeText(flat);
     setCopied(true);
     setStatusMsg(st.resumeTextCopied);
@@ -3785,8 +3790,13 @@ Awards: ${form.awards}`;
   async function downloadPDF() {
     const options = arguments[0] || {};
     if (exporting) return;
-    const src = result || liveData;
+    const src = normalizeResumeData(result || liveData);
     if (!src) return;
+    if (isResumeDataEmpty(src)) {
+      setStatusMsg(statusText("downloadEmptyResume"));
+      setTimeout(() => setStatusMsg(""), 3500);
+      return;
+    }
     if (shouldReviewBeforeExport("pdf", options.skipReview)) return;
     if (!form.name.trim() || !form.experience.trim() || !form.skills.trim()) {
       setStatusMsg(st.incompleteDownload);
@@ -3821,7 +3831,7 @@ Awards: ${form.awards}`;
     // jsPDF built-in fonts render WinAnsi/Latin-1 (accents kept, non-Latin dropped).
     const safe = pdfSafe;
     // Honest heads-up: PDF uses Latin-script fonts; warn for Arabic/other scripts.
-    if (containsNonLatin1([src.name, src.title, src.summary, (src.sections || []).map(s => (s.items || []).join(" ")).join(" ")].join(" "))) {
+    if (containsNonLatin1([src.name, src.title, src.summary, asArray(src.sections).map(s => asArray(s.items).join(" ")).join(" ")].join(" "))) {
       setStatusMsg(st.pdfNonLatin);
       setTimeout(() => setStatusMsg(""), 6000);
     }
@@ -3859,7 +3869,7 @@ Awards: ${form.awards}`;
     }
 
     const pdfEmail = safe(form.email || "");
-    if ((src.contact || []).filter(Boolean).length) {
+    if (asArray(src.contact).filter(Boolean).length) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9.5);
       y += drawPdfContactItems(doc, src.contact, {
@@ -3896,7 +3906,7 @@ Awards: ${form.awards}`;
       .map((e) => ({ title: e.title.trim(), url: e.titleUrl.trim() }));
 
     // Sections
-    for (const section of (src.sections || [])) {
+    for (const section of asArray(src.sections)) {
       checkY(16);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
@@ -3913,7 +3923,7 @@ Awards: ${form.awards}`;
       doc.setTextColor(55, 55, 55);
       const tagSection = /skill|compét|habilidad|مهارات|fähig|^language|^langue|^idioma|^sprach/i.test(`${section.key || ""} ${section.heading || ""}`);
       if (tagSection) {
-        const lines = doc.splitTextToSize((section.items || []).map((item) => safe(normalizeDateRange(item, docLang))).filter(Boolean).join("  •  "), colW);
+        const lines = doc.splitTextToSize(asArray(section.items).map((item) => safe(normalizeDateRange(item, docLang))).filter(Boolean).join("  •  "), colW);
         checkY(lines.length * 5 + 2);
         doc.text(lines, margin, y);
         y += lines.length * 5 + 2;
@@ -4000,8 +4010,13 @@ Awards: ${form.awards}`;
   async function downloadDOCX() {
     const options = arguments[0] || {};
     if (exporting) return;
-    const src = result || liveData;
+    const src = normalizeResumeData(result || liveData);
     if (!src) return;
+    if (isResumeDataEmpty(src)) {
+      setStatusMsg(statusText("downloadEmptyResume"));
+      setTimeout(() => setStatusMsg(""), 3500);
+      return;
+    }
     if (shouldReviewBeforeExport("docx", options.skipReview)) return;
     if (!form.name.trim() || !form.experience.trim() || !form.skills.trim()) {
       setStatusMsg(st.incompleteDownload);
@@ -4057,7 +4072,7 @@ Awards: ${form.awards}`;
     }
 
     // Contact
-    const contact = (src.contact || []).filter(Boolean).join("   •   ");
+    const contact = asArray(src.contact).filter(Boolean).join("   •   ");
     if (contact) {
       children.push(makeParagraph({
         children: makeLinkedRuns(contact, { size: 20, color: "666666" }),
@@ -4080,7 +4095,7 @@ Awards: ${form.awards}`;
     }
 
     // Sections
-    for (const section of (src.sections || [])) {
+    for (const section of asArray(src.sections)) {
       children.push(makeParagraph({
         children: [makeRun({ text: section.heading.toUpperCase(), bold: true, size: 22, color: accent })],
         border: { bottom: { color: accent, space: 1, style: BorderStyle.SINGLE, size: 4 } },
@@ -4088,7 +4103,7 @@ Awards: ${form.awards}`;
       }));
       if (isDocxTagSection(section)) {
         children.push(makeParagraph({
-          children: makeLinkedRuns((section.items || []).map((item) => normalizeDateRange(item, docLang)).filter(Boolean).join("   •   "), { size: 20 }),
+          children: makeLinkedRuns(asArray(section.items).map((item) => normalizeDateRange(item, docLang)).filter(Boolean).join("   •   "), { size: 20 }),
           spacing: { after: 100 },
         }));
         continue;

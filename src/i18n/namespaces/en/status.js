@@ -38,6 +38,8 @@ const status = {
   "shareCanView": "Anyone with the full link can view this document.",
   "shareStored": "This link keeps the document data inside the URL, so it can be long.",
   "shareFailed": "Private offline link could not be created. Please try again.",
+  "shareEmptyResume": "Your résumé is empty. Add some details before sharing it.",
+  "downloadEmptyResume": "Your résumé is empty. Add your details before downloading.",
   "shareEmailBody": "Here's my document, viewable in any browser:\n\n{url}\n\nMade free with ApplyCraft — applycraft.io"
 };
 

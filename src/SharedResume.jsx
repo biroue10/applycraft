@@ -24,6 +24,8 @@ const ERROR_COPY = {
     expiredBody: "Ask the sender for a fresh link.",
     networkTitle: "The document could not be loaded.",
     networkBody: "Check your connection and try again.",
+    renderTitle: "This shared résumé could not be displayed.",
+    renderBody: "Ask the sender for a fresh link, or build your own resume for free.",
     cta: "Build my resume - free",
   },
   fr: {
@@ -36,6 +38,8 @@ const ERROR_COPY = {
     expiredBody: "Demandez un nouveau lien à l'expéditeur.",
     networkTitle: "Le document n'a pas pu être chargé.",
     networkBody: "Vérifiez votre connexion puis réessayez.",
+    renderTitle: "Ce CV partagé n’a pas pu être affiché.",
+    renderBody: "Demandez un nouveau lien à l'expéditeur ou créez votre CV gratuitement.",
     cta: "Créer mon CV gratuitement",
   },
   ar: {
@@ -48,6 +52,8 @@ const ERROR_COPY = {
     expiredBody: "اطلب من المرسل رابطًا جديدًا.",
     networkTitle: "تعذر تحميل المستند.",
     networkBody: "تحقق من اتصالك ثم حاول مرة أخرى.",
+    renderTitle: "تعذر عرض السيرة الذاتية المشتركة.",
+    renderBody: "اطلب من المرسل رابطًا جديدًا أو أنشئ سيرتك الذاتية مجانًا.",
     cta: "إنشاء سيرتي الذاتية مجانًا",
   },
 };
@@ -121,6 +127,36 @@ function SharedStyles({ pageSize }) {
   );
 }
 
+class SharedDocumentErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { failed: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch() {
+    // Keep the public shared viewer on a friendly fallback instead of React's crash page.
+  }
+
+  render() {
+    if (!this.state.failed) return this.props.children;
+    const copy = this.props.copy || ERROR_COPY.en;
+    return (
+      <div dir={copy === ERROR_COPY.ar ? "rtl" : "ltr"} style={{ color: TEXT2, textAlign: "center", padding: 60, maxWidth: 460, margin: "0 auto" }}>
+        <div style={{ fontSize: 18, fontWeight: 800, color: TEXT1, marginBottom: 8 }}>{copy.renderTitle}</div>
+        <div style={{ fontSize: 14, marginBottom: 20 }}>{copy.renderBody}</div>
+        <a href="/resume/templates" style={{ background: GRAD, color: "#fff", textDecoration: "none",
+          borderRadius: 3, padding: "11px 22px", fontSize: 14, fontWeight: 700, display: "inline-block" }}>
+          {copy.cta}
+        </a>
+      </div>
+    );
+  }
+}
+
 export default function SharedResume() {
   const [doc, setDoc] = useState(null);
   const [ready, setReady] = useState(false);
@@ -189,17 +225,19 @@ export default function SharedResume() {
             </a>
           </div>
         ) : (
-          <div className="ac-shared-stage">
-            <div className="ac-shared-document-wrap">
-              <article lang={doc.l} dir={resolved.rtl ? "rtl" : "ltr"} data-share-kind={doc.k} data-template-id={resolved.template.id}>
-                {doc.k === "cover" ? (
-                  <CoverLetterPaper tpl={resolved.template} data={doc.d || {}} rtl={resolved.rtl} lang={doc.l} preview={false} />
-                ) : (
-                  <ResumePaper tpl={resolved.template} result={doc.d || {}} rtl={resolved.rtl} lang={doc.l} placeholder={false} preview={false} />
-                )}
-              </article>
+          <SharedDocumentErrorBoundary copy={copy}>
+            <div className="ac-shared-stage">
+              <div className="ac-shared-document-wrap">
+                <article lang={doc.l} dir={resolved.rtl ? "rtl" : "ltr"} data-share-kind={doc.k} data-template-id={resolved.template.id}>
+                  {doc.k === "cover" ? (
+                    <CoverLetterPaper tpl={resolved.template} data={doc.d || {}} rtl={resolved.rtl} lang={doc.l} preview={false} />
+                  ) : (
+                    <ResumePaper tpl={resolved.template} result={doc.d || {}} rtl={resolved.rtl} lang={doc.l} placeholder={false} preview={false} />
+                  )}
+                </article>
+              </div>
             </div>
-          </div>
+          </SharedDocumentErrorBoundary>
         )}
       </main>
     </AppShell>

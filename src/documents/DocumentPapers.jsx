@@ -2,6 +2,7 @@ import React from "react";
 import LinkifiedText, { LinkifyLinksProvider } from "../components/LinkifiedText.jsx";
 import { isPlaceholderOnly, normalizeDateRange } from "../resumeQuality.js";
 import { getContactHref, normalizeContactItems } from "../utils/contactLinks.js";
+import { asArray, emptyResumePreviewMessage, isResumeDataEmpty, normalizeResumeData } from "../resumeData.js";
 
 function ContactLink({ item, style }) {
   const href = getContactHref(item);
@@ -112,7 +113,7 @@ export function structureSectionItems(section, lang = "en") {
   const entries = [];
   let current = null;
 
-  (section?.items || []).forEach((item) => {
+  asArray(section?.items).forEach((item) => {
     const raw = String(item || "").trim();
     if (!raw) return;
     const bullet = LEADING_BULLET_RE.test(raw);
@@ -233,9 +234,8 @@ function ResumeSectionBody({ section, lang = "en", sidebar = false, accent = "#2
 
 export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder = true, preview = false }) {
   const tpl = rawTpl.variant ? { ...rawTpl, id: rawTpl.variant } : rawTpl;
-  const hasContent = result && (result.name !== "—" || result.summary || (result.sections && result.sections.length));
-  const empty = placeholder && !hasContent;
-  const data = result || { name: "—", title: "", contact: [], summary: "", sections: [] };
+  const data = normalizeResumeData(result);
+  const empty = isResumeDataEmpty(data);
   const paper = { background: "#fff", color: "#1a1a1a",
     borderRadius: 0, minHeight: preview ? "100%" : 900,
     height: preview ? "100%" : undefined,
@@ -255,8 +255,8 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
     return <div className="resume-paper" lang={lang} dir={rtl ? "rtl" : "ltr"} style={{ ...paper, display: "flex", alignItems: "center", justifyContent: "center",
       color: "#9ca3af", fontFamily: "'Inter', sans-serif", fontSize: 14, padding: 30, textAlign: "center" }}>
       {tpl.id === "blank"
-        ? "Fill in the form — your plain-text resume will appear here."
-        : <>Your resume will appear here in the <strong style={{ color: tpl.accent, margin: "0 4px" }}>{tpl.name}</strong> style.</>}
+        ? emptyResumePreviewMessage(lang)
+        : emptyResumePreviewMessage(lang)}
     </div>;
   }
 
