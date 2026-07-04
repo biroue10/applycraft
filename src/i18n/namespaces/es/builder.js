@@ -1,7 +1,9 @@
 const builder = {
   "toolName": "Creador de currículums",
-  "savedLocally": "Guardado localmente",
-  "unsavedChanges": "Cambios sin guardar",
+  "savedLocally": "No se guarda automáticamente",
+  "unsavedChanges": "No se guarda automáticamente",
+  "notSavedAutomatically": "No se guarda automáticamente",
+  "notSavedShort": "no guardado",
   "myResumes": "Mis currículums",
   "unlimited": "Ilimitado",
   "free": "gratis",
@@ -22,8 +24,9 @@ const builder = {
   "useTemplate": "Usar plantilla",
   "backToTemplates": "Volver a las plantillas",
   "complete": "completado",
-  "save": "Guardar",
-  "saveResume": "Guardar currículum",
+  "save": "Conservar para esta sesión",
+  "saveResume": "Conservar para esta sesión",
+  "keepForThisSession": "Conservar para esta sesión",
   "customize": "Personalizar",
   "documentSettings": "Configuración del documento",
   "interfaceLanguage": "Idioma de la interfaz",
@@ -83,7 +86,14 @@ const builder = {
   "clearFilters": "Borrar filtros",
   "noTemplatesTitle": "No se encontraron plantillas",
   "noTemplatesSub": "Prueba a quitar un filtro o buscar con un término más amplio.",
-  "fit": "Ajustar"
+  "fit": "Ajustar",
+  "savedLocalTooltip": "Tu documento no se guarda automáticamente.",
+  "savedLocalHeaderTooltip": "Tu documento no se guarda automáticamente.",
+  "notSavedTooltip": "Descarga tu PDF o DOCX antes de cerrar esta página.",
+  "notSavedHeaderTooltip": "Por privacidad, los campos se borran cuando sales o vuelves a abrir el editor.",
+  "sessionSaveTooltip": "Conserva esta versión solo hasta que se cierre esta página.",
+  "saveResumeTooltip": "Conserva esta versión solo hasta que se cierre esta página.",
+  "noAutosaveReminder": "Descarga tu currículum antes de cerrar esta página. Tu contenido no se guarda automáticamente."
 };
 
 export default builder;

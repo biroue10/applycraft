@@ -187,6 +187,8 @@ test("analytics whitelist contains multilingual events only with safe scalar pro
     "DOCX_EXPORT_FAILED",
     "TRANSLATION_STARTED",
     "TRANSLATION_COPY_CREATED",
+    "DOCUMENT_AUTOSAVE_DISABLED",
+    "BEFOREUNLOAD_WARNING_SHOWN",
   ]) {
     assert.equal(typeof EVENTS[event], "string", `${event} missing`);
   }

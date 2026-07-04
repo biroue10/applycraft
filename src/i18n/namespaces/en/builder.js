@@ -1,7 +1,9 @@
 const builder = {
   "toolName": "Resume Builder",
-  "savedLocally": "Saved locally",
-  "unsavedChanges": "Unsaved changes",
+  "savedLocally": "Not saved automatically",
+  "unsavedChanges": "Not saved automatically",
+  "notSavedAutomatically": "Not saved automatically",
+  "notSavedShort": "not saved",
   "myResumes": "My resumes",
   "unlimited": "Unlimited",
   "free": "free",
@@ -22,8 +24,9 @@ const builder = {
   "useTemplate": "Use template",
   "backToTemplates": "Back to templates",
   "complete": "complete",
-  "save": "Save",
-  "saveResume": "Save resume",
+  "save": "Keep for this session",
+  "saveResume": "Keep for this session",
+  "keepForThisSession": "Keep for this session",
   "customize": "Customize",
   "documentSettings": "Document settings",
   "interfaceLanguage": "Interface language",
@@ -92,9 +95,13 @@ const builder = {
   ,"closeMenu": "Close menu"
   ,"moreOptions": "More options"
   ,"myResumesRegion": "My resumes"
-  ,"savedLocalTooltip": "Saved locally in this browser. Your resume is not backed up to the cloud."
-  ,"savedLocalHeaderTooltip": "Saved locally in this browser and not backed up to the cloud."
-  ,"saveResumeTooltip": "Save this resume to My Resumes"
+  ,"savedLocalTooltip": "Your document is not saved automatically."
+  ,"savedLocalHeaderTooltip": "Your document is not saved automatically."
+  ,"notSavedTooltip": "Download your PDF or DOCX before closing this page."
+  ,"notSavedHeaderTooltip": "For privacy, form data is cleared when you leave or reopen the builder."
+  ,"sessionSaveTooltip": "Keep this version only until this page is closed."
+  ,"saveResumeTooltip": "Keep this version only until this page is closed."
+  ,"noAutosaveReminder": "Download your résumé before closing this page. Your content is not saved automatically."
   ,"renameSection": "Rename section"
   ,"restoreDefaultLabel": "Restore default label"
   ,"sectionOptions": "{section} options"

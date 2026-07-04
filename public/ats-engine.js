@@ -214,14 +214,12 @@ function runCheck(locale) {
       });
     }
 
-    try { localStorage.setItem('ac_ats_text', text); } catch(e) {}
     btn.disabled = false;
     btn.textContent = locale.recheck;
   }, 320);
 }
 
 function openInBuilder() {
-  try { localStorage.setItem('ac_ats_text', document.getElementById('resume-text').value.trim()); } catch(e) {}
   window.location.href = '/';
 }
 

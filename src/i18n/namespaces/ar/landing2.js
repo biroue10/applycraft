@@ -195,7 +195,7 @@ const landing2 = {
     "preview": "معاينة",
     "continueResume": "المتابعة بهذه السيرة الذاتية",
     "continueBuilder": "المتابعة إلى المحرر الكامل",
-    "noSignupSaveExport": "لا حاجة إلى التسجيل للبدء. احفظ أو صدّر عندما تكون جاهزًا.",
+    "noSignupSaveExport": "لا حاجة إلى التسجيل للبدء. قم بتنزيل PDF أو DOCX قبل إغلاق الصفحة.",
     "fullBuilderExportAvailable": "يتوفر تصدير PDF و DOCX في المحرر الكامل.",
     "expandedPreview": "معاينة موسّعة للسيرة الذاتية",
     "guidedDraft": "مسودة سيرة ذاتية موجهة",

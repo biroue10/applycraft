@@ -41,6 +41,8 @@ export const EVENTS = {
   MISSING_TRANSLATION_KEY: "missing_translation_key",
   TRANSLATION_STARTED: "translation_started",
   TRANSLATION_COPY_CREATED: "translation_copy_created",
+  DOCUMENT_AUTOSAVE_DISABLED: "document_autosave_disabled",
+  BEFOREUNLOAD_WARNING_SHOWN: "beforeunload_warning_shown",
 };
 
 const ALLOWED = new Set(Object.values(EVENTS));

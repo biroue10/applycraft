@@ -98,7 +98,7 @@
 
 <h2 id="data-we-collect">2. What data we process</h2>
 <h3>2.1 Resume and cover letter content</h3>
-<p>By default, your resume and cover letter content is edited and stored only in your own browser (in <code>localStorage</code>). ApplyCraft does not require an account, and this content is not sent to or stored on our servers unless you explicitly use an optional feature below (cloud sync in 2.2, or an AI helper in section 4).</p>
+<p>By default, your resume and cover letter content is edited in your browser and is not saved automatically after you leave or reopen the builder. ApplyCraft does not automatically store your résumé content in <code>localStorage</code>. Download your PDF or DOCX before closing the page, unless you explicitly use a feature that stores or shares the document.</p>
 
 <h3>2.2 Optional account and Master Profile sync</h3>
 <p>You may optionally provide an email address to save your <strong>Master Profile</strong> and sync it across your devices. This is entirely optional — the builder, all templates, and PDF/DOCX export work fully without it.</p>
@@ -119,7 +119,7 @@
 
 <h2 id="cookies">3. Cookies and analytics</h2>
 <p>ApplyCraft sets <strong>no advertising cookies</strong> and uses <strong>no cross-site tracking</strong> (no Google Analytics, no Facebook Pixel, no Hotjar, no ad networks). Product analytics is provided by <strong>Plausible</strong>, which is <strong>cookieless</strong> and records only anonymous, aggregated events (such as "a resume was exported") with no names, emails, or document content.</p>
-<p>Cloudflare may set strictly necessary security cookies (for example <code>__cf_bm</code>) for bot and abuse protection. Your work is kept in <code>localStorage</code>, not cookies. Full details are in the <a href="/cookies/">Cookie Policy</a>.</p>
+<p>Cloudflare may set strictly necessary security cookies (for example <code>__cf_bm</code>) for bot and abuse protection. ApplyCraft may keep non-sensitive preferences such as language choices in browser storage, but document content is not auto-saved there. Full details are in the <a href="/cookies/">Cookie Policy</a>.</p>
 
 <h2 id="ai">4. AI features and your data</h2>
 <p>Optional AI helpers — generating or rewriting content, ATS suggestions, AI tailoring to a job description, and the translation assistant — send the text relevant to that action to our AI provider <strong>only when you click</strong>. Changing the document language only updates labels, dates, direction, and layout. If you choose the translation assistant, the text you wrote is processed to create a translated copy. Your original résumé remains unchanged. Review AI translations before sending applications. The provider is <strong>Anthropic</strong> (the Claude model family), reached through a server proxy we operate on Cloudflare. The core builder, previews, and export never use AI. Do not submit content you are not comfortable having processed by a third party. Full details are in the <a href="/ai-disclosure/">AI Disclosure</a>.</p>

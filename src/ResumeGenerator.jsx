@@ -883,7 +883,25 @@ function useIsMobile(bp = 768) {
 }
 
 const SITE_LANGUAGE_STORAGE_KEY = "ac_site_language";
-const LOCAL_STORAGE_KEYS = ["ac_resume_draft", "ac_resume_draft_saved_at", "ac_master", "ac_tracker", "ac_ats_text", "ac_resumes", "ac_current_resume_id", "ac_subscription", SITE_LANGUAGE_STORAGE_KEY];
+const STORAGE_POLICY_VERSION_KEY = "ac_storage_policy_version";
+const STORAGE_POLICY_VERSION = "no-document-autosave-v1";
+const SENSITIVE_STORAGE_KEYS = [
+  "ac_resume_draft",
+  "ac_resume_draft_saved_at",
+  "ac_master",
+  "ac_tracker",
+  "ac_ats_text",
+  "ac_resumes",
+  "ac_current_resume_id",
+  "ac_cover_letter_data",
+  "ac_builder_state",
+  "ac_translated_versions",
+  "resumeData",
+  "coverLetterData",
+  "masterProfile",
+  "builderState",
+  "translatedVersions",
+];
 const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
 const MAX_RESUME_UPLOAD_BYTES = 8 * 1024 * 1024;
 const ALLOWED_PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -1055,8 +1073,28 @@ function validateResumeImport(file) {
 function clearApplyCraftLocalData() {
   if (typeof localStorage === "undefined") return;
   try {
-    LOCAL_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+    SENSITIVE_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+    localStorage.setItem(STORAGE_POLICY_VERSION_KEY, STORAGE_POLICY_VERSION);
   } catch {}
+}
+
+function hasMeaningfulCoverLetterContent(form) {
+  if (!form || typeof form !== "object") return false;
+  return [
+    "name",
+    "jobTitle",
+    "email",
+    "phone",
+    "location",
+    "recipientName",
+    "recipientTitle",
+    "company",
+    "companyAddress",
+    "subject",
+    "opening",
+    "body",
+    "closing",
+  ].some((key) => String(form[key] || "").trim().length > 0);
 }
 
 function trackUxEvent(name, data = {}) {
@@ -2910,11 +2948,7 @@ export default function ResumeGenerator() {
     certifications: "", languages: "", projects: "", volunteer: "", awards: "",
     sectionTitles: {},
   });
-  const [form, setForm] = useState(() => {
-    if (typeof localStorage === "undefined") return emptyResumeForm;
-    const saved = safeParseStoredJson(localStorage.getItem("ac_resume_draft"), null);
-    return saved && typeof saved === "object" ? migrateForm({ ...emptyResumeForm, ...saved }) : emptyResumeForm;
-  });
+  const [form, setForm] = useState(() => emptyResumeForm);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -3078,6 +3112,8 @@ export default function ResumeGenerator() {
   // Analytics init + optional-account bootstrap (runs once in the browser).
   useEffect(() => {
     initAnalytics();
+    clearApplyCraftLocalData();
+    track(EVENTS.DOCUMENT_AUTOSAVE_DISABLED, { storagePolicy: "no_document_content_persistence" });
     try {
       track(EVENTS.LANGUAGE_MIGRATION_COMPLETED, {
         interface_language: lang,
@@ -3146,9 +3182,7 @@ export default function ResumeGenerator() {
   const [coachLoading, setCoachLoading] = useState(false);
   const [atsOpen, setAtsOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const [master, setMaster] = useState(() => (
-    typeof localStorage === "undefined" ? {...defaultMaster} : safeParseStoredJson(localStorage.getItem("ac_master"), {...defaultMaster})
-  ));
+  const [master, setMaster] = useState(() => ({ ...defaultMaster }));
   const [masterTab, setMasterTab] = useState("personal");
   const [masterOpen, setMasterOpen] = useState({});
   const [tailorOpen, setTailorOpen] = useState(false);
@@ -3156,54 +3190,14 @@ export default function ResumeGenerator() {
   const [jdKws, setJdKws] = useState(null);
   const [tailorSel, setTailorSel] = useState(null);
   const [skillDraft, setSkillDraft] = useState("");
-  // Debounced localStorage writes: master and tracker can hold large JSON blobs.
-  // Serialising synchronously on every state change would block the main thread
-  // during rapid updates. 800 ms is short enough to not lose data on tab close,
-  // long enough to skip intermediate states during rapid drag operations.
-  useEffect(() => {
-    const id = setTimeout(() => {
-      try { localStorage.setItem("ac_master", JSON.stringify(master)); } catch {}
-    }, 800);
-    return () => clearTimeout(id);
-  }, [master]);
-  const [trackerCards, setTrackerCards] = useState(() => {
-    if (typeof localStorage === "undefined") return [];
-    const parsed = safeParseStoredJson(localStorage.getItem("ac_tracker"), []);
-    return Array.isArray(parsed) ? parsed : [];
-  });
+  const [trackerCards, setTrackerCards] = useState([]);
   const [trackerModal, setTrackerModal] = useState({ open: false, card: null });
   const [trackerDragId, setTrackerDragId] = useState(null);
   const [trackerDragOver, setTrackerDragOver] = useState(null);
-  const [draftSavedAt, setDraftSavedAt] = useState(() => {
-    if (typeof localStorage === "undefined") return "";
-    return localStorage.getItem("ac_resume_draft_saved_at") || "";
-  });
-  useEffect(() => {
-    const id = setTimeout(() => {
-      try {
-        localStorage.setItem("ac_resume_draft", JSON.stringify(form));
-        const stamp = new Date().toISOString();
-        localStorage.setItem("ac_resume_draft_saved_at", stamp);
-        setDraftSavedAt(stamp);
-      } catch {
-        setStatusMsg(st.draftFail);
-      }
-    }, 700);
-    return () => clearTimeout(id);
-  }, [form]);
-  useEffect(() => {
-    const id = setTimeout(() => {
-      try { localStorage.setItem("ac_tracker", JSON.stringify(trackerCards)); } catch {}
-    }, 800);
-    return () => clearTimeout(id);
-  }, [trackerCards]);
-
   const [atsText, setAtsText] = useState("");
   const [atsJd, setAtsJd] = useState("");
   const [atsResult, setAtsResult] = useState(null);
-  const [atsFromChecker, setAtsFromChecker] = useState(() => {
-    try { return localStorage.getItem("ac_ats_text") || ""; } catch { return ""; }
-  });
+  const [atsFromChecker, setAtsFromChecker] = useState("");
   const [coverStep, setCoverStep] = useState(initialRoute.coverStep);
   const [coverTpl, setCoverTpl] = useState(() => (
     initialRoute.navPage === "cover" && initialRoute.coverStep === "form"
@@ -3425,6 +3419,21 @@ export default function ResumeGenerator() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [form, fullPhone, photoUrl, docLang, lang]
   );
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const hasResumeContent = !isResumeDataEmpty(liveData);
+    const hasCoverContent = hasMeaningfulCoverLetterContent(coverForm);
+    if (!hasResumeContent && !hasCoverContent) return undefined;
+    const handler = (event) => {
+      track(EVENTS.BEFOREUNLOAD_WARNING_SHOWN, {
+        documentType: hasResumeContent && hasCoverContent ? "multiple" : hasResumeContent ? "resume" : "coverLetter",
+      });
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [liveData, coverForm]);
   const shouldReviewBeforeExport = useCallback((format, skipReview = false) => {
     if (skipReview) return false;
     const warnings = analyzeResumeQuality(result || liveData, { ...form, phone: fullPhone }, { lang: docLang });
@@ -3449,47 +3458,29 @@ export default function ResumeGenerator() {
 
   // ── Multiple resumes (save / open / new) with the free-tier limit ─────────
   const [savedResumes, setSavedResumes] = useState(() => resumes.listResumes());
-  const [currentResumeId, setCurrentResumeId] = useState(() => {
-    try { return (typeof localStorage !== "undefined" && localStorage.getItem("ac_current_resume_id")) || null; } catch { return null; }
-  });
+  const [currentResumeId, setCurrentResumeId] = useState(null);
   const [subModalOpen, setSubModalOpen] = useState(false);
-  useEffect(() => {
-    if (typeof localStorage === "undefined") return;
-    try { currentResumeId ? localStorage.setItem("ac_current_resume_id", currentResumeId) : localStorage.removeItem("ac_current_resume_id"); } catch { /* noop */ }
-  }, [currentResumeId]);
   const refreshResumes = useCallback(() => setSavedResumes(resumes.listResumes()), []);
 
   const pendingSaveRef = useRef(false);
-  // Persist the saved resume (assumes the user is already signed in).
+  // Keep a version available only while this page is open. Document content is
+  // intentionally not persisted to browser storage.
   const doSaveResume = useCallback(() => {
-    // Updating an existing resume is always allowed; a brand-new save counts
-    // against the free limit.
-    if (!currentResumeId && !resumes.canCreateNew()) { setSubModalOpen(true); return; }
     const title = form.name?.trim()
       ? `${form.name.trim()}${form.title?.trim() ? ` — ${form.title.trim()}` : ""}`
       : "Untitled resume";
     const id = resumes.upsertResume({ id: currentResumeId, title, data: form });
     setCurrentResumeId(id);
     refreshResumes();
-    setStatusMsg(st.resumeSaved);
-    setTimeout(() => setStatusMsg(""), 2000);
-  }, [form, currentResumeId, refreshResumes]);
+    setStatusMsg(st.sessionVersionSaved);
+    setTimeout(() => setStatusMsg(""), 3000);
+  }, [form, currentResumeId, refreshResumes, st.sessionVersionSaved]);
 
-  // Saving requires an account — prompt sign-in/sign-up first, then save.
   const saveCurrentResume = useCallback(() => {
-    if (!currentUser) {
-      pendingSaveRef.current = true;
-      setAuthModalTab("signup");
-      setAuthModal(true);
-      setStatusMsg(st.accountToSave);
-      setTimeout(() => setStatusMsg(""), 3000);
-      return;
-    }
     doSaveResume();
-  }, [currentUser, doSaveResume]);
+  }, [doSaveResume]);
 
   const newResume = useCallback(() => {
-    if (!resumes.canCreateNew()) { setSubModalOpen(true); return; }
     setForm(emptyResumeForm);
     setCurrentResumeId(null);
     setTpl(null);
@@ -4505,9 +4496,9 @@ Awards: ${form.awards}`;
         )}
         <div style={{ flex: 1 }} />
         {!isMobile && (
-          <span title={builderText("savedLocalHeaderTooltip")}
+          <span title={builderText("notSavedHeaderTooltip")}
             style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
-            <LineIcon name="check" size={14} color={C.text3} /> {bu.savedLocally}
+            <LineIcon name="alert" size={14} color={C.text3} /> {bu.notSavedAutomatically}
           </span>
         )}
         <LanguageDropdown
@@ -4559,9 +4550,9 @@ Awards: ${form.awards}`;
           )}
           <div style={{ flex: 1 }} />
           {!isMobile && (
-            <span title={builderText("savedLocalHeaderTooltip")}
+            <span title={builderText("notSavedHeaderTooltip")}
               style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
-              <LineIcon name="check" size={14} color={C.text3} /> {bu.savedLocally}
+              <LineIcon name="alert" size={14} color={C.text3} /> {bu.notSavedAutomatically}
             </span>
           )}
           <LanguageDropdown
@@ -5371,7 +5362,7 @@ Awards: ${form.awards}`;
   const resumeTitle = form.name.trim()
     ? `${form.name.trim().split(/\s+/)[0]}'s Resume`
     : "Untitled Resume";
-  const savedLabel = draftSavedAt ? bu.savedLocally : bu.unsavedChanges;
+  const savedLabel = bu.notSavedShort;
   const translationFieldEntries = Object.entries(form.translationMeta?.fields || {});
   const translationReviewed = Boolean(form.translationMeta?.reviewed)
     || (translationFieldEntries.length > 0 && translationFieldEntries.every(([, meta]) => meta?.translationStatus === TRANSLATION_STATUSES.humanReviewed));
@@ -5412,7 +5403,7 @@ Awards: ${form.awards}`;
           <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
             <h1 style={{ margin: 0, color: C.text1, fontSize: isMobile ? 16 : 18, lineHeight: 1.15,
               fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resumeTitle}</h1>
-            <span title={builderText("savedLocalTooltip")}
+            <span title={builderText("notSavedTooltip")}
               style={{ color: C.text3, fontSize: 11.5, whiteSpace: "nowrap" }}>· {savedLabel}</span>
             {isTranslatedResume && (
               <button type="button" onClick={() => !translationReviewed && markTranslatedFields(TRANSLATION_STATUSES.humanReviewed)}
@@ -5449,9 +5440,9 @@ Awards: ${form.awards}`;
           )}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-          <button type="button" onClick={saveCurrentResume} title={builderText("saveResumeTooltip")}
+          <button type="button" onClick={saveCurrentResume} title={builderText("sessionSaveTooltip")}
             style={{ ...softBtn, fontWeight: 700 }}>
-            💾 {currentResumeId ? bu.save : bu.saveResume}
+            💾 {bu.keepForThisSession}
           </button>
           {renderMoreMenu(moreMenuOpen, setMoreMenuOpen, resumeSharePayload, `${form.name || "My"} resume`)}
           <div style={{ position: "relative" }}>
@@ -5592,6 +5583,11 @@ Awards: ${form.awards}`;
             )}
           </div>
         </div>
+      </div>
+
+      <div role="note" style={{ background: `${C.accent}10`, border: `1px solid ${C.accent}28`, borderRadius: 10,
+        color: C.text2, fontSize: 12.5, lineHeight: 1.5, padding: "9px 12px", marginBottom: 12 }}>
+        {bu.noAutosaveReminder}
       </div>
 
       {!guidanceDismissed && (
@@ -7144,7 +7140,6 @@ Awards: ${form.awards}`;
         setAtsText(localText);
         setAtsJd(localJd);
         if (atsFromChecker) {
-          try { localStorage.removeItem("ac_ats_text"); } catch {}
           setAtsFromChecker("");
         }
         setRunning(false);
@@ -9131,7 +9126,7 @@ Awards: ${form.awards}`;
             <span style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 11px",
               background: C.surface, border: `1px solid ${C.border}`, borderRadius: 9,
               color: C.text2, fontSize: 12.5, fontWeight: 700 }}>
-              {bu.savedLocally}
+              {bu.notSavedAutomatically}
             </span>
           )}
         </div>
@@ -10254,6 +10249,7 @@ function LineIcon({ name, size = 18, color = "currentColor", style = {}, decorat
   const paths = {
     upload: <><path d="M12 16V4" /><path d="m7 9 5-5 5 5" /><path d="M20 16v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3" /></>,
     check: <path d="M20 6 9 17l-5-5" />,
+    alert: <><path d="M12 9v4" /><path d="M12 17h.01" /><path d="M10.3 4.4 2.6 18a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 4.4a2 2 0 0 0-3.4 0Z" /></>,
     globe: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18" /><path d="M12 3c2.5 2.7 3.7 5.7 3.7 9S14.5 18.3 12 21" /><path d="M12 3c-2.5 2.7-3.7 5.7-3.7 9S9.5 18.3 12 21" /></>,
     lock: <><rect x="5" y="10" width="14" height="10" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></>,
     spark: <><path d="M12 3v4" /><path d="M12 17v4" /><path d="M3 12h4" /><path d="M17 12h4" /><path d="m5.6 5.6 2.8 2.8" /><path d="m15.6 15.6 2.8 2.8" /><path d="m5.6 18.4 2.8-2.8" /><path d="m15.6 8.4 2.8-2.8" /></>,

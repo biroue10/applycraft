@@ -4,13 +4,13 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Cookie Policy | ApplyCraft</title>
-<meta name="description" content="How ApplyCraft uses browser storage and cookies: local storage for your draft, cookieless analytics, and strictly necessary security cookies set by Cloudflare."/>
+<meta name="description" content="How ApplyCraft uses browser storage and cookies: non-sensitive preferences, cookieless analytics, and strictly necessary security cookies set by Cloudflare."/>
 <link rel="canonical" href="https://applycraft.io/cookies/"/>
 <link rel="alternate" hreflang="en" href="https://applycraft.io/cookies/"/>
 <link rel="alternate" hreflang="fr" href="https://applycraft.io/fr/cookies/"/>
 <link rel="alternate" hreflang="x-default" href="https://applycraft.io/cookies/"/>
 <meta property="og:title" content="Cookie Policy | ApplyCraft"/>
-<meta property="og:description" content="How ApplyCraft uses browser storage and cookies: local storage for your draft, cookieless analytics, and strictly necessary security cookies set by Cloudflare."/>
+<meta property="og:description" content="How ApplyCraft uses browser storage and cookies: non-sensitive preferences, cookieless analytics, and strictly necessary security cookies set by Cloudflare."/>
 <meta property="og:url" content="https://applycraft.io/cookies/"/>
 <meta property="og:image" content="https://applycraft.io/og.png"/>
 <meta property="og:image:secure_url" content="https://applycraft.io/og.png"/>
@@ -20,7 +20,7 @@
 <meta property="og:image:alt" content="ApplyCraft resume builder interface"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Cookie Policy | ApplyCraft"/>
-<meta name="twitter:description" content="How ApplyCraft uses browser storage and cookies: local storage for your draft, cookieless analytics, and strictly necessary security cookies set by Cloudflare."/>
+<meta name="twitter:description" content="How ApplyCraft uses browser storage and cookies: non-sensitive preferences, cookieless analytics, and strictly necessary security cookies set by Cloudflare."/>
 <meta name="twitter:image" content="https://applycraft.io/og.png"/>
 <meta name="twitter:image:alt" content="ApplyCraft resume builder interface"/>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
@@ -57,7 +57,7 @@
   .prose th{color:#C0CADB;font-weight:700}
   .prose code{background:#0D1117;border:1px solid #1A2740;border-radius:5px;padding:1px 6px;font-size:12.5px;color:#B6C2D6}
 </style>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Cookie Policy | ApplyCraft","description":"How ApplyCraft uses browser storage and cookies: local storage for your draft, cookieless analytics, and strictly necessary security cookies set by Cloudflare.","url":"https://applycraft.io/cookies/","publisher":{"@type":"Organization","name":"Biroue Digital Ltd","url":"https://applycraft.io/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Cookie Policy | ApplyCraft","description":"How ApplyCraft uses browser storage and cookies: non-sensitive preferences, cookieless analytics, and strictly necessary security cookies set by Cloudflare.","url":"https://applycraft.io/cookies/","publisher":{"@type":"Organization","name":"Biroue Digital Ltd","url":"https://applycraft.io/"}}</script>
 </head>
 <body>
 <nav class="nav">
@@ -73,10 +73,10 @@
 
 <p class="lead">This page explains the cookies and browser storage ApplyCraft relies on. The core builder is designed to avoid tracking cookies — but it is not accurate to say "no cookies at all," because our security provider and optional features use a small number of necessary technologies.</p>
 
-<h2>1. Local storage, not cookies, for your work</h2>
-<p>Your resume draft, saved resumes, language choice, and (if you opt in) account session are kept in your browser's <strong>localStorage</strong> — not in cookies, and not sent to our servers by default. You can clear them with the "Delete local data" button in the app or via your browser settings. Keys we use include:</p>
+<h2>1. Browser storage for preferences, not document autosave</h2>
+<p>ApplyCraft does not automatically store your résumé or cover-letter content in <strong>localStorage</strong>. Form data is cleared when you reopen the builder, unless you explicitly use a feature that stores or shares the document. Non-sensitive preferences and optional account state may still be kept in browser storage. Keys we use include:</p>
 <ul>
-  <li><code>ac_resume_draft</code>, <code>ac_resumes</code>, <code>ac_current_resume_id</code> — your resume content and selection</li>
+  <li><code>ac_site_language</code>, <code>ac_interface_language</code>, <code>ac_document_language</code> — language preferences</li>
   <li><code>ac_subscription</code>, <code>ac_session</code>, <code>ac_account</code>, <code>ac_consent_sync</code> — optional account / pass state</li>
 </ul>
 

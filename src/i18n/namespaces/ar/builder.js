@@ -1,7 +1,9 @@
 const builder = {
   "toolName": "منشئ السيرة الذاتية",
-  "savedLocally": "محفوظ محلياً",
-  "unsavedChanges": "تغييرات غير محفوظة",
+  "savedLocally": "لا يتم الحفظ تلقائياً",
+  "unsavedChanges": "لا يتم الحفظ تلقائياً",
+  "notSavedAutomatically": "لا يتم الحفظ تلقائياً",
+  "notSavedShort": "غير محفوظ",
   "myResumes": "سيري الذاتية",
   "unlimited": "غير محدود",
   "free": "مجانية",
@@ -22,8 +24,9 @@ const builder = {
   "useTemplate": "استخدم القالب",
   "backToTemplates": "العودة إلى القوالب",
   "complete": "مكتمل",
-  "save": "حفظ",
-  "saveResume": "حفظ السيرة الذاتية",
+  "save": "الاحتفاظ لهذه الجلسة",
+  "saveResume": "الاحتفاظ لهذه الجلسة",
+  "keepForThisSession": "الاحتفاظ لهذه الجلسة",
   "customize": "تخصيص",
   "documentSettings": "إعدادات المستند",
   "interfaceLanguage": "لغة الواجهة",
@@ -92,9 +95,13 @@ const builder = {
   ,"closeMenu": "إغلاق القائمة"
   ,"moreOptions": "خيارات إضافية"
   ,"myResumesRegion": "سيري الذاتية"
-  ,"savedLocalTooltip": "محفوظ محلياً في هذا المتصفح. سيرتك الذاتية ليست محفوظة في السحابة."
-  ,"savedLocalHeaderTooltip": "محفوظ محلياً في هذا المتصفح وغير محفوظ في السحابة."
-  ,"saveResumeTooltip": "حفظ هذه السيرة في سيري الذاتية"
+  ,"savedLocalTooltip": "لا يتم حفظ المستند تلقائياً."
+  ,"savedLocalHeaderTooltip": "لا يتم حفظ المستند تلقائياً."
+  ,"notSavedTooltip": "قم بتنزيل ملف PDF أو DOCX قبل إغلاق هذه الصفحة."
+  ,"notSavedHeaderTooltip": "حفاظاً على خصوصيتك، يتم مسح الحقول عند مغادرة أو إعادة فتح أداة الإنشاء."
+  ,"sessionSaveTooltip": "احتفظ بهذه النسخة فقط حتى يتم إغلاق هذه الصفحة."
+  ,"saveResumeTooltip": "احتفظ بهذه النسخة فقط حتى يتم إغلاق هذه الصفحة."
+  ,"noAutosaveReminder": "قم بتنزيل سيرتك الذاتية قبل إغلاق هذه الصفحة. لا يتم حفظ المحتوى تلقائياً."
   ,"renameSection": "إعادة تسمية القسم"
   ,"restoreDefaultLabel": "استعادة التسمية الافتراضية"
   ,"sectionOptions": "خيارات {section}"

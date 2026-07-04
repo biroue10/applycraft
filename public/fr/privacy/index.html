@@ -74,7 +74,7 @@
 
 <h2>2. Quelles données nous traitons</h2>
 <h3>2.1 Contenu de CV et de lettres</h3>
-<p>Par défaut, le contenu de vos CV et lettres est édité et stocké uniquement dans votre navigateur (dans le <code>localStorage</code>). ApplyCraft n'exige pas de compte, et ce contenu n'est ni envoyé ni stocké sur nos serveurs, sauf si vous utilisez explicitement une fonction facultative ci-dessous (synchronisation cloud en 2.2, ou un assistant IA en section 4).</p>
+<p>Par défaut, le contenu de vos CV et lettres est édité dans votre navigateur et n’est pas enregistré automatiquement lorsque vous quittez ou rouvrez le créateur. ApplyCraft ne stocke pas automatiquement le contenu de votre CV dans le <code>localStorage</code>. Téléchargez votre PDF ou DOCX avant de fermer la page, sauf si vous utilisez explicitement une fonction qui stocke ou partage le document.</p>
 <h3>2.2 Compte et synchronisation du Profil principal (facultatif)</h3>
 <p>Vous pouvez éventuellement fournir une adresse e-mail pour enregistrer votre <strong>Profil principal</strong> et le synchroniser entre vos appareils. C'est entièrement facultatif — l'éditeur, tous les modèles et l'export PDF/DOCX fonctionnent pleinement sans cela.</p>
 <ul>
@@ -89,7 +89,7 @@
 
 <h2>3. Cookies et analyse</h2>
 <p>ApplyCraft ne pose <strong>aucun cookie publicitaire</strong> et n'utilise <strong>aucun suivi inter-sites</strong> (pas de Google Analytics, de Facebook Pixel, de Hotjar, ni de régies publicitaires). L'analyse produit est fournie par <strong>Plausible</strong>, qui est <strong>sans cookie</strong> et n'enregistre que des événements anonymes et agrégés (comme « un CV a été exporté »), sans noms, e-mails ni contenu de document.</p>
-<p>Cloudflare peut poser des cookies de sécurité strictement nécessaires (par exemple <code>__cf_bm</code>) pour la protection contre les bots et les abus. Votre travail est conservé dans le <code>localStorage</code>, pas dans des cookies. Détails complets dans la <a href="/fr/cookies/">Politique relative aux cookies</a>.</p>
+<p>Cloudflare peut poser des cookies de sécurité strictement nécessaires (par exemple <code>__cf_bm</code>) pour la protection contre les bots et les abus. ApplyCraft peut conserver des préférences non sensibles comme les choix de langue dans le stockage du navigateur, mais le contenu des documents n’y est pas enregistré automatiquement. Détails complets dans la <a href="/fr/cookies/">Politique relative aux cookies</a>.</p>
 
 <h2>4. Fonctions IA et vos données</h2>
 <p>Les assistants IA facultatifs — génération ou reformulation de contenu, traduction, suggestions ATS et adaptation par IA à une offre — envoient le texte pertinent à notre prestataire d'IA <strong>uniquement lorsque vous cliquez</strong>. Le prestataire est <strong>Anthropic</strong> (la famille de modèles Claude), atteint via un proxy serveur que nous exploitons sur Cloudflare. L'éditeur principal, les aperçus et l'export n'utilisent jamais l'IA. Ne soumettez pas de contenu que vous ne souhaitez pas voir traité par un tiers. Détails complets dans la <a href="/fr/ai-disclosure/">Divulgation IA</a>.</p>

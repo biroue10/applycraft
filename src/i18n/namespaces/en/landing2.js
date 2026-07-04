@@ -78,8 +78,8 @@ const landing2 = {
         "Premium only"
       ],
       [
-        "Your data stays in your browser",
-        "Stored on servers"
+        "No automatic document storage",
+        "Account often required"
       ],
       [
         "English, French & Arabic localization",
@@ -232,7 +232,7 @@ const landing2 = {
     "preview": "Preview",
     "continueResume": "Continue with this resume",
     "continueBuilder": "Continue to the full builder",
-    "noSignupSaveExport": "No sign-up required to start. Save or export when ready.",
+    "noSignupSaveExport": "No sign-up required to start. Download your PDF or DOCX before closing the page.",
     "fullBuilderExportAvailable": "PDF and DOCX export are available in the full builder.",
     "expandedPreview": "Expanded resume preview",
     "guidedDraft": "Guided resume draft",

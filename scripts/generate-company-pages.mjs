@@ -150,7 +150,7 @@ const PAGES = {
 <p class="meta">Last updated: ${TODAY} · Effective immediately</p>
 <p class="lead">ApplyCraft is designed to handle as little of your data as possible. The free builder is browser-first by default, while optional online features process selected data only when you choose to use them.</p>
 
-<div class="callout"><p>⚡ <strong style="color:#E4EBF5">Short version:</strong> Free builder data is stored in your browser by default. If you use optional features such as cloud sync, accounts, AI helpers, or private offline sharing, selected data may be stored or processed so those features can work. ApplyCraft does not send résumé content to analytics.</p></div>
+<div class="callout"><p>⚡ <strong style="color:#E4EBF5">Short version:</strong> Core editing happens in your browser, but résumé content is not saved automatically after you leave the builder. If you use optional features such as accounts, AI helpers, or private offline sharing, selected data may be stored or processed so those features can work. ApplyCraft does not send résumé content to analytics.</p></div>
 
 <h2>1. Who we are</h2>
 <p>ApplyCraft is an independent product built and operated by Biroue Digital Ltd (<a href="mailto:${EMAIL}">${EMAIL}</a>). This website is accessible at <strong>applycraft.io</strong>.</p>
@@ -337,13 +337,13 @@ const PAGES = {
 <h2>Privacy and data</h2>
 
 <h3>Where is my resume data stored?</h3>
-<p>Free builder data is stored in your browser by default. If you use optional features such as cloud sync, accounts, AI helpers, or private offline sharing, selected data may be stored or processed so those features can work. ApplyCraft does not send résumé content to analytics.</p>
+<p>Core editing happens in your browser, but résumé content is not saved automatically after you leave the builder. If you use optional features such as accounts, AI helpers, or private offline sharing, selected data may be stored or processed so those features can work. ApplyCraft does not send résumé content to analytics.</p>
 
 <h3>Is my data used to train AI?</h3>
 <p>User-written résumé or cover-letter content is not translated, uploaded, or processed by AI unless you explicitly choose an AI-powered action. If you choose the translation assistant, the text you wrote is processed to create a translated copy. Your original résumé remains unchanged. Review AI translations before sending applications. Avoid optional AI helpers for sensitive content unless you are comfortable with that processing.</p>
 
 <h3>How do I delete my data?</h3>
-<p>Use the local data controls in the app or clear this site's browser storage. Closing a tab does not always remove local drafts stored by your browser.</p>
+<p>If you close the builder before downloading your file, your unsaved work may be lost. You can also clear this site's browser storage to remove old sensitive keys from earlier versions.</p>
 
 <h3>How do private offline share links work?</h3>
 <p>Private offline share links store the document data inside the URL fragment. Anyone with the full link can view the document, so only share it with people you trust. These links do not require server-side document storage, but they can be long.</p>
@@ -440,8 +440,8 @@ const PAGES = {
 </div>
 
 <div class="roadmap-item">
-  <h3>Resume saving to browser storage</h3>
-  <p>Opt-in local persistence using localStorage — save multiple resume versions in your browser without any server involved.</p>
+  <h3>Privacy-first document handling</h3>
+  <p>Core editing happens in the browser, and document content is not saved automatically after you leave the builder.</p>
 </div>
 
 <h2>📋 In progress</h2>

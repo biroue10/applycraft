@@ -1,11 +1,13 @@
 // ──────────────────────────────────────────────────────────────────────────
-// Multi-resume storage (browser-first, no account). Saved resumes live in
-// localStorage. Free users may keep up to FREE_RESUME_LIMIT resumes; creating
-// more requires the subscription. SSR-safe (all access guarded).
+// Session-only resume versions.
+//
+// ApplyCraft no longer persists user-written document content in browser
+// storage. These helpers keep translated versions/open documents available
+// while the current page is open, then intentionally reset on reopen.
 // ──────────────────────────────────────────────────────────────────────────
 
-const KEY = "ac_resumes";
 const SUB_KEY = "ac_subscription";
+let sessionResumes = [];
 
 export const FREE_RESUME_LIMIT = 2;
 export const SUBSCRIPTION = { priceUsd: 3, period: "month" };
@@ -13,11 +15,11 @@ export const SUBSCRIPTION = { priceUsd: 3, period: "month" };
 const hasLS = () => typeof localStorage !== "undefined";
 
 function read() {
-  if (!hasLS()) return [];
-  try { const a = JSON.parse(localStorage.getItem(KEY) || "[]"); return Array.isArray(a) ? a : []; }
-  catch { return []; }
+  return Array.isArray(sessionResumes) ? sessionResumes : [];
 }
-function write(list) { if (!hasLS()) return; try { localStorage.setItem(KEY, JSON.stringify(list)); } catch { /* quota */ } }
+function write(list) {
+  sessionResumes = Array.isArray(list) ? list : [];
+}
 
 export function newResumeId() {
   try { if (typeof crypto !== "undefined" && crypto.randomUUID) return "r-" + crypto.randomUUID(); } catch { /* noop */ }

@@ -195,7 +195,7 @@ const landing2 = {
     "preview": "Vorschau",
     "continueResume": "Mit diesem Lebenslauf fortfahren",
     "continueBuilder": "Zum vollständigen Editor fortfahren",
-    "noSignupSaveExport": "Keine Anmeldung nötig. Speichere oder exportiere, wenn du bereit bist.",
+    "noSignupSaveExport": "Keine Anmeldung nötig. Lade dein PDF oder DOCX herunter, bevor du die Seite schließt.",
     "fullBuilderExportAvailable": "PDF- und DOCX-Export sind im vollständigen Editor verfügbar.",
     "expandedPreview": "Erweiterte Lebenslaufvorschau",
     "guidedDraft": "Geführter Lebenslaufentwurf",

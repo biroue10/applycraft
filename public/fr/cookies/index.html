@@ -63,10 +63,10 @@
 <nav class="legal-nav" aria-label="Pages légales"><a href="/fr/terms/">Conditions d'utilisation</a><a href="/fr/privacy/">Politique de confidentialité</a><a href="/fr/cookies/" aria-current="page">Politique relative aux cookies</a><a href="/fr/refund-policy/">Politique de remboursement</a><a href="/fr/gdpr/">RGPD</a><a href="/fr/ai-disclosure/">Divulgation IA</a><a href="/accessibility/">Accessibilité</a></nav>
 
 <p class="lead">Cette page explique les cookies et le stockage du navigateur utilisés par ApplyCraft. L'éditeur principal est conçu pour éviter les cookies de suivi — mais il ne serait pas exact de dire « aucun cookie », car notre fournisseur de sécurité et certaines fonctions optionnelles utilisent quelques technologies nécessaires.</p>
-<h2>1. Le stockage local, pas les cookies, pour votre travail</h2>
-<p>Votre brouillon de CV, vos CV enregistrés, votre choix de langue et (si vous y consentez) votre session de compte sont conservés dans le <strong>localStorage</strong> de votre navigateur — pas dans des cookies, et non envoyés à nos serveurs par défaut. Vous pouvez les effacer avec le bouton « Supprimer les données locales » dans l'application ou via les paramètres de votre navigateur. Les clés utilisées incluent :</p>
+<h2>1. Stockage du navigateur pour les préférences, pas pour l’enregistrement automatique des documents</h2>
+<p>ApplyCraft ne stocke pas automatiquement le contenu de votre CV ou lettre dans le <strong>localStorage</strong>. Les champs sont réinitialisés lorsque vous rouvrez le créateur, sauf si vous utilisez explicitement une fonction qui stocke ou partage le document. Des préférences non sensibles et l’état optionnel du compte peuvent rester dans le stockage du navigateur. Les clés utilisées incluent :</p>
 <ul>
-  <li><code>ac_resume_draft</code>, <code>ac_resumes</code>, <code>ac_current_resume_id</code> — le contenu et la sélection de vos CV</li>
+  <li><code>ac_site_language</code>, <code>ac_interface_language</code>, <code>ac_document_language</code> — préférences de langue</li>
   <li><code>ac_subscription</code>, <code>ac_session</code>, <code>ac_account</code>, <code>ac_consent_sync</code> — état du compte / pass optionnel</li>
 </ul>
 <h2>2. L'analyse est sans cookie</h2>

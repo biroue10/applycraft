@@ -1,7 +1,9 @@
 const builder = {
   "toolName": "Lebenslauf-Generator",
-  "savedLocally": "Lokal gespeichert",
-  "unsavedChanges": "Nicht gespeicherte Änderungen",
+  "savedLocally": "Nicht automatisch gespeichert",
+  "unsavedChanges": "Nicht automatisch gespeichert",
+  "notSavedAutomatically": "Nicht automatisch gespeichert",
+  "notSavedShort": "nicht gespeichert",
   "myResumes": "Meine Lebensläufe",
   "unlimited": "Unbegrenzt",
   "free": "kostenlos",
@@ -22,8 +24,9 @@ const builder = {
   "useTemplate": "Vorlage verwenden",
   "backToTemplates": "Zurück zu den Vorlagen",
   "complete": "abgeschlossen",
-  "save": "Speichern",
-  "saveResume": "Lebenslauf speichern",
+  "save": "Für diese Sitzung behalten",
+  "saveResume": "Für diese Sitzung behalten",
+  "keepForThisSession": "Für diese Sitzung behalten",
   "customize": "Anpassen",
   "documentSettings": "Dokumenteinstellungen",
   "interfaceLanguage": "Oberflächensprache",
@@ -83,7 +86,14 @@ const builder = {
   "clearFilters": "Filter zurücksetzen",
   "noTemplatesTitle": "Keine Vorlagen gefunden",
   "noTemplatesSub": "Entferne einen Filter oder suche mit einem allgemeineren Begriff.",
-  "fit": "Anpassen"
+  "fit": "Anpassen",
+  "savedLocalTooltip": "Dein Dokument wird nicht automatisch gespeichert.",
+  "savedLocalHeaderTooltip": "Dein Dokument wird nicht automatisch gespeichert.",
+  "notSavedTooltip": "Lade dein PDF oder DOCX herunter, bevor du diese Seite schließt.",
+  "notSavedHeaderTooltip": "Aus Datenschutzgründen werden Formularfelder gelöscht, wenn du den Editor verlässt oder neu öffnest.",
+  "sessionSaveTooltip": "Diese Version nur bis zum Schließen dieser Seite behalten.",
+  "saveResumeTooltip": "Diese Version nur bis zum Schließen dieser Seite behalten.",
+  "noAutosaveReminder": "Lade deinen Lebenslauf herunter, bevor du diese Seite schließt. Deine Inhalte werden nicht automatisch gespeichert."
 };
 
 export default builder;

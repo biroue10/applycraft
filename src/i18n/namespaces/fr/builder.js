@@ -1,7 +1,9 @@
 const builder = {
   "toolName": "Créateur de CV",
-  "savedLocally": "Enregistré localement",
-  "unsavedChanges": "Modifications non enregistrées",
+  "savedLocally": "Non enregistré automatiquement",
+  "unsavedChanges": "Non enregistré automatiquement",
+  "notSavedAutomatically": "Non enregistré automatiquement",
+  "notSavedShort": "non enregistré",
   "myResumes": "Mes CV",
   "unlimited": "Illimité",
   "free": "gratuits",
@@ -22,8 +24,9 @@ const builder = {
   "useTemplate": "Utiliser le modèle",
   "backToTemplates": "Retour aux modèles",
   "complete": "complété",
-  "save": "Enregistrer",
-  "saveResume": "Enregistrer le CV",
+  "save": "Conserver pour cette session",
+  "saveResume": "Conserver pour cette session",
+  "keepForThisSession": "Conserver pour cette session",
   "customize": "Personnaliser",
   "documentSettings": "Paramètres du document",
   "interfaceLanguage": "Langue de l'interface",
@@ -92,9 +95,13 @@ const builder = {
   ,"closeMenu": "Fermer le menu"
   ,"moreOptions": "Plus d'options"
   ,"myResumesRegion": "Mes CV"
-  ,"savedLocalTooltip": "Enregistré localement dans ce navigateur. Votre CV n'est pas sauvegardé dans le cloud."
-  ,"savedLocalHeaderTooltip": "Enregistré localement dans ce navigateur et non sauvegardé dans le cloud."
-  ,"saveResumeTooltip": "Enregistrer ce CV dans Mes CV"
+  ,"savedLocalTooltip": "Votre document n’est pas enregistré automatiquement."
+  ,"savedLocalHeaderTooltip": "Votre document n’est pas enregistré automatiquement."
+  ,"notSavedTooltip": "Téléchargez votre PDF ou DOCX avant de fermer cette page."
+  ,"notSavedHeaderTooltip": "Pour votre confidentialité, les champs sont réinitialisés lorsque vous quittez ou rouvrez le créateur."
+  ,"sessionSaveTooltip": "Conserver cette version uniquement jusqu’à la fermeture de cette page."
+  ,"saveResumeTooltip": "Conserver cette version uniquement jusqu’à la fermeture de cette page."
+  ,"noAutosaveReminder": "Téléchargez votre CV avant de fermer cette page. Votre contenu n’est pas enregistré automatiquement."
   ,"renameSection": "Renommer la section"
   ,"restoreDefaultLabel": "Restaurer le libellé par défaut"
   ,"sectionOptions": "Options de {section}"

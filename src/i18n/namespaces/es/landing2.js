@@ -195,7 +195,7 @@ const landing2 = {
     "preview": "Vista previa",
     "continueResume": "Continuar con este CV",
     "continueBuilder": "Continuar al editor completo",
-    "noSignupSaveExport": "No necesitas registrarte para empezar. Guarda o exporta cuando estés listo.",
+    "noSignupSaveExport": "No necesitas registrarte para empezar. Descarga tu PDF o DOCX antes de cerrar la página.",
     "fullBuilderExportAvailable": "La exportación PDF y DOCX está disponible en el editor completo.",
     "expandedPreview": "Vista previa ampliada del CV",
     "guidedDraft": "Borrador de CV guiado",
