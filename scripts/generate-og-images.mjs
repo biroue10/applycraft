@@ -1,6 +1,6 @@
-import { mkdirSync, writeFileSync } from "node:fs";
-import { execFileSync } from "node:child_process";
+import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import sharp from "sharp";
 
 const ROOT = new URL("../public/og/", import.meta.url);
 mkdirSync(ROOT, { recursive: true });
@@ -24,8 +24,10 @@ function esc(text) {
 function svg([id, eyebrow, title, subtitle]) {
   const isArabic = /[\u0600-\u06FF]/.test(`${title}${subtitle}`);
   const dir = isArabic ? "rtl" : "ltr";
-  const anchor = isArabic ? "end" : "start";
-  const x = isArabic ? 1030 : 96;
+  const anchor = isArabic ? "middle" : "start";
+  const x = isArabic ? 600 : 96;
+  const titleSize = isArabic ? 46 : 58;
+  const subtitleSize = isArabic ? 28 : 32;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#050816"/><stop offset="0.55" stop-color="#0D1424"/><stop offset="1" stop-color="#132036"/></linearGradient>
@@ -36,8 +38,8 @@ function svg([id, eyebrow, title, subtitle]) {
   <circle cx="180" cy="560" r="230" fill="#2DD4BF" opacity="0.10"/>
   <rect x="72" y="72" width="1056" height="486" rx="28" fill="#0D1424" stroke="#20324E" stroke-width="2"/>
   <text x="${x}" y="158" direction="${dir}" text-anchor="${anchor}" fill="#93C5FD" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="800" letter-spacing="1.5">${esc(eyebrow)}</text>
-  <text x="${x}" y="286" direction="${dir}" text-anchor="${anchor}" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="58" font-weight="900">${esc(title)}</text>
-  <text x="${x}" y="360" direction="${dir}" text-anchor="${anchor}" fill="#B6C2D6" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="650">${esc(subtitle)}</text>
+  <text x="${x}" y="286" direction="${dir}" text-anchor="${anchor}" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="${titleSize}" font-weight="900">${esc(title)}</text>
+  <text x="${x}" y="360" direction="${dir}" text-anchor="${anchor}" fill="#B6C2D6" font-family="Inter, Arial, sans-serif" font-size="${subtitleSize}" font-weight="650">${esc(subtitle)}</text>
   <rect x="${isArabic ? 766 : 96}" y="424" width="338" height="58" rx="8" fill="url(#accent)"/>
   <text x="${isArabic ? 935 : 265}" y="462" text-anchor="middle" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800">applycraft.io</text>
 </svg>`;
@@ -46,8 +48,29 @@ function svg([id, eyebrow, title, subtitle]) {
 for (const image of images) {
   const id = image[0];
   const svgPath = join(ROOT.pathname, `${id}.svg`);
-  const pngPath = join(ROOT.pathname, `${id}.png`);
   writeFileSync(svgPath, svg(image), "utf8");
-  execFileSync("rsvg-convert", ["-w", "1200", "-h", "630", "-o", pngPath, svgPath], { stdio: "inherit" });
-  console.log(`✓ Generated public/og/${id}.png`);
+}
+
+const svgFiles = readdirSync(ROOT.pathname)
+  .filter((file) => file.endsWith(".svg"))
+  .sort();
+
+for (const file of svgFiles) {
+  const svgPath = join(ROOT.pathname, file);
+  const pngPath = join(ROOT.pathname, file.replace(/\.svg$/, ".png"));
+
+  try {
+    await sharp(svgPath, { density: 150 })
+      .resize(1200, 630, { fit: "fill" })
+      .png({ compressionLevel: 9, adaptiveFiltering: true })
+      .toFile(pngPath);
+    console.log(`✓ Generated public/og/${file.replace(/\.svg$/, ".png")}`);
+  } catch (error) {
+    console.error(`Failed to generate public/og/${file.replace(/\.svg$/, ".png")} from public/og/${file}: ${error.message}`);
+    process.exitCode = 1;
+  }
+}
+
+if (process.exitCode) {
+  throw new Error("One or more OG image files failed to generate.");
 }
