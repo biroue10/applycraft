@@ -35,9 +35,10 @@ img{max-width:100%;height:auto}
 .nav{position:sticky;top:0;z-index:100;background:#06080Fdd;backdrop-filter:blur(12px);
   padding:0 32px;height:68px;
   display:flex;align-items:center;justify-content:space-between}
-.nav-logo{display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;line-height:1;flex-shrink:0}
-.brand-logo-img{display:block;height:32px;width:auto;max-width:180px;object-fit:contain;
-  filter:drop-shadow(0 6px 12px rgba(37,99,235,.16))}
+.nav-logo{display:inline-flex;align-items:center;justify-content:flex-start;gap:.5rem;text-decoration:none;
+  line-height:1;flex-shrink:0;overflow:visible;background:transparent;border:0;padding:0}
+.brand-logo-img{display:block;height:30px;width:auto;max-width:170px;object-fit:contain;
+  background:transparent;border:0;box-shadow:none}
 .nav-logo:hover,.nav-logo:focus{text-decoration:none}
 .nav-cta{background:linear-gradient(135deg,var(--color-accent-primary),#3B82F6);color:#fff;border:none;
   border-radius:var(--radius-sm);padding:9px 20px;font-size:14px;font-weight:700;cursor:pointer;
@@ -165,4 +166,8 @@ details p{padding:0 20px 16px;font-size:13.5px;color:var(--color-text-secondary)
   .btn-secondary{margin-left:0}
   .footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
   .footer-bottom{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:480px){
+  .brand-logo-img{height:24px;max-width:125px}
+  .nav-cta{padding:7px 10px;font-size:12.5px}
 }

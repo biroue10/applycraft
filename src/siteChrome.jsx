@@ -22,15 +22,17 @@ function BrandLogoImage({ compact = false, style = {} }) {
       className="ac-brand-logo-img"
       src={BRAND_LOGO_SRC}
       alt="ApplyCraft"
-      width="221"
-      height="68"
+      width="1180"
+      height="304"
       style={{
         display: "block",
-        height: compact ? 28 : 32,
+        height: compact ? 28 : 30,
         width: "auto",
-        maxWidth: compact ? 145 : 180,
+        maxWidth: compact ? 145 : 170,
         objectFit: "contain",
-        filter: "drop-shadow(0 6px 12px rgba(37, 99, 235, 0.16))",
+        background: "transparent",
+        border: 0,
+        boxShadow: "none",
         ...style,
       }}
     />
@@ -44,6 +46,8 @@ function Logo({ compact = false }) {
       display: "inline-flex",
       alignItems: "center",
       lineHeight: 1,
+      flexShrink: 0,
+      overflow: "visible",
     }}>
       <BrandLogoImage compact={compact} />
     </a>
@@ -109,7 +113,7 @@ export function SiteHeader({
           padding: 0 16px !important;
         }
         .ac-nav-logo {
-          max-width: 142px !important;
+          max-width: 145px !important;
         }
         .ac-brand-logo-img { height: 28px !important; max-width: 145px !important; }
         .ac-site-nav-links {
@@ -124,6 +128,21 @@ export function SiteHeader({
         }
         .ac-site-mobile-menu {
           display: flex !important;
+        }
+      }
+      @media (max-width: 480px) {
+        .ac-nav-logo {
+          max-width: 125px !important;
+        }
+        .ac-brand-logo-img { height: 24px !important; max-width: 125px !important; }
+        .ac-nav-cta {
+          padding: 7px 10px !important;
+          font-size: 12.5px !important;
+        }
+        .ac-site-mobile-menu-button {
+          width: 36px !important;
+          height: 36px !important;
+          margin-inline-start: 6px !important;
         }
       }
     `}</style>
@@ -159,9 +178,12 @@ export function SiteHeader({
             textDecoration: "none",
             display: "inline-flex",
             alignItems: "center",
+            justifyContent: "flex-start",
             lineHeight: 1,
+            background: "transparent",
+            overflow: "visible",
           }}>
-          <BrandLogoImage style={{ height: 34, maxWidth: 180 }} />
+          <BrandLogoImage style={{ height: 30, maxWidth: 170 }} />
         </LogoTag>
         <nav aria-label="Primary tools" className="ac-site-nav-links" style={{ display: "flex", gap: 4, marginInlineStart: 18 }}>
           {items.map((item) => {

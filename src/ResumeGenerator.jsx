@@ -52,15 +52,17 @@ function AppBrandLogo({ compact = false, style = {} }) {
     <img
       src={BRAND_LOGO_SRC}
       alt="ApplyCraft"
-      width="221"
-      height="68"
+      width="1180"
+      height="304"
       style={{
         display: "block",
-        height: compact ? 28 : 32,
+        height: compact ? 28 : 30,
         width: "auto",
-        maxWidth: compact ? 145 : 180,
+        maxWidth: compact ? 145 : 170,
         objectFit: "contain",
-        filter: "drop-shadow(0 6px 12px rgba(37, 99, 235, 0.16))",
+        background: "transparent",
+        border: 0,
+        boxShadow: "none",
         ...style,
       }}
     />
