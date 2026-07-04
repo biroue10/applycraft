@@ -79,7 +79,7 @@ async function testWorkerUpstreamControls() {
     assert.equal((await readJson(response)).result, "Improved bullet.");
     assert.equal(response.headers.get("Cache-Control"), "no-store");
     assert.equal(response.headers.get("Access-Control-Allow-Origin"), ORIGIN);
-    assert.equal(upstreamBody.model, "claude-3-5-haiku-20241022");
+    assert.equal(upstreamBody.model, "claude-haiku-4-5");
     assert.equal(upstreamBody.max_tokens, 150);
     assert.equal(upstreamBody.messages.length, 1);
     assert.ok(!("tools" in upstreamBody));
@@ -159,7 +159,7 @@ async function testTranslateDocumentEndpoint() {
     assert.equal(json.document.email, "isaac@example.com");
     assert.equal(json.document.url, "https://www.linkedin.com/in/isaac-biroue");
     assert.equal(json.document.certifications, "RHCSA — Red Hat");
-    assert.equal(upstreamBody.model, "claude-3-5-sonnet-latest");
+    assert.equal(upstreamBody.model, "claude-sonnet-5");
     assert.ok(upstreamBody.system.includes("Return valid JSON only"));
     assert.ok(upstreamBody.messages[0].content[0].text.includes("Microsoft Intune"));
     assert.ok(!("metadata" in upstreamBody));

@@ -2,7 +2,7 @@ const DEFAULT_ALLOWED_ORIGINS = ["https://applycraft.io"];
 const DEV_ALLOWED_ORIGINS = ["http://localhost:5173", "http://localhost:4173", "http://127.0.0.1:5173", "http://127.0.0.1:4173"];
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_VERSION = "2023-06-01";
-const MODEL = "claude-3-5-haiku-20241022";
+const MODEL = "claude-haiku-4-5";
 const MAX_BODY_BYTES = 16 * 1024;
 const MAX_TRANSLATION_BODY_BYTES = 64 * 1024;
 const MAX_SHARE_BODY_BYTES = 128 * 1024;
@@ -505,7 +505,7 @@ async function handleTranslateDocument(request, env) {
 
   const promptParts = buildTranslationPrompt(validation.value);
   const aiRequest = {
-    model: env.ANTHROPIC_TRANSLATION_MODEL || "claude-3-5-sonnet-latest",
+    model: env.ANTHROPIC_TRANSLATION_MODEL || "claude-sonnet-5",
     max_tokens: 2600,
     temperature: 0.1,
     system: promptParts.system,
