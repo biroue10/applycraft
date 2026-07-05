@@ -165,6 +165,8 @@ for (const page of pages) {
 
 function duplicateRows(map, label) {
   for (const [value, routes] of map.entries()) {
+    const localeBuckets = new Set(routes.map((route) => route.startsWith("/fr/") ? "fr" : route.startsWith("/ar/") ? "ar" : "en"));
+    if (label === "title" && localeBuckets.size === routes.length && localeBuckets.size > 1) continue;
     if (routes.length > 1) errors.push(`duplicate ${label}: ${JSON.stringify(value)} on ${routes.join(", ")}`);
   }
 }

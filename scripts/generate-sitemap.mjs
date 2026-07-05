@@ -7,6 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const PUBLIC_DIR = join(ROOT, "public");
 const SITE = "https://applycraft.io";
+const TODAY = new Date().toISOString().slice(0, 10);
 const STATIC_APP_ROUTES = [
   "/",
   "/fr/",
@@ -57,9 +58,9 @@ function gitLastmod(filePath) {
       cwd: ROOT,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
-    }).trim();
+    }).trim() || TODAY;
   } catch {
-    return "";
+    return TODAY;
   }
 }
 

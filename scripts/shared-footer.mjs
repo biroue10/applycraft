@@ -18,7 +18,8 @@ export function footerHtml(lang = "en") {
           <h2>${f[section.key]}</h2>
           ${section.links.map((link) => {
             const rel = link.external ? ` rel="noopener"` : "";
-            return `<a href="${link.href}"${rel}>${f[link.labelKey] || link.labelKey}</a>`;
+            const href = link.labelKey === "blog" && (lang === "fr" || lang === "ar") ? "/fr/blog/" : link.href;
+            return `<a href="${href}"${rel}>${f[link.labelKey] || link.labelKey}</a>`;
           }).join("")}
         </div>`).join("\n        ");
 
