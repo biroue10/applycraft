@@ -73,6 +73,7 @@ export function buildResumeTranslationRequest(form, { sourceLanguage = "auto", t
       "Do not invent achievements or add experience.",
       "Use natural, concise, professional resume language in the target language.",
       ...(targetLanguage === "ar" ? ["Localize French/English month names in date ranges to Arabic month names, and keep mixed technical titles in natural Arabic order, e.g. مهندس Full Stack."] : []),
+      "Translate field-by-field: title stays title, institution/school stays institution/school, dates stay dates, and descriptions stay descriptions.",
       "Keep bullet points as bullet points and preserve dates and numbers.",
       "Preserve section boundaries, blank-line entry breaks, and the number of entries in each section.",
       "Return valid JSON only with the same top-level field keys.",

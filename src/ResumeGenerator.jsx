@@ -12,6 +12,7 @@ import { asArray, isResumeDataEmpty, normalizeResumeData } from "./resumeData.js
 import { linkifyText, normalizeLinkHref } from "./utils/linkify.js";
 import { getContactHref, normalizeContactItems } from "./utils/contactLinks.js";
 import { formatPhoneForResume } from "./utils/phone.js";
+import { detectImportedResumeLanguage } from "./importLanguage.js";
 import { ResumePaper, CoverLetterPaper, structureSectionItems } from "./documents/DocumentPapers.jsx";
 import { analyzeResumeQuality, formatDateRange, isPlaceholderOnly, normalizeDateRange, presentLabel } from "./resumeQuality.js";
 import {
@@ -1447,6 +1448,13 @@ function mergeTranslatedEntries(key, originalEntries = [], translatedText = "") 
       next.titleUrl = oldEntry.titleUrl || incoming.titleUrl || "";
       next.startDate = oldEntry.startDate || incoming.startDate || "";
       next.endDate = oldEntry.endDate || incoming.endDate || "";
+      const dateTokens = new Set([next.startDate, next.endDate].filter(Boolean).map((value) => String(value).trim()));
+      next.description = String(next.description || "")
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .filter((line) => !dateTokens.has(line) && !(/^\d{4}$/.test(line) && dateTokens.has(line)))
+        .join("\n");
     }
     if (schema.type === "role") {
       next.startDate = oldEntry.startDate || incoming.startDate || "";
@@ -3134,6 +3142,7 @@ export default function ResumeGenerator() {
   const [aiPolished, setAiPolished] = useState(false);
   const [translating, setTranslating] = useState(false);
   const [translationConfirm, setTranslationConfirm] = useState({ open: false, target: null });
+  const [importLanguageNotice, setImportLanguageNotice] = useState({ open: false, detected: "", previous: "" });
   const [translationReview, setTranslationReview] = useState({ open: false, original: null, translated: null, fields: [], meta: null, warning: "" });
   const [translationDuplicate, setTranslationDuplicate] = useState({ open: false, existingId: "", target: null });
   const [photoUrl, setPhotoUrl] = useState(null);
@@ -3548,10 +3557,14 @@ export default function ResumeGenerator() {
   // Replaces the form with clean structured fields — no raw text dumps.
   const hydrateFromParsed = useCallback((p) => {
     const entry = (fields) => ({ id: uid(), visible: true, ...fields });
+    const detectedDocumentLanguage = detectImportedResumeLanguage(p);
+    const previousDocumentLanguage = docLang;
     const next = migrateForm({
       name: p.name || "", title: p.title || "", email: p.email || "", phone: p.phone || "",
       location: p.location || "", linkedin: p.linkedin || "", website: p.website || "",
       summary: p.summary || "", sectionTitles: {}, addedSections: [],
+      documentLanguage: detectedDocumentLanguage,
+      translationMeta: null,
       experienceEntries: (p.experience || []).map((e) => entry({
         title: e.title || "", company: [e.company, e.location].filter(Boolean).join(" · "),
         startDate: e.startDate || "", endDate: e.endDate || "", isCurrent: Boolean(e.isCurrent),
@@ -3570,8 +3583,14 @@ export default function ResumeGenerator() {
       extracurricularEntries: (p.extracurricular || []).map((it) => entry(it)),
     });
     setForm(next);
+    setDocumentLanguage(detectedDocumentLanguage);
+    setImportLanguageNotice({
+      open: Boolean(previousDocumentLanguage && previousDocumentLanguage !== detectedDocumentLanguage),
+      detected: detectedDocumentLanguage,
+      previous: previousDocumentLanguage,
+    });
     if (/^\+\d/.test(p.phone || "")) setPhoneCode(LANG_CODE[interfaceLanguage] || "+1");
-  }, [interfaceLanguage]);
+  }, [docLang, interfaceLanguage]);
   // Per-section entry handlers shared by every SectionCard.
   const addSectionEntry = useCallback((key) => {
     const e = blankEntry(key);
@@ -4197,10 +4216,10 @@ export default function ResumeGenerator() {
 
   async function translateCV() {
     if (translating) return;
-    const langCode = docLang || "en";
-    if (langCode === "en") return;
-    const targetName = selectedDocumentLang?.native || selectedDocumentLang?.name || langCode;
     const confirm = translationConfirm;
+    const langCode = confirm.target?.code || docLang || "en";
+    if (langCode === "en") return;
+    const targetName = confirm.target?.native || confirm.target?.name || selectedDocumentLang?.native || selectedDocumentLang?.name || langCode;
     const sourceResume = confirm.retranslate && confirm.sourceResumeId ? resumes.getResume(confirm.sourceResumeId) : null;
     const sourceForm = sourceResume?.data ? migrateForm({ ...emptyResumeForm, ...sourceResume.data }) : form;
     const sourceVersionId = confirm.retranslate ? confirm.sourceResumeId : currentResumeId;
@@ -5953,6 +5972,37 @@ Awards: ${form.awards}`;
           <button onClick={() => setUploadedResume(null)}
             style={{ fontSize: 11, color: C.text3, background: "none", border: "none",
               cursor: "pointer", padding: 0, fontFamily: "inherit" }}>✕</button>
+        </div>
+      )}
+
+      {importLanguageNotice.open && (
+        <div role="status" style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 10, flexWrap: "wrap", padding: "10px 12px", background: `${C.accent}12`,
+          border: `1px solid ${C.accent}30`, borderRadius: 10, marginBottom: 14,
+          color: C.text2, fontSize: 12.5, lineHeight: 1.45 }}>
+          <span>
+            {translateLabel(bu.importLanguageDetected, {
+              detected: translationLanguageName(importLanguageNotice.detected),
+              previous: translationLanguageName(importLanguageNotice.previous),
+            })}
+          </span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <button type="button"
+              onClick={() => {
+                const target = languageByCode(importLanguageNotice.previous);
+                setTranslationConfirm({ open: true, target, kind: "resume" });
+                setImportLanguageNotice({ open: false, detected: "", previous: "" });
+              }}
+              style={{ border: "none", background: `${C.accent}18`, color: C.accent2, borderRadius: 8,
+                padding: "7px 10px", fontSize: 12, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
+              {translateLabel(bu.importLanguageTranslateOffer, { language: translationLanguageName(importLanguageNotice.previous) })}
+            </button>
+            <button type="button" onClick={() => setImportLanguageNotice({ open: false, detected: "", previous: "" })}
+              style={{ border: "none", background: C.elevated, color: C.text2, borderRadius: 8,
+                padding: "7px 10px", fontSize: 12, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
+              {bu.importLanguageDismiss}
+            </button>
+          </span>
         </div>
       )}
 

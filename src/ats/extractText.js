@@ -8,6 +8,7 @@
 import * as pdfjsLib from "pdfjs-dist";
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { extractDocxText } from "./docxText.js";
+import { textItemsToLines } from "./pdfText.js";
 
 if (typeof window !== "undefined") {
   pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
@@ -19,17 +20,7 @@ async function extractPdf(buf) {
   for (let p = 1; p <= doc.numPages; p++) {
     const page = await doc.getPage(p);
     const content = await page.getTextContent();
-    let line = "", lastY = null;
-    const lines = [];
-    for (const it of content.items) {
-      if (typeof it.str !== "string") continue;
-      const y = Math.round(it.transform[5]);
-      if (lastY !== null && Math.abs(y - lastY) > 3) { if (line.trim()) lines.push(line.trim()); line = ""; }
-      line += (line && !line.endsWith(" ") && !it.str.startsWith(" ") ? " " : "") + it.str;
-      lastY = y;
-    }
-    if (line.trim()) lines.push(line.trim());
-    out.push(lines.join("\n"));
+    out.push(textItemsToLines(content.items).join("\n"));
   }
   try { doc.destroy(); } catch { /* noop */ }
   return out.join("\n");

@@ -152,6 +152,9 @@ const builder = {
   ,"dismissImportTemplatePicker": "Dismiss template picker"
   ,"chooseImportedTemplate": "Choose {template} for imported resume"
   ,"selectedTemplateName": "Current design: {template}"
+  ,"importLanguageDetected": "Imported content looks like {detected}. Your previous document language was {previous}; the resume was kept untranslated."
+  ,"importLanguageTranslateOffer": "Translate to {language}"
+  ,"importLanguageDismiss": "Keep as imported"
   ,"full": "Full"
 };
 

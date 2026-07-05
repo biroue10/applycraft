@@ -33,6 +33,7 @@ const request = buildResumeTranslationRequest(original, {
 assert.equal(request.type, "resume");
 assert.equal(request.targetLanguage, "ar");
 assert.equal(request.content.summary, original.summary);
+assert.ok(request.rules.some((rule) => /field-by-field/.test(rule)), "translation request should require field-by-field structure preservation");
 assert.ok(request.preserveTerms.includes("Microsoft Intune"));
 assert.ok(request.preserveTerms.includes("Active Directory"));
 assert.ok(request.preserveTerms.includes("Jamf Pro"));
@@ -104,6 +105,7 @@ assert.match(app, /translateSectionsPartial/, "users should be warned when secti
 assert.match(app, /EVENTS\.TRANSLATION_STARTED/, "translation analytics should track safe metadata only");
 assert.match(app, /EVENTS\.TRANSLATION_COPY_CREATED/, "copy-created analytics should track safe metadata only");
 assert.match(translationSource, /\/api\/translate-document/, "translation must call the dedicated backend endpoint");
+assert.match(translationSource, /title stays title, institution\/school stays institution\/school/, "translation rules must preserve education field mapping");
 assert.match(translationSource, /translation_limit_reached/, "frontend should handle worker translation limits");
 assert.doesNotMatch(app, /callAi\("translate-resume"/, "translation must not use the generic frontend AI endpoint");
 assert.match(app, /translatedBadge/, "AI translated fields should show a review badge");

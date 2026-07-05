@@ -9,7 +9,7 @@ Expérience
 Ingénieur Logiciel Senior
 Groupe OCP — Casablanca · Mars 2022 – Aujourd'hui
 • Conçu des services Node.js et React utilisés par 12 équipes internes.
-• Réduit le temps de déploiement de 45 % grâce à l'automatisation CI/CD.
+• Réduit le temps de déploiement de 45 % grâce à l'automatisation CI/CD et à la standardisation des pipelines, réduisant le temps de traitement des demandes de 40 %.
 • Encadré 4 développeurs juniors sur les pratiques de revue de code.
 
 Développeur Full Stack

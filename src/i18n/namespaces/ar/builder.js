@@ -152,6 +152,9 @@ const builder = {
   ,"dismissImportTemplatePicker": "إغلاق منتقي القوالب"
   ,"chooseImportedTemplate": "اختيار {template} للسيرة الذاتية المستوردة"
   ,"selectedTemplateName": "التصميم الحالي: {template}"
+  ,"importLanguageDetected": "يبدو أن المحتوى المستورد باللغة {detected}. كانت لغة المستند السابقة {previous}؛ تم الاحتفاظ بالسيرة دون ترجمة."
+  ,"importLanguageTranslateOffer": "ترجمة إلى {language}"
+  ,"importLanguageDismiss": "الاحتفاظ كما هو"
   ,"full": "كامل"
 };
 

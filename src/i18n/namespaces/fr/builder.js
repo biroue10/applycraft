@@ -152,6 +152,9 @@ const builder = {
   ,"dismissImportTemplatePicker": "Fermer le sélecteur de modèle"
   ,"chooseImportedTemplate": "Choisir {template} pour le CV importé"
   ,"selectedTemplateName": "Design actuel : {template}"
+  ,"importLanguageDetected": "Le contenu importé semble être en {detected}. La langue précédente du document était {previous} ; le CV a été conservé sans traduction."
+  ,"importLanguageTranslateOffer": "Traduire en {language}"
+  ,"importLanguageDismiss": "Conserver tel quel"
   ,"full": "Plein écran"
 };
 

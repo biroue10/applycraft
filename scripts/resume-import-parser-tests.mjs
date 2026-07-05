@@ -4,8 +4,11 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseResume } from "../src/ats/parseResume.js";
 import { extractDocxText } from "../src/ats/docxText.js";
+import { textItemsToLines } from "../src/ats/pdfText.js";
+import { detectImportedResumeLanguage } from "../src/importLanguage.js";
 import { formatPhoneForResume } from "../src/utils/phone.js";
 import { postProcessTranslatedResume } from "../src/translation.js";
+import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 
 const root = dirname(fileURLToPath(new URL("../package.json", import.meta.url)));
 const fixtureDir = join(root, "tests/fixtures");
@@ -19,12 +22,23 @@ for (const name of ["french-import-resume.docx", "french-import-resume.pdf"]) {
 const parsed = parseResume(text);
 const docxText = extractDocxText(await readFile(join(fixtureDir, "french-import-resume.docx")));
 const parsedDocx = parseResume(docxText);
+const pdfBytes = await readFile(join(fixtureDir, "french-import-resume.pdf"));
+const pdfDoc = await pdfjs.getDocument({ data: new Uint8Array(pdfBytes), useSystemFonts: true, isEvalSupported: false }).promise;
+const pdfPages = [];
+for (let pageNumber = 1; pageNumber <= pdfDoc.numPages; pageNumber += 1) {
+  const page = await pdfDoc.getPage(pageNumber);
+  const content = await page.getTextContent();
+  pdfPages.push(textItemsToLines(content.items).join("\n"));
+}
+await pdfDoc.destroy();
+const parsedPdf = parseResume(pdfPages.join("\n"));
 
 assert.equal(parsed.name, "Youssef El Amine");
 assert.equal(parsed.title, "Ingénieur Logiciel Senior");
 assert.equal(parsed.phone, "+212 6 61 23 45 67");
 assert.equal(formatPhoneForResume(parsed.phone, "+1", "+1"), "+212 6 61 23 45 67", "international phones must not receive phantom +1");
 assert.equal(parsed.website, "", "import must not inject applycraft.io or any placeholder website");
+assert.equal(detectImportedResumeLanguage(parsedDocx), "fr", "imported French resume should set document language from content");
 
 assert.equal(parsed.experience.length, 2, "French fixture should produce exactly 2 experience entries");
 assert.equal(parsed.experience[0].title, "Ingénieur Logiciel Senior");
@@ -33,6 +47,7 @@ assert.equal(parsed.experience[0].location, "Casablanca");
 assert.equal(parsed.experience[0].startDate, "Mars 2022");
 assert.equal(parsed.experience[0].endDate, "Present");
 assert.equal(parsed.experience[0].bullets.length, 3);
+assert.match(parsed.experience[0].bullets[1], /temps de traitement des demandes de 40 %/, "wrapped PDF regression bullet should exist in source expectation");
 assert.equal(parsed.experience[1].title, "Développeur Full Stack");
 assert.equal(parsed.experience[1].company, "Inwi");
 assert.equal(parsed.experience[1].location, "Casablanca");
@@ -53,6 +68,20 @@ assert.equal(parsedDocx.experience.length, 2, "generated DOCX fixture should pro
 assert.equal(parsedDocx.experience[1].title, "Développeur Full Stack", "DOCX second role title must not become a bullet");
 assert.equal(parsedDocx.education.length, 1, "generated DOCX fixture should produce exactly 1 education entry");
 assert.equal(parsedDocx.phone, "+212 6 61 23 45 67");
+assert.equal(parsedPdf.experience.length, 2, "generated PDF fixture should produce exactly 2 experience entries");
+assert.deepEqual(
+  parsedPdf.experience.map((entry) => entry.bullets),
+  parsedDocx.experience.map((entry) => entry.bullets),
+  "PDF wrapped bullets should merge to match DOCX import bullets exactly"
+);
+assert.equal(parsedPdf.education.length, 1, "generated PDF fixture should produce exactly 1 education entry");
+
+const appSource = await readFile(join(root, "src/ResumeGenerator.jsx"), "utf8");
+const importHandler = appSource.slice(appSource.indexOf("onImprove={async"), appSource.indexOf("startResume(\"resume_upload\")"));
+assert.match(importHandler, /hydrateFromParsed\(parsed\)/, "import should hydrate parsed content directly");
+assert.doesNotMatch(importHandler, /translateCV|translateDocumentContent|setTranslationConfirm|callAi/, "import must not trigger or queue AI translation");
+assert.match(appSource, /setDocumentLanguage\(detectedDocumentLanguage\)/, "import should set document language from detected content");
+assert.doesNotMatch(appSource, /hydrateFromParsed[\s\S]{0,1400}setDocumentLanguagePreference/, "import hydration must not apply persisted document-language preference");
 
 const arabic = postProcessTranslatedResume({
   title: "Full Stack مهندس",
