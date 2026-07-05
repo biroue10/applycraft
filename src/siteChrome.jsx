@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FOOTER_LINK_SECTIONS } from "./footerLinks.js";
+import { FOOTER_LINK_SECTIONS, localizedFooterHref } from "./footerLinks.js";
 import { FOOTER_UI, LANDING_UI } from "./i18n/index.js";
 import { PRODUCT } from "./product.js";
 
@@ -39,9 +39,33 @@ function BrandLogoImage({ compact = false, style = {} }) {
   );
 }
 
-function Logo({ compact = false }) {
+function homeHrefForLang(lang = "en") {
+  if (lang === "fr") return "/fr/";
+  if (lang === "ar") return "/ar/";
+  return "/";
+}
+
+function defaultCtaHrefForLang(lang = "en") {
+  if (lang === "fr") return "/fr/creer-cv-gratuit/";
+  if (lang === "ar") return "/ar/free-resume-builder/";
+  return "/resume/templates/";
+}
+
+function localizeNavHref(href, lang = "en") {
+  if (lang === "fr") {
+    if (href === "/") return "/fr/";
+    if (href === "/ats-checker/") return "/ats-checker-fr/";
+  }
+  if (lang === "ar") {
+    if (href === "/") return "/ar/";
+    if (href === "/ats-checker/") return "/ats-checker-ar/";
+  }
+  return href;
+}
+
+function Logo({ compact = false, lang = "en" }) {
   return (
-    <a href="/" aria-label="ApplyCraft home" style={{
+    <a href={homeHrefForLang(lang)} aria-label="ApplyCraft home" style={{
       textDecoration: "none",
       display: "inline-flex",
       alignItems: "center",
@@ -71,7 +95,7 @@ export function SiteHeader({
   lang = "en",
   navItems,
   onLogoClick,
-  ctaHref = "/resume/templates/",
+  ctaHref,
   ctaLabel,
   onCtaClick,
   renderLanguageSelector,
@@ -83,10 +107,12 @@ export function SiteHeader({
   const f = FOOTER_UI[lang] || FOOTER_UI.en;
   const items = (navItems || DEFAULT_NAV_LINKS).map((item) => ({
     ...item,
+    href: item.href ? localizeNavHref(item.href, lang) : item.href,
     label: item.label || (item.footerKey ? f[item.footerKey] : "") || (item.labelKey ? l[item.labelKey] : "") || item.fallback || item.id || "",
   }));
   const LogoTag = onLogoClick ? "button" : "a";
   const cta = ctaLabel || l.createResume || "Create my resume";
+  const resolvedCtaHref = ctaHref || defaultCtaHrefForLang(lang);
   const controlledMobileMenu = typeof onMobileMenuToggle === "function";
   const menuOpen = controlledMobileMenu ? mobileMenuOpen : internalMenuOpen;
   const toggleMobileMenu = controlledMobileMenu
@@ -171,7 +197,7 @@ export function SiteHeader({
         justifyContent: "space-between",
       }}>
         <LogoTag
-          {...(onLogoClick ? { type: "button", onClick: onLogoClick } : { href: "/" })}
+          {...(onLogoClick ? { type: "button", onClick: onLogoClick } : { href: homeHrefForLang(lang) })}
           className="ac-nav-logo"
           aria-label="ApplyCraft home"
           style={{
@@ -234,7 +260,7 @@ export function SiteHeader({
             {cta}
           </button>
         ) : (
-        <a className="ac-nav-cta" href={ctaHref} style={{
+        <a className="ac-nav-cta" href={resolvedCtaHref} style={{
           background: SITE_COLORS.grad,
           color: "#fff",
           textDecoration: "none",
@@ -305,7 +331,7 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 40, marginBottom: 48 }}>
           <div style={{ maxWidth: 280 }}>
-            <Logo />
+            <Logo lang={lang} />
             <p style={{ fontSize: 13, color: SITE_COLORS.text3, lineHeight: 1.75, margin: "12px 0 16px" }}>
               {footerText(f.brand)}
             </p>
@@ -318,7 +344,7 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
                 {section.links.map((link) => (
                   <a
                     key={`${link.href}-${link.labelKey}`}
-                    href={link.href}
+                    href={localizedFooterHref(link, lang)}
                     target={link.external ? "_blank" : undefined}
                     rel={link.external ? "noopener noreferrer" : undefined}
                     style={lk}

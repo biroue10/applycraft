@@ -36,8 +36,9 @@ function nav(lang = "en", hrefOverride = "") {
     interfaceLanguage: lang === "en" ? "" : lang,
     documentLanguage: lang === "ar" ? "ar" : "",
   });
+  const homeHref = lang === "fr" ? "/fr/" : lang === "ar" ? "/ar/" : "/";
   return `<nav class="nav">
-  <a href="/" class="nav-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="eager" decoding="async"></a>
+  <a href="${homeHref}" class="nav-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="eager" decoding="async"></a>
   <a href="${href}" class="nav-cta">${label}</a>
 </nav>`;
 }

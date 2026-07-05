@@ -77,6 +77,7 @@ function page(config) {
     interfaceLanguage: config.lang === "en" ? "" : config.lang,
     documentLanguage: config.dir === "rtl" ? config.lang : "",
   });
+  const homeHref = config.lang === "fr" ? "/fr/" : config.lang === "ar" ? "/ar/" : "/";
   return `<!doctype html>
 <html lang="${config.lang}"${config.dir ? ` dir="${config.dir}"` : ""}>
 <head>
@@ -111,7 +112,7 @@ ${localeAlternates(config.ogAlternateLocales)}
 ${config.software ? `<script type="application/ld+json">${appSchema(config.lang)}</script>` : ""}
 </head>
 <body>
-<nav class="nav"><a href="/" class="nav-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="eager" decoding="async"></a><a href="${builderUrl}" class="nav-cta">${config.cta}</a></nav>
+<nav class="nav"><a href="${homeHref}" class="nav-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="eager" decoding="async"></a><a href="${builderUrl}" class="nav-cta">${config.cta}</a></nav>
 <main>
   <div class="page">
     ${languageSwitcher(config.alternates)}

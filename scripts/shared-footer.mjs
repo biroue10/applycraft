@@ -1,4 +1,4 @@
-import { FOOTER_LINK_SECTIONS } from "../src/footerLinks.js";
+import { FOOTER_LINK_SECTIONS, localizedFooterHref } from "../src/footerLinks.js";
 import en from "../src/i18n/namespaces/en/footer.js";
 import fr from "../src/i18n/namespaces/fr/footer.js";
 import ar from "../src/i18n/namespaces/ar/footer.js";
@@ -14,11 +14,12 @@ function footerText(value) {
 
 export function footerHtml(lang = "en") {
   const f = FOOTER_UI[lang] || FOOTER_UI.en;
+  const homeHref = lang === "fr" ? "/fr/" : lang === "ar" ? "/ar/" : "/";
   const linkHtml = FOOTER_LINK_SECTIONS.map((section) => `<div>
           <h2>${f[section.key]}</h2>
           ${section.links.map((link) => {
             const rel = link.external ? ` rel="noopener"` : "";
-            const href = link.labelKey === "blog" && (lang === "fr" || lang === "ar") ? "/fr/blog/" : link.href;
+            const href = localizedFooterHref(link, lang);
             return `<a href="${href}"${rel}>${f[link.labelKey] || link.labelKey}</a>`;
           }).join("")}
         </div>`).join("\n        ");
@@ -27,7 +28,7 @@ export function footerHtml(lang = "en") {
   <div class="footer-shell">
     <div class="footer-top">
       <div class="footer-brand">
-        <a href="/" class="footer-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="lazy" decoding="async"></a>
+        <a href="${homeHref}" class="footer-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="lazy" decoding="async"></a>
         <p>${footerText(f.brand)}</p>
         <a href="mailto:hello@applycraft.io">hello@applycraft.io</a>
       </div>
