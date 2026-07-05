@@ -145,6 +145,13 @@ const builder = {
   ,"useTemplateNamed": "Use {template} template"
   ,"useRecommendedCoverTemplate": "Use recommended cover letter template"
   ,"useCoverTemplateNamed": "Use {template} cover letter template"
+  ,"importTemplateEyebrow": "Imported resume"
+  ,"importTemplateTitle": "Your resume is ready — choose a design"
+  ,"importTemplateSub": "Browse templates with your imported content in the preview. Selecting a design updates the live resume instantly."
+  ,"keepThisDesign": "Keep this design"
+  ,"dismissImportTemplatePicker": "Dismiss template picker"
+  ,"chooseImportedTemplate": "Choose {template} for imported resume"
+  ,"selectedTemplateName": "Current design: {template}"
   ,"full": "Full"
 };
 

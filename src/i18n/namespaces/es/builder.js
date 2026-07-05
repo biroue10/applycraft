@@ -95,7 +95,14 @@ const builder = {
   "notSavedHeaderTooltip": "Por privacidad, los campos se borran cuando sales o vuelves a abrir el editor.",
   "sessionSaveTooltip": "Conserva esta versión solo hasta que se cierre esta página.",
   "saveResumeTooltip": "Conserva esta versión solo hasta que se cierre esta página.",
-  "noAutosaveReminder": "Descarga tu currículum antes de cerrar esta página. Tu contenido no se guarda automáticamente."
+  "noAutosaveReminder": "Descarga tu currículum antes de cerrar esta página. Tu contenido no se guarda automáticamente.",
+  "importTemplateEyebrow": "Currículum importado",
+  "importTemplateTitle": "Tu currículum está listo — elige un diseño",
+  "importTemplateSub": "Explora plantillas con tu contenido importado en la vista previa. El diseño seleccionado actualiza el currículum al instante.",
+  "keepThisDesign": "Conservar este diseño",
+  "dismissImportTemplatePicker": "Cerrar selector de plantilla",
+  "chooseImportedTemplate": "Elegir {template} para el currículum importado",
+  "selectedTemplateName": "Diseño actual: {template}"
 };
 
 export default builder;

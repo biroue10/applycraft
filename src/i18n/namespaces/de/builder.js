@@ -95,7 +95,14 @@ const builder = {
   "notSavedHeaderTooltip": "Aus Datenschutzgründen werden Formularfelder gelöscht, wenn du den Editor verlässt oder neu öffnest.",
   "sessionSaveTooltip": "Diese Version nur bis zum Schließen dieser Seite behalten.",
   "saveResumeTooltip": "Diese Version nur bis zum Schließen dieser Seite behalten.",
-  "noAutosaveReminder": "Lade deinen Lebenslauf herunter, bevor du diese Seite schließt. Deine Inhalte werden nicht automatisch gespeichert."
+  "noAutosaveReminder": "Lade deinen Lebenslauf herunter, bevor du diese Seite schließt. Deine Inhalte werden nicht automatisch gespeichert.",
+  "importTemplateEyebrow": "Importierter Lebenslauf",
+  "importTemplateTitle": "Dein Lebenslauf ist bereit — wähle ein Design",
+  "importTemplateSub": "Durchsuche Vorlagen mit deinen importierten Inhalten in der Vorschau. Das gewählte Design aktualisiert den Lebenslauf sofort.",
+  "keepThisDesign": "Dieses Design behalten",
+  "dismissImportTemplatePicker": "Vorlagenauswahl schließen",
+  "chooseImportedTemplate": "{template} für importierten Lebenslauf wählen",
+  "selectedTemplateName": "Aktuelles Design: {template}"
 };
 
 export default builder;

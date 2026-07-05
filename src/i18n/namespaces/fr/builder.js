@@ -145,6 +145,13 @@ const builder = {
   ,"useTemplateNamed": "Utiliser le modèle {template}"
   ,"useRecommendedCoverTemplate": "Utiliser le modèle de lettre recommandé"
   ,"useCoverTemplateNamed": "Utiliser le modèle de lettre {template}"
+  ,"importTemplateEyebrow": "CV importé"
+  ,"importTemplateTitle": "Votre CV est prêt — choisissez un design"
+  ,"importTemplateSub": "Parcourez les modèles avec votre contenu importé dans l’aperçu. Le design sélectionné met à jour le CV en direct."
+  ,"keepThisDesign": "Conserver ce design"
+  ,"dismissImportTemplatePicker": "Fermer le sélecteur de modèle"
+  ,"chooseImportedTemplate": "Choisir {template} pour le CV importé"
+  ,"selectedTemplateName": "Design actuel : {template}"
   ,"full": "Plein écran"
 };
 

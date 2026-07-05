@@ -3348,6 +3348,7 @@ export default function ResumeGenerator() {
     reader.readAsDataURL(file);
   };
   const [uploadedResume, setUploadedResume] = useState(null);
+  const [postImportTemplatePickerOpen, setPostImportTemplatePickerOpen] = useState(false);
   const [uploadDragOver, setUploadDragOver] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [appView, setAppView] = useState(initialRoute.appView);
@@ -3657,6 +3658,14 @@ export default function ResumeGenerator() {
   const rShell = isMobile ? rShellMobile : rShellDesktop;
   const recommendedTemplate = TEMPLATES.find((template) => template.id === RECOMMENDED_TEMPLATE_ID) || TEMPLATES.find((template) => !template.blank);
 
+  const openPostImportTemplatePicker = useCallback(() => {
+    if (!tpl && recommendedTemplate) setTpl(recommendedTemplate);
+    setPostImportTemplatePickerOpen(true);
+    setNavPage("resume");
+    setStep("form");
+    setAppView("app");
+  }, [tpl, recommendedTemplate]);
+
   const startResume = useCallback((source = "primary") => {
     if (!tpl && recommendedTemplate) setTpl(recommendedTemplate);
     setStep("form");
@@ -3695,6 +3704,7 @@ export default function ResumeGenerator() {
     setForm(emptyResumeForm);
     setCurrentResumeId(null);
     setTpl(null);
+    setPostImportTemplatePickerOpen(false);
     setNavPage("resume");
     setStep("templates");
     setStatusMsg(st.newStarted);
@@ -3706,6 +3716,7 @@ export default function ResumeGenerator() {
     if (!r) return;
     setForm(migrateForm({ ...emptyResumeForm, ...r.data }));
     setCurrentResumeId(id);
+    setPostImportTemplatePickerOpen(false);
     setNavPage("resume");
     setStep(tpl ? "form" : "templates");
   }, [emptyResumeForm, tpl]);
@@ -3876,6 +3887,12 @@ export default function ResumeGenerator() {
     trackUxEvent("resume_editor_started", { source, template: template.id });
     track(EVENTS.TEMPLATE_SELECTED, { template: template.id });
   }, [emptyResumeForm]);
+
+  const applyTemplateOnly = useCallback((template, source = "template_switch") => {
+    if (!template) return;
+    setTpl(template);
+    track(EVENTS.TEMPLATE_SELECTED, { template: template.id, source });
+  }, []);
 
   const starterQueryAppliedRef = useRef("");
   useEffect(() => {
@@ -5939,6 +5956,81 @@ Awards: ${form.awards}`;
         </div>
       )}
 
+      {postImportTemplatePickerOpen && (
+        <section aria-labelledby="post-import-template-title"
+          style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
+            padding: isMobile ? "14px 12px" : "16px 18px", marginBottom: 16,
+            boxShadow: "0 14px 40px rgba(0,0,0,0.18)" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 12,
+            justifyContent: "space-between", marginBottom: 12 }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ color: C.accent2, fontSize: 11, fontWeight: 900,
+                letterSpacing: "1.1px", textTransform: "uppercase", marginBottom: 4 }}>
+                {bu.importTemplateEyebrow}
+              </div>
+              <h2 id="post-import-template-title" style={{ margin: 0, color: C.text1,
+                fontSize: isMobile ? 17 : 19, lineHeight: 1.25, fontWeight: 900 }}>
+                {bu.importTemplateTitle}
+              </h2>
+              <p style={{ margin: "5px 0 0", color: C.text2, fontSize: 12.5, lineHeight: 1.5 }}>
+                {bu.importTemplateSub}
+              </p>
+            </div>
+            <button type="button" onClick={() => setPostImportTemplatePickerOpen(false)}
+              aria-label={builderText("dismissImportTemplatePicker")}
+              style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 9,
+                border: `1px solid ${C.border}`, background: C.elevated, color: C.text2,
+                cursor: "pointer", fontFamily: "inherit", fontSize: 15 }}>
+              ✕
+            </button>
+          </div>
+          <div dir={rtl ? "rtl" : "ltr"} data-post-import-template-carousel=""
+            style={{ display: "flex", gap: 12, overflowX: "auto", overflowY: "hidden",
+              WebkitOverflowScrolling: "touch", scrollSnapType: "x mandatory", padding: "2px 2px 12px",
+              marginInline: isMobile ? "-2px" : 0 }}>
+            {TEMPLATES.filter((template) => !template.blank).map((tp) => {
+              const selected = tpl?.id === tp.id;
+              return (
+                <button key={tp.id} type="button"
+                  onClick={() => applyTemplateOnly(tp, "post_import_picker")}
+                  aria-pressed={selected}
+                  aria-label={builderText("chooseImportedTemplate", { template: tp.name })}
+                  style={{ scrollSnapAlign: "start", flex: "0 0 auto", width: isMobile ? 150 : 172,
+                    border: `2px solid ${selected ? C.accent : "transparent"}`,
+                    background: selected ? `${C.accent}14` : "transparent",
+                    color: C.text1, borderRadius: 10, padding: 7, cursor: "pointer",
+                    fontFamily: "inherit", textAlign: rtl ? "right" : "left",
+                    boxShadow: selected ? `0 0 0 3px ${C.accent}18` : "none" }}>
+                  <div style={{ borderRadius: 7, overflow: "hidden", background: "transparent" }}>
+                    <ThumbPreview tp={tp} isMobile={isMobile} resumeResult={liveData} resumeRtl={documentRtl} resumeLang={docLang} />
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8,
+                    minHeight: 18, justifyContent: "space-between" }}>
+                    <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis",
+                      whiteSpace: "nowrap", fontSize: 12.5, fontWeight: 850 }}>
+                      {tp.name}
+                    </span>
+                    {selected && <LineIcon name="check" size={14} color={C.accent2} />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+            gap: 10, flexWrap: "wrap", marginTop: 2 }}>
+            <span style={{ color: C.text3, fontSize: 11.5 }}>
+              {builderText("selectedTemplateName", { template: tpl?.name || recommendedTemplate?.name || "" })}
+            </span>
+            <button type="button" onClick={() => setPostImportTemplatePickerOpen(false)}
+              style={{ minHeight: 38, border: "none", borderRadius: 9, background: C.grad,
+                color: "#fff", padding: "0 14px", fontSize: 12.5, fontWeight: 900,
+                cursor: "pointer", fontFamily: "inherit" }}>
+              {bu.keepThisDesign}
+            </button>
+          </div>
+        </section>
+      )}
+
       <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "minmax(420px, 45%) minmax(520px, 55%)",
         gap: 18, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
         <div className="ac-panel-noscroll" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileResumeMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
@@ -7479,8 +7571,7 @@ Awards: ${form.awards}`;
       if (localText.trim().length < 20) return;
       const { parseResume } = await import("./ats/parseResume.js");
       hydrateFromParsed(parseResume(localText)); // structured parse → correct fields, no dumps
-      setNavPage("resume");
-      setStep(tpl ? "form" : "templates");
+      openPostImportTemplatePicker();
       setStatusMsg(st.resumeImported);
       setTimeout(() => setStatusMsg(""), 2500);
     };
@@ -8693,6 +8784,7 @@ Awards: ${form.awards}`;
               const parsed = parseResume(text);
               if (email) parsed.email = parsed.email || email;
               hydrateFromParsed(parsed);
+              openPostImportTemplatePicker();
               setStatusMsg(st.importedReview);
             } catch {
               if (email) setForm(f => ({ ...f, email: email || f.email }));
@@ -10881,7 +10973,7 @@ const footerLink = { color: C.text2, textDecoration: "none", transition: "color 
 const DOCUMENT_PREVIEW_WIDTH = 700;
 const DOCUMENT_PREVIEW_PAGE_HEIGHT = 990;
 
-function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = false }) {
+function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = false, lang = "", resumeResult = null }) {
   const frameRef = useRef(null);
   const contentRef = useRef(null);
   const [fit, setFit] = useState({
@@ -10942,7 +11034,7 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
       contentObserver.disconnect();
       window.removeEventListener("resize", measure);
     };
-  }, [isMobile, template?.id, type]);
+  }, [isMobile, template?.id, type, resumeResult]);
 
   if (template.blank) {
     return (
@@ -10980,9 +11072,9 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
               <CoverLetterPaper tpl={template} data={COVER_THUMB_SAMPLES[template.id] || SAMPLE_COVER} preview />
             ) : (
               <ResumePaper tpl={template}
-                result={THUMB_SAMPLES[template.id]?.result || SAMPLE_RESUME}
+                result={resumeResult || THUMB_SAMPLES[template.id]?.result || SAMPLE_RESUME}
                 rtl={rtl}
-                lang={sampleLangForTemplate(template)}
+                lang={lang || sampleLangForTemplate(template)}
                 placeholder={false}
                 preview />
             )}
@@ -11001,13 +11093,15 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
   );
 }
 
-function ThumbPreview({ tp, isMobile }) {
+function ThumbPreview({ tp, isMobile, resumeResult = null, resumeRtl = null, resumeLang = "" }) {
   return (
     <DocumentThumbnailPreview
       type="resume"
       template={tp}
       isMobile={isMobile}
-      rtl={THUMB_SAMPLES[tp.id]?.rtl || false}
+      rtl={resumeRtl ?? (THUMB_SAMPLES[tp.id]?.rtl || false)}
+      lang={resumeLang}
+      resumeResult={resumeResult}
     />
   );
 }

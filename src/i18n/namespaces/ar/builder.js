@@ -145,6 +145,13 @@ const builder = {
   ,"useTemplateNamed": "استخدم قالب {template}"
   ,"useRecommendedCoverTemplate": "استخدم قالب الخطاب الموصى به"
   ,"useCoverTemplateNamed": "استخدم قالب خطاب {template}"
+  ,"importTemplateEyebrow": "سيرة ذاتية مستوردة"
+  ,"importTemplateTitle": "سيرتك الذاتية جاهزة — اختر تصميماً"
+  ,"importTemplateSub": "تصفح القوالب مع محتواك المستورد في المعاينة. اختيار تصميم يحدّث السيرة الذاتية مباشرة."
+  ,"keepThisDesign": "الاحتفاظ بهذا التصميم"
+  ,"dismissImportTemplatePicker": "إغلاق منتقي القوالب"
+  ,"chooseImportedTemplate": "اختيار {template} للسيرة الذاتية المستوردة"
+  ,"selectedTemplateName": "التصميم الحالي: {template}"
   ,"full": "كامل"
 };
 
