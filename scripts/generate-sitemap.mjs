@@ -11,7 +11,7 @@ const STATIC_APP_ROUTES = [
   "/",
   "/fr/",
   "/ar/",
-  "/resume-builder",
+  "/resume-builder/",
   "/resume/templates",
   "/cover-letter/templates",
   "/cover-letter/builder",

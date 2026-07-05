@@ -33,12 +33,13 @@ export const ALTERNATES = {
   ],
 };
 
-// Self-canonical for any SPA route. Root stays "/"; other routes keep their
-// exact path (no forced trailing slash — matches how the routes are served).
+// Self-canonical for any SPA route. Root stays "/"; the public resume builder
+// route uses the site-wide trailing-slash convention.
 export function canonicalFor(path) {
   if (!path || path === "/") return `${ORIGIN}/`;
   if (path === "/fr" || path === "/fr/") return `${ORIGIN}/fr/`;
   if (path === "/ar" || path === "/ar/") return `${ORIGIN}/ar/`;
+  if (path === "/resume-builder" || path === "/resume-builder/") return `${ORIGIN}/resume-builder/`;
   return ORIGIN + path;
 }
 

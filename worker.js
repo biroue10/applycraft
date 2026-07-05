@@ -30,6 +30,9 @@ const SHARE_TEMPLATE_IDS = new Set([
   "mariner", "summit", "ledger", "craft", "mono", "aurora", "canvas", "keystone", "blueprint",
   "delta", "terra", "metro", "verve", "consultant", "founder", "graduate", "clinical",
 ]);
+const TRAILING_SLASH_HTML_ASSETS = new Map([
+  ["/resume-builder/", "/resume-builder.html"],
+]);
 
 const ACTIONS = {
   "generate-resume": {
@@ -938,6 +941,25 @@ export default {
     if (url.pathname === "/api/translate-document") return handleTranslateDocument(request, env);
     if (url.pathname === "/api/feedback") return handleFeedback(request, env);
     if (url.pathname === "/api/share" || url.pathname.startsWith("/api/share/")) return handleShare(request, env, url);
+    if (request.method === "GET" || request.method === "HEAD") {
+      if (url.pathname === "/resume-builder") {
+        const canonicalUrl = new URL(request.url);
+        canonicalUrl.pathname = "/resume-builder/";
+        return new Response(null, {
+          status: 301,
+          headers: {
+            Location: `${canonicalUrl.pathname}${canonicalUrl.search}`,
+            ...SECURITY_HEADERS,
+          },
+        });
+      }
+      const htmlAsset = TRAILING_SLASH_HTML_ASSETS.get(url.pathname);
+      if (htmlAsset) {
+        const assetUrl = new URL(htmlAsset, url.origin);
+        assetUrl.search = url.search;
+        return withSecurityHeaders(await env.ASSETS.fetch(new Request(assetUrl, request)));
+      }
+    }
     if (request.method === "GET" && /^\/r\/[A-Za-z0-9_-]{8,24}$/.test(url.pathname)) {
       const assetUrl = new URL("/r.html", url.origin);
       return withSecurityHeaders(await env.ASSETS.fetch(new Request(assetUrl, request)));

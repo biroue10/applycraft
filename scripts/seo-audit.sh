@@ -253,15 +253,63 @@ if [[ "${SEO_AUDIT_SKIP_HTTP:-0}" != "1" ]]; then
     exit 1
   fi
 
+  resolve_location() {
+    node -e 'console.log(new URL(process.argv[2], process.argv[1]).toString())' "$1" "$2"
+  }
+
+  check_sitemap_url() {
+    local original_url="$1"
+    local current_url="$original_url"
+    local hops=0
+    local seen="|$original_url|"
+    local response status location
+
+    while true; do
+      response="$(curl -sSI --max-redirs 0 --max-time 20 "$current_url")" || {
+        echo "SEO audit failed: sitemap URL request failed: $current_url" >&2
+        exit 1
+      }
+      status="$(printf '%s\n' "$response" | awk 'BEGIN{code=""} /^HTTP\//{code=$2} END{print code}')"
+      if [[ -z "$status" ]]; then
+        echo "SEO audit failed: sitemap URL returned no HTTP status: $current_url" >&2
+        exit 1
+      fi
+
+      if [[ "$status" =~ ^30[0-9]$ ]]; then
+        location="$(printf '%s\n' "$response" | awk 'BEGIN{IGNORECASE=1} /^location:[[:space:]]*/{sub(/^[Ll]ocation:[[:space:]]*/, ""); sub(/\r$/, ""); print; exit}')"
+        if [[ -z "$location" ]]; then
+          echo "SEO audit failed: redirect without Location for sitemap URL: $current_url ($status)" >&2
+          exit 1
+        fi
+        hops=$((hops + 1))
+        if (( hops > 5 )); then
+          echo "SEO audit failed: redirect chain exceeded 5 hops for sitemap URL: $original_url" >&2
+          exit 1
+        fi
+        if (( hops > 1 )); then
+          echo "SEO audit failed: redirect chain exceeded 1 hop for sitemap URL: $original_url" >&2
+          exit 1
+        fi
+        current_url="$(resolve_location "$current_url" "$location")"
+        if [[ "$seen" == *"|$current_url|"* ]]; then
+          echo "SEO audit failed: redirect loop for sitemap URL: $original_url -> $current_url" >&2
+          exit 1
+        fi
+        seen="${seen}${current_url}|"
+        continue
+      fi
+
+      if [[ "$status" != "200" ]]; then
+        echo "SEO audit failed: sitemap URL did not resolve to 200: $original_url (final $status at $current_url)" >&2
+        exit 1
+      fi
+      break
+    done
+  }
+
   while IFS= read -r url; do
     [[ -z "$url" ]] && continue
-    result="$(curl -sS -o /dev/null -w '%{http_code} %{num_redirects}' "$url")"
-    code="${result%% *}"
-    redirects="${result##* }"
-    if [[ "$code" != "200" || "$redirects" != "0" ]]; then
-      echo "SEO audit failed: sitemap URL did not return direct 200: $url ($result)" >&2
-      exit 1
-    fi
+    check_sitemap_url "$url"
   done < <(grep -oE '<loc>[^<]+' "$SITEMAP_PATH" | sed 's#<loc>##')
 
   echo "Sitemap HTTP checks passed against $SITE_URL"
