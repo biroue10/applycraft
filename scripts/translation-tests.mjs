@@ -6,6 +6,7 @@ import {
   buildResumeTranslationRequest,
   createTranslatedResumeCopy,
   parseTranslationJson,
+  postProcessTranslatedResume,
   TRANSLATION_STATUSES,
 } from "../src/translation.js";
 
@@ -72,6 +73,28 @@ assert.equal(copy.translationMeta.fields.summary.targetLanguage, "ar");
 assert.equal(copy.translationMeta.sourceVersionId, "original-en");
 assert.equal(copy.translationMeta.reviewed, false);
 
+const structuredArabic = postProcessTranslatedResume({
+  educationEntries: [{
+    title: "دبلوم مهندس دولة في المعلوماتية",
+    subtitle: "ENSIAS",
+    startDate: "2018",
+    endDate: "",
+    location: "Rabat",
+    description: "",
+  }],
+  experienceEntries: [
+    { title: "مهندس برمجيات أول", company: "Groupe OCP", startDate: "Mars 2022", endDate: "", isCurrent: true },
+    { title: "مهندس Full Stack", company: "Inwi", startDate: "Janvier 2019", endDate: "Février 2022" },
+  ],
+}, "ar");
+
+assert.equal(structuredArabic.educationEntries[0].title, "دبلوم مهندس دولة في المعلوماتية");
+assert.equal(structuredArabic.educationEntries[0].subtitle, "ENSIAS");
+assert.equal(structuredArabic.experienceEntries[0].startDate, "مارس 2022");
+assert.equal(structuredArabic.experienceEntries[1].startDate, "يناير 2019");
+assert.equal(structuredArabic.experienceEntries[1].endDate, "فبراير 2022");
+assert.doesNotMatch(JSON.stringify(structuredArabic), /Mars|Janvier|Février/);
+
 assert.deepEqual(assertProtectedTermsPreserved(request.content, translated), []);
 assert.ok(assertProtectedTermsPreserved(request.content, { summary: "حللت حوادث Intune." }).includes("Microsoft Intune"));
 
@@ -100,6 +123,9 @@ assert.match(app, /findExistingTranslatedVersion/, "existing translated versions
 assert.match(app, /openExistingTranslation/, "duplicate translation flow should prefer opening the existing version");
 assert.match(app, /function mergeTranslatedEntries/, "translated sections should be merged into original entry structure");
 assert.match(app, /parsed\.length < original\.length/, "missing translated entries should fall back to original sections");
+assert.match(app, /labelKeys: \{ title: "degree", subtitle: "institution"/, "education entry title should be the degree, not the institution");
+assert.match(app, /title: e\.degree \|\| "", titleUrl: "", subtitle: e\.school \|\| ""/, "import should hydrate education title from degree and institution from school");
+assert.match(app, /setImportLanguageNotice\(\{ open: false, detected: "", previous: "" \}\);[\s\S]{0,120}setMobileResumeMode\("edit"\)/, "accepting translated copy should dismiss the stale untranslated import banner");
 assert.match(app, /preservedSections/, "translation metadata should track preserved original sections");
 assert.match(app, /translateSectionsPartial/, "users should be warned when sections are kept from the original");
 assert.match(app, /EVENTS\.TRANSLATION_STARTED/, "translation analytics should track safe metadata only");

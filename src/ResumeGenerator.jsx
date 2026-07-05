@@ -1213,7 +1213,7 @@ const ENTRY_SCHEMAS = {
   experience:     { type: "role",    icon: "💼", fields: ["title", "company", "startDate", "endDate", "description"], primary: "title",  secondary: "company" },
   education:      { type: "edu",     icon: "🎓", fields: ["title", "titleUrl", "subtitle", "startDate", "endDate", "location", "description"], primary: "title", secondary: "subtitle",
                     fieldTypes: { startDate: "month", endDate: "month" }, linkFor: { title: "titleUrl" },
-                    labelKeys: { title: "school", subtitle: "degree", location: "location" } },
+                    labelKeys: { title: "degree", subtitle: "institution", location: "location" } },
   skills:         { type: "tag",     icon: "⚡", fields: ["name"],                                                   primary: "name", labelKeys: { name: "skill" } },
   languages:      { type: "tag",     icon: "🌐", fields: ["name"],                                                   primary: "name", labelKeys: { name: "language" } },
   certifications: { type: "generic", icon: "📜", fields: ["title", "subtitle", "description"],                       primary: "title",  secondary: "subtitle", labelKeys: { title: "certification", subtitle: "issuer", description: "details" } },
@@ -1248,6 +1248,10 @@ function isHeaderLine(line) {
   return /\s[—–]\s|\|/.test(l);
 }
 
+function looksLikeEducationTitle(value) {
+  return /\b(?:b\.?s\.?|m\.?s\.?|bachelor|master|mba|phd|doctorat|licence|maîtrise|dipl[oô]me|degree|computer science|engineering|arts?|science|sciences|informatique|management|ing[eé]nieur)\b/i.test(String(value || ""));
+}
+
 // Build the single header line for an entry (mirrors the legacy "Title — Company | dates" format).
 function entryHeader(key, e, lang = "en") {
   const s = ENTRY_SCHEMAS[key];
@@ -1272,8 +1276,8 @@ function entryToLines(key, e, lang = "en") {
     // Separators are only added around present values (no stray "—"/"|").
     const out = [];
     const dates = normalizeDateRange([e.startDate, e.endDate].map((x) => (x || "").trim()).filter(Boolean).join(" – "));
-    const degree = (e.subtitle || "").trim();
-    const school = (e.title || "").trim();
+    const degree = (e.title || "").trim();
+    const school = (e.subtitle || "").trim();
     const head = degree || school;
     if (head) out.push(head);
     if (school && school !== head) out.push(school);
@@ -1397,8 +1401,13 @@ function migrateForm(form) {
     if (key === "education") {
       entries = entries.map((e) => {
         const n = { ...e };
-        if (!n.title && n.institution) n.title = n.institution;
-        if (!n.subtitle && n.degree) n.subtitle = n.degree;
+        if (!n.title && n.degree) n.title = n.degree;
+        if (!n.subtitle && (n.institution || n.school)) n.subtitle = n.institution || n.school;
+        if (n.title && n.subtitle && !looksLikeEducationTitle(n.title) && looksLikeEducationTitle(n.subtitle)) {
+          const previousTitle = n.title;
+          n.title = n.subtitle;
+          n.subtitle = previousTitle;
+        }
         if (!n.endDate && n.year) n.endDate = n.year;
         return n;
       });
@@ -3571,7 +3580,7 @@ export default function ResumeGenerator() {
         description: (e.bullets || []).map((b) => (/^[•\-*]/.test(b) ? b : `• ${b}`)).join("\n"),
       })),
       educationEntries: (p.education || []).map((e) => entry({
-        title: e.school || "", titleUrl: "", subtitle: e.degree || "",
+        title: e.degree || "", titleUrl: "", subtitle: e.school || "",
         startDate: e.startDate || "", endDate: e.endDate || "", location: e.location || "", description: e.description || "",
       })),
       skillsEntries: (p.skills || []).map((name) => entry({ name })),
@@ -4201,6 +4210,7 @@ export default function ResumeGenerator() {
     setResult(null);
     setAiPolished(false);
     clearTranslationReview();
+    setImportLanguageNotice({ open: false, detected: "", previous: "" });
     setMobileResumeMode("edit");
     track(EVENTS.TRANSLATION_COPY_CREATED, {
       documentType: "resume",
@@ -4302,7 +4312,7 @@ export default function ResumeGenerator() {
           reviewed: false,
           preservedSections,
         };
-        return next;
+        return postProcessTranslatedResume(next, langCode);
       })();
       const preservedSections = nextForm.translationMeta?.preservedSections || [];
       setTranslationReview({

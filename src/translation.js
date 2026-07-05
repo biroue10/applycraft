@@ -110,12 +110,22 @@ function postProcessArabicText(value) {
     .replace(/Full Stack\s+(مهندس|مطور)/g, "$1 Full Stack");
 }
 
+export function postProcessTranslatedValue(value, targetLanguage = "en") {
+  if (targetLanguage !== "ar") return value;
+  if (typeof value === "string") return postProcessArabicText(value);
+  if (Array.isArray(value)) return value.map((item) => postProcessTranslatedValue(item, targetLanguage));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, entryValue]) => [
+      key,
+      postProcessTranslatedValue(entryValue, targetLanguage),
+    ]));
+  }
+  return value;
+}
+
 export function postProcessTranslatedResume(translated, targetLanguage = "en") {
-  if (targetLanguage !== "ar" || !translated || typeof translated !== "object") return translated;
-  return Object.fromEntries(Object.entries(translated).map(([key, value]) => [
-    key,
-    typeof value === "string" ? postProcessArabicText(value) : value,
-  ]));
+  if (!translated || typeof translated !== "object") return translated;
+  return postProcessTranslatedValue(translated, targetLanguage);
 }
 
 export async function translateDocumentContent({
