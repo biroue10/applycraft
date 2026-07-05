@@ -55,7 +55,7 @@ export const DOCUMENT_LABELS = {
       achievements: "Réalisations",
     },
     values: {
-      present: "Aujourd'hui",
+      present: "Présent",
       current: "Actuel",
       from: "De",
       to: "À",

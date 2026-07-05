@@ -183,6 +183,11 @@ for (const loc of sitemapUrls) {
   sitemapSet.add(loc);
   if (!loc.startsWith(SITE + "/")) errors.push(`sitemap URL must use ${SITE}: ${loc}`);
 }
+const sitemapPathSet = new Set(
+  sitemapUrls
+    .filter((loc) => loc.startsWith(SITE + "/"))
+    .map((loc) => new URL(loc).pathname)
+);
 
 for (const page of pages) {
   if (page.appShell) continue;
@@ -203,6 +208,9 @@ for (const page of pages) {
 
     let pathname = href.startsWith(SITE + "/") ? new URL(href).pathname : href.split("#")[0].split("?")[0];
     if (!pathname || pathname === "/") continue;
+    if (!/\.[a-z0-9]+$/i.test(pathname) && !pathname.endsWith("/") && sitemapPathSet.has(`${pathname}/`)) {
+      errors.push(`${page.route}: internal href points to a sitemap page without trailing slash: ${href}`);
+    }
     if (/\.[a-z0-9]+$/i.test(pathname)) {
       const assetPath = pathname.startsWith("/")
         ? path.join(HTML_ROOT, pathname.replace(/^\//, ""))

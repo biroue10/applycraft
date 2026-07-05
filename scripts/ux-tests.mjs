@@ -7,6 +7,10 @@ const landing = await readFile(new URL("../src/i18n/namespaces/en/landing.js", i
 const landing2 = await readFile(new URL("../src/i18n/namespaces/en/landing2.js", import.meta.url), "utf8");
 const common = await readFile(new URL("../src/i18n/namespaces/en/common.js", import.meta.url), "utf8");
 const builder = await readFile(new URL("../src/i18n/namespaces/en/builder.js", import.meta.url), "utf8");
+const entryEn = await readFile(new URL("../src/i18n/namespaces/en/entry.js", import.meta.url), "utf8");
+const entryFr = await readFile(new URL("../src/i18n/namespaces/fr/entry.js", import.meta.url), "utf8");
+const entryAr = await readFile(new URL("../src/i18n/namespaces/ar/entry.js", import.meta.url), "utf8");
+const starterContent = await readFile(new URL("../src/data/resumeStarters/starterContent.js", import.meta.url), "utf8");
 const pkg = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
 
 assert.match(landing, /Create my resume/, "homepage needs a specific primary CTA");
@@ -28,5 +32,14 @@ assert.match(landing2, /write content in any language/i, "multilingual claim sho
 assert.match(app, /UX_MEASUREMENT_ENABLED = false/, "privacy-preserving measurement must be disabled by default");
 assert.doesNotMatch(app, /from ["'](?:@?fullstory|hotjar|mixpanel|amplitude)|https?:\/\/[^"']*(?:fullstory|hotjar|mixpanel|amplitude|google-analytics)|gtag\(/i, "no invasive analytics should be added");
 assert.ok(pkg.scripts["test:ux"], "package.json should expose npm run test:ux");
+assert.match(app, /function SectionCard\([^)]*builderText = \(key\) => key/, "section menus should receive a safe builderText helper");
+assert.match(app, /builderText=\{builderText\}/, "section menu translation helper should be passed from the builder component");
+assert.match(app, /currentRoleId/, "experience editor should expose a current-role checkbox");
+assert.match(app, /isCurrent: e\.target\.checked/, "current-role checkbox should update structured experience data");
+assert.match(entryEn, /I currently work here/, "English current-role label missing");
+assert.match(entryFr, /J’occupe actuellement ce poste/, "French current-role label missing");
+assert.match(entryAr, /ما زلت أعمل هنا حاليًا/, "Arabic current-role label missing");
+assert.match(starterContent, /isCurrent: true/, "starter data should use isCurrent for ongoing jobs");
+assert.doesNotMatch(starterContent, /endDate: "(?:Present|Présent|الحاضر|حتى الآن)"/, "starter endDate fields should not store localized present labels");
 
 console.log("UX tests passed.");

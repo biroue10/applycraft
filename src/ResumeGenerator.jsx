@@ -12,7 +12,7 @@ import { asArray, isResumeDataEmpty, normalizeResumeData } from "./resumeData.js
 import { linkifyText, normalizeLinkHref } from "./utils/linkify.js";
 import { getContactHref, normalizeContactItems } from "./utils/contactLinks.js";
 import { ResumePaper, CoverLetterPaper, structureSectionItems } from "./documents/DocumentPapers.jsx";
-import { analyzeResumeQuality, isPlaceholderOnly, normalizeDateRange } from "./resumeQuality.js";
+import { analyzeResumeQuality, formatDateRange, isPlaceholderOnly, normalizeDateRange, presentLabel } from "./resumeQuality.js";
 import {
   assertProtectedTermsPreserved,
   buildResumeTranslationRequest,
@@ -1231,6 +1231,7 @@ const PICKER_ICONS = { summary: "📝", ...Object.fromEntries(SECTION_KEYS.map((
 function blankEntry(key) {
   const e = { id: uid(), visible: true };
   ENTRY_SCHEMAS[key].fields.forEach((f) => { e[f] = ""; });
+  if (key === "experience") e.isCurrent = false;
   return e;
 }
 
@@ -1244,12 +1245,12 @@ function isHeaderLine(line) {
 }
 
 // Build the single header line for an entry (mirrors the legacy "Title — Company | dates" format).
-function entryHeader(key, e) {
+function entryHeader(key, e, lang = "en") {
   const s = ENTRY_SCHEMAS[key];
   const parts = [e[s.primary], s.secondary ? e[s.secondary] : ""].map((x) => (x || "").trim()).filter(Boolean);
   let head = parts.join(" — ");
   if (s.type === "role") {
-    const d = normalizeDateRange([e.startDate, e.endDate].map((x) => (x || "").trim()).filter(Boolean).join(" – "));
+    const d = formatDateRange({ startDate: e.startDate, endDate: e.endDate, isCurrent: e.isCurrent, language: lang });
     if (d) head += (head ? " | " : "") + d;
   } else if (key === "education" && (e.year || "").trim()) {
     head += (head ? " | " : "") + normalizeDateRange(e.year.trim());
@@ -1258,10 +1259,10 @@ function entryHeader(key, e) {
 }
 
 // Flat list of preview/export lines for one entry (header + description bullets).
-function entryToLines(key, e) {
+function entryToLines(key, e, lang = "en") {
   const s = ENTRY_SCHEMAS[key];
   if (s.type === "tag") return [(e.name || "").trim()].filter(Boolean);
-  if (s.type === "line") return [entryHeader(key, e)].filter(Boolean);
+  if (s.type === "line") return [entryHeader(key, e, lang)].filter(Boolean);
   if (s.type === "edu") {
     // Render education professionally: degree/program as the title, school/location/date as metadata.
     // Separators are only added around present values (no stray "—"/"|").
@@ -1278,26 +1279,26 @@ function entryToLines(key, e) {
     return out;
   }
   const out = [];
-  const h = entryHeader(key, e);
+  const h = entryHeader(key, e, lang);
   if (h) out.push(h);
   (e.description || "").split("\n").forEach((l) => { if (l.trim()) out.push(l); });
   return out;
 }
 
 // Serialize entries back into the flat string projection kept on `form`.
-function entriesToText(key, entries) {
+function entriesToText(key, entries, lang = "en") {
   const list = entries || [];
   const s = ENTRY_SCHEMAS[key];
   if (s.type === "tag")  return list.map((e) => (e.name || "").trim()).filter(Boolean).join(", ");
-  if (s.type === "line") return list.map((e) => entryHeader(key, e)).filter(Boolean).join("\n");
-  return list.map((e) => entryToLines(key, e).join("\n")).filter(Boolean).join("\n\n");
+  if (s.type === "line") return list.map((e) => entryHeader(key, e, lang)).filter(Boolean).join("\n");
+  return list.map((e) => entryToLines(key, e, lang).join("\n")).filter(Boolean).join("\n\n");
 }
 
 // Visible-only flat items for the preview / export (matches old lines()/csv()).
-function entriesToItems(key, entries) {
+function entriesToItems(key, entries, lang = "en") {
   const list = (entries || []).filter((e) => e.visible !== false);
   if (ENTRY_SCHEMAS[key].type === "tag") return list.map((e) => (e.name || "").trim()).filter(Boolean);
-  return list.flatMap((e) => entryToLines(key, e)).filter(Boolean);
+  return list.flatMap((e) => entryToLines(key, e, lang)).filter(Boolean);
 }
 
 // Parse an existing flat string field into structured entries (migration / AI write-back).
@@ -1362,6 +1363,10 @@ function parseEntries(key, text) {
           const dd = datePart.split(/\s*[–-]\s*/);
           cur.startDate = (dd[0] || "").trim();
           cur.endDate = (dd[1] || "").trim();
+          if (/^(present|présent|aujourd'hui|الحاضر|حتى الآن)$/i.test(cur.endDate)) {
+            cur.isCurrent = true;
+            cur.endDate = "";
+          }
         } else if (s.secondary) {
           cur[s.secondary] = [cur[s.secondary], datePart].filter(Boolean).join(" · ");
         }
@@ -1395,7 +1400,16 @@ function migrateForm(form) {
       });
     }
     // Guarantee shape (id + visible) on every entry.
-    entries = entries.map((e) => ({ ...e, id: e.id || uid(), visible: e.visible !== false }));
+    entries = entries.map((e) => {
+      const next = { ...e, id: e.id || uid(), visible: e.visible !== false };
+      if (key === "experience") {
+        const end = String(next.endDate || "").trim();
+        const currentByText = /^(present|présent|aujourd'hui|الحاضر|حتى الآن)$/i.test(end);
+        next.isCurrent = Boolean(next.isCurrent || next.current || currentByText);
+        if (next.isCurrent && currentByText) next.endDate = "";
+      }
+      return next;
+    });
     out[arrKey] = entries;
     out[key] = entriesToText(key, entries);
   });
@@ -1434,6 +1448,7 @@ function mergeTranslatedEntries(key, originalEntries = [], translatedText = "") 
     if (schema.type === "role") {
       next.startDate = oldEntry.startDate || incoming.startDate || "";
       next.endDate = oldEntry.endDate || incoming.endDate || "";
+      next.isCurrent = Boolean(oldEntry.isCurrent || oldEntry.current);
     }
     return next;
   });
@@ -1443,12 +1458,12 @@ function mergeTranslatedEntries(key, originalEntries = [], translatedText = "") 
 
 // Build resume data straight from the form so the preview updates as the user types.
 // Reads the entry arrays directly so hidden entries are excluded from the output.
-function buildLiveData(form, t) {
+function buildLiveData(form, t, lang = "en") {
   const label = (key) => t[key].replace(/\s*\(.*\)/, "");
   const headingOf = (key, def) => (form.sectionTitles && form.sectionTitles[key]) || def;
   const sections = [];
   const add = (key, heading) => {
-    const items = entriesToItems(key, form[key + "Entries"]);
+    const items = entriesToItems(key, form[key + "Entries"], lang);
     if (items.length) sections.push({ key, heading, isCustom: Boolean(form.sectionTitles?.[key]), items });
   };
   add("experience",     headingOf("experience", t.experience));
@@ -1563,6 +1578,7 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
   const urlFields = new Set(Object.values(schema.linkFor || {}));
   const nonDesc = schema.fields.filter((f) => f !== "description" && !urlFields.has(f));
   const fieldType = (f) => (schema.fieldTypes && schema.fieldTypes[f]) || "text";
+  const currentRoleId = `current-role-${entry.id}`;
   return (
     <div
       onDragOver={(e) => {
@@ -1597,7 +1613,8 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
               {nonDesc.map((f) => {
                 const urlKey = schema.linkFor && schema.linkFor[f];
                 const showUrl = !!(urlKey && (linkOpen[f] || (entry[urlKey] || "").trim()));
-                const isDate = fieldType(f) === "month";
+                const isDate = fieldType(f) === "month" || (sectionKey === "experience" && (f === "startDate" || f === "endDate"));
+                const disabled = sectionKey === "experience" && f === "endDate" && entry.isCurrent;
                 const hasVal = (entry[f] || "").trim();
                 return (
                   <div key={f}>
@@ -1612,11 +1629,14 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
                     </div>
                     <div style={{ position: "relative" }}>
                       <input value={entry[f] || ""} onChange={(e) => onChange({ [f]: e.target.value })}
-                        placeholder={isDate ? "MM/YYYY" : labelFor(f)} dir={rtl ? "rtl" : "ltr"}
+                        placeholder={isDate ? (f === "endDate" ? presentLabel("en") : "MM/YYYY") : labelFor(f)}
+                        dir={rtl ? "rtl" : "ltr"}
+                        disabled={disabled}
                         style={{ width: "100%", boxSizing: "border-box",
                           padding: isDate && hasVal ? "9px 30px 9px 12px" : "9px 12px", background: C.elevated,
-                          border: `1px solid ${SECTION_TOKENS.inputEdge}`, borderRadius: 8, color: C.text1, fontSize: 14, outline: "none", fontFamily: "inherit" }} />
-                      {isDate && hasVal && (
+                          border: `1px solid ${SECTION_TOKENS.inputEdge}`, borderRadius: 8, color: C.text1, fontSize: 14, outline: "none", fontFamily: "inherit",
+                          opacity: disabled ? 0.45 : 1 }} />
+                      {isDate && hasVal && !disabled && (
                         <button type="button" aria-label={`Clear ${labelFor(f)}`} onClick={() => onChange({ [f]: "" })}
                           style={{ position: "absolute", top: "50%", insetInlineEnd: 8, transform: "translateY(-50%)",
                             background: "none", border: "none", color: C.text3, cursor: "pointer", fontSize: 16, lineHeight: 1, padding: 0 }}>×</button>
@@ -1633,6 +1653,25 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
               })}
             </div>
           )}
+          {sectionKey === "experience" && (
+            <div>
+              <label htmlFor={currentRoleId} style={{ display: "flex", alignItems: "center", gap: 8, color: C.text2, fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                <input
+                  id={currentRoleId}
+                  type="checkbox"
+                  checked={!!entry.isCurrent}
+                  onChange={(e) => onChange({ isCurrent: e.target.checked, endDate: e.target.checked ? "" : entry.endDate || "" })}
+                  style={{ accentColor: C.accent }}
+                />
+                {eui.currentRole || "I currently work here"}
+              </label>
+              {entry.isCurrent && (
+                <div style={{ marginTop: 5, color: C.text3, fontSize: 11.5 }}>
+                  {eui.currentRoleHint || "End date is not required for your current role."}
+                </div>
+              )}
+            </div>
+          )}
           {schema.fields.includes("description") && (
             <div>
               <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: C.text3, marginBottom: 4 }}>{labelFor("description")}</label>
@@ -1646,12 +1685,13 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
 }
 
 // Reusable section card. Drives every section from ENTRY_SCHEMAS — no per-section markup.
-function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, collapsed, onToggleCollapse, onEditHeading, onRestoreDefault, onAdd, onChangeEntry, onDeleteEntry, onToggleVisible, onReorder }) {
+function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, builderText = (key) => key, collapsed, onToggleCollapse, onEditHeading, onRestoreDefault, onAdd, onChangeEntry, onDeleteEntry, onToggleVisible, onReorder }) {
   const schema = ENTRY_SCHEMAS[sectionKey];
   const [expandedId, setExpandedId] = useState(null);
   const [editingHeading, setEditingHeading] = useState(false);
   const [headingDraft, setHeadingDraft] = useState(heading);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
   const [over, setOver] = useState(null); // { index, side: "above" | "below" }
   const dragFrom = useRef(null);
   const list = entries || [];
@@ -1659,6 +1699,22 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, c
   const status = visibleCount > 0 ? "Complete" : "Missing";
   const countLabel = visibleCount === 0 ? status : `${visibleCount} ${visibleCount === 1 ? "entry" : "entries"} · ${status}`;
   const statusColor = statusTone(status);
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const handlePointerDown = (event) => {
+      if (menuRef.current?.contains(event.target)) return;
+      setMenuOpen(false);
+    };
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [menuOpen]);
   const dnd = {
     dragging: () => dragFrom.current,
     onDragStart: (i) => { dragFrom.current = i; },
@@ -1705,7 +1761,7 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, c
             )}
           </div>
         )}
-        <div style={{ position: "relative" }}>
+        <div ref={menuRef} style={{ position: "relative" }}>
           <button type="button" aria-label={`${heading} options`} aria-expanded={menuOpen}
             onClick={(e) => { e.stopPropagation(); setMenuOpen(o => !o); }}
             style={{ width: 40, height: 40, borderRadius: 10, border: "none",
@@ -3536,7 +3592,7 @@ export default function ResumeGenerator() {
   // Memoised so non-form state changes (modal open, ATS result, etc.) don't
   // trigger an expensive re-parse of the entire form on every render.
   const liveData = useMemo(
-    () => buildLiveData({ ...form, phone: fullPhone, photo: photoUrl }, documentT),
+    () => buildLiveData({ ...form, phone: fullPhone, photo: photoUrl }, documentT, docLang),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [form, fullPhone, photoUrl, docLang, lang]
   );
@@ -5180,6 +5236,7 @@ Awards: ${form.awards}`;
       defaultHeading={defaultHeading}
       entries={form[key + "Entries"] || []}
       eui={eui} rtl={documentRtl}
+      builderText={builderText}
       collapsed={!!collapsedSections[key]}
       onToggleCollapse={() => toggleSectionCollapse(key)}
       onEditHeading={(h) => setSectionTitle(key, h)}
@@ -8070,6 +8127,12 @@ Awards: ${form.awards}`;
     const upJobBullet = (jid, bi, v) => upJob(jid, {bullets: master.jobs.find(j=>j.id===jid).bullets.map((b,i) => i===bi ? v : b)});
     const addJobBullet = (jid) => upJob(jid, {bullets: [...(master.jobs.find(j=>j.id===jid)?.bullets||[]), ""]});
     const delJobBullet = (jid, bi) => upJob(jid, {bullets: master.jobs.find(j=>j.id===jid).bullets.filter((_,i) => i!==bi)});
+    const masterJobDateRange = (job) => formatDateRange({
+      startDate: job.startDate,
+      endDate: job.endDate,
+      isCurrent: Boolean(job.current || job.isCurrent),
+      language: docLang,
+    });
 
     // Education helpers
     const addEdu = () => { const id = uid(); setMaster(m => ({...m, education: [...m.education, {id, school:"", degree:"", field:"", startDate:"", endDate:"", gpa:""}]})); setMasterOpen(o => ({...o, [id]: true})); };
@@ -8127,7 +8190,7 @@ Awards: ${form.awards}`;
     const generateTailored = () => {
       const s = tailorSel || {};
       const selJobs = master.jobs.filter(j => s.jobs?.[j.id] !== false);
-      const experience = selJobs.map(j => [`${j.title}${j.company ? ` | ${j.company}` : ""}${j.location ? ` | ${j.location}` : ""}${j.startDate ? ` | ${j.startDate} – ${j.current ? "Present" : j.endDate||""}` : ""}`, ...j.bullets.filter(Boolean).map(b => `• ${b}`)].join("\n")).join("\n\n");
+      const experience = selJobs.map(j => [`${j.title}${j.company ? ` | ${j.company}` : ""}${j.location ? ` | ${j.location}` : ""}${masterJobDateRange(j) ? ` | ${masterJobDateRange(j)}` : ""}`, ...j.bullets.filter(Boolean).map(b => `• ${b}`)].join("\n")).join("\n\n");
       const education = master.education.filter(e => s.education?.[e.id] !== false).map(e => {
         const dates = [e.startDate, e.endDate].filter(Boolean).join(" – ");
         const head = [e.school, dates].filter(Boolean).join("  |  ");
@@ -8244,7 +8307,7 @@ Awards: ${form.awards}`;
             {tailorSel && jdKws && (
               <div style={{borderTop:`1px solid ${C.border}`, paddingTop:20}}>
                 <div style={{fontSize:14, fontWeight:700, color:C.text1, marginBottom:14}}>{ms.selectInclude}</div>
-                {master.jobs.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, marginBottom:8}}>{ms.workExperience}</div>{master.jobs.map(j => renderSelRow(j, "jobs", scoreText(j.title+" "+j.company+" "+j.bullets.join(" "), jdKws), `${j.title}${j.company ? " · "+j.company : ""}${j.startDate ? " ("+j.startDate+" – "+(j.current?"Present":j.endDate||"?")+")" : ""}`))}</>)}
+                {master.jobs.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, marginBottom:8}}>{ms.workExperience}</div>{master.jobs.map(j => renderSelRow(j, "jobs", scoreText(j.title+" "+j.company+" "+j.bullets.join(" "), jdKws), `${j.title}${j.company ? " · "+j.company : ""}${masterJobDateRange(j) ? " ("+masterJobDateRange(j)+")" : ""}`))}</>)}
                 {master.education.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>{ms.education}</div>{master.education.map(e => renderSelRow(e, "education", scoreText(e.degree+" "+e.field+" "+e.school, jdKws), `${e.degree}${e.field ? " in "+e.field : ""} — ${e.school}`))}</>)}
                 {master.skills.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>{ms.skills}</div><div style={{display:"flex", flexWrap:"wrap", gap:6, marginBottom:4}}>{master.skills.map(sk => { const sc = scoreText(sk.name, jdKws); const bd = badge(sc); const checked = tailorSel.skills?.[sk.id] !== false; return (<button key={sk.id} onClick={() => toggleSel("skills", sk.id)} style={{padding:"5px 12px", borderRadius:999, fontSize:12.5, fontWeight:600, border:`1.5px solid ${checked ? bd.color : C.border}`, background: checked ? `${bd.color}18` : "transparent", color: checked ? bd.color : C.text3, cursor:"pointer", fontFamily:"inherit", transition:"all 0.12s"}}>{sk.name}</button>); })}</div></>)}
                 {master.projects.length > 0 && (<><div style={{fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"1px", color:C.text3, margin:"14px 0 8px"}}>{ms.projects}</div>{master.projects.map(p => renderSelRow(p, "projects", scoreText(p.name+" "+p.tech+" "+p.description, jdKws), `${p.name}${p.tech ? " · "+p.tech : ""}`))}</>)}
@@ -8306,7 +8369,7 @@ Awards: ${form.awards}`;
                   <span style={{color:C.text3, fontSize:12, display:"inline-block", transform: masterOpen[job.id] ? "rotate(90deg)" : "none", transition:"transform 0.15s"}}>▶</span>
                   <div style={{flex:1, minWidth:0}}>
                     <div style={{fontSize:13.5, fontWeight:700, color:C.text1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis"}}>{job.title||"Untitled role"}{job.company ? ` · ${job.company}` : ""}</div>
-                    {(job.startDate||job.endDate||job.current) && <div style={{fontSize:11.5, color:C.text3, marginTop:1}}>{job.startDate} – {job.current ? "Present" : job.endDate}</div>}
+                    {(job.startDate||job.endDate||job.current||job.isCurrent) && <div style={{fontSize:11.5, color:C.text3, marginTop:1}}>{masterJobDateRange(job)}</div>}
                   </div>
                   <button onClick={e => { e.stopPropagation(); delJob(job.id); }} style={{background:"none", border:"none", color:"#EF4444", cursor:"pointer", fontSize:13, padding:"4px 6px", borderRadius:6, fontFamily:"inherit", opacity:0.7}}>✕</button>
                 </div>
@@ -8318,11 +8381,11 @@ Awards: ${form.awards}`;
                       ))}
                       <div>
                         <label style={lb}>End date</label>
-                        <input value={job.endDate||""} onChange={e => upJob(job.id, {endDate:e.target.value})} placeholder="Present" disabled={job.current} style={{...mi, opacity: job.current ? 0.45 : 1}} />
+                        <input value={job.endDate||""} onChange={e => upJob(job.id, {endDate:e.target.value})} placeholder={presentLabel(docLang)} disabled={job.current || job.isCurrent} style={{...mi, opacity: (job.current || job.isCurrent) ? 0.45 : 1}} />
                       </div>
                       <div style={{display:"flex", alignItems:"center", gap:8, paddingTop:22}}>
-                        <input type="checkbox" id={`cur_${job.id}`} checked={!!job.current} onChange={e => upJob(job.id, {current:e.target.checked, endDate:""})} style={{accentColor:C.accent}} />
-                        <label htmlFor={`cur_${job.id}`} style={{fontSize:13, color:C.text2, cursor:"pointer"}}>Currently working here</label>
+                        <input type="checkbox" id={`cur_${job.id}`} checked={!!(job.current || job.isCurrent)} onChange={e => upJob(job.id, {current:e.target.checked, isCurrent:e.target.checked, endDate:""})} style={{accentColor:C.accent}} />
+                        <label htmlFor={`cur_${job.id}`} style={{fontSize:13, color:C.text2, cursor:"pointer"}}>{eui.currentRole || "I currently work here"}</label>
                       </div>
                     </div>
                     <div style={{marginTop:16}}>

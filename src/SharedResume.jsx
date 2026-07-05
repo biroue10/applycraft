@@ -148,7 +148,7 @@ class SharedDocumentErrorBoundary extends React.Component {
       <div dir={copy === ERROR_COPY.ar ? "rtl" : "ltr"} style={{ color: TEXT2, textAlign: "center", padding: 60, maxWidth: 460, margin: "0 auto" }}>
         <div style={{ fontSize: 18, fontWeight: 800, color: TEXT1, marginBottom: 8 }}>{copy.renderTitle}</div>
         <div style={{ fontSize: 14, marginBottom: 20 }}>{copy.renderBody}</div>
-        <a href="/resume/templates" style={{ background: GRAD, color: "#fff", textDecoration: "none",
+        <a href="/resume/templates/" style={{ background: GRAD, color: "#fff", textDecoration: "none",
           borderRadius: 3, padding: "11px 22px", fontSize: 14, fontWeight: 700, display: "inline-block" }}>
           {copy.cta}
         </a>
@@ -219,7 +219,7 @@ export default function SharedResume() {
           <div dir={copy === ERROR_COPY.ar ? "rtl" : "ltr"} style={{ color: TEXT2, textAlign: "center", padding: 60, maxWidth: 460, margin: "0 auto" }}>
             <div style={{ fontSize: 18, fontWeight: 800, color: TEXT1, marginBottom: 8 }}>{errorTitle}</div>
             <div style={{ fontSize: 14, marginBottom: 20 }}>{errorBody}</div>
-            <a href="/resume/templates" style={{ background: GRAD, color: "#fff", textDecoration: "none",
+            <a href="/resume/templates/" style={{ background: GRAD, color: "#fff", textDecoration: "none",
               borderRadius: 3, padding: "11px 22px", fontSize: 14, fontWeight: 700, display: "inline-block" }}>
               {copy.cta}
             </a>

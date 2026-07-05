@@ -26,13 +26,13 @@ const FREE_BUILDER_ALTERNATES = [
 ];
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
-function nav(lang = "en") {
+function nav(lang = "en", hrefOverride = "") {
   const label = lang === "fr"
     ? "Créer mon CV gratuitement →"
     : lang === "ar"
       ? "أنشئ سيرتي الذاتية مجانًا ←"
       : "Build My Resume Free →";
-  const href = buildResumeStarterUrl("", {
+  const href = hrefOverride || buildResumeStarterUrl("", {
     interfaceLanguage: lang === "en" ? "" : lang,
     documentLanguage: lang === "ar" ? "ar" : "",
   });
@@ -54,7 +54,7 @@ function languageSwitcher(alternates = []) {
   return `<div class="language-switcher" aria-label="Language versions">${links.map(({ hreflang, href }) => `<a href="${href.replace(SITE, "")}">${labels[hreflang] || hreflang}</a>`).join("")}</div>`;
 }
 
-function ctaStrip(heading, sub, href = "/resume-builder", label = "Start Building — It's Free →") {
+function ctaStrip(heading, sub, href = "/", label = "Start Building — It's Free →") {
   return `<div class="cta-strip">
   <h2>${heading}</h2>
   <p>${sub}</p>
@@ -118,7 +118,9 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
   const htmlAttrs = dir ? `lang="${lang}" dir="${dir}"` : `lang="${lang}"`;
   const starterId = starterIdForSlug(slug);
   const documentLanguage = starterId === "arabic-resume" ? "ar" : starterId === "french-cv" ? "fr" : undefined;
-  const genericBuilderUrl = buildResumeStarterUrl("", {
+  const genericBuilderUrl = canonicalPath.startsWith("/examples/")
+    ? "/"
+    : buildResumeStarterUrl("", {
     interfaceLanguage: lang === "en" ? "" : lang,
     documentLanguage: lang === "ar" ? "ar" : "",
   });
@@ -149,6 +151,7 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
 <meta name="description" content="${description}"/>
 <link rel="canonical" href="${canonical}"/>${alternateLinks}
 <meta property="og:type" content="website"/>
+<meta property="og:site_name" content="ApplyCraft"/>
 <meta property="og:locale" content="${ogLocale}"/>
 ${ogAlternateLocales.map((locale) => `<meta property="og:locale:alternate" content="${locale}"/>`).join("\n")}
 <meta property="og:url" content="${canonical}"/>
@@ -186,7 +189,7 @@ ${ogAlternateLocales.map((locale) => `<meta property="og:locale:alternate" conte
   })}</script>
 </head>
 <body>
-${nav(lang)}
+${nav(lang, genericBuilderUrl)}
 <main>
   <div class="page">
     ${languageSwitcher(alternates)}
@@ -196,7 +199,7 @@ ${nav(lang)}
       <p>${sub}</p>
       <div class="hero-btns">
         <a href="${genericBuilderUrl}" class="btn-primary">${ctaLabels.build}</a>
-        <a href="/resume/templates" class="btn-secondary">${ctaLabels.templates}</a>
+        <a href="/resume/templates/" class="btn-secondary">${ctaLabels.templates}</a>
       </div>
       <div class="trust">
         <span>🔒 Browser-first editing</span>

@@ -14,6 +14,19 @@ const ROLE_KEYWORDS = {
   product: /\b(product manager|roadmap|stakeholder|launch|metrics|analytics|go-to-market)\b/i,
 };
 
+const PRESENT_LABELS = {
+  en: "Present",
+  fr: "Présent",
+  ar: "حتى الآن",
+  es: "Presente",
+  de: "Heute",
+};
+
+export function presentLabel(language = "en") {
+  const lang = String(language || "en").toLowerCase().split("-")[0];
+  return PRESENT_LABELS[lang] || PRESENT_LABELS.en;
+}
+
 export function isPlaceholderText(value) {
   return PLACEHOLDER_RE.test(String(value || ""));
 }
@@ -27,12 +40,24 @@ export function normalizeDateRange(value, lang = "en") {
   const text = String(value || "").trim();
   if (!text) return "";
   const dash = lang === "ar" ? " – " : " – ";
+  const present = presentLabel(lang);
   return text
     .replace(/\s*[—–-]\s*/g, dash)
-    .replace(/\b(\d{4})\s+(\d{4}|present|présent|الحاضر)\b/gi, `$1${dash}$2`)
-    .replace(/\b([A-Za-zÀ-ÿ]{3,9}\s+\d{4})\s+([A-Za-zÀ-ÿ]{3,9}\s+\d{4}|present|présent)\b/gi, `$1${dash}$2`)
+    .replace(/\b(\d{4})\s+(\d{4}|present|présent|aujourd'hui|الحاضر|حتى الآن)\b/gi, `$1${dash}$2`)
+    .replace(/\b([A-Za-zÀ-ÿ]{3,9}\s+\d{4})\s+([A-Za-zÀ-ÿ]{3,9}\s+\d{4}|present|présent|aujourd'hui)\b/gi, `$1${dash}$2`)
+    .replace(/\b(?:present|présent|aujourd'hui)\b/gi, present)
+    .replace(/(?:الحاضر|حتى الآن)/g, present)
     .replace(/\s+–\s+/g, dash)
     .trim();
+}
+
+export function formatDateRange({ startDate = "", endDate = "", isCurrent = false, language = "en" } = {}) {
+  const start = String(startDate || "").trim();
+  const end = isCurrent ? presentLabel(language) : String(endDate || "").trim();
+  if (start && end) return normalizeDateRange(`${start} – ${end}`, language);
+  if (start) return start;
+  if (end) return normalizeDateRange(end, language);
+  return "";
 }
 
 function allResumeText(data, form) {

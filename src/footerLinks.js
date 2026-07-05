@@ -3,10 +3,10 @@ export const FOOTER_LINK_SECTIONS = [
     key: "product",
     links: [
       { href: "/", labelKey: "resumeBuilder" },
-      { href: "/resume/templates", labelKey: "resumeTemplates" },
+      { href: "/resume/templates/", labelKey: "resumeTemplates" },
       { href: "/fr/", labelKey: "frenchResumeBuilder" },
       { href: "/ar/", labelKey: "arabicResumeBuilder" },
-      { href: "/cover-letter/templates", labelKey: "coverLetter" },
+      { href: "/cover-letter/templates/", labelKey: "coverLetter" },
       { href: "/ats-checker/", labelKey: "atsChecker" },
       { href: "/ats-checker-fr/", labelKey: "atsCheckerFr" },
       { href: "/ats-checker-ar/", labelKey: "atsCheckerAr" },

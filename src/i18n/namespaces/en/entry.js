@@ -8,6 +8,8 @@ const entry = {
   "collapse": "Collapse",
   "expand": "Expand",
   "reorder": "Drag to reorder",
+  "currentRole": "I currently work here",
+  "currentRoleHint": "End date is not required for your current role.",
   "labels": {
     "title": "Job title",
     "company": "Company",

@@ -12,12 +12,12 @@ const read = (path) => readFile(new URL(path, root), "utf8");
 
 assert.equal(
   buildResumeStarterUrl("sales-representative"),
-  "/resume-builder?starter=sales-representative",
+  "/resume-builder/?starter=sales-representative",
   "starter helper should build the canonical starter URL",
 );
 assert.equal(
   buildResumeStarterUrl("arabic-resume", { interfaceLanguage: "ar", documentLanguage: "ar" }),
-  "/resume-builder?starter=arabic-resume&ui=ar&docLang=ar",
+  "/resume-builder/?starter=arabic-resume&ui=ar&docLang=ar",
   "starter helper should preserve interface and document language",
 );
 assert.equal(starterIdForSlug("sales-representative-resume"), "sales-representative");
@@ -40,11 +40,11 @@ assert.match(app, /Template could not be loaded\. Starting with a blank résumé
 assert.doesNotMatch(app, /localStorage\.setItem\(["']resumeData["']|localStorage\.setItem\(["']ac_resume_draft["']/, "starter data must not be passed or saved through resume localStorage");
 
 const publicChecks = [
-  ["public/examples/sales-representative-resume/index.html", /href="\/resume-builder\?starter=sales-representative"/, /Use This Template Free/],
-  ["public/examples/it-support-technician-resume/index.html", /href="\/resume-builder\?starter=it-support-technician"/, /Use This Template Free/],
-  ["public/examples/customer-service-resume/index.html", /href="\/resume-builder\?starter=customer-service"/, /Use This Template Free/],
-  ["public/resume-in-french/index.html", /href="\/resume-builder\?starter=french-cv&ui=fr&docLang=fr"/, /Utiliser ce modèle gratuitement/],
-  ["public/resume-in-arabic/index.html", /href="\/resume-builder\?starter=arabic-resume&ui=ar&docLang=ar"/, /استخدم هذا القالب مجانًا/],
+  ["public/examples/sales-representative-resume/index.html", /href="\/resume-builder\/\?starter=sales-representative"/, /Use This Template Free/],
+  ["public/examples/it-support-technician-resume/index.html", /href="\/resume-builder\/\?starter=it-support-technician"/, /Use This Template Free/],
+  ["public/examples/customer-service-resume/index.html", /href="\/resume-builder\/\?starter=customer-service"/, /Use This Template Free/],
+  ["public/resume-in-french/index.html", /href="\/resume-builder\/\?starter=french-cv&ui=fr&docLang=fr"/, /Utiliser ce modèle gratuitement/],
+  ["public/resume-in-arabic/index.html", /href="\/resume-builder\/\?starter=arabic-resume&ui=ar&docLang=ar"/, /استخدم هذا القالب مجانًا/],
 ];
 
 for (const [file, hrefPattern, labelPattern] of publicChecks) {

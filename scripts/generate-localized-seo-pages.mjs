@@ -87,6 +87,7 @@ function page(config) {
 <link rel="canonical" href="${canonical}"/>
 ${alternates(config.alternates)}
 <meta property="og:type" content="website"/>
+<meta property="og:site_name" content="ApplyCraft"/>
 <meta property="og:locale" content="${config.ogLocale}"/>
 ${localeAlternates(config.ogAlternateLocales)}
 <meta property="og:url" content="${canonical}"/>
@@ -148,7 +149,7 @@ const pages = [
     cta: "Créer mon CV",
     primary: "Créer mon CV",
     secondary: "Voir les modèles",
-    secondaryHref: "/resume/templates",
+    secondaryHref: "/resume/templates/",
     trust: ["Sans inscription", "PDF et DOCX", "Compatible ATS", "Interface française"],
     sectionTitle: "Pourquoi utiliser ApplyCraft ?",
     sectionIntro: "Un outil rapide pour créer un CV et une lettre de motivation cohérents, en français, anglais ou arabe.",
@@ -184,7 +185,7 @@ const pages = [
     cta: "أنشئ سيرتي الذاتية",
     primary: "أنشئ سيرتي الذاتية",
     secondary: "عرض القوالب",
-    secondaryHref: "/resume/templates",
+    secondaryHref: "/resume/templates/",
     trust: ["بدون تسجيل", "PDF و DOCX", "متوافق مع ATS", "واجهة عربية"],
     sectionTitle: "لماذا تستخدم ApplyCraft؟",
     sectionIntro: "أداة سريعة لإنشاء سيرة ذاتية وخطاب تقديم متناسقين بالعربية أو الفرنسية أو الإنجليزية.",

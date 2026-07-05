@@ -9,6 +9,8 @@ const images = [
   ["home", "ApplyCraft", "Resume Builder & Cover Letter Maker", "Fast, ATS-friendly documents"],
   ["home-fr", "ApplyCraft", "Créateur de CV et lettre de motivation", "Rapide, compatible ATS"],
   ["home-ar", "ApplyCraft", "منشئ سيرة ذاتية وخطاب تقديم", "سريع ومتوافق مع ATS"],
+  ["blog", "ApplyCraft Blog", "Resume writing guides", "ATS, templates, and job search tips"],
+  ["pricing", "Free forever core builder", "Optional 7-day pass", "Never a subscription"],
   ["free-resume-builder", "Free Resume Builder", "No sign-up. No hidden fees.", "PDF & DOCX downloads"],
   ["free-resume-builder-fr", "Créer un CV gratuit", "Sans inscription ni frais cachés", "Export PDF et DOCX"],
   ["free-resume-builder-ar", "منشئ سيرة ذاتية مجاني", "بدون تسجيل أو رسوم مخفية", "تنزيل PDF و DOCX"],

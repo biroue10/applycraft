@@ -56,8 +56,8 @@ function Logo({ compact = false }) {
 
 const DEFAULT_NAV_LINKS = [
   { href: "/", footerKey: "resumeBuilder", fallback: "Resume Builder" },
-  { href: "/resume/templates", footerKey: "resumeTemplates", fallback: "Resume Templates" },
-  { href: "/cover-letter/templates", footerKey: "coverLetter", fallback: "Cover Letter" },
+  { href: "/resume/templates/", footerKey: "resumeTemplates", fallback: "Resume Templates" },
+  { href: "/cover-letter/templates/", footerKey: "coverLetter", fallback: "Cover Letter" },
   { href: "/ats-checker/", footerKey: "atsChecker", fallback: "ATS Checker" },
 ];
 
@@ -71,7 +71,7 @@ export function SiteHeader({
   lang = "en",
   navItems,
   onLogoClick,
-  ctaHref = "/resume/templates",
+  ctaHref = "/resume/templates/",
   ctaLabel,
   onCtaClick,
   renderLanguageSelector,

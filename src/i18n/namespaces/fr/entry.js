@@ -8,6 +8,8 @@ const entry = {
   "collapse": "Réduire",
   "expand": "Développer",
   "reorder": "Glisser pour réordonner",
+  "currentRole": "J’occupe actuellement ce poste",
+  "currentRoleHint": "La date de fin n’est pas requise pour votre poste actuel.",
   "labels": {
     "title": "Intitulé du poste",
     "company": "Entreprise",

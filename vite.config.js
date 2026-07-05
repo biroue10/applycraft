@@ -239,35 +239,42 @@ export default defineConfig({
       const image = meta.image || "https://applycraft.io/og/home.png";
       const canonical = canonicalFor(path);
       const imageAlt = meta.imageAlt || "ApplyCraft resume builder and cover letter maker preview";
+      const ogType = meta.ogType || "website";
+      const ogLocale = meta.locale || "en_US";
       const metaTags = [
         `<title>${title}</title>`,
         `<meta name="description" content="${description}" />`,
+        `<meta property="og:type" content="${ogType}" />`,
+        `<meta property="og:site_name" content="ApplyCraft" />`,
+        `<meta property="og:locale" content="${ogLocale}" />`,
         `<meta property="og:url" content="${canonical}" />`,
         `<meta property="og:title" content="${title}" />`,
         `<meta property="og:description" content="${description}" />`,
         `<meta property="og:image" content="${image}" />`,
         `<meta property="og:image:secure_url" content="${image}" />`,
+        `<meta property="og:image:type" content="image/png" />`,
+        `<meta property="og:image:width" content="1200" />`,
+        `<meta property="og:image:height" content="630" />`,
         `<meta property="og:image:alt" content="${imageAlt}" />`,
         `<meta name="twitter:title" content="${title}" />`,
         `<meta name="twitter:description" content="${description}" />`,
         `<meta name="twitter:image" content="${image}" />`,
         `<meta name="twitter:image:alt" content="${imageAlt}" />`,
       ];
-      if (meta.locale) metaTags.push(`<meta property="og:locale" content="${meta.locale}" />`);
       for (const locale of meta.alternateLocales || []) metaTags.push(`<meta property="og:locale:alternate" content="${locale}" />`);
       let nextHtml = html
         .replace(/<title>[\s\S]*?<\/title>/, metaTags[0])
         .replace(/<meta name="description" content="[^"]*"\s*\/?>/, metaTags[1])
-        .replace(/<meta property="og:url" content="[^"]*"\s*\/?>/, metaTags[2])
-        .replace(/<meta property="og:title" content="[^"]*"\s*\/?>/, metaTags[3])
-        .replace(/<meta property="og:description" content="[^"]*"\s*\/?>/, metaTags[4])
-        .replace(/<meta property="og:image" content="[^"]*"\s*\/?>/, metaTags[5])
-        .replace(/<meta property="og:image:secure_url" content="[^"]*"\s*\/?>/, metaTags[6])
-        .replace(/<meta property="og:image:alt" content="[^"]*"\s*\/?>/, metaTags[7])
-        .replace(/<meta name="twitter:title" content="[^"]*"\s*\/?>/, metaTags[8])
-        .replace(/<meta name="twitter:description" content="[^"]*"\s*\/?>/, metaTags[9])
-        .replace(/<meta name="twitter:image" content="[^"]*"\s*\/?>/, metaTags[10])
-        .replace(/<meta name="twitter:image:alt" content="[^"]*"\s*\/?>/, metaTags[11]);
+        .replace(/<meta property="og:url" content="[^"]*"\s*\/?>/, metaTags[5])
+        .replace(/<meta property="og:title" content="[^"]*"\s*\/?>/, metaTags[6])
+        .replace(/<meta property="og:description" content="[^"]*"\s*\/?>/, metaTags[7])
+        .replace(/<meta property="og:image" content="[^"]*"\s*\/?>/, metaTags[8])
+        .replace(/<meta property="og:image:secure_url" content="[^"]*"\s*\/?>/, metaTags[9])
+        .replace(/<meta property="og:image:alt" content="[^"]*"\s*\/?>/, metaTags[13])
+        .replace(/<meta name="twitter:title" content="[^"]*"\s*\/?>/, metaTags[14])
+        .replace(/<meta name="twitter:description" content="[^"]*"\s*\/?>/, metaTags[15])
+        .replace(/<meta name="twitter:image" content="[^"]*"\s*\/?>/, metaTags[16])
+        .replace(/<meta name="twitter:image:alt" content="[^"]*"\s*\/?>/, metaTags[17]);
       const faqSchema = faqSchemaFor(path);
       if (faqSchema) {
         nextHtml = nextHtml.replace(
@@ -275,8 +282,14 @@ export default defineConfig({
           `<script type="application/ld+json">${faqSchema}</script>`
         );
       }
-      nextHtml = nextHtml.replace(/<meta property="og:locale" content="[^"]*"\s*\/?>/g, "");
-      nextHtml = nextHtml.replace("</head>", `    ${metaTags.slice(12).join("\n    ")}\n  </head>`);
+      nextHtml = nextHtml
+        .replace(/<meta property="og:type" content="[^"]*"\s*\/?>/g, "")
+        .replace(/<meta property="og:site_name" content="[^"]*"\s*\/?>/g, "")
+        .replace(/<meta property="og:locale" content="[^"]*"\s*\/?>/g, "")
+        .replace(/<meta property="og:image:type" content="[^"]*"\s*\/?>/g, "")
+        .replace(/<meta property="og:image:width" content="[^"]*"\s*\/?>/g, "")
+        .replace(/<meta property="og:image:height" content="[^"]*"\s*\/?>/g, "");
+      nextHtml = nextHtml.replace("</head>", `    ${metaTags.slice(2, 5).join("\n    ")}\n    ${metaTags.slice(10, 13).join("\n    ")}\n    ${metaTags.slice(18).join("\n    ")}\n  </head>`);
       return nextHtml
         .replace(/<html[^>]*>/, htmlTag)
         .replace("</head>", `    ${tags.join("\n    ")}\n  </head>`);

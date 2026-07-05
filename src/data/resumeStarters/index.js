@@ -38,7 +38,7 @@ export function buildResumeStarterUrl(starterId, options = {}) {
   if (options.interfaceLanguage) params.set("ui", options.interfaceLanguage);
   if (options.documentLanguage) params.set("docLang", options.documentLanguage);
   const query = params.toString();
-  return query ? `/resume-builder?${query}` : "/resume-builder";
+  return query ? `/resume-builder/?${query}` : "/resume-builder/";
 }
 
 export function buildTemplateUrl(templateId, options = {}) {
@@ -47,7 +47,7 @@ export function buildTemplateUrl(templateId, options = {}) {
   if (options.interfaceLanguage) params.set("ui", options.interfaceLanguage);
   if (options.documentLanguage) params.set("docLang", options.documentLanguage);
   const query = params.toString();
-  return query ? `/resume-builder?${query}` : "/resume-builder";
+  return query ? `/resume-builder/?${query}` : "/resume-builder/";
 }
 
 export async function loadResumeStarter(starterId) {

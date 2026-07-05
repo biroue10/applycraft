@@ -14,6 +14,7 @@ import {
   migratePreferences,
 } from "../src/i18n/languages.js";
 import { sectionLabel } from "../src/i18n/documentLabels.js";
+import { formatDateRange, normalizeDateRange } from "../src/resumeQuality.js";
 import { EVENTS } from "../src/analytics.js";
 
 const app = await readFile(new URL("../src/ResumeGenerator.jsx", import.meta.url), "utf8");
@@ -161,6 +162,14 @@ test("document section labels localize and fall back safely", () => {
   assert.equal(sectionLabel("ar", "experience"), "الخبرة العملية");
   assert.equal(sectionLabel("zz", "experience"), "Work Experience");
   assert.equal(sectionLabel("ar", "notASection"), "notASection");
+});
+
+test("current experience date ranges localize by document language", () => {
+  assert.equal(formatDateRange({ startDate: "2020", endDate: "", isCurrent: true, language: "en" }), "2020 – Present");
+  assert.equal(formatDateRange({ startDate: "2020", endDate: "", isCurrent: true, language: "fr" }), "2020 – Présent");
+  assert.equal(formatDateRange({ startDate: "2020", endDate: "", isCurrent: true, language: "ar" }), "2020 – حتى الآن");
+  assert.equal(normalizeDateRange("2020 – Present", "fr"), "2020 – Présent");
+  assert.equal(normalizeDateRange("2020 – Present", "ar"), "2020 – حتى الآن");
 });
 
 test("custom section label behavior is present and protected", () => {

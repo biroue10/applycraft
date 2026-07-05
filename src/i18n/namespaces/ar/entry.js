@@ -8,6 +8,8 @@ const entry = {
   "collapse": "طي",
   "expand": "توسيع",
   "reorder": "اسحب لإعادة الترتيب",
+  "currentRole": "ما زلت أعمل هنا حاليًا",
+  "currentRoleHint": "تاريخ الانتهاء غير مطلوب للمنصب الحالي.",
   "labels": {
     "title": "المسمى الوظيفي",
     "company": "الشركة",

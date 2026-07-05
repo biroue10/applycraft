@@ -21,6 +21,9 @@ function shell(title, description, canonicalPath, content, extraHead = "") {
 <title>${title} | ApplyCraft</title>
 <meta name="description" content="${description}"/>
 <link rel="canonical" href="${SITE}${canonicalPath}"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="ApplyCraft"/>
+<meta property="og:locale" content="en_US"/>
 <meta property="og:title" content="${title} | ApplyCraft"/>
 <meta property="og:description" content="${description}"/>
 <meta property="og:url" content="${SITE}${canonicalPath}"/>
@@ -81,7 +84,7 @@ ${extraHead}
 <body>
 <nav class="nav">
   <a href="/" class="nav-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="eager" decoding="async"></a>
-  <a href="/resume-builder" class="nav-cta">Build My Resume Free →</a>
+  <a href="/" class="nav-cta">Build My Resume Free →</a>
 </nav>
 <main>
 <div class="prose">
