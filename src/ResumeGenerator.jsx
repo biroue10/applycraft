@@ -11,6 +11,7 @@ import { buildPrivateShareUrl } from "./share.js";
 import { asArray, isResumeDataEmpty, normalizeResumeData } from "./resumeData.js";
 import { linkifyText, normalizeLinkHref } from "./utils/linkify.js";
 import { getContactHref, normalizeContactItems } from "./utils/contactLinks.js";
+import { formatPhoneForResume } from "./utils/phone.js";
 import { ResumePaper, CoverLetterPaper, structureSectionItems } from "./documents/DocumentPapers.jsx";
 import { analyzeResumeQuality, formatDateRange, isPlaceholderOnly, normalizeDateRange, presentLabel } from "./resumeQuality.js";
 import {
@@ -19,6 +20,7 @@ import {
   createTranslatedResumeCopy,
   extractProtectedTerms,
   parseTranslationJson,
+  postProcessTranslatedResume,
   translateDocumentContent,
   TRANSLATABLE_RESUME_FIELDS,
   TRANSLATION_STATUSES,
@@ -3519,10 +3521,10 @@ export default function ResumeGenerator() {
     const next = migrateForm({
       name: p.name || "", title: p.title || "", email: p.email || "", phone: p.phone || "",
       location: p.location || "", linkedin: p.linkedin || "", website: p.website || "",
-      summary: p.summary || "", sectionTitles: {},
+      summary: p.summary || "", sectionTitles: {}, addedSections: [],
       experienceEntries: (p.experience || []).map((e) => entry({
         title: e.title || "", company: [e.company, e.location].filter(Boolean).join(" · "),
-        startDate: e.startDate || "", endDate: e.endDate || "",
+        startDate: e.startDate || "", endDate: e.endDate || "", isCurrent: Boolean(e.isCurrent),
         description: (e.bullets || []).map((b) => (/^[•\-*]/.test(b) ? b : `• ${b}`)).join("\n"),
       })),
       educationEntries: (p.education || []).map((e) => entry({
@@ -3538,7 +3540,8 @@ export default function ResumeGenerator() {
       extracurricularEntries: (p.extracurricular || []).map((it) => entry(it)),
     });
     setForm(next);
-  }, []);
+    if (/^\+\d/.test(p.phone || "")) setPhoneCode(LANG_CODE[interfaceLanguage] || "+1");
+  }, [interfaceLanguage]);
   // Per-section entry handlers shared by every SectionCard.
   const addSectionEntry = useCallback((key) => {
     const e = blankEntry(key);
@@ -3588,7 +3591,9 @@ export default function ResumeGenerator() {
     setCollapsedSections((c) => ({ ...c, [key]: false })); // open it
     setAddContentOpen(false);
   }, []);
-  const fullPhone = form.phone.trim() ? `${phoneCode} ${form.phone.trim()}` : "";
+  const defaultPhoneCode = LANG_CODE[interfaceLanguage] || "+1";
+  const rawPhone = form.phone.trim();
+  const fullPhone = formatPhoneForResume(rawPhone, phoneCode, defaultPhoneCode);
   // Memoised so non-form state changes (modal open, ATS result, etc.) don't
   // trigger an expensive re-parse of the entire form on every render.
   const liveData = useMemo(
@@ -4186,7 +4191,7 @@ export default function ResumeGenerator() {
         payload: request.content,
       });
       incrementTranslationUsage();
-      const translated = parseTranslationJson(JSON.stringify(response.document));
+      const translated = postProcessTranslatedResume(parseTranslationJson(JSON.stringify(response.document)), langCode);
       const missingProtected = assertProtectedTermsPreserved(request.content, translated);
       const untranslatedFields = Object.keys(request.content).filter((key) => typeof translated[key] !== "string" || !translated[key].trim());
       const translatedAt = new Date().toISOString();

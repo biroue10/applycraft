@@ -68,8 +68,8 @@ assert.match(docxBody, /structureSectionItems\(section, docLang\)/, "DOCX export
 assert.match(app, /Review before download/, "export warnings modal should exist");
 assert.match(app, /Download anyway/, "warnings modal should allow non-blocking download");
 assert.match(app, /skipReview: true/, "warning downloads should be bypassable by the user");
-assert.match(app, /onClick=\{\(\) => \{ setExportMenuOpen\(false\); downloadPDF\(\); \}\}/, "PDF download should remain a direct free action");
-assert.match(app, /onClick=\{\(\) => \{ setExportMenuOpen\(false\); downloadDOCX\(\); \}\}/, "DOCX download should remain a direct free action");
+assert.match(app, /onClick=\{\(\) => \{ setActiveToolbarPanel\(null\); downloadPDF\(\); \}\}/, "PDF download should remain a direct free action");
+assert.match(app, /onClick=\{\(\) => \{ setActiveToolbarPanel\(null\); downloadDOCX\(\); \}\}/, "DOCX download should remain a direct free action");
 assert.match(common, /"dlPdf": "Download PDF"/, "English PDF export label should still exist");
 assert.match(common, /"dlDocx": "Download DOCX"/, "English DOCX export label should still exist");
 

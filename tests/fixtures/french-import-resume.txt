@@ -1,0 +1,28 @@
+Youssef El Amine
+Ingénieur Logiciel Senior
+Casablanca, Maroc · +212 6 61 23 45 67 · youssef.elamine@email.com · linkedin.com/in/youssefelamine
+
+Profil
+Ingénieur logiciel senior avec 6 ans d'expérience dans le développement web, les architectures cloud et l'amélioration continue des plateformes numériques.
+
+Expérience
+Ingénieur Logiciel Senior
+Groupe OCP — Casablanca · Mars 2022 – Aujourd'hui
+• Conçu des services Node.js et React utilisés par 12 équipes internes.
+• Réduit le temps de déploiement de 45 % grâce à l'automatisation CI/CD.
+• Encadré 4 développeurs juniors sur les pratiques de revue de code.
+
+Développeur Full Stack
+Inwi — Casablanca · Janvier 2019 – Février 2022
+• Développé des tableaux de bord clients avec React, Express et PostgreSQL.
+• Amélioré la performance des API de 35 % en optimisant les requêtes SQL.
+
+Formation
+Diplôme d'Ingénieur d'État en Informatique
+ENSIAS — Rabat · 2018
+
+Langues
+Arabe, Français, Anglais
+
+Compétences
+JavaScript, TypeScript, React, Node.js, Express, PostgreSQL, Docker, Kubernetes, AWS, Git

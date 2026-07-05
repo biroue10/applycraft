@@ -49,8 +49,8 @@ assert.match(common, /"dlDocx": "Download DOCX"/, "DOCX export label should rema
 assert.match(cover, /PDF or DOCX/, "cover-letter copy should mention both free export formats");
 assert.doesNotMatch(cover, /unlock cover letter export/i, "cover-letter copy must not imply a locked export");
 
-assert.match(app, /onClick=\{downloadCoverPDF\}/, "cover letter PDF export button should call the export directly");
-assert.match(app, /onClick=\{downloadCoverDOCX\}/, "cover letter DOCX export button should call the export directly");
+assert.match(app, /onClick=\{\(\) => \{ setActiveToolbarPanel\(null\); downloadCoverPDF\(\); \}\}/, "cover letter PDF export button should call the export directly");
+assert.match(app, /onClick=\{\(\) => \{ setActiveToolbarPanel\(null\); downloadCoverDOCX\(\); \}\}/, "cover letter DOCX export button should call the export directly");
 assert.match(exportBodies.coverDocx, /document_type: "cover"/, "cover DOCX analytics should stay document-type only");
 assert.match(exportBodies.coverDocx, /ExternalHyperlink/, "cover DOCX export should preserve supported hyperlinks");
 

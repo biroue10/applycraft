@@ -21,6 +21,9 @@ const SPA_ROUTES = new Set([
   "/cover-letter/builder", "/job-tracker", "/app/ats-checker", "/master-profile",
   "/email-signature", "/personal-website",
 ]);
+for (const route of Array.from(SPA_ROUTES)) {
+  if (route !== "/" && !route.endsWith("/")) SPA_ROUTES.add(`${route}/`);
+}
 
 let failures = 0;
 const fail = (m) => { failures++; console.error("  FAIL " + m); };

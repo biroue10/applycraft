@@ -72,6 +72,7 @@ export function buildResumeTranslationRequest(form, { sourceLanguage = "auto", t
       "Preserve names, emails, phone numbers, URLs, company names, certifications, tools, technologies, and acronyms.",
       "Do not invent achievements or add experience.",
       "Use natural, concise, professional resume language in the target language.",
+      ...(targetLanguage === "ar" ? ["Localize French/English month names in date ranges to Arabic month names, and keep mixed technical titles in natural Arabic order, e.g. مهندس Full Stack."] : []),
       "Keep bullet points as bullet points and preserve dates and numbers.",
       "Preserve section boundaries, blank-line entry breaks, and the number of entries in each section.",
       "Return valid JSON only with the same top-level field keys.",
@@ -79,6 +80,41 @@ export function buildResumeTranslationRequest(form, { sourceLanguage = "auto", t
     preserveTerms: protectedTerms,
     content,
   };
+}
+
+const ARABIC_MONTHS = new Map([
+  ["janvier", "يناير"], ["jan", "يناير"], ["january", "يناير"],
+  ["février", "فبراير"], ["fevrier", "فبراير"], ["fév", "فبراير"], ["february", "فبراير"],
+  ["mars", "مارس"], ["march", "مارس"],
+  ["avril", "أبريل"], ["april", "أبريل"],
+  ["mai", "مايو"], ["may", "مايو"],
+  ["juin", "يونيو"], ["june", "يونيو"],
+  ["juillet", "يوليو"], ["july", "يوليو"],
+  ["août", "أغسطس"], ["aout", "أغسطس"], ["august", "أغسطس"],
+  ["septembre", "سبتمبر"], ["september", "سبتمبر"],
+  ["octobre", "أكتوبر"], ["october", "أكتوبر"],
+  ["novembre", "نوفمبر"], ["november", "نوفمبر"],
+  ["décembre", "ديسمبر"], ["decembre", "ديسمبر"], ["december", "ديسمبر"],
+]);
+
+function postProcessArabicText(value) {
+  return String(value || "")
+    .replace(/\b([A-Za-zÀ-ÿ]+)\s+(\d{4})\b/g, (match, month, year) => {
+      const direct = month.toLowerCase();
+      const normalized = month.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      const arabic = ARABIC_MONTHS.get(direct) || ARABIC_MONTHS.get(normalized);
+      return arabic ? `${arabic} ${year}` : match;
+    })
+    .replace(/Aujourd['’]?hui|Présent|Present/gi, "حتى الآن")
+    .replace(/Full Stack\s+(مهندس|مطور)/g, "$1 Full Stack");
+}
+
+export function postProcessTranslatedResume(translated, targetLanguage = "en") {
+  if (targetLanguage !== "ar" || !translated || typeof translated !== "object") return translated;
+  return Object.fromEntries(Object.entries(translated).map(([key, value]) => [
+    key,
+    typeof value === "string" ? postProcessArabicText(value) : value,
+  ]));
 }
 
 export async function translateDocumentContent({

@@ -18,6 +18,7 @@
     "analyze": "ANALYZE=true npm run build",
     "test:product": "node scripts/product-tests.mjs",
     "test:ats": "node scripts/ats-tests.mjs",
+    "test:resume-import": "node scripts/resume-import-parser-tests.mjs",
     "test:pdf": "node scripts/pdf-tests.mjs",
     "test:resume-quality": "node scripts/resume-quality-tests.mjs",
     "test:translation": "node scripts/translation-tests.mjs",

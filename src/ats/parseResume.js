@@ -15,6 +15,7 @@ const PRESENT = "(?:present|présent|présente|actuel|actuelle|en\\s?cours|now|t
 const DATE_ANY = new RegExp(`(${DATE_TOKEN}|${PRESENT})`, "gi");
 const DATE_RANGE = new RegExp(`(${DATE_TOKEN})\\s*(?:[–—\\-]|to|à|au)\\s*(${DATE_TOKEN}|${PRESENT})`, "i");
 const BULLET_RE = /^\s*[•·▸◦‣*►-]\s+/;
+const DEGREE_RE = /(diplom|degree|bachelor|master|licence|baccalaur|bac\b|bts|dut|phd|doctor|mba|ing[eé]nieur|technician|technicien)/i;
 
 // Section header keywords → builder section key (EN + FR).
 const HEADER_MAP = [
@@ -65,6 +66,159 @@ function splitHeaderParts(rest) {
   return rest.split(/\s+[—–|·]\s+|\s+[-]\s+|,\s+| at | chez /i)
     .map((p) => p.replace(/^[\s—–|·,\-]+|[\s—–|·,\-]+$/g, "").trim())
     .filter(Boolean);
+}
+
+function hasMeaningfulEntry(entry, key) {
+  if (!entry) return false;
+  if (key === "experience") {
+    return Boolean(entry.title || entry.company || entry.startDate || entry.endDate || entry.bullets?.length);
+  }
+  return Boolean(entry.school || entry.degree || entry.location || entry.startDate || entry.endDate || entry.bullets?.length);
+}
+
+function nextContentLine(lines, index) {
+  for (let i = index + 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line) return line;
+  }
+  return "";
+}
+
+function isStandaloneTitleLine(line, nextLine) {
+  if (!line || BULLET_RE.test(line) || extractDates(line).hasDate) return false;
+  if (classifyHeader(line)) return false;
+  if (line.length > 90 || /[.!?]$/.test(line)) return false;
+  const nextDates = extractDates(nextLine || "");
+  return Boolean(nextDates.hasDate || /\s[—–|·]\s| at | chez |,\s/.test(nextLine || ""));
+}
+
+function parseExperienceEntries(body) {
+  const entries = [];
+  let cur = null;
+  const finish = () => {
+    if (!hasMeaningfulEntry(cur, "experience")) return;
+    cur.bullets = [...new Set((cur.bullets || []).map((b) => b.trim()).filter(Boolean))];
+    entries.push(cur);
+  };
+
+  for (let i = 0; i < body.length; i++) {
+    const raw = body[i];
+    const line = raw.trim();
+    if (!line) continue;
+    const bullet = BULLET_RE.test(raw);
+    const cleanBullet = raw.replace(BULLET_RE, "").trim();
+    const dates = extractDates(line);
+    const nextLine = nextContentLine(body, i);
+
+    if (bullet) {
+      if (!cur) cur = { title: "", company: "", location: "", startDate: "", endDate: "", bullets: [] };
+      if (cleanBullet) cur.bullets.push(cleanBullet);
+      continue;
+    }
+
+    if (isStandaloneTitleLine(line, nextLine)) {
+      finish();
+      cur = { title: line, company: "", location: "", startDate: "", endDate: "", bullets: [] };
+      continue;
+    }
+
+    if (dates.hasDate) {
+      const parts = splitHeaderParts(dates.rest);
+      if (cur?.title && !cur.company && !cur.startDate && !cur.endDate) {
+        cur.company = parts[0] || cur.company || "";
+        cur.location = parts.slice(1).join(" · ");
+        cur.startDate = dates.start;
+        cur.endDate = dates.end;
+      } else {
+        finish();
+        cur = {
+          title: parts[0] || "",
+          company: parts[1] || "",
+          location: parts.slice(2).join(" · "),
+          startDate: dates.start,
+          endDate: dates.end,
+          bullets: [],
+        };
+      }
+      continue;
+    }
+
+    if (!cur) {
+      cur = { title: line, company: "", location: "", startDate: "", endDate: "", bullets: [] };
+    } else if (!cur.title) {
+      cur.title = line;
+    } else {
+      cur.bullets.push(line);
+    }
+  }
+
+  finish();
+  return entries;
+}
+
+function parseEducationEntries(body) {
+  const entries = [];
+  let cur = null;
+  const finish = () => {
+    if (!hasMeaningfulEntry(cur, "education")) return;
+    const seen = new Set([cur.startDate, cur.endDate].filter(Boolean).map((item) => item.trim()));
+    cur.bullets = (cur.bullets || [])
+      .map((b) => b.trim())
+      .filter(Boolean)
+      .filter((b) => {
+        const dates = extractDates(b);
+        if (dates.hasDate && !dates.rest && seen.has(dates.start)) return false;
+        if (seen.has(b)) return false;
+        return true;
+      });
+    cur.bullets = [...new Set(cur.bullets)];
+    entries.push(cur);
+  };
+
+  for (let i = 0; i < body.length; i++) {
+    const raw = body[i];
+    const line = raw.trim();
+    if (!line) continue;
+    const bullet = BULLET_RE.test(raw);
+    const cleanBullet = raw.replace(BULLET_RE, "").trim();
+    const dates = extractDates(cleanBullet || line);
+    const nextLine = nextContentLine(body, i);
+
+    if (bullet) {
+      if (!cur) cur = { school: "", degree: "", location: "", startDate: "", endDate: "", bullets: [] };
+      if (cleanBullet) cur.bullets.push(cleanBullet);
+      continue;
+    }
+
+    if (isStandaloneTitleLine(line, nextLine) || (!dates.hasDate && DEGREE_RE.test(line))) {
+      finish();
+      cur = { school: "", degree: line, location: "", startDate: "", endDate: "", bullets: [] };
+      continue;
+    }
+
+    if (dates.hasDate) {
+      const parts = splitHeaderParts(dates.rest);
+      if (cur && !cur.startDate && !cur.endDate) {
+        if (!cur.school && parts[0]) cur.school = parts[0];
+        else if (!cur.degree && parts[0] && DEGREE_RE.test(parts[0])) cur.degree = parts[0];
+        cur.location = parts.slice(cur.school ? 1 : 0).join(" · ") || cur.location;
+        cur.startDate = dates.start;
+        cur.endDate = dates.end;
+      } else {
+        finish();
+        cur = { school: "", degree: "", location: "", startDate: dates.start, endDate: dates.end, bullets: [] };
+        if (parts[0] && DEGREE_RE.test(parts[0])) { cur.degree = parts[0]; cur.school = parts[1] || ""; cur.location = parts.slice(2).join(" · "); }
+        else { cur.school = parts[0] || ""; cur.degree = parts[1] || ""; cur.location = parts.slice(2).join(" · "); }
+      }
+      continue;
+    }
+
+    if (!cur) cur = { school: "", degree: line, location: "", startDate: "", endDate: "", bullets: [] };
+    else cur.bullets.push(line);
+  }
+
+  finish();
+  return entries;
 }
 
 export function parseResume(rawText) {
@@ -155,33 +309,7 @@ export function parseResume(rawText) {
       if (para && !out.summary) out.summary = para;            // never duplicate
       else if (para && out.summary.length < 30) out.summary = para;
     } else if (key === "experience" || key === "education") {
-      const entries = [];
-      let cur = null;
-      for (const raw of body) {
-        const line = raw.trim();
-        if (!line) continue;
-        const bullet = BULLET_RE.test(raw);
-        const { start, end, rest, hasDate } = extractDates(line);
-        const looksHeader = !bullet && (hasDate || /\s[—–|·]\s| at | chez |,\s/.test(line));
-        if (looksHeader || !cur) {
-          const parts = splitHeaderParts(hasDate ? rest : line);
-          cur = { startDate: start, endDate: end, bullets: [] };
-          if (key === "experience") {
-            cur.title = parts[0] || "";
-            cur.company = parts[1] || "";
-            cur.location = parts[2] || "";
-          } else {
-            // education: degree keyword decides which part is the degree.
-            const degRe = /(diplom|degree|bachelor|master|licence|baccalaur|bac\b|bts|dut|phd|doctor|mba|ing[eé]nieur|technician|technicien)/i;
-            if (parts[0] && degRe.test(parts[0])) { cur.degree = parts[0]; cur.school = parts[1] || ""; }
-            else { cur.school = parts[0] || ""; cur.degree = parts[1] || ""; }
-            cur.location = parts[2] || "";
-          }
-          entries.push(cur);
-        } else {
-          cur.bullets.push(raw.replace(BULLET_RE, "").trim());
-        }
-      }
+      const entries = key === "experience" ? parseExperienceEntries(body) : parseEducationEntries(body);
       if (key === "experience") out.experience = entries.map((e) => ({ title: e.title, company: e.company, location: e.location, startDate: e.startDate, endDate: e.endDate, bullets: e.bullets.filter(Boolean) }));
       else out.education = entries.map((e) => ({ school: e.school || "", degree: e.degree || "", location: e.location || "", startDate: e.startDate, endDate: e.endDate, description: e.bullets.filter(Boolean).join("\n") }));
     } else if (key === "skills") {
