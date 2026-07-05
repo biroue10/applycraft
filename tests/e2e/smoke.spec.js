@@ -45,6 +45,67 @@ test.describe("Resume flow", () => {
     const name = page.locator("#field-name");
     if (await name.count()) { await name.fill("Jane Doe"); await expect(name).toHaveValue("Jane Doe"); }
   });
+
+  test("builder toolbar panels are mutually exclusive", async ({ page }) => {
+    const ignoreKnownHydration = (message) => /Minified React error #(418|423|425)\b/.test(message);
+    const errors = [];
+    page.on("pageerror", (e) => {
+      const text = String(e);
+      if (!ignoreKnownHydration(text)) errors.push(text);
+    });
+
+    await page.goto("/resume-builder?template=modern");
+    const exportButton = page.getByRole("button", { name: /^Export$/ }).first();
+    const customizeButton = page.getByRole("button", { name: /^Customize$/ }).first();
+    const moreButton = page.getByRole("button", { name: /more options/i }).first();
+
+    await exportButton.click();
+    await expect(exportButton).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByText("Export your resume")).toBeVisible();
+
+    await customizeButton.click();
+    await expect(exportButton).toHaveAttribute("aria-expanded", "false");
+    await expect(customizeButton).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByText("Export your resume")).toHaveCount(0);
+    await expect(page.getByText("Document settings")).toBeVisible();
+
+    await exportButton.click();
+    await expect(customizeButton).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByText("Document settings")).toHaveCount(0);
+    await expect(page.getByText("Export your resume")).toBeVisible();
+
+    await moreButton.click();
+    await expect(exportButton).toHaveAttribute("aria-expanded", "false");
+    await expect(moreButton).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByText("Export your resume")).toHaveCount(0);
+    await expect(page.getByText("Keep for this session")).toBeVisible();
+
+    await moreButton.click();
+    await expect(moreButton).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByText("Keep for this session")).toHaveCount(0);
+
+    await exportButton.click();
+    await page.mouse.click(12, 520);
+    await expect(exportButton).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByText("Export your resume")).toHaveCount(0);
+
+    await customizeButton.click();
+    await page.keyboard.press("Escape");
+    await expect(customizeButton).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByText("Document settings")).toHaveCount(0);
+
+    await page.setViewportSize({ width: 390, height: 900 });
+    await page.goto("/resume-builder?template=modern");
+    const mobileExportButton = page.getByRole("button", { name: /^Export$/ }).first();
+    const mobileCustomizeButton = page.getByRole("button", { name: /^Customize$/ }).first();
+    await mobileExportButton.click();
+    await expect(page.getByText("Export your resume")).toBeVisible();
+    await mobileCustomizeButton.click();
+    await expect(page.getByText("Export your resume")).toHaveCount(0);
+    await expect(page.getByText("Document settings")).toBeVisible();
+
+    expect(errors, errors.join("\n")).toHaveLength(0);
+  });
 });
 
 test.describe("ATS checker", () => {

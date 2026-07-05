@@ -3064,9 +3064,12 @@ export default function ResumeGenerator() {
   const [previewZoom, setPreviewZoom] = useState(86);
   const [mobileResumeMode, setMobileResumeMode] = useState("edit");
   const [exporting, setExporting] = useState("");
-  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [activeToolbarPanel, setActiveToolbarPanel] = useState(null);
+  const resumeToolbarRef = useRef(null);
+  const coverToolbarRef = useRef(null);
+  const mobileResumeToolbarRef = useRef(null);
+  const mobileCoverToolbarRef = useRef(null);
   const [reviewModal, setReviewModal] = useState({ open: false, format: "", warnings: [] });
-  const [customizeOpen, setCustomizeOpen] = useState(false);
   const [guidanceDismissed, setGuidanceDismissed] = useState(false);
   const [exportSuccess, setExportSuccess] = useState("");
   const [aiPolished, setAiPolished] = useState(false);
@@ -3623,9 +3626,30 @@ export default function ResumeGenerator() {
     setCurrentResumeId((cur) => (cur === id ? null : cur));
   }, [refreshResumes]);
 
+  const toggleToolbarPanel = useCallback((panelName) => {
+    setActiveToolbarPanel((current) => (current === panelName ? null : panelName));
+    setShareUrl("");
+  }, []);
+
+  useEffect(() => {
+    if (!activeToolbarPanel) return undefined;
+    const refs = [resumeToolbarRef, coverToolbarRef, mobileResumeToolbarRef, mobileCoverToolbarRef];
+    const handlePointerDown = (event) => {
+      if (refs.some((ref) => ref.current?.contains(event.target))) return;
+      setActiveToolbarPanel(null);
+    };
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") setActiveToolbarPanel(null);
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeToolbarPanel]);
+
   // ── Share / email document (⋮ menu on the resume + cover editors) ─────────
-  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
-  const [coverMoreOpen, setCoverMoreOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const shareCopy = useMemo(() => ({
     create: statusText("shareCreate"),
@@ -3679,17 +3703,20 @@ export default function ResumeGenerator() {
     return { v: 2, k: "cover", t: coverTpl?.id || "modern", l: docLang || "en", p: "a4", c: {}, d };
   }, [coverForm, coverTpl, docLang]);
   // Reusable ⋮ menu for secondary editor actions.
-  const renderMoreMenu = (open, setOpen, getPayload, subject, options = {}) => (
+  const renderMoreMenu = (panelName, getPayload, subject, options = {}) => {
+    const open = activeToolbarPanel === panelName;
+    return (
     <div style={{ position: "relative" }}>
-      <button type="button" aria-label={builderText("moreOptions")} aria-expanded={open}
-        onClick={() => { setOpen((o) => !o); setShareUrl(""); }}
+      <button type="button" aria-label={builderText("moreOptions")} aria-haspopup="menu" aria-expanded={open}
+        aria-controls={`p-${panelName}`}
+        onClick={() => toggleToolbarPanel(panelName)}
         style={{ ...softBtn, padding: "7px 11px", fontWeight: 800 }}>⋮</button>
       {open && (
-        <div style={{ position: "absolute", top: "calc(100% + 8px)", insetInlineEnd: 0, zIndex: 120, width: 290,
+        <div id={`p-${panelName}`} role="menu" style={{ position: "absolute", top: "calc(100% + 8px)", insetInlineEnd: 0, zIndex: 120, width: 290,
           background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, boxShadow: "0 18px 54px rgba(0,0,0,0.5)", padding: 10 }}>
           {options.content}
           {(options.items || []).map((item, index) => (
-            <button key={`${item.label}-${index}`} type="button" onClick={() => { setOpen(false); item.onClick?.(); }}
+            <button key={`${item.label}-${index}`} type="button" role="menuitem" onClick={() => { setActiveToolbarPanel(null); item.onClick?.(); }}
               disabled={item.disabled}
               style={{ display: "block", width: "100%", textAlign: "left", background: item.primary ? `${C.accent}18` : "none",
                 border: "none", color: item.disabled ? C.text3 : item.color || C.text1,
@@ -3702,12 +3729,12 @@ export default function ResumeGenerator() {
           {((options.items || []).length > 0 || options.content) && (
             <div aria-hidden style={{ height: 1, background: C.border, opacity: 0.65, margin: "6px 0" }} />
           )}
-          <button type="button" onClick={() => { emailLink(getPayload, subject); }}
+          <button type="button" role="menuitem" onClick={() => { emailLink(getPayload, subject); }}
             style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none",
               color: C.text1, padding: "10px 10px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", borderRadius: 8 }}>
             📧 {shareCopy.email}
           </button>
-          <button type="button" onClick={() => shareLink(getPayload)}
+          <button type="button" role="menuitem" onClick={() => shareLink(getPayload)}
             style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none",
               color: C.text1, padding: "10px 10px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", borderRadius: 8 }}>
             🔗 {shareCopy.create}
@@ -3734,7 +3761,8 @@ export default function ResumeGenerator() {
         </div>
       )}
     </div>
-  );
+    );
+  };
 
   const handleSubscribe = useCallback(async () => {
     track(EVENTS.CHECKOUT_STARTED, { plan: "monthly" });
@@ -5645,17 +5673,18 @@ Awards: ${form.awards}`;
             </div>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+        <div ref={resumeToolbarRef} style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
           <div style={{ position: "relative" }}>
-            <button type="button" onClick={() => setCustomizeOpen(o => !o)}
-              aria-expanded={customizeOpen}
+            <button type="button" onClick={() => toggleToolbarPanel("c")}
+              aria-haspopup="dialog" aria-expanded={activeToolbarPanel === "c"} aria-controls="p-c"
               style={{ ...softBtn }}>{bu.customize}</button>
-            {customizeOpen && (
-              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
+            {activeToolbarPanel === "c" && (
+              <div id="p-c" role="dialog" aria-label={bu.documentSettings}
+                style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
                 width: 300, maxWidth: "calc(100vw - 24px)", background: C.surface, border: "none",
                 borderRadius: 12, boxShadow: "0 18px 54px rgba(0,0,0,0.5)", padding: 14 }}>
                 <div style={{ fontSize: 13, fontWeight: 900, color: C.text1, marginBottom: 8 }}>{bu.documentSettings}</div>
-                <button onClick={() => { setCustomizeOpen(false); setStep("templates"); }}
+                <button onClick={() => { setActiveToolbarPanel(null); setStep("templates"); }}
                   style={{ width: "100%", textAlign: "left", background: C.elevated, border: "none",
                     color: C.text1, borderRadius: 9, padding: "10px 12px", cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
                   <strong style={{ display: "block", fontSize: 13 }}>{bu.templateLabel}</strong>
@@ -5749,14 +5778,15 @@ Awards: ${form.awards}`;
             </button>
           )}
           <div style={{ position: "relative" }}>
-            <button onClick={() => setExportMenuOpen(o => !o)} disabled={!!exporting} aria-expanded={exportMenuOpen}
+            <button onClick={() => toggleToolbarPanel("e")} disabled={!!exporting}
+              aria-haspopup="menu" aria-expanded={activeToolbarPanel === "e"} aria-controls="p-e"
               style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 9, minHeight: 38,
                 padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: exporting ? "not-allowed" : "pointer",
                 fontFamily: "inherit", opacity: exporting ? 0.72 : 1 }}>
               {exporting ? bu.exportingBtn : bu.exportBtn}
             </button>
-            {exportMenuOpen && (
-              <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
+            {activeToolbarPanel === "e" && (
+              <div id="p-e" role="menu" style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
                 minWidth: 230, background: C.surface, border: "none", borderRadius: 12,
                 boxShadow: "0 18px 54px rgba(0,0,0,0.5)", overflow: "hidden" }}>
                 <div style={{ padding: "12px 14px", boxShadow: `inset 0 -1px 0 ${SECTION_TOKENS.rowDivider}` }}>
@@ -5765,12 +5795,12 @@ Awards: ${form.awards}`;
                     {readyForReview ? bu.readyToExport : `${resumeChecklist.length - completedChecklist} ${bu.improvementsRemain}`}
                   </div>
                 </div>
-                <button onClick={() => { setExportMenuOpen(false); downloadPDF(); }}
+                <button role="menuitem" onClick={() => { setActiveToolbarPanel(null); downloadPDF(); }}
                   style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px",
                     background: "none", border: "none", color: C.text1, cursor: "pointer", fontFamily: "inherit" }}>
                   <strong>{t.dlPdf}</strong><br /><span style={{ color: C.text3, fontSize: 12 }}>{bu.pdfHint}</span>
                 </button>
-                <button onClick={() => { setExportMenuOpen(false); downloadDOCX(); }}
+                <button role="menuitem" onClick={() => { setActiveToolbarPanel(null); downloadDOCX(); }}
                   style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px",
                     background: "none", border: "none", color: C.text1, cursor: "pointer", fontFamily: "inherit",
                     boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}` }}>
@@ -5779,7 +5809,7 @@ Awards: ${form.awards}`;
               </div>
             )}
           </div>
-          {renderMoreMenu(moreMenuOpen, setMoreMenuOpen, resumeSharePayload, `${form.name || "My"} resume`, {
+          {renderMoreMenu("m", resumeSharePayload, `${form.name || "My"} resume`, {
             content: savedResumes.length > 0 ? (
               <label style={{ display: "block", padding: "6px 10px 10px" }}>
                 <span style={{ display: "block", color: C.text3, fontSize: 11.5, fontWeight: 800, marginBottom: 6 }}>
@@ -6503,7 +6533,7 @@ Awards: ${form.awards}`;
         </div>
       )}
       {isMobile && (
-        <div style={{ position: "sticky", bottom: 0, zIndex: 20, margin: "12px -4px -8px",
+        <div ref={mobileResumeToolbarRef} style={{ position: "sticky", bottom: 0, zIndex: 20, margin: "12px -4px -8px",
           padding: "10px 12px", background: `${C.bg}f2`, backdropFilter: "blur(10px)",
           boxShadow: "0 -12px 28px rgba(0,0,0,0.18)", display: "grid", gridTemplateColumns: "1fr 1fr",
           gap: 8 }}>
@@ -6514,7 +6544,8 @@ Awards: ${form.awards}`;
               justifyContent: "center", gap: 4 }}>
             {mobileResumeMode === "edit" ? bu.preview : bu.edit}
           </button>
-          <button onClick={() => setExportMenuOpen(o => !o)} disabled={!!exporting}
+          <button onClick={() => toggleToolbarPanel("e")} disabled={!!exporting}
+            aria-haspopup="menu" aria-expanded={activeToolbarPanel === "e"} aria-controls="p-e"
             style={{ border: "none", background: C.grad, color: "#fff",
               borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
               cursor: exporting ? "not-allowed" : "pointer", fontFamily: "inherit",
@@ -7024,8 +7055,8 @@ Awards: ${form.awards}`;
               </div>
             )}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            <button type="button" onClick={() => setCoverStep("templates")} style={{ ...softBtn }}>{bu.customize}</button>
+          <div ref={coverToolbarRef} style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <button type="button" onClick={() => { setActiveToolbarPanel(null); setCoverStep("templates"); }} style={{ ...softBtn }}>{bu.customize}</button>
             {isMobile && (
               <button onClick={() => setMobileCoverMode(mobileCoverMode === "edit" ? "preview" : "edit")}
                 style={{ ...softBtn }}>
@@ -7033,22 +7064,23 @@ Awards: ${form.awards}`;
               </button>
             )}
             <div style={{ position: "relative" }}>
-              <button onClick={() => setExportMenuOpen(o => !o)} disabled={!coverReady || !!exporting} aria-expanded={exportMenuOpen}
+              <button onClick={() => toggleToolbarPanel("e")} disabled={!coverReady || !!exporting}
+                aria-haspopup="menu" aria-expanded={activeToolbarPanel === "e"} aria-controls="p-e"
                 style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 9, minHeight: 38,
                   padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: coverReady && !exporting ? "pointer" : "not-allowed",
                   fontFamily: "inherit", opacity: coverReady && !exporting ? 1 : 0.55 }}>
                 {exporting ? bu.exportingBtn : bu.exportBtn}
               </button>
-              {exportMenuOpen && (
-                <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
+              {activeToolbarPanel === "e" && (
+                <div id="p-e" role="menu" style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 100,
                   minWidth: 210, background: C.surface, border: "none", borderRadius: 12,
                   boxShadow: "0 18px 54px rgba(0,0,0,0.5)", overflow: "hidden" }}>
-                  <button onClick={() => { setExportMenuOpen(false); downloadCoverPDF(); }}
+                  <button role="menuitem" onClick={() => { setActiveToolbarPanel(null); downloadCoverPDF(); }}
                     style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px",
                       background: "none", border: "none", color: C.text1, cursor: "pointer", fontFamily: "inherit" }}>
                     <strong>{t.dlPdf}</strong>
                   </button>
-                  <button onClick={() => { setExportMenuOpen(false); downloadCoverDOCX(); }}
+                  <button role="menuitem" onClick={() => { setActiveToolbarPanel(null); downloadCoverDOCX(); }}
                     style={{ display: "block", width: "100%", textAlign: "left", padding: "12px 14px",
                       background: "none", border: "none", color: C.text1, cursor: "pointer", fontFamily: "inherit",
                       boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}` }}>
@@ -7057,7 +7089,7 @@ Awards: ${form.awards}`;
                 </div>
               )}
             </div>
-            {renderMoreMenu(coverMoreOpen, setCoverMoreOpen, coverSharePayload, `${coverForm.name || "My"} cover letter`, {
+            {renderMoreMenu("m", coverSharePayload, `${coverForm.name || "My"} cover letter`, {
               content: (
                 <div style={{ padding: "6px 10px 10px" }}>
                   <div style={{ color: C.text3, fontSize: 11.5, fontWeight: 800, marginBottom: 6 }}>
@@ -7214,7 +7246,7 @@ Awards: ${form.awards}`;
           </div>
         </div>
         {isMobile && (
-          <div style={{ position: "sticky", bottom: 0, zIndex: 20, margin: "12px -4px -8px",
+          <div ref={mobileCoverToolbarRef} style={{ position: "sticky", bottom: 0, zIndex: 20, margin: "12px -4px -8px",
             padding: "10px 12px", background: `${C.bg}f2`, backdropFilter: "blur(10px)",
             boxShadow: "0 -12px 28px rgba(0,0,0,0.18)", display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
             gap: 8 }}>
@@ -7224,14 +7256,14 @@ Awards: ${form.awards}`;
                 cursor: "pointer", fontFamily: "inherit" }}>
               {mobileCoverMode === "edit" ? bu.preview : bu.edit}
             </button>
-            <button onClick={downloadCoverPDF} disabled={!coverReady || !!exporting}
+            <button onClick={() => { setActiveToolbarPanel(null); downloadCoverPDF(); }} disabled={!coverReady || !!exporting}
               style={{ border: "none", background: C.grad, color: "#fff",
                 borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
                 cursor: coverReady && !exporting ? "pointer" : "not-allowed", fontFamily: "inherit",
                 opacity: coverReady && !exporting ? 1 : 0.55 }}>
               {t.dlPdf}
             </button>
-            <button onClick={downloadCoverDOCX} disabled={!coverReady || !!exporting}
+            <button onClick={() => { setActiveToolbarPanel(null); downloadCoverDOCX(); }} disabled={!coverReady || !!exporting}
               style={{ border: `1px solid ${C.border}`, background: C.surface, color: C.text1,
                 borderRadius: 8, padding: "10px 6px", fontSize: 12, fontWeight: 800,
                 cursor: coverReady && !exporting ? "pointer" : "not-allowed", fontFamily: "inherit",
