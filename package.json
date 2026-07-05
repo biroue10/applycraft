@@ -36,6 +36,7 @@
     "test:i18n-strings": "node scripts/check-hardcoded-strings.mjs",
     "test:starters": "node scripts/starter-tests.mjs",
     "test:ux": "node scripts/ux-tests.mjs",
+    "test:localized-links": "node scripts/localized-link-tests.mjs",
     "test:visual": "node scripts/visual-regression.mjs",
     "audit:high": "npm audit --audit-level=high"
   },

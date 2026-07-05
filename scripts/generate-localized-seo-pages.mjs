@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { footerHtml } from "./shared-footer.mjs";
 import { buildResumeStarterUrl } from "../src/data/resumeStarters/index.js";
+import { localizeRoute } from "../src/seo/localizedRoutes.js";
 
 const ROOT = new URL("../public/", import.meta.url);
 const SITE = "https://applycraft.io";
@@ -77,7 +78,7 @@ function page(config) {
     interfaceLanguage: config.lang === "en" ? "" : config.lang,
     documentLanguage: config.dir === "rtl" ? config.lang : "",
   });
-  const homeHref = config.lang === "fr" ? "/fr/" : config.lang === "ar" ? "/ar/" : "/";
+  const homeHref = localizeRoute("/", config.lang);
   return `<!doctype html>
 <html lang="${config.lang}"${config.dir ? ` dir="${config.dir}"` : ""}>
 <head>

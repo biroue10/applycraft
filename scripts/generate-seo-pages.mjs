@@ -3,6 +3,7 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { footerHtml } from "./shared-footer.mjs";
 import { buildResumeStarterUrl, starterIdForSlug } from "../src/data/resumeStarters/index.js";
+import { localizeRoute } from "../src/seo/localizedRoutes.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..", "public");
@@ -36,7 +37,7 @@ function nav(lang = "en", hrefOverride = "") {
     interfaceLanguage: lang === "en" ? "" : lang,
     documentLanguage: lang === "ar" ? "ar" : "",
   });
-  const homeHref = lang === "fr" ? "/fr/" : lang === "ar" ? "/ar/" : "/";
+  const homeHref = localizeRoute("/", lang);
   return `<nav class="nav">
   <a href="${homeHref}" class="nav-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="eager" decoding="async"></a>
   <a href="${href}" class="nav-cta">${label}</a>
@@ -398,7 +399,7 @@ const PAGES = [
       heading: "What makes a resume ATS-friendly?",
       intro: "Applicant Tracking Systems scan your resume for keywords, structure, and file format before a human ever reads it. ApplyCraft is built with this in mind.",
       ctaHeading: "Build your ATS-ready resume now",
-      ctaSub: "Pass the bots and land more interviews with a resume designed for ATS from the ground up.",
+      ctaSub: "Improve readability and structure with a resume designed around common ATS parsing patterns.",
       items: [
         { icon: "📐", title: "Clean, Parseable Structure", body: "Standard section headings (Experience, Education, Skills) that every ATS recognises and correctly parses." },
         { icon: "🔤", title: "Standard Fonts & Sizing", body: "We use system-safe fonts and avoid tables, columns, and graphics that confuse ATS parsers." },
@@ -420,7 +421,7 @@ const PAGES = [
     slug: "cover-letter-builder",
     canonicalPath: "/cover-letter-builder/",
     title: "Free Cover Letter Builder — Professional Templates | ApplyCraft",
-    description: "Write a compelling cover letter in minutes with 6 professional templates. Personalise for any role, download as PDF or DOCX. Free, no sign-up.",
+    description: "Write a compelling cover letter with 18 professional styles. Personalise for any role, download as PDF or DOCX. Free, no sign-up.",
     eyebrow: "Cover Letter Builder",
     h1: "Free Cover Letter Builder",
     sub: "18 professionally designed cover letter styles. Personalise your letter for any role in minutes and download as PDF or DOCX — completely free.",
@@ -448,7 +449,7 @@ const PAGES = [
       ctaHeading: "Write your cover letter now",
       ctaSub: "18 styles, live preview, PDF & DOCX export — all free.",
       items: [
-        { icon: "✍️", title: "6 Professional Templates", body: "From formal to modern, choose a layout that matches the tone of the company you're applying to." },
+        { icon: "✍️", title: "18 Cover Letter Styles", body: "From formal to modern, choose a layout that matches the tone of the company you're applying to." },
         { icon: "🔄", title: "Match Your Resume Style", body: "Cover letter templates are designed to complement your resume so both documents look like a cohesive package." },
         { icon: "⚡", title: "Live Preview", body: "See your cover letter update in real-time as you type. Adjust tone and length on the fly." },
         { icon: "🌍", title: "Multilingual Documents", body: "Write cover letters in any language, with fully localized English, French, and Arabic document labels where supported." },
@@ -709,6 +710,11 @@ const PAGES = [
   {
     slug: "student-resume-builder",
     canonicalPath: "/student-resume-builder/",
+    alternates: [
+      { hreflang: "en", href: `${SITE}/student-resume-builder/` },
+      { hreflang: "fr", href: `${SITE}/fr/creer-cv-etudiant/` },
+      { hreflang: "x-default", href: `${SITE}/student-resume-builder/` },
+    ],
     title: "Student Resume Builder — First Job & Internship Templates | ApplyCraft",
     description: "Build a student resume with no experience. Highlight education, projects, and transferable skills. Free templates designed for students and graduates.",
     eyebrow: "Student & Graduate",

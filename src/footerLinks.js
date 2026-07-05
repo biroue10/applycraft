@@ -1,3 +1,5 @@
+import { localizeRoute } from "./seo/localizedRoutes.js";
+
 export const FOOTER_LINK_SECTIONS = [
   {
     key: "product",
@@ -55,32 +57,5 @@ export const FOOTER_LINK_SECTIONS = [
 
 export function localizedFooterHref(link, lang = "en") {
   if (!link || link.external) return link?.href || "";
-  if (lang === "fr") {
-    const frenchHrefByKey = {
-      resumeBuilder: "/fr/",
-      atsChecker: "/ats-checker-fr/",
-      pricing: "/fr/pricing/",
-      blog: "/fr/blog/",
-      examples: "/examples/french-cv-example/",
-      freeBuilder: "/fr/creer-cv-gratuit/",
-      terms: "/fr/terms/",
-      privacy: "/fr/privacy/",
-      cookies: "/fr/cookies/",
-      gdpr: "/fr/gdpr/",
-      refundPolicy: "/fr/refund-policy/",
-      aiDisclosure: "/fr/ai-disclosure/",
-    };
-    return frenchHrefByKey[link.labelKey] || link.href;
-  }
-  if (lang === "ar") {
-    const arabicHrefByKey = {
-      resumeBuilder: "/ar/",
-      atsChecker: "/ats-checker-ar/",
-      freeBuilder: "/ar/free-resume-builder/",
-      // Switch Blog to /ar/blog/ here when an Arabic blog index exists.
-      blog: "/blog/",
-    };
-    return arabicHrefByKey[link.labelKey] || link.href;
-  }
-  return link.href;
+  return localizeRoute(link.href, lang);
 }

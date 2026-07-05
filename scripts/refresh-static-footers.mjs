@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { footerHtml } from "./shared-footer.mjs";
+import { localizeRoute } from "../src/seo/localizedRoutes.js";
 
 const ROOT = new URL("../public/", import.meta.url).pathname;
 
@@ -20,7 +21,10 @@ for (const file of walk(ROOT)) {
   if (!html.includes('<footer class="site-footer"')) continue;
 
   const lang = html.match(/<html[^>]*\blang="([^"]+)"/i)?.[1]?.slice(0, 2) || "en";
-  const next = html.replace(/<footer class="site-footer">[\s\S]*?<\/footer>/, footerHtml(lang));
+  const homeHref = localizeRoute("/", lang);
+  const next = html
+    .replace(/<footer class="site-footer">[\s\S]*?<\/footer>/, footerHtml(lang))
+    .replace(/<a href="\/" class="nav-logo"/, `<a href="${homeHref}" class="nav-logo"`);
   if (next === html) continue;
   writeFileSync(file, next, "utf8");
   updated += 1;

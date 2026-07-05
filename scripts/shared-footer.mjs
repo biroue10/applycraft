@@ -2,6 +2,7 @@ import { FOOTER_LINK_SECTIONS, localizedFooterHref } from "../src/footerLinks.js
 import en from "../src/i18n/namespaces/en/footer.js";
 import fr from "../src/i18n/namespaces/fr/footer.js";
 import ar from "../src/i18n/namespaces/ar/footer.js";
+import { localizeRoute } from "../src/seo/localizedRoutes.js";
 
 const FOOTER_UI = { en, fr, ar };
 
@@ -14,7 +15,7 @@ function footerText(value) {
 
 export function footerHtml(lang = "en") {
   const f = FOOTER_UI[lang] || FOOTER_UI.en;
-  const homeHref = lang === "fr" ? "/fr/" : lang === "ar" ? "/ar/" : "/";
+  const homeHref = localizeRoute("/", lang);
   const linkHtml = FOOTER_LINK_SECTIONS.map((section) => `<div>
           <h2>${f[section.key]}</h2>
           ${section.links.map((link) => {

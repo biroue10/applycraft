@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FOOTER_LINK_SECTIONS, localizedFooterHref } from "./footerLinks.js";
 import { FOOTER_UI, LANDING_UI } from "./i18n/index.js";
 import { PRODUCT } from "./product.js";
+import { localizeRoute } from "./seo/localizedRoutes.js";
 
 export const SITE_COLORS = {
   bg: "#06080F",
@@ -40,27 +41,16 @@ function BrandLogoImage({ compact = false, style = {} }) {
 }
 
 function homeHrefForLang(lang = "en") {
-  if (lang === "fr") return "/fr/";
-  if (lang === "ar") return "/ar/";
-  return "/";
+  return localizeRoute("/", lang);
 }
 
 function defaultCtaHrefForLang(lang = "en") {
-  if (lang === "fr") return "/fr/creer-cv-gratuit/";
-  if (lang === "ar") return "/ar/free-resume-builder/";
+  if (lang === "fr" || lang === "ar") return localizeRoute("/free-resume-builder/", lang);
   return "/resume/templates/";
 }
 
 function localizeNavHref(href, lang = "en") {
-  if (lang === "fr") {
-    if (href === "/") return "/fr/";
-    if (href === "/ats-checker/") return "/ats-checker-fr/";
-  }
-  if (lang === "ar") {
-    if (href === "/") return "/ar/";
-    if (href === "/ats-checker/") return "/ats-checker-ar/";
-  }
-  return href;
+  return localizeRoute(href, lang);
 }
 
 function Logo({ compact = false, lang = "en" }) {
