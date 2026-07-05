@@ -123,10 +123,14 @@ export async function translateDocumentContent({
   targetLanguage,
   payload,
   protectedTerms = [],
+  devBypassToken = "",
+  devBypassHeader = "",
 } = {}) {
+  const headers = { "Content-Type": "application/json" };
+  if (devBypassToken && devBypassHeader && import.meta.env.VITE_DEV_BYPASS) headers[devBypassHeader] = devBypassToken;
   const res = await fetch("/api/translate-document", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({
       documentType,
       sourceLanguage,

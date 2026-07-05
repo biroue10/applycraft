@@ -218,6 +218,17 @@ async function testTranslateDocumentEndpoint() {
     assert.equal(response.status, 429);
     assert.equal((await readJson(response)).error, "translation_limit_reached");
   }, async () => new Response(JSON.stringify({ content: [{ type: "text", text: JSON.stringify(translationBody.payload) }] }), { headers: { "Content-Type": "application/json" } }));
+
+  await withMockFetch(async () => {
+    let response;
+    for (let i = 0; i < 9; i += 1) {
+      response = await worker.fetch(request("/api/translate-document", {
+        headers: { "X-Forwarded-For": "198.51.100.88", "X-AC-Trace": "dev-secret" },
+        body: JSON.stringify(translationBody),
+      }), { ...env(), DEV_BYPASS_TOKEN: "dev-secret" });
+      assert.equal(response.status, 200);
+    }
+  }, async () => new Response(JSON.stringify({ content: [{ type: "text", text: JSON.stringify(translationBody.payload) }] }), { headers: { "Content-Type": "application/json" } }));
 }
 
 async function testSecurityHeaders() {

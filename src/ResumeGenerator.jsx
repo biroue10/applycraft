@@ -98,6 +98,7 @@ const LOCALIZED_DOCUMENT_LANGUAGE_COUNT = PRODUCT.localizedDocumentLanguageCount
 const UI_LANGUAGE_COUNT = PRODUCT.interfaceLanguageCount;
 const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
 const TRANSLATION_USAGE_KEY = "ac_translation_usage";
+const TRANSLATION_DEV_BYPASS_HASH = import.meta.env.VITE_DEV_BYPASS || "";
 
 function readTranslationUsage(limit = 1) {
   if (typeof localStorage === "undefined") return { fullResumeTranslationsUsed: 0, limit, resetAt: null };
@@ -3147,6 +3148,7 @@ export default function ResumeGenerator() {
   const hasPass = account.hasActivePass();
   const translationLimit = hasPass ? 30 : currentUser ? 3 : 1;
   const [translationUsage, setTranslationUsage] = useState(() => readTranslationUsage(translationLimit));
+  const [translationDevBypass, setTranslationDevBypass] = useState({ active: false, token: "", header: "" });
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
   const resumePrintRef = useRef(null);
@@ -3473,8 +3475,35 @@ export default function ResumeGenerator() {
       return next;
     });
   }, [translationLimit]);
-  const translationLimitReached = translationUsage.fullResumeTranslationsUsed >= translationLimit;
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    if (!TRANSLATION_DEV_BYPASS_HASH) return undefined;
+    let cancelled = false;
+    let cleanup = () => {};
+    import("./translationDevBypass.js").then((mod) => {
+      if (cancelled) return;
+      mod.install(TRANSLATION_DEV_BYPASS_HASH, window);
+      const refreshDevBypass = () => setTranslationDevBypass({
+        active: mod.isActive(TRANSLATION_DEV_BYPASS_HASH),
+        token: mod.token(TRANSLATION_DEV_BYPASS_HASH),
+        header: mod.headerName,
+      });
+      refreshDevBypass();
+      window.addEventListener(mod.eventName, refreshDevBypass);
+      window.addEventListener("storage", refreshDevBypass);
+      cleanup = () => {
+        window.removeEventListener(mod.eventName, refreshDevBypass);
+        window.removeEventListener("storage", refreshDevBypass);
+      };
+    });
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
+  }, []);
+  const translationLimitReached = !translationDevBypass.active && translationUsage.fullResumeTranslationsUsed >= translationLimit;
   const incrementTranslationUsage = useCallback(() => {
+    if (translationDevBypass.active) return;
     setTranslationUsage((usage) => {
       const next = {
         ...usage,
@@ -3484,7 +3513,7 @@ export default function ResumeGenerator() {
       writeTranslationUsage(next);
       return next;
     });
-  }, [translationLimit]);
+  }, [translationDevBypass.active, translationLimit]);
   const set = useCallback((k) => (e) => setForm(f => ({ ...f, [k]: e.target.value })), []);
   const setField = useCallback((k, v) => setForm(f => ({ ...f, [k]: v })), []);
 
@@ -4189,6 +4218,8 @@ export default function ResumeGenerator() {
         targetLanguage: langCode,
         protectedTerms: request.preserveTerms,
         payload: request.content,
+        devBypassToken: translationDevBypass.token,
+        devBypassHeader: translationDevBypass.header,
       });
       incrementTranslationUsage();
       const translated = postProcessTranslatedResume(parseTranslationJson(JSON.stringify(response.document)), langCode);
@@ -6667,6 +6698,8 @@ Awards: ${form.awards}`;
         targetLanguage: langCode,
         protectedTerms,
         payload: content,
+        devBypassToken: translationDevBypass.token,
+        devBypassHeader: translationDevBypass.header,
       });
       const translated = parseTranslationJson(JSON.stringify(response.document), contentKeys);
       const translatedAt = new Date().toISOString();

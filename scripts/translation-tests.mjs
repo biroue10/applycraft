@@ -11,6 +11,7 @@ import {
 
 const app = await readFile(new URL("../src/ResumeGenerator.jsx", import.meta.url), "utf8");
 const translationSource = await readFile(new URL("../src/translation.js", import.meta.url), "utf8");
+const translationDevBypassSource = await readFile(new URL("../src/translationDevBypass.js", import.meta.url), "utf8");
 
 const original = {
   name: "ISAAC BIROUE",
@@ -85,6 +86,12 @@ assert.match(app, /versionLabel/, "builder should expose a resume version select
 assert.match(app, /translatePartial/, "partial translations should show a safe warning");
 assert.match(app, /TRANSLATION_USAGE_KEY = "ac_translation_usage"/, "free translation usage should be stored locally");
 assert.match(app, /translationLimitReached/, "translation limit reached state should be enforced");
+assert.match(app, /TRANSLATION_DEV_BYPASS_HASH = import\.meta\.env\.VITE_DEV_BYPASS/, "developer bypass should require a build-time env flag");
+assert.match(app, /import\("\.\/translationDevBypass\.js"\)/, "developer bypass code should be loaded dynamically only when configured");
+assert.match(app, /translationDevBypass\.active/, "developer bypass should explicitly gate the client-side translation limit");
+assert.match(translationSource, /devBypassToken/, "translation API helper should accept a developer bypass token");
+assert.match(translationDevBypassSource, /X-AC-Trace/, "developer bypass token should be sent only through the dedicated dev header");
+assert.match(translationDevBypassSource, /__actdiag/, "developer console activator should stay isolated in the dev bypass module");
 assert.match(app, /activeTranslatedToSelected/, "same-language translated resumes should disable normal translation");
 assert.match(app, /alreadyTranslatedTo/, "already translated state should be shown in the UI");
 assert.match(app, /retranslateFromOriginal/, "translated versions should offer deliberate retranslation from original");

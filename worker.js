@@ -18,6 +18,7 @@ const RATE_MAX_PER_WINDOW = 8;
 const HOURLY_WINDOW_MS = 60 * 60 * 1000;
 const RATE_MAX_PER_HOUR = 40;
 const GLOBAL_HOURLY_BUDGET = 1500;
+const DEV_BYPASS_HEADER = "X-AC-Trace";
 const rateBuckets = new Map();
 const globalBudget = { windowStart: 0, count: 0 };
 const SHARE_ID_RE = /^[A-Za-z0-9_-]{8,24}$/;
@@ -191,11 +192,27 @@ function corsFor(request, env) {
     headers: {
       "Access-Control-Allow-Origin": origin,
       "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, X-Delete-Token",
+      "Access-Control-Allow-Headers": `Content-Type, X-Delete-Token, ${DEV_BYPASS_HEADER}`,
       "Access-Control-Max-Age": "600",
       "Vary": "Origin",
     },
   };
+}
+
+function constantTimeEqual(a = "", b = "") {
+  const left = String(a);
+  const right = String(b);
+  if (!left || !right || left.length !== right.length) return false;
+  let diff = 0;
+  for (let i = 0; i < left.length; i += 1) diff |= left.charCodeAt(i) ^ right.charCodeAt(i);
+  return diff === 0;
+}
+
+function hasDevBypass(request, env) {
+  const expected = env && env.DEV_BYPASS_TOKEN;
+  if (!expected) return false;
+  const supplied = request.headers.get(DEV_BYPASS_HEADER) || new URL(request.url).searchParams.get("dev_token") || "";
+  return constantTimeEqual(supplied, expected);
 }
 
 function clientKey(request) {
@@ -481,12 +498,15 @@ async function handleTranslateDocument(request, env) {
   if (!contentType.toLowerCase().startsWith("application/json")) {
     return errorResponse("UNSUPPORTED_MEDIA_TYPE", "Content-Type must be application/json.", 415, cors.headers);
   }
-  const rate = await checkRateLimitKV(env, request);
-  if (!rate.allowed) {
-    return jsonResponse({ ok: false, error: "translation_limit_reached" }, 429, {
-      ...cors.headers,
-      "Retry-After": String(Math.max(1, rate.retryAfter || 60)),
-    });
+  const devBypass = hasDevBypass(request, env);
+  if (!devBypass) {
+    const rate = await checkRateLimitKV(env, request);
+    if (!rate.allowed) {
+      return jsonResponse({ ok: false, error: "translation_limit_reached" }, 429, {
+        ...cors.headers,
+        "Retry-After": String(Math.max(1, rate.retryAfter || 60)),
+      });
+    }
   }
   const apiKey = env.ANTHROPIC_API_KEY;
   if (!apiKey) return jsonResponse({ ok: false, error: "translation_unavailable" }, 503, cors.headers);
