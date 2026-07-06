@@ -2,27 +2,12 @@ import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { INDEXABLE_APP_PATHS, SITE, isIndexablePublicUrl } from "./seo-url-policy.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const PUBLIC_DIR = join(ROOT, "public");
-const SITE = "https://applycraft.io";
 const TODAY = new Date().toISOString().slice(0, 10);
-const STATIC_APP_ROUTES = [
-  "/",
-  "/fr/",
-  "/ar/",
-  "/resume-builder/",
-  "/resume/templates",
-  "/cover-letter/templates",
-  "/cover-letter/builder",
-  "/job-tracker",
-  "/app/ats-checker",
-  "/master-profile",
-  "/email-signature",
-  "/personal-website",
-];
-const REDIRECTED_PATHS = new Set();
 
 function walk(dir, files = []) {
   for (const entry of readdirSync(dir)) {
@@ -78,15 +63,15 @@ const pages = [join(ROOT, "index.html"), ...walk(PUBLIC_DIR)]
     const html = readFileSync(filePath, "utf8");
     const loc = canonicalFromHtml(html);
     if (!loc || !loc.startsWith(`${SITE}/`) || isNoindex(html)) return null;
-    const path = new URL(loc).pathname;
-    if (REDIRECTED_PATHS.has(path)) return null;
+    if (!isIndexablePublicUrl(loc)) return null;
     return { loc, lastmod: gitLastmod(filePath) };
   })
   .filter(Boolean)
   .sort((a, b) => a.loc.localeCompare(b.loc));
 
-for (const route of STATIC_APP_ROUTES) {
+for (const route of INDEXABLE_APP_PATHS) {
   const loc = `${SITE}${route}`;
+  if (!isIndexablePublicUrl(loc)) continue;
   if (!pages.some((page) => page.loc === loc)) pages.push({ loc, lastmod: "" });
 }
 pages.sort((a, b) => a.loc.localeCompare(b.loc));

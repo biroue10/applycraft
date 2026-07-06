@@ -40,7 +40,8 @@ export function canonicalFor(path) {
   if (path === "/fr" || path === "/fr/") return `${ORIGIN}/fr/`;
   if (path === "/ar" || path === "/ar/") return `${ORIGIN}/ar/`;
   if (path === "/resume-builder" || path === "/resume-builder/") return `${ORIGIN}/resume-builder/`;
-  return ORIGIN + path;
+  const normalized = path.endsWith("/") ? path : `${path}/`;
+  return ORIGIN + normalized;
 }
 
 // hreflang alternates for a route, or [] when it has no translated equivalents.

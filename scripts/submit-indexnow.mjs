@@ -1,6 +1,7 @@
 import fs from "node:fs";
+import { pathToFileURL } from "node:url";
+import { HOST, isIndexablePublicUrl } from "./seo-url-policy.mjs";
 
-const HOST = "applycraft.io";
 const KEY = "91a714f93cc24a8c95f1efe0d9e9a914";
 const KEY_LOCATION = `https://${HOST}/${KEY}.txt`;
 const ENDPOINT = "https://api.indexnow.org/indexnow";
@@ -15,17 +16,10 @@ function appendSummary(markdown) {
   }
 }
 
-function readSitemapUrls() {
-  const xml = fs.readFileSync(SITEMAP_PATH, "utf8");
+export function readSitemapUrls(sitemapPath = SITEMAP_PATH) {
+  const xml = fs.readFileSync(sitemapPath, "utf8");
   const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1].trim());
-  const canonicalUrls = urls.filter((url) => {
-    try {
-      const parsed = new URL(url);
-      return parsed.protocol === "https:" && parsed.hostname === HOST;
-    } catch {
-      return false;
-    }
-  });
+  const canonicalUrls = urls.filter((url) => isIndexablePublicUrl(url));
 
   return [...new Set(canonicalUrls)].sort();
 }
@@ -67,8 +61,10 @@ async function main() {
   appendSummary(`### IndexNow submission\n\nSubmitted ${urlList.length} URLs to \`${ENDPOINT}\`.\n\nKey file verified: ${KEY_LOCATION}`);
 }
 
-main().catch((error) => {
-  console.error(error.message);
-  appendSummary(`### IndexNow error\n\n\`\`\`\n${error.stack || error.message}\n\`\`\``);
-  process.exit(1);
-});
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error.message);
+    appendSummary(`### IndexNow error\n\n\`\`\`\n${error.stack || error.message}\n\`\`\``);
+    process.exit(1);
+  });
+}
