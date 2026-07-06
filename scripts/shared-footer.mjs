@@ -3,14 +3,15 @@ import en from "../src/i18n/namespaces/en/footer.js";
 import fr from "../src/i18n/namespaces/fr/footer.js";
 import ar from "../src/i18n/namespaces/ar/footer.js";
 import { localizeRoute } from "../src/seo/localizedRoutes.js";
+import { PRODUCT } from "../src/product.js";
 
 const FOOTER_UI = { en, fr, ar };
 
 function footerText(value) {
   return String(value || "")
-    .replace("{tpl}", "46")
-    .replace("{docs}", "3")
-    .replace("{ui}", "3");
+    .replace("{tpl}", PRODUCT.resumeTemplateCount)
+    .replace("{docs}", PRODUCT.localizedDocumentLanguageCount)
+    .replace("{ui}", PRODUCT.interfaceLanguageCount);
 }
 
 export function footerHtml(lang = "en") {

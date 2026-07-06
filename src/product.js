@@ -1,4 +1,7 @@
 // ──────────────────────────────────────────────────────────────────────────
+import { COVER_TEMPLATE_COUNT, RESUME_TEMPLATE_COUNT } from "./documents/templateRegistry.js";
+import { INTERFACE_LANGUAGES } from "./i18n/languages.js";
+
 // PRODUCT — single source of truth for product facts that are repeated across
 // the app, landing pages, static HTML pages, README, metadata, structured
 // data, and footers.
@@ -9,9 +12,8 @@
 //     counts declared here, or
 //   • any static HTML page / README states a different number.
 //
-// When you add or remove a template or a document/interface language, update
-// the matching count here in ONE place; the test then tells you which copy
-// still needs to match.
+// Template and interface counts are derived from their registries so static
+// generation and runtime copy stay aligned when templates/languages change.
 //
 // Pricing/feature flags below describe the product as shipped. The actual
 // runtime gating of the optional account + paid pass lives in src/config.js
@@ -19,13 +21,12 @@
 // ──────────────────────────────────────────────────────────────────────────
 
 export const PRODUCT = {
-  // Counts — verified against TEMPLATES / COVER_TEMPLATES / WORLD_LANGUAGES /
-  // UI_LANGS in src/ResumeGenerator.jsx.
-  resumeTemplateCount: 46,        // TEMPLATES, excluding the "blank" template
-  coverLetterTemplateCount: 18,   // COVER_TEMPLATES (count shown in the gallery)
+  // Counts — verified against TEMPLATES / COVER_TEMPLATES / WORLD_LANGUAGES.
+  resumeTemplateCount: RESUME_TEMPLATE_COUNT,
+  coverLetterTemplateCount: COVER_TEMPLATE_COUNT,
   writableLanguageCount: 99,      // WORLD_LANGUAGES — users can write content in these languages
   localizedDocumentLanguageCount: 3, // Production document labels: en, fr, ar
-  interfaceLanguageCount: 5,      // UI_LANGS — en, fr, es, ar, de
+  interfaceLanguageCount: INTERFACE_LANGUAGES.length,
 
   // Free / account model (matches the live product: the core builder, every
   // template, multilingual support, and PDF/DOCX export work with no account).

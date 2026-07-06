@@ -11,6 +11,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const src = readFileSync(path.join(root, "src/ResumeGenerator.jsx"), "utf8");
 const registry = readFileSync(path.join(root, "src/documents/templateRegistry.js"), "utf8");
+const { TEMPLATES, RESUME_TEMPLATE_COUNT, templateCountries } = await import(path.join(root, "src/documents/templateRegistry.js"));
 
 let failures = 0;
 const check = (name, cond) => { if (cond) console.log(`  ok  ${name}`); else { failures++; console.error(`  FAIL ${name}`); } };
@@ -34,8 +35,21 @@ check("template preview is an accessible dialog (role=dialog, aria-modal, Escape
 check('preview dialog has a "Use this template" action',
   src.includes("Use this template"));
 
-check("template registry defines market tags for all 46 resume templates",
-  (registry.match(/markets:\s*"/g) || []).length === 46 && registry.includes("TEMPLATE_COUNTRIES") && registry.includes("templateCountries"));
+const resumeTemplates = TEMPLATES.filter((template) => !template.blank);
+const newTemplateIds = ["toronto", "montreal", "vancouver", "maple", "global", "meridian", "atlas-pro", "passport", "casablanca", "paris", "medina", "dubai", "riyad", "khaleej"];
+const canadaIds = ["toronto", "montreal", "vancouver", "maple"];
+check("template registry defines market tags for every resume template",
+  resumeTemplates.length === RESUME_TEMPLATE_COUNT
+    && resumeTemplates.every((template) => templateCountries(template).length > 0)
+    && registry.includes("TEMPLATE_COUNTRIES")
+    && registry.includes("templateCountries"));
+check("country-specific expansion adds at least 60 resume templates",
+  RESUME_TEMPLATE_COUNT >= 60 && newTemplateIds.every((id) => resumeTemplates.some((template) => template.id === id)));
+check("Canada templates are tagged Canada and avoid photo variants",
+  canadaIds.every((id) => {
+    const template = resumeTemplates.find((candidate) => candidate.id === id);
+    return template && templateCountries(template).includes("canada") && !["modern", "elegant", "creative", "slate", "vertex", "carbon"].includes(template.variant || template.id);
+  }));
 check("gallery supports shareable country filter URL state",
   src.includes('initialSearchParams.get("country")') && src.includes('current.searchParams.set("country", tplCountry)'));
 check("country filter participates in template filtering",

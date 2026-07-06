@@ -3090,15 +3090,16 @@ export default function ResumeGenerator() {
   const initialSearchParams = new URLSearchParams(location.search || "");
   const initialInterfaceLang = initialSearchParams.get("ui") || routeLang;
   const initialDocumentLang = initialSearchParams.get("docLang") || routeLang;
+  const initialTemplateCountry = (() => {
+    const value = initialSearchParams.get("country") || "all";
+    return TEMPLATE_COUNTRY_FILTERS.includes(value) ? value : "all";
+  })();
   const [navPage, setNavPage] = useState(initialRoute.navPage);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sideSearch, setSideSearch] = useState("");
   const [tplSearch, setTplSearch] = useState("");
-  const [tplFilter, setTplFilter] = useState("recommended");
-  const [tplCountry, setTplCountry] = useState(() => {
-    const value = initialSearchParams.get("country") || "all";
-    return TEMPLATE_COUNTRY_FILTERS.includes(value) ? value : "all";
-  });
+  const [tplFilter, setTplFilter] = useState(initialTemplateCountry === "all" ? "recommended" : "all");
+  const [tplCountry, setTplCountry] = useState(initialTemplateCountry);
   const [templateFiltersOpen, setTemplateFiltersOpen] = useState(false);
   const [templatePreview, setTemplatePreview] = useState(null);
   const [templateHover, setTemplateHover] = useState("");
@@ -4828,12 +4829,13 @@ Awards: ${form.awards}`;
 
   const getTemplateMeta = (template) => {
     const baseMeta = TEMPLATE_GALLERY_META[template.id] || (template.variant ? TEMPLATE_GALLERY_META[template.variant] : null);
+    const localizedMeta = template.gallery?.[lang] || template.gallery?.en || null;
     return {
-      description: templateTagText(template) || baseMeta?.description || "Professional layout with clear sections and export support.",
-      bestFor: baseMeta?.bestFor || "Best for general professional applications.",
-      attributes: baseMeta?.attributes || ["Professional", "Flexible"],
-      layout: baseMeta?.layout || "Flexible",
-      filters: baseMeta?.filters || [],
+      description: localizedMeta?.description || templateTagText(template) || baseMeta?.description || "Professional layout with clear sections and export support.",
+      bestFor: localizedMeta?.bestFor || baseMeta?.bestFor || "Best for general professional applications.",
+      attributes: localizedMeta?.attributes || baseMeta?.attributes || ["Professional", "Flexible"],
+      layout: localizedMeta?.layout || baseMeta?.layout || "Flexible",
+      filters: [...new Set([...(baseMeta?.filters || []), ...(template.filters || [])])],
       countries: templateCountries(template),
     };
   };

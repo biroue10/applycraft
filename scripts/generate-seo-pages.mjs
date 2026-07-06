@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { footerHtml } from "./shared-footer.mjs";
 import { buildResumeStarterUrl, starterIdForSlug } from "../src/data/resumeStarters/index.js";
 import { localizeRoute } from "../src/seo/localizedRoutes.js";
+import { PRODUCT } from "../src/product.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..", "public");
@@ -13,6 +14,7 @@ const TODAY = "2026-06-27";
 const CSS_PATH = "../_seo.css"; // relative from each subdir
 const SOCIAL_IMAGE = `${SITE}/og/home.png`;
 const SOCIAL_IMAGE_ALT = "ApplyCraft resume builder and cover letter maker preview";
+const RESUME_TEMPLATE_COUNT = PRODUCT.resumeTemplateCount;
 const HOME_ALTERNATES = [
   { hreflang: "en", href: `${SITE}/` },
   { hreflang: "fr", href: `${SITE}/fr/` },
@@ -311,7 +313,7 @@ const PAGES = [
       ctaHeading: "Ready to build your resume?",
       ctaSub: "Create a polished resume without signup, watermark, or download paywall.",
       items: [
-        { icon: "🎨", title: "46 Professional Templates", body: "From minimalist to creative, find the perfect template for your industry and seniority level." },
+        { icon: "🎨", title: `${RESUME_TEMPLATE_COUNT} Professional Templates`, body: "From minimalist to creative, find the perfect template for your industry and seniority level." },
         { icon: "⚡", title: "Live Preview", body: "See exactly how your resume looks as you type. No more guessing — what you see is what you get." },
         { icon: "🤖", title: "AI-Powered Polish", body: "Our AI rewrites weak bullet points into strong action-oriented achievements recruiters love." },
         { icon: "📄", title: "PDF & DOCX Export", body: "Download your finished resume as a perfectly formatted PDF or editable DOCX file instantly." },
@@ -377,7 +379,7 @@ const PAGES = [
     slug: "ats-resume-builder",
     canonicalPath: "/ats-resume-builder/",
     title: "ATS Resume Builder — ATS-Conscious Resume Templates | ApplyCraft",
-    description: "Build an ATS-conscious resume with clear formatting, keyword guidance, 46 templates, and free PDF/DOCX export. No signup or watermark.",
+    description: `Build an ATS-conscious resume with clear formatting, keyword guidance, ${RESUME_TEMPLATE_COUNT} templates, and free PDF/DOCX export. No signup or watermark.`,
     eyebrow: "ATS Optimised",
     h1: "ATS Resume Builder for Cleaner Parsing",
     sub: "ApplyCraft templates are designed with clear headings, readable typography, and ATS-conscious layouts to improve parsing compatibility.",
@@ -514,11 +516,11 @@ const PAGES = [
     lang: "fr",
     ogLocale: "fr_FR",
     title: "CV en Français — Créez votre CV en ligne gratuitement | ApplyCraft",
-    description: "Créez un CV professionnel en français avec 46 modèles. Prévisualisation en direct, export PDF et DOCX. Gratuit, sans inscription.",
+    description: `Créez un CV professionnel en français avec ${RESUME_TEMPLATE_COUNT} modèles. Prévisualisation en direct, export PDF et DOCX. Gratuit, sans inscription.`,
     eyebrow: "CV en Français",
     socialImageAlt: "Aperçu du créateur de CV ApplyCraft en français",
     h1: "Créez votre CV en Français",
-    sub: "46 modèles professionnels, prévisualisation en direct, et export PDF ou DOCX — entièrement gratuit. Rédigez votre CV en français en quelques minutes.",
+    sub: `${RESUME_TEMPLATE_COUNT} modèles professionnels, prévisualisation en direct, et export PDF ou DOCX — entièrement gratuit. Rédigez votre CV en français en quelques minutes.`,
     keywords: "cv en français, faire son cv en français, modèle cv français, créer cv gratuit, cv professionnel français",
     resumeCard: `<div class="resume-card">
   <div class="rc-header" style="border-color:#6366F1">
@@ -592,11 +594,11 @@ const PAGES = [
     dir: "rtl",
     ogLocale: "ar_MA",
     title: "إنشاء سيرة ذاتية بالعربية — مجاناً | ApplyCraft",
-    description: "أنشئ سيرة ذاتية احترافية باللغة العربية مع دعم الكتابة من اليمين إلى اليسار. 46 قالباً مجانياً، تصدير PDF و DOCX.",
+    description: `أنشئ سيرة ذاتية احترافية باللغة العربية مع دعم الكتابة من اليمين إلى اليسار. ${RESUME_TEMPLATE_COUNT} قالباً مجانياً، تصدير PDF و DOCX.`,
     eyebrow: "السيرة الذاتية بالعربية",
     socialImageAlt: "معاينة منشئ السيرة الذاتية من ApplyCraft بالعربية",
     h1: "أنشئ سيرتك الذاتية بالعربية",
-    sub: "46 قالباً احترافياً مع دعم إنتاجي للعربية والكتابة من اليمين إلى اليسار. تنزيل PDF أو DOCX مجاناً — دون تسجيل.",
+    sub: `${RESUME_TEMPLATE_COUNT} قالباً احترافياً مع دعم إنتاجي للعربية والكتابة من اليمين إلى اليسار. تنزيل PDF أو DOCX مجاناً — دون تسجيل.`,
     keywords: "سيرة ذاتية بالعربية, نموذج سيرة ذاتية عربي, cv بالعربي, سيرة ذاتية مجانية, انشاء سيرة ذاتية",
     resumeCard: `<div class="resume-card" dir="rtl" style="text-align:right">
   <div class="rc-header" style="border-color:#6366F1">
