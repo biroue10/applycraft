@@ -23,6 +23,7 @@ jobs:
           node-version: '24'
       - run: npm ci
       - run: npm run audit:high
+      - run: npm run test:i18n-strings
       - run: npm run seo:og
       - run: npm run seo:pages
       - run: npm run seo:sitemap

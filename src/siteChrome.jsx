@@ -54,8 +54,9 @@ function localizeNavHref(href, lang = "en") {
 }
 
 function Logo({ compact = false, lang = "en" }) {
+  const f = FOOTER_UI[lang] || FOOTER_UI.en;
   return (
-    <a href={homeHrefForLang(lang)} aria-label="ApplyCraft home" style={{
+    <a href={homeHrefForLang(lang)} aria-label={f.brandHome} style={{
       textDecoration: "none",
       display: "inline-flex",
       alignItems: "center",
@@ -189,7 +190,7 @@ export function SiteHeader({
         <LogoTag
           {...(onLogoClick ? { type: "button", onClick: onLogoClick } : { href: homeHrefForLang(lang) })}
           className="ac-nav-logo"
-          aria-label="ApplyCraft home"
+          aria-label={f.brandHome}
           style={{
             border: "none",
             cursor: "pointer",
@@ -206,7 +207,7 @@ export function SiteHeader({
           }}>
           <BrandLogoImage style={{ height: 30, maxWidth: 170 }} />
         </LogoTag>
-        <nav aria-label="Primary tools" className="ac-site-nav-links" style={{ display: "flex", gap: 4, marginInlineStart: 18 }}>
+        <nav aria-label={f.primaryTools} className="ac-site-nav-links" style={{ display: "flex", gap: 4, marginInlineStart: 18 }}>
           {items.map((item) => {
             const action = actionProps(item);
             const Tag = action.as;
@@ -273,7 +274,7 @@ export function SiteHeader({
           </button>
       </div>
       {menuOpen && (
-        <nav aria-label="Menu" className="ac-site-mobile-menu" style={{ boxShadow: `inset 0 1px 0 ${SITE_COLORS.border}`, background: `${SITE_COLORS.bg}f5`,
+        <nav aria-label={f.menu} className="ac-site-mobile-menu" style={{ boxShadow: `inset 0 1px 0 ${SITE_COLORS.border}`, background: `${SITE_COLORS.bg}f5`,
           backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
           padding: "8px 12px 14px", display: "none", flexDirection: "column", gap: 2 }}>
           {items.map((item) => {
@@ -327,7 +328,7 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
             </p>
             <a href={`mailto:${AUTHOR_EMAIL}`} style={{ fontSize: 13, color: SITE_COLORS.text2, textDecoration: "none" }}>{AUTHOR_EMAIL}</a>
           </div>
-          <nav aria-label="Footer" style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
+          <nav aria-label={f.footerRegion} style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
             {FOOTER_LINK_SECTIONS.map((section) => (
               <div key={section.key}>
                 <div style={col}>{f[section.key]}</div>
@@ -355,7 +356,7 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
           flexWrap: "wrap",
           gap: 8,
         }}>
-          <div style={{ fontSize: 12.5, color: SITE_COLORS.text3 }}>© {new Date().getFullYear()} ApplyCraft by Biroue Digital Ltd · applycraft.io</div>
+          <div style={{ fontSize: 12.5, color: SITE_COLORS.text3 }}>{footerText((f.copyrightLine || "© {year} ApplyCraft by Biroue Digital Ltd · applycraft.io").replace("{year}", new Date().getFullYear()))}</div>
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
             <span style={badge}>{f.badge1}</span>
             <span style={badge}>{f.badge2}</span>

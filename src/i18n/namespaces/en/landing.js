@@ -21,7 +21,32 @@ const landing = {
   "statFormats": "Export formats",
   "statDownloads": "Free downloads",
   "comingSoonBody": "This feature is not yet available. We're working on it and it will be ready soon.",
-  "gotIt": "Got it"
+  "gotIt": "Got it",
+  // ── About page ──
+  "aboutEyebrow": "About",
+  "aboutTitle": "About ApplyCraft",
+  "aboutSub": "A free, browser-first tool for building professional resumes and cover letters — no account required and no paywall for the core builder.",
+  "aboutMission": "Mission",
+  "aboutMissionBody": "Getting a job is hard enough without fighting the tools meant to help you. ApplyCraft gives every job seeker — regardless of budget or background — free access to polished, ATS-conscious documents you can write in any language, with fully localized labels in English, French, and Arabic. No account, no paywall, no catch.",
+  "aboutWhatYouCanDo": "What you can do",
+  "aboutFeatResumeTitle": "Build a resume",
+  "aboutFeatResumeDesc": "Choose from {count} professional templates with live preview.",
+  "aboutFeatCoverTitle": "Write a cover letter",
+  "aboutFeatCoverDesc": "6 matching cover letter styles with full customisation.",
+  "aboutFeatLangTitle": "Write in any language",
+  "aboutFeatLangDesc": "Fully localized labels are production-ready in English, French, and Arabic.",
+  "aboutFeatExportTitle": "PDF & DOCX export",
+  "aboutFeatExportDesc": "Download in the format any employer expects.",
+  "aboutFeatBrowserTitle": "Browser-first",
+  "aboutFeatBrowserDesc": "Build and export without creating an account or cloud profile.",
+  "aboutFeatAiTitle": "AI suggestions",
+  "aboutFeatAiDesc": "Optional AI polish to sharpen your wording instantly.",
+  "aboutBuiltBy": "Built by",
+  "aboutStudioDesc": "An independent studio building tools that make job seekers' lives easier.",
+  "aboutTechStack": "Tech stack",
+  "aboutBack": "← Back to landing page",
+  "aboutViewSource": "View source on GitHub",
+  "starOnGithub": "⭐ Star on GitHub →"
 };
 
 export default landing;

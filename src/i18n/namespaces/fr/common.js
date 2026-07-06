@@ -54,7 +54,8 @@ const common = {
   "summaryRequired": "Le résumé professionnel est obligatoire.",
   "experienceRequired": "L'expérience professionnelle est obligatoire.",
   "educationRequired": "La formation est obligatoire.",
-  "skillsRequired": "Les compétences sont obligatoires."
+  "skillsRequired": "Les compétences sont obligatoires.",
+  "accessibility": "Accessibilité"
 };
 
 export default common;

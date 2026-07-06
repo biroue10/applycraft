@@ -58,26 +58,36 @@ const INTERFACE_LANGUAGE_DROPDOWN_COPY = {
     ariaLabel: "Select interface language",
     searchPlaceholder: "Search interface language...",
     emptyLabel: "No interface language found",
+    siteBadge: "SITE",
+    uiBadge: "UI",
   },
   fr: {
     ariaLabel: "Choisir la langue de l’interface",
     searchPlaceholder: "Rechercher une langue d’interface...",
     emptyLabel: "Aucune langue d’interface trouvée",
+    siteBadge: "SITE",
+    uiBadge: "UI",
   },
   ar: {
     ariaLabel: "اختيار لغة الواجهة",
     searchPlaceholder: "ابحث عن لغة الواجهة...",
     emptyLabel: "لم يتم العثور على لغة واجهة",
+    siteBadge: "الموقع",
+    uiBadge: "الواجهة",
   },
   es: {
     ariaLabel: "Seleccionar idioma de la interfaz",
     searchPlaceholder: "Buscar idioma de la interfaz...",
     emptyLabel: "No se encontró ningún idioma de interfaz",
+    siteBadge: "SITIO",
+    uiBadge: "IU",
   },
   de: {
     ariaLabel: "Sprache der Benutzeroberfläche auswählen",
     searchPlaceholder: "Sprache der Benutzeroberfläche suchen...",
     emptyLabel: "Keine Sprache der Benutzeroberfläche gefunden",
+    siteBadge: "SEITE",
+    uiBadge: "UI",
   },
 };
 const STARTER_STATUS_COPY = {
@@ -2996,12 +3006,12 @@ function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, k
           </div>
           <aside style={{ display: "grid", gap: 14 }}>
             <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 14, padding: 16 }}>
-              <h3 style={{ margin: "0 0 8px", color: C.text1, fontSize: 15.5 }}>Why choose {template.name}</h3>
+              <h3 style={{ margin: "0 0 8px", color: C.text1, fontSize: 15.5 }}>{(labels.whyChoose || "Why choose {name}").replace("{name}", template.name)}</h3>
               <p style={{ margin: "0 0 12px", color: C.text2, fontSize: 13.5, lineHeight: 1.6 }}>{info.description}</p>
               <p style={{ margin: 0, color: C.text3, fontSize: 13, lineHeight: 1.55 }}>{info.bestFor}</p>
             </div>
             <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 14, padding: 16 }}>
-              <h3 style={{ margin: "0 0 10px", color: C.text1, fontSize: 15.5 }}>Template details</h3>
+              <h3 style={{ margin: "0 0 10px", color: C.text1, fontSize: 15.5 }}>{labels.templateDetails || "Template details"}</h3>
               <div style={{ display: "grid", gap: 8 }}>
                 {[
                   ["Layout", info.layout || "Flexible"],
@@ -3484,6 +3494,12 @@ export default function ResumeGenerator() {
   const builderText = useCallback((key, values = {}) => (
     translateLabel(bu[key] || BUILDER_UI.en[key] || key, values)
   ), [bu, translateLabel]);
+  const masterText = useCallback((key, values = {}) => (
+    translateLabel(ms[key] || MASTER_UI.en[key] || key, values)
+  ), [ms, translateLabel]);
+  const landingText = useCallback((key, values = {}) => (
+    translateLabel(lx[key] || LANDING_UI.en[key] || key, values)
+  ), [lx, translateLabel]);
   const templateTagText = useCallback((template) => (
     l2.templateTags?.[template?.id] || template?.tag || ""
   ), [l2]);
@@ -5093,7 +5109,7 @@ Awards: ${form.awards}`;
                   {bu.filters}
                 </button>
                 {templateFiltersOpen && (
-                  <div role="menu" aria-label="More template filters"
+                  <div role="menu" aria-label={builderText("moreTemplateFilters")}
                     style={{ position: "absolute", right: rtl ? "auto" : 0, left: rtl ? 0 : "auto", top: "calc(100% + 8px)",
                       minWidth: 190, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12,
                       boxShadow: "0 18px 48px rgba(0,0,0,0.42)", padding: 6, zIndex: 20 }}>
@@ -5270,6 +5286,8 @@ Awards: ${form.awards}`;
           previewEyebrow: builderText("templatePreviewEyebrow"),
           useTemplate: builderText("useThisTemplate"),
           close: builderText("closeTemplatePreview"),
+          whyChoose: bu.whyChoose || BUILDER_UI.en.whyChoose,
+          templateDetails: builderText("templateDetails"),
         }}
       />
     </div>
@@ -5783,12 +5801,12 @@ Awards: ${form.awards}`;
   const totalCount  = trackFields.length + 1;
   const completion  = Math.round(filledCount / totalCount * 100);
   const resumeChecklist = [
-    { id: "contact", label: "Add contact details", done: !!(form.name && form.email && form.location), target: "field-name" },
-    { id: "summary", label: "Write a short summary", done: !!form.summary.trim(), target: "field-summary" },
-    { id: "experience", label: "Add work experience", done: !!form.experience.trim(), target: "field-experience" },
-    { id: "education", label: "Add education", done: !!form.education.trim(), target: "field-education" },
-    { id: "skills", label: "Add 5+ relevant skills", done: form.skills.split(",").filter(s => s.trim()).length >= 5, target: "field-skills" },
-    { id: "download", label: "Review and download", done: !!exportSuccess, target: null },
+    { id: "contact", label: builderText("checklistContact"), done: !!(form.name && form.email && form.location), target: "field-name" },
+    { id: "summary", label: builderText("checklistSummary"), done: !!form.summary.trim(), target: "field-summary" },
+    { id: "experience", label: builderText("checklistExperience"), done: !!form.experience.trim(), target: "field-experience" },
+    { id: "education", label: builderText("checklistEducation"), done: !!form.education.trim(), target: "field-education" },
+    { id: "skills", label: builderText("checklistSkills"), done: form.skills.split(",").filter(s => s.trim()).length >= 5, target: "field-skills" },
+    { id: "download", label: builderText("checklistDownload"), done: !!exportSuccess, target: null },
   ];
   const completedChecklist = resumeChecklist.filter(item => item.done).length;
   const nextChecklistItem = resumeChecklist.find(item => !item.done);
@@ -5796,8 +5814,8 @@ Awards: ${form.awards}`;
   const atsIssues = computeATSIssues();
   const atsScore = scoreFromIssues(atsIssues);
   const resumeTitle = form.name.trim()
-    ? `${form.name.trim().split(/\s+/)[0]}'s Resume`
-    : "Untitled Resume";
+    ? builderText("ownedResumeTitle", { name: form.name.trim().split(/\s+/)[0] })
+    : builderText("untitledResume");
   const savedLabel = bu.notSavedShort;
   const translationFieldEntries = Object.entries(form.translationMeta?.fields || {});
   const translationReviewed = Boolean(form.translationMeta?.reviewed)
@@ -5887,6 +5905,8 @@ Awards: ${form.awards}`;
                     setSiteLanguage(l);
                   }}
                   siteOnly
+                  siteBadge={builderText("langBadgeSite")}
+                  uiBadge={builderText("langBadgeUi")}
                 />
                 <div style={{ fontSize: 12, fontWeight: 800, color: C.text3, margin: "12px 0 7px" }}>
                   {bu.documentLanguage}
@@ -5897,6 +5917,8 @@ Awards: ${form.awards}`;
                     setDocumentLanguagePreference(l);
                   }}
                   ariaLabel={bu.chooseDocumentLanguage}
+                  siteBadge={builderText("langBadgeSite")}
+                  uiBadge={builderText("langBadgeUi")}
                 />
                 <p style={{ margin: "10px 0 0", fontSize: 11.5, color: C.text3, lineHeight: 1.5 }}>
                   {bu.languageSeparationNote}
@@ -6026,7 +6048,7 @@ Awards: ${form.awards}`;
           marginBottom: 14 }}>
           <span style={{ fontSize: 15 }}>📂</span>
           <span style={{ fontSize: 12.5, color: C.text2, flex: 1 }}>
-            Reference: <strong style={{ color: C.text1 }}>{uploadedResume.name}</strong>
+            {builderText("referenceLabel")} <strong style={{ color: C.text1 }}>{uploadedResume.name}</strong>
           </span>
           <button onClick={() => setUploadedResume(null)}
             style={{ fontSize: 11, color: C.text3, background: "none", border: "none",
@@ -6155,7 +6177,7 @@ Awards: ${form.awards}`;
           )}
 
           {/* ── SECTION: Personal Info ── */}
-          <FieldCard icon="👤" title="Personal Info" rtl={rtl} eui={eui}
+          <FieldCard icon="👤" title={builderText("personalInfo")} rtl={rtl} eui={eui}
             collapsed={!!collapsedSections.personal} onToggleCollapse={() => toggleSectionCollapse("personal")}>
 
           {/* Photo upload */}
@@ -6167,20 +6189,20 @@ Awards: ${form.awards}`;
               display: "flex", alignItems: "center", justifyContent: "center",
               transition: "outline-color 0.2s" }}>
               {photoUrl
-                ? <img src={photoUrl} alt="Profile" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ? <img src={photoUrl} alt={builderText("profilePhoto")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 : <span style={{ fontSize: 22, opacity: 0.3 }}>👤</span>
               }
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12.5, fontWeight: 600, color: C.text1, marginBottom: 4 }}>
-                Profile Photo <span style={{ color: C.text3, fontWeight: 400 }}>(optional)</span>
+                {builderText("profilePhoto")} <span style={{ color: C.text3, fontWeight: 400 }}>{builderText("photoOptional")}</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                 <label htmlFor="photo-upload"
                   style={{ cursor: "pointer", fontSize: 12, fontWeight: 700, color: C.accent2,
                     padding: "5px 12px", borderRadius: 4, border: "none",
                     background: `${C.accent}10`, display: "inline-block" }}>
-                  {photoUrl ? "Change" : "Upload"}
+                  {photoUrl ? builderText("photoChange") : builderText("photoUpload")}
                 </label>
                 <input id="photo-upload" type="file" accept="image/jpeg,image/png,image/webp"
                   onChange={handlePhotoUpload} style={{ display: "none" }} />
@@ -6188,12 +6210,12 @@ Awards: ${form.awards}`;
                   <button onClick={() => setPhotoUrl(null)}
                     style={{ fontSize: 12, color: "#f87171", background: "none", border: "none",
                       cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
-                    Remove
+                    {builderText("photoRemove")}
                   </button>
                 )}
               </div>
               <div style={{ fontSize: 11, color: C.text3, marginTop: 5 }}>
-                Appears in sidebar templates
+                {builderText("photoHint")}
               </div>
             </div>
           </div>
@@ -6275,7 +6297,7 @@ Awards: ${form.awards}`;
                   background: `${C.accent}14`, border: "none",
                   borderRadius: 999, padding: "3px 12px", cursor: "pointer",
                   fontFamily: "inherit", display: "flex", alignItems: "center", gap: 5 }}>
-                ✦ Coach me · {weakBullets.length} weak {weakBullets.length === 1 ? "bullet" : "bullets"}
+                {builderText("coachButton")} · {builderText(weakBullets.length === 1 ? "weakBulletsOne" : "weakBulletsOther", { count: weakBullets.length })}
               </button>
             </div>
           )}
@@ -6295,7 +6317,7 @@ Awards: ${form.awards}`;
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                       <div style={{ fontSize: 12.5, fontWeight: 800, color: C.accent2,
                         textTransform: "uppercase", letterSpacing: "1px" }}>
-                        Improve this achievement
+                        {builderText("coachImprove")}
                       </div>
                       {weakBullets.length > 1 && (
                         <span style={{ fontSize: 10.5, color: C.text3 }}>
@@ -6304,7 +6326,7 @@ Awards: ${form.awards}`;
                       )}
                     </div>
                     <div style={{ fontSize: 11.5, color: C.text3, marginBottom: 10, lineHeight: 1.5 }}>
-                      Only this bullet and the context you enter below are sent to the AI service. Review any suggested numbers or claims before accepting.
+                      {builderText("coachDisclaimer")}
                     </div>
                     <div style={{ fontSize: 12.5, color: C.text2, background: C.bg,
                       border: "none", borderRadius: 6, padding: "6px 10px",
@@ -6366,7 +6388,7 @@ Awards: ${form.awards}`;
                     border: "none", borderRadius: 8, fontSize: 13, fontWeight: 700,
                     cursor: coachLoading ? "not-allowed" : "pointer", opacity: coachLoading ? 0.7 : 1,
                     fontFamily: "inherit", marginBottom: coachResult ? 12 : 0 }}>
-                  {coachLoading ? "Creating suggestion…" : "Create achievement suggestion"}
+                  {coachLoading ? builderText("coachCreating") : builderText("coachCreate")}
                 </button>
 
                 {/* Result */}
@@ -6374,7 +6396,7 @@ Awards: ${form.awards}`;
                   <div style={{ marginTop: 12 }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: C.text3,
                       textTransform: "uppercase", letterSpacing: "1px", marginBottom: 6 }}>
-                      Suggested version:
+                      {builderText("coachSuggested")}
                     </div>
                     <div style={{ background: `${C.accent}0a`, border: "none",
                       borderRadius: 8, padding: "10px 14px", marginBottom: 10 }}>
@@ -6391,13 +6413,13 @@ Awards: ${form.awards}`;
                         style={{ flex: 1, padding: "8px 0", background: C.grad, color: "#fff",
                           border: "none", borderRadius: 7, fontSize: 12.5, fontWeight: 700,
                           cursor: "pointer", fontFamily: "inherit" }}>
-                        Accept suggestion
+                        {builderText("coachAccept")}
                       </button>
                       <button onClick={() => { setCoachResult(""); setCoachAnswers({}); }}
                         style={{ padding: "8px 14px", background: C.surface,
                           border: "none", borderRadius: 7, fontSize: 12,
                           color: C.text2, cursor: "pointer", fontFamily: "inherit" }}>
-                        Retry
+                        {builderText("coachRetry")}
                       </button>
                     </div>
                   </div>
@@ -6410,7 +6432,7 @@ Awards: ${form.awards}`;
           {educationError && <p style={fieldErr}>{educationError}</p>}
 
           {/* ── SECTION: Skills & Languages ── */}
-          <SectionHeader icon="⚡" title="Skills & Languages" filled={!!form.skills} />
+          <SectionHeader icon="⚡" title={builderText("skillsAndLanguages")} filled={!!form.skills} filledLabel={builderText("filledBadge")} />
           <div id="field-skills">{renderSection("skills", t.skills.replace(/\s*\(.*\)/, ""))}</div>
           {skillsError && <p style={fieldErr}>{skillsError}</p>}
           {renderSection("languages", t.languages.replace(/\s*\(.*\)/, ""))}
@@ -6457,11 +6479,11 @@ Awards: ${form.awards}`;
                       <div style={{ fontSize: 28, fontWeight: 900, color: scoreColor, lineHeight: 1 }}>{score}</div>
                       <div>
                         <div style={{ fontSize: 13, fontWeight: 800, color: scoreColor }}>{scoreLabel}</div>
-                        <div style={{ fontSize: 10.5, color: C.text3 }}>ApplyCraft ATS Readiness Score</div>
+                        <div style={{ fontSize: 10.5, color: C.text3 }}>{builderText("atsReadyTitle")}</div>
                       </div>
                     </div>
                     <div style={{ fontSize: 11.5, color: C.text3, maxWidth: 360, lineHeight: 1.5 }}>
-                      An ApplyCraft heuristic for resume structure, content, and keywords. It does not reproduce any specific ATS (Workday, Greenhouse, Taleo, Lever…) and does not guarantee interviews.
+                      {builderText("atsReadyDisclaimer")}
                     </div>
                   </div>
                   <button onClick={() => setAtsOpen(false)} aria-label={builderText("closeAtsChecker")}
@@ -6477,7 +6499,7 @@ Awards: ${form.awards}`;
 
                 {issues.length === 0 ? (
                   <div style={{ textAlign: "center", padding: "16px 0", color: "#4ade80", fontSize: 14, fontWeight: 700 }}>
-                    ✓ No issues detected — your resume is well-structured for ATS parsing.
+                    {builderText("atsNoIssues")}
                   </div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -6521,11 +6543,11 @@ Awards: ${form.awards}`;
                 {issues.length > 0 && (
                   <div style={{ display: "flex", gap: 12, marginTop: 14, paddingTop: 12,
                     borderTop: `1px solid ${SECTION_TOKENS.rowDivider}`, flexWrap: "wrap" }}>
-                    {criticals.length > 0 && <span style={{ fontSize: 11.5, color: "#f87171", fontWeight: 700 }}>● {criticals.length} critical</span>}
-                    {warnings.length  > 0 && <span style={{ fontSize: 11.5, color: "#fbbf24", fontWeight: 700 }}>● {warnings.length} warnings</span>}
-                    {infos.length     > 0 && <span style={{ fontSize: 11.5, color: "#60a5fa", fontWeight: 700 }}>● {infos.length} info</span>}
+                    {criticals.length > 0 && <span style={{ fontSize: 11.5, color: "#f87171", fontWeight: 700 }}>● {criticals.length} {builderText("atsCritical")}</span>}
+                    {warnings.length  > 0 && <span style={{ fontSize: 11.5, color: "#fbbf24", fontWeight: 700 }}>● {warnings.length} {builderText("atsWarnings")}</span>}
+                    {infos.length     > 0 && <span style={{ fontSize: 11.5, color: "#60a5fa", fontWeight: 700 }}>● {infos.length} {builderText("atsInfo")}</span>}
                     <span style={{ fontSize: 11.5, color: C.text3, marginLeft: "auto" }}>
-                      Start with critical items, then review optional improvements.
+                      {builderText("atsStartCritical")}
                     </span>
                   </div>
                 )}
@@ -6547,12 +6569,12 @@ Awards: ${form.awards}`;
                 <button onClick={() => { setNavPage("cover"); setCoverStep("form"); }}
                     style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
                     alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13 }}>
-                  Create matching cover letter
+                  {builderText("atsCreateCover")}
                 </button>
                 <button onClick={() => setAtsOpen(true)}
                   style={{ ...dlBtn, flex: 1, justifyContent: "center", display: "flex",
                     alignItems: "center", gap: 5, padding: "10px 8px", fontSize: 13 }}>
-                  Review ATS tips
+                  {builderText("atsReviewTips")}
                 </button>
               </div>
             )}
@@ -6603,7 +6625,7 @@ Awards: ${form.awards}`;
               maxWidth: 760, margin: "0 auto", transform: `scale(${previewZoom / 100})`, transformOrigin: "top center",
               transition: "transform 0.18s ease", paddingBottom: `${Math.max(0, 100 - previewZoom) * 2}px`
             }}>
-              <ResumePaper tpl={tpl} result={result || liveData} rtl={documentRtl} lang={docLang} placeholder={false} />
+              <ResumePaper tpl={tpl} result={result || liveData} rtl={documentRtl} lang={docLang} uiLang={lang} placeholder={false} />
             </div>
             {zoomed && (
               <button
@@ -7310,6 +7332,8 @@ Awards: ${form.awards}`;
           previewEyebrow: builderText("templatePreviewEyebrow"),
           useTemplate: builderText("useThisTemplate"),
           close: builderText("closeTemplatePreview"),
+          whyChoose: bu.whyChoose || BUILDER_UI.en.whyChoose,
+          templateDetails: builderText("templateDetails"),
         }}
       />
     </div>
@@ -7395,6 +7419,8 @@ Awards: ${form.awards}`;
                     selected={selectedDocumentLang}
                     onSelect={setDocumentLanguagePreference}
                     ariaLabel={bu.chooseDocumentLanguage}
+                    siteBadge={builderText("langBadgeSite")}
+                    uiBadge={builderText("langBadgeUi")}
                   />
                   {docLang !== "en" && (
                     <button type="button" onClick={() => setTranslationConfirm({ open: true, target: selectedDocumentLang || languageByCode(docLang), kind: "cover" })}
@@ -7456,7 +7482,7 @@ Awards: ${form.awards}`;
               <label htmlFor="cover-field-location" style={lbl}>{cu.lblLocation}</label>{coverField("location", false, "City, Country", "📍")}
             </FieldCard>
 
-            <SectionHeader icon="✍️" title={cu.cardLetterContent} filled={!!(coverForm.opening || coverForm.body || coverForm.closing)} />
+            <SectionHeader icon="✍️" title={cu.cardLetterContent} filled={!!(coverForm.opening || coverForm.body || coverForm.closing)} filledLabel={builderText("filledBadge")} />
 
             <FieldCard icon="📌" title={cu.cardOpening} {...cov("opening")}
               status={coverStatus(["subject", "opening"], ["opening"])}>
@@ -7759,7 +7785,7 @@ Awards: ${form.awards}`;
               <input ref={fileRef} type="file" accept=".pdf,.docx,.txt" onChange={onUploadFile} style={{ display: "none" }} />
             </div>
             <textarea value={localText} onChange={e => setLocalText(e.target.value)}
-              placeholder={"Paste your full resume here...\n\nJane Smith\njane@email.com | +1 555 000 0000\n\nEXPERIENCE\nSenior Engineer — Acme (2021–Present)\n• Led migration cutting deploy time 60%\n\nSKILLS\nPython, React, AWS"}
+              placeholder={ats.pasteResumePh}
               style={{ width: "100%", height: 240, resize: "vertical", background: C.elevated,
                 border: `1.5px solid ${C.border}`, borderRadius: 10, color: C.text1,
                 fontFamily: "'Inter', system-ui, sans-serif", fontSize: 13, lineHeight: 1.6,
@@ -7769,7 +7795,7 @@ Awards: ${form.awards}`;
             <div style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, textTransform: "uppercase",
               letterSpacing: "1px", marginBottom: 8 }}>{ats.jdLabel} <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— {ats.optional}</span></div>
             <textarea value={localJd} onChange={e => setLocalJd(e.target.value)}
-              placeholder={"Paste the job description here to get a keyword gap analysis.\n\nWith it, you'll see:\n  • Which keywords you match ✓\n  • Which are missing ✗\n  • Your keyword match %\n\nWithout it, you still get a full ATS readiness score."}
+              placeholder={ats.pasteJdPh}
               style={{ width: "100%", height: 240, resize: "vertical", background: C.elevated,
                 border: `1.5px solid ${C.border}`, borderRadius: 10, color: C.text1,
                 fontFamily: "'Inter', system-ui, sans-serif", fontSize: 13, lineHeight: 1.6,
@@ -7790,7 +7816,7 @@ Awards: ${form.awards}`;
           <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 14,
             padding: "28px 24px", textAlign: "center", marginBottom: 24 }}>
             <div style={{ fontSize: 11.5, fontWeight: 800, textTransform: "uppercase", letterSpacing: "1.2px", color: C.accent2, marginBottom: 6 }}>
-              ApplyCraft ATS Readiness Score
+              {ats.readinessTitle}
             </div>
             <div style={{ fontSize: 64, fontWeight: 800, color: scoreColor, letterSpacing: "-2px", lineHeight: 1 }}>
               {result.score}
@@ -7800,7 +7826,7 @@ Awards: ${form.awards}`;
               {band ? band.meaning : ats.scoreDesc}
             </div>
             <details style={{ marginTop: 14, maxWidth: 460, marginInline: "auto", textAlign: "left" }}>
-              <summary style={{ cursor: "pointer", fontSize: 12, color: C.accent2, fontWeight: 700 }}>How is this score calculated?</summary>
+              <summary style={{ cursor: "pointer", fontSize: 12, color: C.accent2, fontWeight: 700 }}>{ats.howCalculated}</summary>
               <p style={{ fontSize: 12, color: C.text3, lineHeight: 1.6, margin: "8px 0 0" }}>{READINESS_EXPLAINER}</p>
             </details>
             <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", marginTop: 16 }}>
@@ -7924,10 +7950,10 @@ Awards: ${form.awards}`;
   const AboutPage = () => (
     <div style={{ padding: isMobile ? 20 : 40, maxWidth: 720 }}>
       <PageHeader
-        eyebrow="About"
+        eyebrow={landingText("aboutEyebrow")}
         icon="✦"
-        title="About ApplyCraft"
-        sub="A free, browser-first tool for building professional resumes and cover letters — no account required and no paywall for the core builder."
+        title={landingText("aboutTitle")}
+        sub={landingText("aboutSub")}
         isMobile={isMobile}
       />
 
@@ -7937,26 +7963,24 @@ Awards: ${form.awards}`;
       {/* Mission */}
       <div style={{ marginBottom: 36 }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-          letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>Mission</div>
+          letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>{landingText("aboutMission")}</div>
         <p style={{ fontSize: 14.5, color: C.text1, lineHeight: 1.8, margin: 0 }}>
-          Getting a job is hard enough without fighting the tools meant to help you. ApplyCraft
-          gives every job seeker — regardless of budget or background — free access to polished,
-          ATS-conscious documents you can write in any language, with fully localized labels in English, French, and Arabic. No account, no paywall, no catch.
+          {landingText("aboutMissionBody")}
         </p>
       </div>
 
       {/* What you can do */}
       <div style={{ marginBottom: 36 }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-          letterSpacing: "2px", color: C.accent2, marginBottom: 16 }}>What you can do</div>
+          letterSpacing: "2px", color: C.accent2, marginBottom: 16 }}>{landingText("aboutWhatYouCanDo")}</div>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12 }}>
           {[
-            ["document", "Build a resume", `Choose from ${RESUME_TEMPLATE_COUNT} professional templates with live preview.`],
-            ["document", "Write a cover letter", "6 matching cover letter styles with full customisation."],
-            ["globe", "Write in any language", "Fully localized labels are production-ready in English, French, and Arabic."],
-            ["upload", "PDF & DOCX export", "Download in the format any employer expects."],
-            ["lock", "Browser-first", "Build and export without creating an account or cloud profile."],
-            ["spark", "AI suggestions", "Optional AI polish to sharpen your wording instantly."],
+            ["document", landingText("aboutFeatResumeTitle"), landingText("aboutFeatResumeDesc", { count: RESUME_TEMPLATE_COUNT })],
+            ["document", landingText("aboutFeatCoverTitle"), landingText("aboutFeatCoverDesc")],
+            ["globe", landingText("aboutFeatLangTitle"), landingText("aboutFeatLangDesc")],
+            ["upload", landingText("aboutFeatExportTitle"), landingText("aboutFeatExportDesc")],
+            ["lock", landingText("aboutFeatBrowserTitle"), landingText("aboutFeatBrowserDesc")],
+            ["spark", landingText("aboutFeatAiTitle"), landingText("aboutFeatAiDesc")],
           ].map(([icon, title, desc]) => (
             <div key={title} style={{ background: C.elevated, border: `1px solid ${C.border}`,
               borderRadius: 12, padding: "16px 18px", display: "flex", gap: 14, alignItems: "flex-start" }}>
@@ -7976,7 +8000,7 @@ Awards: ${form.awards}`;
       {/* Built by */}
       <div style={{ marginBottom: 36 }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-          letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>Built by</div>
+          letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>{landingText("aboutBuiltBy")}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div style={{ width: 48, height: 48, borderRadius: "50%",
             background: C.grad, display: "flex", alignItems: "center",
@@ -7986,7 +8010,7 @@ Awards: ${form.awards}`;
           <div>
             <div style={{ fontSize: 15, fontWeight: 700, color: C.text1 }}>Biroue Digital Ltd</div>
             <div style={{ fontSize: 13, color: C.text2, marginTop: 3 }}>
-              An independent studio building tools that make job seekers' lives easier.
+              {landingText("aboutStudioDesc")}
             </div>
             {AUTHOR.github && (
               <a href={AUTHOR.github} target="_blank" rel="noopener noreferrer"
@@ -8001,7 +8025,7 @@ Awards: ${form.awards}`;
       {/* Stack */}
       <div style={{ marginBottom: 36 }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-          letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>Tech stack</div>
+          letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>{landingText("aboutTechStack")}</div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {["React 18", "Vite 6", "jsPDF", "docx.js", "Cloudflare Pages"].map(t => (
             <span key={t} style={{ fontSize: 12.5, padding: "4px 12px", borderRadius: 999,
@@ -8018,12 +8042,12 @@ Awards: ${form.awards}`;
         <button onClick={() => setAppView("landing")}
           style={{ fontSize: 13.5, color: C.accent2, background: "none", border: "none",
             cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
-          ← Back to landing page
+          {landingText("aboutBack")}
         </button>
         {AUTHOR.github && (
           <a href={`${AUTHOR.github}/applycraft`} target="_blank" rel="noopener noreferrer"
             style={{ fontSize: 13.5, color: C.text2, textDecoration: "none" }}>
-            View source on GitHub
+            {landingText("aboutViewSource")}
           </a>
         )}
       </div>
@@ -8583,7 +8607,7 @@ Awards: ${form.awards}`;
         {masterTab === "personal" && (
           <div>
             <div style={g2}>
-              {[["name","Full name","Alexandra Johnson"],["headline","Professional headline","Senior Product Designer"],["email","Email","alex@email.com"],["phone","Phone","+1 415 555 0000"],["location","Location","San Francisco, CA"],["linkedin","LinkedIn","linkedin.com/in/alexj"],["website","Website / Portfolio","alexj.design"]].map(([k,label,ph]) => (
+              {[["name",masterText("fullName"),"Alexandra Johnson"],["headline",masterText("headline"),"Senior Product Designer"],["email",masterText("email"),"alex@email.com"],["phone",masterText("phone"),"+1 415 555 0000"],["location",masterText("location"),"San Francisco, CA"],["linkedin",masterText("linkedin"),"linkedin.com/in/alexj"],["website",masterText("website"),"alexj.design"]].map(([k,label,ph]) => (
                 <div key={k}>
                   <label style={lb}>{label}</label>
                   <input value={master[k]||""} onChange={mField(k)} placeholder={ph} style={mi} />
@@ -8591,8 +8615,8 @@ Awards: ${form.awards}`;
               ))}
             </div>
             <div style={{marginTop:14}}>
-              <label style={lb}>Professional summary</label>
-              <textarea value={master.summary||""} onChange={mField("summary")} placeholder="Write a 2–3 sentence summary of your career, skills, and goals..." rows={4} style={{...mi, resize:"vertical", lineHeight:1.6}} />
+              <label style={lb}>{masterText("summaryLabel")}</label>
+              <textarea value={master.summary||""} onChange={mField("summary")} placeholder={masterText("summaryPh")} rows={4} style={{...mi, resize:"vertical", lineHeight:1.6}} />
             </div>
           </div>
         )}
@@ -8600,13 +8624,13 @@ Awards: ${form.awards}`;
         {/* Experience tab */}
         {masterTab === "experience" && (
           <div>
-            {master.jobs.length === 0 && <div style={{textAlign:"center", padding:"32px 24px", color:C.text3, fontSize:13}}>No work experience added yet.</div>}
+            {master.jobs.length === 0 && <div style={{textAlign:"center", padding:"32px 24px", color:C.text3, fontSize:13}}>{masterText("noWork")}</div>}
             {master.jobs.map(job => (
               <div key={job.id} style={{background:C.surface, border:`1px solid ${C.border}`, borderRadius:11, marginBottom:10, overflow:"hidden"}}>
                 <div style={{display:"flex", alignItems:"center", gap:10, padding:"12px 14px", cursor:"pointer", userSelect:"none"}} onClick={() => toggleOpen(job.id)}>
                   <span style={{color:C.text3, fontSize:12, display:"inline-block", transform: masterOpen[job.id] ? "rotate(90deg)" : "none", transition:"transform 0.15s"}}>▶</span>
                   <div style={{flex:1, minWidth:0}}>
-                    <div style={{fontSize:13.5, fontWeight:700, color:C.text1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis"}}>{job.title||"Untitled role"}{job.company ? ` · ${job.company}` : ""}</div>
+                    <div style={{fontSize:13.5, fontWeight:700, color:C.text1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis"}}>{job.title||masterText("untitledRole")}{job.company ? ` · ${job.company}` : ""}</div>
                     {(job.startDate||job.endDate||job.current||job.isCurrent) && <div style={{fontSize:11.5, color:C.text3, marginTop:1}}>{masterJobDateRange(job)}</div>}
                   </div>
                   <button onClick={e => { e.stopPropagation(); delJob(job.id); }} style={{background:"none", border:"none", color:"#EF4444", cursor:"pointer", fontSize:13, padding:"4px 6px", borderRadius:6, fontFamily:"inherit", opacity:0.7}}>✕</button>
@@ -8614,11 +8638,11 @@ Awards: ${form.awards}`;
                 {masterOpen[job.id] && (
                   <div style={{padding:"0 14px 16px", borderTop:`1px solid ${C.border}`}}>
                     <div style={{...g2, marginTop:14}}>
-                      {[["title","Job title","Software Engineer"],["company","Company","Stripe"],["startDate","Start date","Jan 2022"],["location","Location","Remote"]].map(([k,label,ph]) => (
+                      {[["title",masterText("jobTitle"),"Software Engineer"],["company",masterText("company"),"Stripe"],["startDate",masterText("startDate"),"Jan 2022"],["location",masterText("location"),"Remote"]].map(([k,label,ph]) => (
                         <div key={k}><label style={lb}>{label}</label><input value={job[k]||""} onChange={e => upJob(job.id, {[k]:e.target.value})} placeholder={ph} style={mi} /></div>
                       ))}
                       <div>
-                        <label style={lb}>End date</label>
+                        <label style={lb}>{masterText("endDate")}</label>
                         <input value={job.endDate||""} onChange={e => upJob(job.id, {endDate:e.target.value})} placeholder={presentLabel(docLang)} disabled={job.current || job.isCurrent} style={{...mi, opacity: (job.current || job.isCurrent) ? 0.45 : 1}} />
                       </div>
                       <div style={{display:"flex", alignItems:"center", gap:8, paddingTop:22}}>
@@ -8627,34 +8651,34 @@ Awards: ${form.awards}`;
                       </div>
                     </div>
                     <div style={{marginTop:16}}>
-                      <label style={lb}>Achievements & responsibilities</label>
+                      <label style={lb}>{masterText("achievements")}</label>
                       {job.bullets.map((b, bi) => (
                         <div key={bi} style={{display:"flex", gap:8, marginBottom:6, alignItems:"center"}}>
                           <span style={{color:C.text3, fontSize:16, flexShrink:0, lineHeight:"38px"}}>•</span>
-                          <input value={b} onChange={e => upJobBullet(job.id, bi, e.target.value)} placeholder="Led migration of 3 services, reducing infra costs by 40%..." style={{...mi, flex:1}} />
+                          <input value={b} onChange={e => upJobBullet(job.id, bi, e.target.value)} placeholder={masterText("bulletPh")} style={{...mi, flex:1}} />
                           <button onClick={() => delJobBullet(job.id, bi)} style={{background:"none", border:"none", color:C.text3, cursor:"pointer", fontSize:14, padding:"4px 6px", flexShrink:0, fontFamily:"inherit"}}>✕</button>
                         </div>
                       ))}
-                      <button onClick={() => addJobBullet(job.id)} style={{marginTop:4, background:"none", border:`1px dashed ${C.border}`, borderRadius:7, padding:"6px 12px", fontSize:12.5, color:C.text2, cursor:"pointer", fontFamily:"inherit"}}>+ Add bullet</button>
+                      <button onClick={() => addJobBullet(job.id)} style={{marginTop:4, background:"none", border:`1px dashed ${C.border}`, borderRadius:7, padding:"6px 12px", fontSize:12.5, color:C.text2, cursor:"pointer", fontFamily:"inherit"}}>{masterText("addBullet")}</button>
                     </div>
                   </div>
                 )}
               </div>
             ))}
-            <button onClick={addJob} style={{width:"100%", background:C.surface, border:`1.5px dashed ${C.border}`, borderRadius:10, padding:"11px", fontSize:13.5, color:C.text2, cursor:"pointer", fontFamily:"inherit", marginTop:4}}>+ Add work experience</button>
+            <button onClick={addJob} style={{width:"100%", background:C.surface, border:`1.5px dashed ${C.border}`, borderRadius:10, padding:"11px", fontSize:13.5, color:C.text2, cursor:"pointer", fontFamily:"inherit", marginTop:4}}>{masterText("addWork")}</button>
           </div>
         )}
 
         {/* Education tab */}
         {masterTab === "education" && (
           <div>
-            {master.education.length === 0 && <div style={{textAlign:"center", padding:"32px 24px", color:C.text3, fontSize:13}}>No education added yet.</div>}
+            {master.education.length === 0 && <div style={{textAlign:"center", padding:"32px 24px", color:C.text3, fontSize:13}}>{masterText("noEducation")}</div>}
             {master.education.map(edu => (
               <div key={edu.id} style={{background:C.surface, border:`1px solid ${C.border}`, borderRadius:11, marginBottom:10, overflow:"hidden"}}>
                 <div style={{display:"flex", alignItems:"center", gap:10, padding:"12px 14px", cursor:"pointer", userSelect:"none"}} onClick={() => toggleOpen(edu.id)}>
                   <span style={{color:C.text3, fontSize:12, display:"inline-block", transform: masterOpen[edu.id] ? "rotate(90deg)" : "none", transition:"transform 0.15s"}}>▶</span>
                   <div style={{flex:1, minWidth:0}}>
-                    <div style={{fontSize:13.5, fontWeight:700, color:C.text1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis"}}>{edu.degree||"Degree"}{edu.field ? ` in ${edu.field}` : ""}{edu.school ? ` · ${edu.school}` : ""}</div>
+                    <div style={{fontSize:13.5, fontWeight:700, color:C.text1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis"}}>{edu.degree||masterText("degree")}{edu.field ? ` in ${edu.field}` : ""}{edu.school ? ` · ${edu.school}` : ""}</div>
                     {edu.endDate && <div style={{fontSize:11.5, color:C.text3, marginTop:1}}>{edu.endDate}</div>}
                   </div>
                   <button onClick={e => { e.stopPropagation(); delEdu(edu.id); }} style={{background:"none", border:"none", color:"#EF4444", cursor:"pointer", fontSize:13, padding:"4px 6px", borderRadius:6, fontFamily:"inherit", opacity:0.7}}>✕</button>
@@ -8662,7 +8686,7 @@ Awards: ${form.awards}`;
                 {masterOpen[edu.id] && (
                   <div style={{padding:"0 14px 16px", borderTop:`1px solid ${C.border}`}}>
                     <div style={{...g2, marginTop:14}}>
-                      {[["school","School / University","MIT"],["degree","Degree","B.Sc."],["field","Field of study","Computer Science"],["endDate","Graduation year","2024"],["gpa","GPA (optional)","3.8 / 4.0"]].map(([k,label,ph]) => (
+                      {[["school",masterText("schoolUniversity"),"MIT"],["degree",masterText("degree"),"B.Sc."],["field",masterText("fieldOfStudy"),"Computer Science"],["endDate",masterText("graduationYear"),"2024"],["gpa",masterText("gpaOptional"),"3.8 / 4.0"]].map(([k,label,ph]) => (
                         <div key={k}><label style={lb}>{label}</label><input value={edu[k]||""} onChange={e => upEdu(edu.id, {[k]:e.target.value})} placeholder={ph} style={mi} /></div>
                       ))}
                     </div>
@@ -8670,7 +8694,7 @@ Awards: ${form.awards}`;
                 )}
               </div>
             ))}
-            <button onClick={addEdu} style={{width:"100%", background:C.surface, border:`1.5px dashed ${C.border}`, borderRadius:10, padding:"11px", fontSize:13.5, color:C.text2, cursor:"pointer", fontFamily:"inherit", marginTop:4}}>+ Add education</button>
+            <button onClick={addEdu} style={{width:"100%", background:C.surface, border:`1.5px dashed ${C.border}`, borderRadius:10, padding:"11px", fontSize:13.5, color:C.text2, cursor:"pointer", fontFamily:"inherit", marginTop:4}}>{masterText("addEducation")}</button>
           </div>
         )}
 
@@ -8678,12 +8702,12 @@ Awards: ${form.awards}`;
         {masterTab === "skills" && (
           <div>
             <div style={{marginBottom:20}}>
-              <label style={lb}>Add a skill</label>
+              <label style={lb}>{masterText("addSkill")}</label>
               <div style={{display:"flex", gap:8}}>
-                <input value={skillDraft} onChange={e => setSkillDraft(e.target.value)} onKeyDown={e => { if (e.key==="Enter") { e.preventDefault(); addSkill(skillDraft); } }} placeholder="e.g. React, Python, Project Management..." style={{...mi, flex:1}} />
-                <button onClick={() => addSkill(skillDraft)} disabled={!skillDraft.trim()} style={{background:C.grad, color:"#fff", border:"none", borderRadius:8, padding:"9px 16px", fontSize:13.5, fontWeight:700, cursor: skillDraft.trim() ? "pointer" : "not-allowed", fontFamily:"inherit", flexShrink:0, opacity: skillDraft.trim() ? 1 : 0.5}}>Add</button>
+                <input value={skillDraft} onChange={e => setSkillDraft(e.target.value)} onKeyDown={e => { if (e.key==="Enter") { e.preventDefault(); addSkill(skillDraft); } }} placeholder={masterText("skillPh")} style={{...mi, flex:1}} />
+                <button onClick={() => addSkill(skillDraft)} disabled={!skillDraft.trim()} style={{background:C.grad, color:"#fff", border:"none", borderRadius:8, padding:"9px 16px", fontSize:13.5, fontWeight:700, cursor: skillDraft.trim() ? "pointer" : "not-allowed", fontFamily:"inherit", flexShrink:0, opacity: skillDraft.trim() ? 1 : 0.5}}>{masterText("addBtn")}</button>
               </div>
-              <div style={{fontSize:11.5, color:C.text3, marginTop:5}}>Press Enter to add quickly</div>
+              <div style={{fontSize:11.5, color:C.text3, marginTop:5}}>{masterText("pressEnter")}</div>
             </div>
             {master.skills.length > 0 ? (
               <div style={{display:"flex", flexWrap:"wrap", gap:8}}>
@@ -8695,9 +8719,9 @@ Awards: ${form.awards}`;
                 ))}
               </div>
             ) : (
-              <div style={{textAlign:"center", padding:"32px 24px", color:C.text3, fontSize:13}}>No skills yet. Type a skill and press Enter.</div>
+              <div style={{textAlign:"center", padding:"32px 24px", color:C.text3, fontSize:13}}>{masterText("noSkills")}</div>
             )}
-            {master.skills.length > 0 && <div style={{marginTop:12, fontSize:12.5, color:C.text3}}>{master.skills.length} skill{master.skills.length!==1?"s":""}</div>}
+            {master.skills.length > 0 && <div style={{marginTop:12, fontSize:12.5, color:C.text3}}>{masterText(master.skills.length === 1 ? "skillCountOne" : "skillCountOther", { count: master.skills.length })}</div>}
           </div>
         )}
 
@@ -8707,19 +8731,19 @@ Awards: ${form.awards}`;
             {/* Certifications */}
             <div style={{marginBottom:28}}>
               <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12, paddingBottom:10, borderBottom:`1px solid ${C.border}`}}>
-                <span style={{fontSize:11, fontWeight:700, color:C.text2, textTransform:"uppercase", letterSpacing:"0.8px"}}>Certifications</span>
-                <button onClick={addCert} style={{background:"none", border:`1px solid ${C.border}`, borderRadius:6, padding:"4px 10px", fontSize:12, color:C.text2, cursor:"pointer", fontFamily:"inherit"}}>+ Add</button>
+                <span style={{fontSize:11, fontWeight:700, color:C.text2, textTransform:"uppercase", letterSpacing:"0.8px"}}>{masterText("certifications")}</span>
+                <button onClick={addCert} style={{background:"none", border:`1px solid ${C.border}`, borderRadius:6, padding:"4px 10px", fontSize:12, color:C.text2, cursor:"pointer", fontFamily:"inherit"}}>{masterText("addShort")}</button>
               </div>
-              {master.certifications.length === 0 && <div style={{fontSize:12.5, color:C.text3}}>None added.</div>}
+              {master.certifications.length === 0 && <div style={{fontSize:12.5, color:C.text3}}>{masterText("noneAdded")}</div>}
               {master.certifications.map(c => (
                 <div key={c.id} style={{background:C.surface, border:`1px solid ${C.border}`, borderRadius:9, padding:"12px 14px", marginBottom:8}}>
                   <div style={{...g2, marginBottom:10}}>
-                    <div><label style={lb}>Certification name</label><input value={c.name||""} onChange={e => upCert(c.id, {name:e.target.value})} placeholder="AWS Solutions Architect" style={mi} /></div>
-                    <div><label style={lb}>Issuing organization</label><input value={c.issuer||""} onChange={e => upCert(c.id, {issuer:e.target.value})} placeholder="Amazon Web Services" style={mi} /></div>
-                    <div><label style={lb}>Date</label><input value={c.date||""} onChange={e => upCert(c.id, {date:e.target.value})} placeholder="March 2024" style={mi} /></div>
-                    <div><label style={lb}>URL (optional)</label><input value={c.url||""} onChange={e => upCert(c.id, {url:e.target.value})} placeholder="credential link..." style={mi} /></div>
+                    <div><label style={lb}>{masterText("certName")}</label><input value={c.name||""} onChange={e => upCert(c.id, {name:e.target.value})} placeholder="AWS Solutions Architect" style={mi} /></div>
+                    <div><label style={lb}>{masterText("issuingOrg")}</label><input value={c.issuer||""} onChange={e => upCert(c.id, {issuer:e.target.value})} placeholder="Amazon Web Services" style={mi} /></div>
+                    <div><label style={lb}>{masterText("dateLabel")}</label><input value={c.date||""} onChange={e => upCert(c.id, {date:e.target.value})} placeholder="March 2024" style={mi} /></div>
+                    <div><label style={lb}>{masterText("urlOptional")}</label><input value={c.url||""} onChange={e => upCert(c.id, {url:e.target.value})} placeholder={masterText("credentialLinkPh")} style={mi} /></div>
                   </div>
-                  <button onClick={() => delCert(c.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>Remove</button>
+                  <button onClick={() => delCert(c.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
                 </div>
               ))}
             </div>
@@ -8727,19 +8751,19 @@ Awards: ${form.awards}`;
             {/* Projects */}
             <div style={{marginBottom:28}}>
               <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12, paddingBottom:10, borderBottom:`1px solid ${C.border}`}}>
-                <span style={{fontSize:11, fontWeight:700, color:C.text2, textTransform:"uppercase", letterSpacing:"0.8px"}}>Projects</span>
-                <button onClick={addProject} style={{background:"none", border:`1px solid ${C.border}`, borderRadius:6, padding:"4px 10px", fontSize:12, color:C.text2, cursor:"pointer", fontFamily:"inherit"}}>+ Add</button>
+                <span style={{fontSize:11, fontWeight:700, color:C.text2, textTransform:"uppercase", letterSpacing:"0.8px"}}>{masterText("projects")}</span>
+                <button onClick={addProject} style={{background:"none", border:`1px solid ${C.border}`, borderRadius:6, padding:"4px 10px", fontSize:12, color:C.text2, cursor:"pointer", fontFamily:"inherit"}}>{masterText("addShort")}</button>
               </div>
-              {master.projects.length === 0 && <div style={{fontSize:12.5, color:C.text3}}>None added.</div>}
+              {master.projects.length === 0 && <div style={{fontSize:12.5, color:C.text3}}>{masterText("noneAdded")}</div>}
               {master.projects.map(p => (
                 <div key={p.id} style={{background:C.surface, border:`1px solid ${C.border}`, borderRadius:9, padding:"12px 14px", marginBottom:8}}>
                   <div style={{...g2, marginBottom:10}}>
-                    <div><label style={lb}>Project name</label><input value={p.name||""} onChange={e => upProject(p.id, {name:e.target.value})} placeholder="Portfolio website" style={mi} /></div>
-                    <div><label style={lb}>Tech stack</label><input value={p.tech||""} onChange={e => upProject(p.id, {tech:e.target.value})} placeholder="React, Node.js, PostgreSQL" style={mi} /></div>
+                    <div><label style={lb}>{masterText("projectName")}</label><input value={p.name||""} onChange={e => upProject(p.id, {name:e.target.value})} placeholder="Portfolio website" style={mi} /></div>
+                    <div><label style={lb}>{masterText("techStack")}</label><input value={p.tech||""} onChange={e => upProject(p.id, {tech:e.target.value})} placeholder="React, Node.js, PostgreSQL" style={mi} /></div>
                   </div>
-                  <div style={{marginBottom:10}}><label style={lb}>Description</label><textarea value={p.description||""} onChange={e => upProject(p.id, {description:e.target.value})} placeholder="What did you build and what was the impact?" rows={2} style={{...mi, resize:"none", lineHeight:1.6}} /></div>
-                  <div style={{marginBottom:8}}><label style={lb}>URL (optional)</label><input value={p.url||""} onChange={e => upProject(p.id, {url:e.target.value})} placeholder="github.com/..." style={mi} /></div>
-                  <button onClick={() => delProject(p.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>Remove</button>
+                  <div style={{marginBottom:10}}><label style={lb}>{masterText("descriptionLabel")}</label><textarea value={p.description||""} onChange={e => upProject(p.id, {description:e.target.value})} placeholder={masterText("descImpactPh")} rows={2} style={{...mi, resize:"none", lineHeight:1.6}} /></div>
+                  <div style={{marginBottom:8}}><label style={lb}>{masterText("urlOptional")}</label><input value={p.url||""} onChange={e => upProject(p.id, {url:e.target.value})} placeholder="github.com/..." style={mi} /></div>
+                  <button onClick={() => delProject(p.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
                 </div>
               ))}
             </div>
@@ -8747,22 +8771,22 @@ Awards: ${form.awards}`;
             {/* Languages */}
             <div style={{marginBottom:28}}>
               <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12, paddingBottom:10, borderBottom:`1px solid ${C.border}`}}>
-                <span style={{fontSize:11, fontWeight:700, color:C.text2, textTransform:"uppercase", letterSpacing:"0.8px"}}>Languages</span>
-                <button onClick={addLang} style={{background:"none", border:`1px solid ${C.border}`, borderRadius:6, padding:"4px 10px", fontSize:12, color:C.text2, cursor:"pointer", fontFamily:"inherit"}}>+ Add</button>
+                <span style={{fontSize:11, fontWeight:700, color:C.text2, textTransform:"uppercase", letterSpacing:"0.8px"}}>{masterText("languages")}</span>
+                <button onClick={addLang} style={{background:"none", border:`1px solid ${C.border}`, borderRadius:6, padding:"4px 10px", fontSize:12, color:C.text2, cursor:"pointer", fontFamily:"inherit"}}>{masterText("addShort")}</button>
               </div>
-              {master.languages.length === 0 && <div style={{fontSize:12.5, color:C.text3}}>None added.</div>}
+              {master.languages.length === 0 && <div style={{fontSize:12.5, color:C.text3}}>{masterText("noneAdded")}</div>}
               {master.languages.map(l => (
                 <div key={l.id} style={{background:C.surface, border:`1px solid ${C.border}`, borderRadius:9, padding:"12px 14px", marginBottom:8}}>
                   <div style={{...g2, marginBottom:8}}>
-                    <div><label style={lb}>Language</label><input value={l.name||""} onChange={e => upLang(l.id, {name:e.target.value})} placeholder="Spanish" style={mi} /></div>
-                    <div><label style={lb}>Proficiency</label>
+                    <div><label style={lb}>{masterText("language")}</label><input value={l.name||""} onChange={e => upLang(l.id, {name:e.target.value})} placeholder="Spanish" style={mi} /></div>
+                    <div><label style={lb}>{masterText("proficiency")}</label>
                       <select value={l.level||""} onChange={e => upLang(l.id, {level:e.target.value})} style={{...mi, cursor:"pointer"}}>
-                        <option value="">Select level...</option>
-                        {["Native","Fluent","Advanced","Intermediate","Basic"].map(lv => <option key={lv} value={lv}>{lv}</option>)}
+                        <option value="">{masterText("selectLevel")}</option>
+                        {[["Native","levelNative"],["Fluent","levelFluent"],["Advanced","levelAdvanced"],["Intermediate","levelIntermediate"],["Basic","levelBasic"]].map(([lv,lk]) => <option key={lv} value={lv}>{masterText(lk)}</option>)}
                       </select>
                     </div>
                   </div>
-                  <button onClick={() => delLang(l.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>Remove</button>
+                  <button onClick={() => delLang(l.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
                 </div>
               ))}
             </div>
@@ -8770,18 +8794,18 @@ Awards: ${form.awards}`;
             {/* Achievements */}
             <div style={{marginBottom:28}}>
               <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12, paddingBottom:10, borderBottom:`1px solid ${C.border}`}}>
-                <span style={{fontSize:11, fontWeight:700, color:C.text2, textTransform:"uppercase", letterSpacing:"0.8px"}}>Awards & Achievements</span>
-                <button onClick={addAch} style={{background:"none", border:`1px solid ${C.border}`, borderRadius:6, padding:"4px 10px", fontSize:12, color:C.text2, cursor:"pointer", fontFamily:"inherit"}}>+ Add</button>
+                <span style={{fontSize:11, fontWeight:700, color:C.text2, textTransform:"uppercase", letterSpacing:"0.8px"}}>{masterText("awardsTitle")}</span>
+                <button onClick={addAch} style={{background:"none", border:`1px solid ${C.border}`, borderRadius:6, padding:"4px 10px", fontSize:12, color:C.text2, cursor:"pointer", fontFamily:"inherit"}}>{masterText("addShort")}</button>
               </div>
-              {master.achievements.length === 0 && <div style={{fontSize:12.5, color:C.text3}}>None added.</div>}
+              {master.achievements.length === 0 && <div style={{fontSize:12.5, color:C.text3}}>{masterText("noneAdded")}</div>}
               {master.achievements.map(a => (
                 <div key={a.id} style={{background:C.surface, border:`1px solid ${C.border}`, borderRadius:9, padding:"12px 14px", marginBottom:8}}>
                   <div style={{...g2, marginBottom:10}}>
-                    <div><label style={lb}>Award / Achievement</label><input value={a.title||""} onChange={e => upAch(a.id, {title:e.target.value})} placeholder="Employee of the Year" style={mi} /></div>
-                    <div><label style={lb}>Date (optional)</label><input value={a.date||""} onChange={e => upAch(a.id, {date:e.target.value})} placeholder="2023" style={mi} /></div>
+                    <div><label style={lb}>{masterText("awardName")}</label><input value={a.title||""} onChange={e => upAch(a.id, {title:e.target.value})} placeholder="Employee of the Year" style={mi} /></div>
+                    <div><label style={lb}>{masterText("dateOptional")}</label><input value={a.date||""} onChange={e => upAch(a.id, {date:e.target.value})} placeholder="2023" style={mi} /></div>
                   </div>
-                  <div style={{marginBottom:8}}><label style={lb}>Description (optional)</label><textarea value={a.description||""} onChange={e => upAch(a.id, {description:e.target.value})} placeholder="Brief description..." rows={2} style={{...mi, resize:"none", lineHeight:1.6}} /></div>
-                  <button onClick={() => delAch(a.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>Remove</button>
+                  <div style={{marginBottom:8}}><label style={lb}>{masterText("descriptionOptional")}</label><textarea value={a.description||""} onChange={e => upAch(a.id, {description:e.target.value})} placeholder={masterText("briefDescPh")} rows={2} style={{...mi, resize:"none", lineHeight:1.6}} /></div>
+                  <button onClick={() => delAch(a.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
                 </div>
               ))}
             </div>
@@ -8789,20 +8813,20 @@ Awards: ${form.awards}`;
             {/* Volunteer */}
             <div style={{marginBottom:28}}>
               <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12, paddingBottom:10, borderBottom:`1px solid ${C.border}`}}>
-                <span style={{fontSize:11, fontWeight:700, color:C.text2, textTransform:"uppercase", letterSpacing:"0.8px"}}>Volunteer Experience</span>
-                <button onClick={addVol} style={{background:"none", border:`1px solid ${C.border}`, borderRadius:6, padding:"4px 10px", fontSize:12, color:C.text2, cursor:"pointer", fontFamily:"inherit"}}>+ Add</button>
+                <span style={{fontSize:11, fontWeight:700, color:C.text2, textTransform:"uppercase", letterSpacing:"0.8px"}}>{masterText("volunteerTitle")}</span>
+                <button onClick={addVol} style={{background:"none", border:`1px solid ${C.border}`, borderRadius:6, padding:"4px 10px", fontSize:12, color:C.text2, cursor:"pointer", fontFamily:"inherit"}}>{masterText("addShort")}</button>
               </div>
-              {master.volunteer.length === 0 && <div style={{fontSize:12.5, color:C.text3}}>None added.</div>}
+              {master.volunteer.length === 0 && <div style={{fontSize:12.5, color:C.text3}}>{masterText("noneAdded")}</div>}
               {master.volunteer.map(v => (
                 <div key={v.id} style={{background:C.surface, border:`1px solid ${C.border}`, borderRadius:9, padding:"12px 14px", marginBottom:8}}>
                   <div style={{...g2, marginBottom:10}}>
-                    <div><label style={lb}>Organization</label><input value={v.org||""} onChange={e => upVol(v.id, {org:e.target.value})} placeholder="Red Cross" style={mi} /></div>
-                    <div><label style={lb}>Role</label><input value={v.role||""} onChange={e => upVol(v.id, {role:e.target.value})} placeholder="Event Coordinator" style={mi} /></div>
-                    <div><label style={lb}>Start date</label><input value={v.startDate||""} onChange={e => upVol(v.id, {startDate:e.target.value})} placeholder="Jan 2022" style={mi} /></div>
-                    <div><label style={lb}>End date</label><input value={v.endDate||""} onChange={e => upVol(v.id, {endDate:e.target.value})} placeholder="Present" style={mi} /></div>
+                    <div><label style={lb}>{masterText("organization")}</label><input value={v.org||""} onChange={e => upVol(v.id, {org:e.target.value})} placeholder="Red Cross" style={mi} /></div>
+                    <div><label style={lb}>{masterText("role")}</label><input value={v.role||""} onChange={e => upVol(v.id, {role:e.target.value})} placeholder="Event Coordinator" style={mi} /></div>
+                    <div><label style={lb}>{masterText("startDate")}</label><input value={v.startDate||""} onChange={e => upVol(v.id, {startDate:e.target.value})} placeholder="Jan 2022" style={mi} /></div>
+                    <div><label style={lb}>{masterText("endDate")}</label><input value={v.endDate||""} onChange={e => upVol(v.id, {endDate:e.target.value})} placeholder={presentLabel(docLang)} style={mi} /></div>
                   </div>
-                  <div style={{marginBottom:8}}><label style={lb}>Description</label><textarea value={v.description||""} onChange={e => upVol(v.id, {description:e.target.value})} placeholder="What did you do and what was the impact?" rows={2} style={{...mi, resize:"none", lineHeight:1.6}} /></div>
-                  <button onClick={() => delVol(v.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>Remove</button>
+                  <div style={{marginBottom:8}}><label style={lb}>{masterText("descriptionLabel")}</label><textarea value={v.description||""} onChange={e => upVol(v.id, {description:e.target.value})} placeholder={masterText("volDescImpactPh")} rows={2} style={{...mi, resize:"none", lineHeight:1.6}} /></div>
+                  <button onClick={() => delVol(v.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
                 </div>
               ))}
             </div>
@@ -9609,7 +9633,7 @@ Awards: ${form.awards}`;
                   <a href={AUTHOR.github} target="_blank" rel="noopener noreferrer"
                     style={{ display: "inline-block", marginTop: 8, fontSize: 12, fontWeight: 700,
                       color: C.accent2, textDecoration: "none" }}>
-                    ⭐ Star on GitHub →
+                    {landingText("starOnGithub")}
                   </a>
                 )}
               </div>
@@ -9633,6 +9657,8 @@ Awards: ${form.awards}`;
             selected={selectedLang}
             onSelect={setSiteLanguage}
             siteOnly
+            siteBadge={builderText("langBadgeSite")}
+            uiBadge={builderText("langBadgeUi")}
           />
           {currentUser ? (
             <div ref={userMenuRef} style={{ position: "relative" }}>
@@ -9743,6 +9769,8 @@ Awards: ${form.awards}`;
                 selected={selectedLang}
                 onSelect={setSiteLanguage}
                 siteOnly
+                siteBadge={builderText("langBadgeSite")}
+                uiBadge={builderText("langBadgeUi")}
               />
             </div>
           </div>
@@ -9792,7 +9820,7 @@ Awards: ${form.awards}`;
                   {AUTHOR.github && (
                     <a href={AUTHOR.github} target="_blank" rel="noopener noreferrer"
                       style={{ display: "inline-block", marginTop: 7, fontSize: 12, fontWeight: 700, color: C.accent2, textDecoration: "none" }}>
-                      ⭐ Star on GitHub →
+                      {landingText("starOnGithub")}
                     </a>
                   )}
                 </div>
@@ -10638,6 +10666,8 @@ function LanguageDropdown({
   ariaLabel = "Choose language",
   searchPlaceholder,
   emptyLabel,
+  siteBadge = "SITE",
+  uiBadge = "UI",
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -10729,12 +10759,12 @@ function LanguageDropdown({
                 {siteOnly ? (
                   <span style={{ fontSize: 10, fontWeight: 700, color: C.accent2,
                     background: `${C.accent}18`, padding: "2px 6px", borderRadius: 4, flexShrink: 0 }}>
-                    SITE
+                    {siteBadge}
                   </span>
                 ) : UI_LANGS.has(l.code) && (
                   <span style={{ fontSize: 10, fontWeight: 700, color: C.accent2,
                     background: `${C.accent}18`, padding: "2px 6px", borderRadius: 4, flexShrink: 0 }}>
-                    UI
+                    {uiBadge}
                   </span>
                 )}
               </button>
@@ -10850,7 +10880,7 @@ function PageHeader({ eyebrow, icon, title, sub, pill, isMobile }) {
   );
 }
 
-function SectionHeader({ icon, title, filled }) {
+function SectionHeader({ icon, title, filled, filledLabel = "Filled" }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "28px 0 16px",
       paddingBottom: 2 }}>
@@ -10858,7 +10888,7 @@ function SectionHeader({ icon, title, filled }) {
       <span style={{ fontSize: 11.5, fontWeight: 800, textTransform: "uppercase",
         letterSpacing: "1px", color: C.text2, flex: 1 }}>{title}</span>
       {filled && <span style={{ fontSize: 10, fontWeight: 700, color: "#4ade80",
-        background: "rgba(74,222,128,0.12)", padding: "2px 8px", borderRadius: 999 }}>✓ Filled</span>}
+        background: "rgba(74,222,128,0.12)", padding: "2px 8px", borderRadius: 999 }}>✓ {filledLabel}</span>}
     </div>
   );
 }
@@ -10895,7 +10925,7 @@ function PageFooter({ t }) {
       <a href={AUTHOR.github} target="_blank" rel="noreferrer" style={footerLink}>GitHub</a>
       {AUTHOR.linkedin && <>{dot}<a href={AUTHOR.linkedin} target="_blank" rel="noreferrer" style={footerLink}>LinkedIn</a></>}
       {dot}
-      <a href="/accessibility/" style={footerLink}>Accessibility</a>
+      <a href="/accessibility/" style={footerLink}>{t.accessibility || "Accessibility"}</a>
     </footer>
   );
 }

@@ -54,7 +54,8 @@ const common = {
   "summaryRequired": "الملخص المهني مطلوب.",
   "experienceRequired": "الخبرة العملية مطلوبة.",
   "educationRequired": "التعليم مطلوب.",
-  "skillsRequired": "المهارات مطلوبة."
+  "skillsRequired": "المهارات مطلوبة.",
+  "accessibility": "إمكانية الوصول"
 };
 
 export default common;

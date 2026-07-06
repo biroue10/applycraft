@@ -232,7 +232,7 @@ function ResumeSectionBody({ section, lang = "en", sidebar = false, accent = "#2
   );
 }
 
-export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder = true, preview = false }) {
+export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = lang, placeholder = true, preview = false }) {
   const tpl = rawTpl.variant ? { ...rawTpl, id: rawTpl.variant } : rawTpl;
   const data = normalizeResumeData(result);
   const empty = isResumeDataEmpty(data);
@@ -255,9 +255,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", placeholder
   if (empty) {
     return <div className="resume-paper" lang={lang} dir={rtl ? "rtl" : "ltr"} style={{ ...paper, display: "flex", alignItems: "center", justifyContent: "center",
       color: "#9ca3af", fontFamily: "'Inter', sans-serif", fontSize: 14, padding: 30, textAlign: "center" }}>
-      {tpl.id === "blank"
-        ? emptyResumePreviewMessage(lang)
-        : emptyResumePreviewMessage(lang)}
+      {emptyResumePreviewMessage(uiLang)}
     </div>;
   }
 

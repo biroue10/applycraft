@@ -38,7 +38,12 @@ const footer = {
   "accessibility": "Accessibility",
   "badge1": "No account required",
   "badge2": "Optional AI helpers",
-  "badge3": "Browser-first editing"
+  "badge3": "Browser-first editing",
+  "brandHome": "ApplyCraft home",
+  "primaryTools": "Primary tools",
+  "menu": "Menu",
+  "footerRegion": "Footer",
+  "copyrightLine": "© {year} ApplyCraft by Biroue Digital Ltd · applycraft.io"
 };
 
 export default footer;

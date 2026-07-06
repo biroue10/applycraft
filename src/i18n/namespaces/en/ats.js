@@ -37,7 +37,11 @@ const ats = {
   "issues": "Issues",
   "fixTitle": "Fix these issues in the builder",
   "fixDesc": "ApplyCraft shows your live ATS score as you type. Pick a template, fill in the gaps, and export a polished PDF or DOCX — free, no account needed.",
-  "openBuilder": "Open in Resume Builder →"
+  "openBuilder": "Open in Resume Builder →",
+  "pasteResumePh": "Paste your full resume here...\n\nJane Smith\njane@email.com | +1 555 000 0000\n\nEXPERIENCE\nSenior Engineer — Acme (2021–Present)\n• Led migration cutting deploy time 60%\n\nSKILLS\nPython, React, AWS",
+  "pasteJdPh": "Paste the job description here to get a keyword gap analysis.\n\nWith it, you'll see:\n  • Which keywords you match ✓\n  • Which are missing ✗\n  • Your keyword match %\n\nWithout it, you still get a full ATS readiness score.",
+  "readinessTitle": "ApplyCraft ATS Readiness Score",
+  "howCalculated": "How is this score calculated?"
 };
 
 export default ats;

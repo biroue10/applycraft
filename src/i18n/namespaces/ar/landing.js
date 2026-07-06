@@ -21,7 +21,32 @@ const landing = {
   "statFormats": "صيغ التصدير",
   "statDownloads": "تنزيلات مجانية",
   "comingSoonBody": "هذه الميزة غير متاحة بعد. نحن نعمل عليها وستكون جاهزة قريباً.",
-  "gotIt": "حسناً"
+  "gotIt": "حسناً",
+  // ── About page ──
+  "aboutEyebrow": "نبذة",
+  "aboutTitle": "نبذة عن ApplyCraft",
+  "aboutSub": "أداة مجانية تعمل في المتصفح أولًا لإنشاء سير ذاتية وخطابات تقديم احترافية — دون حساب ودون اشتراك مدفوع للمحرر الأساسي.",
+  "aboutMission": "الرسالة",
+  "aboutMissionBody": "العثور على وظيفة صعب بما يكفي دون أن تصارع الأدوات التي يُفترض أن تساعدك. يتيح ApplyCraft لكل باحث عن عمل — بغضّ النظر عن ميزانيته أو خلفيته — وصولًا مجانيًا إلى مستندات أنيقة ومراعية لأنظمة ATS، يمكنك كتابتها بأي لغة، مع تسميات مترجمة بالكامل بالإنجليزية والفرنسية والعربية. دون حساب، دون اشتراك مدفوع، دون حِيَل.",
+  "aboutWhatYouCanDo": "ما الذي يمكنك فعله",
+  "aboutFeatResumeTitle": "إنشاء سيرة ذاتية",
+  "aboutFeatResumeDesc": "اختر من بين {count} قالبًا احترافيًا مع معاينة مباشرة.",
+  "aboutFeatCoverTitle": "كتابة خطاب تقديم",
+  "aboutFeatCoverDesc": "6 أنماط خطابات مطابقة قابلة للتخصيص بالكامل.",
+  "aboutFeatLangTitle": "الكتابة بأي لغة",
+  "aboutFeatLangDesc": "التسميات المترجمة بالكامل جاهزة للإنتاج بالإنجليزية والفرنسية والعربية.",
+  "aboutFeatExportTitle": "تصدير PDF وDOCX",
+  "aboutFeatExportDesc": "نزّل بالصيغة التي يتوقعها أي صاحب عمل.",
+  "aboutFeatBrowserTitle": "المتصفح أولًا",
+  "aboutFeatBrowserDesc": "أنشئ وصدّر دون إنشاء حساب أو ملف تعريف سحابي.",
+  "aboutFeatAiTitle": "اقتراحات الذكاء الاصطناعي",
+  "aboutFeatAiDesc": "تحسين اختياري بالذكاء الاصطناعي لصقل صياغتك فورًا.",
+  "aboutBuiltBy": "من إعداد",
+  "aboutStudioDesc": "استوديو مستقل يبني أدوات تُيسّر حياة الباحثين عن عمل.",
+  "aboutTechStack": "التقنيات المستخدمة",
+  "aboutBack": "← العودة إلى الصفحة الرئيسية",
+  "aboutViewSource": "عرض الكود المصدري على GitHub",
+  "starOnGithub": "⭐ ضع نجمة على GitHub →"
 };
 
 export default landing;

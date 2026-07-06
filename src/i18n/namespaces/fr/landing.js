@@ -21,7 +21,32 @@ const landing = {
   "statFormats": "Formats d'export",
   "statDownloads": "Téléchargements gratuits",
   "comingSoonBody": "Cette fonctionnalité n'est pas encore disponible. Nous y travaillons et elle sera bientôt prête.",
-  "gotIt": "Compris"
+  "gotIt": "Compris",
+  // ── About page ──
+  "aboutEyebrow": "À propos",
+  "aboutTitle": "À propos d’ApplyCraft",
+  "aboutSub": "Un outil gratuit, axé sur le navigateur, pour créer des CV et lettres de motivation professionnels — sans compte et sans offre payante pour l’éditeur de base.",
+  "aboutMission": "Mission",
+  "aboutMissionBody": "Trouver un emploi est déjà assez difficile sans devoir se battre avec les outils censés vous aider. ApplyCraft offre à chaque candidat — quels que soient son budget et son parcours — un accès gratuit à des documents soignés et pensés pour les ATS, que vous pouvez rédiger dans n’importe quelle langue, avec des libellés entièrement localisés en anglais, français et arabe. Sans compte, sans offre payante, sans piège.",
+  "aboutWhatYouCanDo": "Ce que vous pouvez faire",
+  "aboutFeatResumeTitle": "Créer un CV",
+  "aboutFeatResumeDesc": "Choisissez parmi {count} modèles professionnels avec aperçu en direct.",
+  "aboutFeatCoverTitle": "Rédiger une lettre de motivation",
+  "aboutFeatCoverDesc": "6 styles de lettres assortis, entièrement personnalisables.",
+  "aboutFeatLangTitle": "Écrire dans n’importe quelle langue",
+  "aboutFeatLangDesc": "Les libellés entièrement localisés sont prêts pour la production en anglais, français et arabe.",
+  "aboutFeatExportTitle": "Export PDF et DOCX",
+  "aboutFeatExportDesc": "Téléchargez dans le format attendu par tout employeur.",
+  "aboutFeatBrowserTitle": "Priorité au navigateur",
+  "aboutFeatBrowserDesc": "Créez et exportez sans créer de compte ni de profil dans le cloud.",
+  "aboutFeatAiTitle": "Suggestions par IA",
+  "aboutFeatAiDesc": "Une amélioration facultative par IA pour affiner vos formulations instantanément.",
+  "aboutBuiltBy": "Conçu par",
+  "aboutStudioDesc": "Un studio indépendant qui crée des outils facilitant la vie des candidats.",
+  "aboutTechStack": "Pile technique",
+  "aboutBack": "← Retour à la page d’accueil",
+  "aboutViewSource": "Voir le code source sur GitHub",
+  "starOnGithub": "⭐ Star on GitHub →"
 };
 
 export default landing;
