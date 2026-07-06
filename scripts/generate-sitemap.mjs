@@ -72,7 +72,7 @@ const pages = [join(ROOT, "index.html"), ...walk(PUBLIC_DIR)]
 for (const route of INDEXABLE_APP_PATHS) {
   const loc = `${SITE}${route}`;
   if (!isIndexablePublicUrl(loc)) continue;
-  if (!pages.some((page) => page.loc === loc)) pages.push({ loc, lastmod: "" });
+  if (!pages.some((page) => page.loc === loc)) pages.push({ loc, lastmod: TODAY });
 }
 pages.sort((a, b) => a.loc.localeCompare(b.loc));
 

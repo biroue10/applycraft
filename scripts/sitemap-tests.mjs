@@ -4,8 +4,7 @@ import { INDEXABLE_APP_PATHS, SITE, isIndexablePublicUrl, normalizePublicPath } 
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const PUBLIC = join(ROOT, "public");
-const DIST = join(ROOT, "dist");
-const HTML_ROOT = existsSync(join(DIST, "index.html")) ? DIST : PUBLIC;
+const HTML_ROOT = PUBLIC;
 const SITEMAP = join(HTML_ROOT, "sitemap.xml");
 const ROBOTS = join(PUBLIC, "robots.txt");
 
@@ -51,8 +50,13 @@ if (!/Sitemap:\s*https:\/\/applycraft\.io\/sitemap\.xml/i.test(robots)) {
 
 const xml = existsSync(SITEMAP) ? readFileSync(SITEMAP, "utf8") : "";
 const urls = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1].trim());
+const entries = [...xml.matchAll(/<url>\s*<loc>([^<]+)<\/loc>([\s\S]*?)<\/url>/g)].map((match) => ({
+  loc: match[1].trim(),
+  body: match[2],
+}));
 const unique = new Set(urls);
 if (urls.length !== unique.size) fail("sitemap.xml contains duplicate URLs");
+if (entries.length !== urls.length) fail("sitemap.xml URL entry count does not match loc count");
 
 for (const url of urls) {
   let parsed;
@@ -70,6 +74,12 @@ for (const url of urls) {
   if (/localhost|127\.0\.0\.1|staging|preview/i.test(url)) fail(`non-production URL in sitemap: ${url}`);
   if (parsed.pathname !== "/" && !parsed.pathname.endsWith("/")) fail(`sitemap URL must use trailing slash: ${url}`);
   if (parsed.pathname.startsWith("/app/")) fail(`internal /app route in sitemap: ${url}`);
+}
+
+for (const entry of entries) {
+  const lastmod = entry.body.match(/<lastmod>([^<]+)<\/lastmod>/)?.[1]?.trim() || "";
+  if (!lastmod) fail(`sitemap URL is missing lastmod: ${entry.loc}`);
+  else if (!/^\d{4}-\d{2}-\d{2}$/.test(lastmod)) fail(`sitemap URL has invalid lastmod format: ${entry.loc} (${lastmod})`);
 }
 
 const sitemapSet = new Set(urls);

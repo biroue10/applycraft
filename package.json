@@ -26,6 +26,7 @@
     "test:seo:hreflang": "node scripts/seo-hreflang-tests.mjs",
     "test:sitemap": "node scripts/sitemap-tests.mjs",
     "test:indexnow": "node scripts/indexnow-tests.mjs",
+    "test:robots": "node scripts/robots-tests.mjs",
     "test:e2e:static": "node scripts/e2e-static-tests.mjs",
     "test:e2e": "playwright test",
     "test:a11y": "node scripts/a11y-check.mjs",
