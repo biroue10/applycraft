@@ -24,11 +24,22 @@ export function readSitemapUrls(sitemapPath = SITEMAP_PATH) {
   return [...new Set(canonicalUrls)].sort();
 }
 
+export function readRawSitemapUrls(sitemapPath = SITEMAP_PATH) {
+  const xml = fs.readFileSync(sitemapPath, "utf8");
+  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1].trim());
+}
+
 async function main() {
   const urlList = readSitemapUrls();
 
   if (urlList.length === 0) {
     throw new Error(`No canonical URLs found in ${SITEMAP_PATH}`);
+  }
+
+  if (process.argv.includes("--dry-run")) {
+    console.log(urlList.join("\n"));
+    console.error(`IndexNow dry run: ${urlList.length} canonical sitemap URLs.`);
+    return;
   }
 
   const keyResponse = await fetch(KEY_LOCATION);
@@ -61,7 +72,7 @@ async function main() {
   appendSummary(`### IndexNow submission\n\nSubmitted ${urlList.length} URLs to \`${ENDPOINT}\`.\n\nKey file verified: ${KEY_LOCATION}`);
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((error) => {
     console.error(error.message);
     appendSummary(`### IndexNow error\n\n\`\`\`\n${error.stack || error.message}\n\`\`\``);

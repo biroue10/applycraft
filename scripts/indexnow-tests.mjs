@@ -1,7 +1,7 @@
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { readSitemapUrls } from "./submit-indexnow.mjs";
+import { readRawSitemapUrls, readSitemapUrls } from "./submit-indexnow.mjs";
 import { isIndexablePublicUrl } from "./seo-url-policy.mjs";
 
 const sampleUrls = [
@@ -47,4 +47,13 @@ assert(!isIndexablePublicUrl("https://applycraft.io/resume-builder/?starter=stud
 assert(!isIndexablePublicUrl("https://applycraft.io/r#abc123"), "hash URLs must be excluded");
 assert(!isIndexablePublicUrl("https://applycraft.io/ats-checker"), "slashless page URLs must be excluded");
 
-console.log(`IndexNow tests passed (${submitted.length} clean URLs from ${sampleUrls.length} candidates).`);
+const realSitemapPath = join(new URL("..", import.meta.url).pathname, "public", "sitemap.xml");
+const sitemapUrls = [...new Set(readRawSitemapUrls(realSitemapPath))].sort();
+const indexNowUrls = readSitemapUrls(realSitemapPath);
+const indexNowOnly = indexNowUrls.filter((url) => !sitemapUrls.includes(url));
+const sitemapOnly = sitemapUrls.filter((url) => !indexNowUrls.includes(url));
+
+assert(indexNowOnly.length === 0, `IndexNow has URLs absent from sitemap:\n${indexNowOnly.join("\n")}`);
+assert(sitemapOnly.length === 0, `sitemap has URLs not submitted to IndexNow:\n${sitemapOnly.join("\n")}`);
+
+console.log(`IndexNow tests passed (${submitted.length} clean URLs from ${sampleUrls.length} candidates; ${indexNowUrls.length} real sitemap URLs).`);
