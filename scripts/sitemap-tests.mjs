@@ -76,10 +76,14 @@ for (const url of urls) {
   if (parsed.pathname.startsWith("/app/")) fail(`internal /app route in sitemap: ${url}`);
 }
 
+const missingLastmod = [];
 for (const entry of entries) {
   const lastmod = entry.body.match(/<lastmod>([^<]+)<\/lastmod>/)?.[1]?.trim() || "";
-  if (!lastmod) fail(`sitemap URL is missing lastmod: ${entry.loc}`);
+  if (!lastmod) missingLastmod.push(entry.loc);
   else if (!/^\d{4}-\d{2}-\d{2}$/.test(lastmod)) fail(`sitemap URL has invalid lastmod format: ${entry.loc} (${lastmod})`);
+}
+if (missingLastmod.length) {
+  fail(`Missing lastmod:\n${missingLastmod.map((url) => `- ${url}`).join("\n")}`);
 }
 
 const sitemapSet = new Set(urls);
