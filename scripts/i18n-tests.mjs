@@ -69,8 +69,8 @@ test("missing production translations fall back safely without crashing", () => 
   );
 });
 
-test("production namespaces resolve for English, French, Arabic, Spanish, and German", () => {
-  for (const language of ["en", "fr", "ar", "es", "de"]) {
+test("production namespaces resolve for English, French, and Arabic", () => {
+  for (const language of ["en", "fr", "ar"]) {
     assert.equal(typeof resources[language]?.common?.dlPdf, "string", `${language}.common.dlPdf missing`);
     assert.equal(typeof resources[language]?.builder?.documentLanguage, "string", `${language}.builder.documentLanguage missing`);
     assert.equal(typeof resources[language]?.status?.pdfFail, "string", `${language}.status.pdfFail missing`);

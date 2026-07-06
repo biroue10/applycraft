@@ -1,0 +1,35 @@
+export const LOCALE_LINK_WHITELIST = {
+  fr: {
+    // Public operational pages are intentionally English-only for now.
+    "/about/": "English-only company page",
+    "/contact/": "English-only contact page",
+    "/help/": "English-only help center",
+    "/changelog/": "English-only product log",
+    "/roadmap/": "English-only roadmap",
+    "/status/": "English-only status page",
+    "/accessibility/": "English-only accessibility statement",
+  },
+  ar: {
+    // Arabic marketing coverage is intentionally smaller until equivalent pages are published.
+    "/blog/": "No Arabic blog yet",
+    "/about/": "English-only company page",
+    "/contact/": "English-only contact page",
+    "/help/": "English-only help center",
+    "/changelog/": "English-only product log",
+    "/roadmap/": "English-only roadmap",
+    "/status/": "English-only status page",
+    "/accessibility/": "English-only accessibility statement",
+    "/pricing/": "No Arabic pricing page yet",
+    "/examples/": "No Arabic examples hub yet",
+    "/ats-resume-builder/": "No Arabic ATS guide page yet",
+    "/cover-letter-builder/": "No Arabic cover-letter guide page yet",
+    "/student-resume-builder/": "No Arabic student resume page yet",
+    "/canadian-resume-builder/": "No Arabic Canadian resume page yet",
+    "/terms/": "English legal fallback until Arabic legal pages exist",
+    "/privacy/": "English legal fallback until Arabic legal pages exist",
+    "/cookies/": "English legal fallback until Arabic legal pages exist",
+    "/gdpr/": "English legal fallback until Arabic legal pages exist",
+    "/refund-policy/": "English legal fallback until Arabic legal pages exist",
+    "/ai-disclosure/": "English legal fallback until Arabic AI disclosure exists",
+  },
+};

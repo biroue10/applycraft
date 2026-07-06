@@ -14,6 +14,18 @@ function walk(dir) {
   });
 }
 
+function localizeInternalAnchors(html, lang) {
+  if (lang !== "fr" && lang !== "ar") return html;
+  return html.replace(/<a\b([^>]*?)href="([^"]+)"([^>]*)>([\s\S]*?)<\/a>/gi, (full, before, href, after, label) => {
+    if (!href.startsWith("/") && !href.startsWith("https://applycraft.io/")) return full;
+    if (/English|Anglais|Français|French|العربية|Arabic|Arabe|الفرنسية|الإنجليزية/i.test(`${href} ${label}`)) return full;
+    const local = href.replace(/^https:\/\/applycraft\.io/i, "");
+    const localized = localizeRoute(local, lang);
+    if (localized === local) return full;
+    return `<a${before}href="${localized}"${after}>${label}</a>`;
+  });
+}
+
 let updated = 0;
 
 for (const file of walk(ROOT)) {
@@ -25,8 +37,9 @@ for (const file of walk(ROOT)) {
   const next = html
     .replace(/<footer class="site-footer">[\s\S]*?<\/footer>/, footerHtml(lang))
     .replace(/<a href="\/" class="nav-logo"/, `<a href="${homeHref}" class="nav-logo"`);
-  if (next === html) continue;
-  writeFileSync(file, next, "utf8");
+  const localized = localizeInternalAnchors(next, lang);
+  if (localized === html) continue;
+  writeFileSync(file, localized, "utf8");
   updated += 1;
 }
 

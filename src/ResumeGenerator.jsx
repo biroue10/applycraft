@@ -27,7 +27,7 @@ import {
   TRANSLATION_STATUSES,
 } from "./translation.js";
 import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
-import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID } from "./documents/templateRegistry.js";
+import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID, TEMPLATE_COUNTRIES, templateCountries } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
 import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter } from "./siteChrome.jsx";
 import { UI, ENTRY_UI, ACCT_UI, LANDING_UI, BUILDER_UI, COVER_UI, ATS_UI, TRACKER_UI, MASTER_UI, STATUS_UI, MODAL_UI, LANDING2_UI, FOOTER_UI } from "./i18n/index.js";
@@ -43,6 +43,7 @@ import {
 } from "./i18n/languages.js";
 import { LANGUAGE_SCHEMA_VERSION, LANGUAGE_SCHEMA_VERSION_KEY } from "./i18n/config.js";
 import { documentLabelsFor } from "./i18n/documentLabels.js";
+import { localizeRoute } from "./seo/localizedRoutes.js";
 
 const LANDING2_LOADERS = {
   es: () => import("./i18n/namespaces/es/landing2.js"),
@@ -50,7 +51,7 @@ const LANDING2_LOADERS = {
 };
 
 // ── UI translation codes (languages with full UI translation) ──────
-const UI_LANGS = new Set(["en", "fr", "es", "ar", "de"]);
+const UI_LANGS = new Set(["en", "fr", "ar"]);
 const SITE_LANGUAGE_CODES = new Set(INTERFACE_LANGUAGES);
 const INTERFACE_LANGUAGE_DROPDOWN_COPY = {
   en: {
@@ -436,6 +437,8 @@ const TEMPLATE_MORE_FILTERS = [
   { id: "modern", label: "Modern" },
   { id: "rtl", label: "RTL-friendly" },
 ];
+
+const TEMPLATE_COUNTRY_FILTERS = ["all", ...TEMPLATE_COUNTRIES];
 
 // ── Per-template thumbnail samples (6 visible slots on landing) ───
 const THUMB_SAMPLES = {
@@ -3092,6 +3095,10 @@ export default function ResumeGenerator() {
   const [sideSearch, setSideSearch] = useState("");
   const [tplSearch, setTplSearch] = useState("");
   const [tplFilter, setTplFilter] = useState("recommended");
+  const [tplCountry, setTplCountry] = useState(() => {
+    const value = initialSearchParams.get("country") || "all";
+    return TEMPLATE_COUNTRY_FILTERS.includes(value) ? value : "all";
+  });
   const [templateFiltersOpen, setTemplateFiltersOpen] = useState(false);
   const [templatePreview, setTemplatePreview] = useState(null);
   const [templateHover, setTemplateHover] = useState("");
@@ -3143,6 +3150,17 @@ export default function ResumeGenerator() {
   const [activeToolbarPanel, setActiveToolbarPanel] = useState(null);
   const resumeToolbarRef = useRef(null);
   const coverToolbarRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const current = new URL(window.location.href);
+    if (tplCountry === "all") current.searchParams.delete("country");
+    else current.searchParams.set("country", tplCountry);
+    const next = `${current.pathname}${current.search}${current.hash}`;
+    if (next !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+      window.history.replaceState({}, "", next);
+    }
+  }, [tplCountry]);
   const mobileResumeToolbarRef = useRef(null);
   const mobileCoverToolbarRef = useRef(null);
   const [reviewModal, setReviewModal] = useState({ open: false, format: "", warnings: [] });
@@ -4816,6 +4834,7 @@ Awards: ${form.awards}`;
       attributes: baseMeta?.attributes || ["Professional", "Flexible"],
       layout: baseMeta?.layout || "Flexible",
       filters: baseMeta?.filters || [],
+      countries: templateCountries(template),
     };
   };
 
@@ -4825,6 +4844,7 @@ Awards: ${form.awards}`;
     const q = tplSearch.trim().toLowerCase();
     const filterOk = tplFilter === "all" || meta.filters.includes(tplFilter) || (tplFilter === "recommended" && template.id === RECOMMENDED_TEMPLATE_ID);
     if (!filterOk) return false;
+    if (tplCountry !== "all" && !meta.countries.includes(tplCountry)) return false;
     if (!q) return true;
     return [
       template.name,
@@ -5092,8 +5112,8 @@ Awards: ${form.awards}`;
                   </div>
                 )}
               </div>
-              {(tplSearch || tplFilter !== "all") && (
-                <button type="button" onClick={() => { setTplSearch(""); setTplFilter("all"); }}
+              {(tplSearch || tplFilter !== "all" || tplCountry !== "all") && (
+                <button type="button" onClick={() => { setTplSearch(""); setTplFilter("all"); setTplCountry("all"); }}
                   style={{ minHeight: 38, border: "none", background: "transparent", color: C.text3,
                     padding: "0 8px", fontSize: 12.8, fontWeight: 750, cursor: "pointer", fontFamily: "inherit" }}>
                   {bu.clear}
@@ -5101,6 +5121,33 @@ Awards: ${form.awards}`;
               )}
             </div>
           </div>
+          <div aria-label={bu.countryFilterLabel}
+            style={{ display: "flex", gap: 8, overflowX: "auto", padding: "12px 0 2px",
+              marginTop: 8, scrollbarWidth: "thin", direction: rtl ? "rtl" : "ltr" }}>
+            {TEMPLATE_COUNTRY_FILTERS.map((country) => {
+              const active = tplCountry === country;
+              const label = bu[`country_${country}`] || country;
+              const hint = bu[`country_${country}_hint`] || "";
+              return (
+                <button key={country} type="button" onClick={() => setTplCountry(country)}
+                  aria-pressed={active}
+                  title={hint}
+                  style={{ minHeight: 42, flex: "0 0 auto", border: `1px solid ${active ? C.accent : C.border}`,
+                    background: active ? `${C.accent}1F` : C.surface,
+                    color: active ? C.accent2 : C.text2, borderRadius: 999, padding: "0 14px",
+                    fontSize: 12.8, fontWeight: 850, cursor: "pointer", fontFamily: "inherit",
+                    display: "inline-flex", alignItems: "center", gap: 7, whiteSpace: "nowrap" }}>
+                  {active && <LineIcon name="check" size={13} color={C.accent2} />}
+                  <span>{label}</span>
+                </button>
+              );
+            })}
+          </div>
+          {tplCountry !== "all" && (
+            <p style={{ margin: "7px 0 0", color: C.text3, fontSize: 12.5, lineHeight: 1.45 }}>
+              {bu[`country_${tplCountry}_hint`]}
+            </p>
+          )}
         </div>
 
         {visibleTemplates.length === 0 ? (
@@ -5108,7 +5155,7 @@ Awards: ${form.awards}`;
             padding: isMobile ? "28px 18px" : "42px", textAlign: "center", color: C.text2 }}>
             <h2 style={{ margin: "0 0 8px", color: C.text1, fontSize: 20 }}>{bu.noTemplatesTitle}</h2>
             <p style={{ margin: "0 0 18px", fontSize: 14 }}>{bu.noTemplatesSub}</p>
-            <button type="button" onClick={() => { setTplSearch(""); setTplFilter("all"); }}
+            <button type="button" onClick={() => { setTplSearch(""); setTplFilter("all"); setTplCountry("all"); }}
               style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
                 padding: "11px 18px", fontSize: 13.5, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
               {bu.clearFilters}
@@ -9366,7 +9413,7 @@ Awards: ${form.awards}`;
               </button>
             </div>
             <FadeIn style={{ textAlign: "center" }}>
-              <a href="/privacy/" style={{ fontSize: 13.5, color: C.accent2, textDecoration: "none",
+              <a href={localizeRoute("/privacy/", lang)} style={{ fontSize: 13.5, color: C.accent2, textDecoration: "none",
                 borderBottom: `1px solid ${C.accent}44`, paddingBottom: 2 }}>
                 {l2.priv.read}
               </a>

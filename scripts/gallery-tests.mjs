@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const src = readFileSync(path.join(root, "src/ResumeGenerator.jsx"), "utf8");
+const registry = readFileSync(path.join(root, "src/documents/templateRegistry.js"), "utf8");
 
 let failures = 0;
 const check = (name, cond) => { if (cond) console.log(`  ok  ${name}`); else { failures++; console.error(`  FAIL ${name}`); } };
@@ -32,6 +33,13 @@ check("template preview is an accessible dialog (role=dialog, aria-modal, Escape
   src.includes('role="dialog" aria-modal="true"') && /key === "Escape"/.test(src));
 check('preview dialog has a "Use this template" action',
   src.includes("Use this template"));
+
+check("template registry defines market tags for all 46 resume templates",
+  (registry.match(/markets:\s*"/g) || []).length === 46 && registry.includes("TEMPLATE_COUNTRIES") && registry.includes("templateCountries"));
+check("gallery supports shareable country filter URL state",
+  src.includes('initialSearchParams.get("country")') && src.includes('current.searchParams.set("country", tplCountry)'));
+check("country filter participates in template filtering",
+  src.includes('tplCountry !== "all"') && src.includes("meta.countries.includes(tplCountry)"));
 
 console.log("");
 if (failures) { console.error(`Gallery invariants: ${failures} failed.`); process.exit(1); }

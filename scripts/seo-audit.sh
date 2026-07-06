@@ -113,6 +113,30 @@ const APP_SHELL_ROUTES = new Set([
   "/resume/builder/",
   "/resume/templates/",
 ]);
+const LOCALIZED_ROUTE_MAP = {
+  "/": { fr: "/fr/", ar: "/ar/" },
+  "/resume-builder/": { fr: "/resume-builder/", ar: "/resume-builder/" },
+  "/resume/templates/": { fr: "/resume/templates/", ar: "/resume/templates/" },
+  "/cover-letter/templates/": { fr: "/cover-letter/templates/", ar: "/cover-letter/templates/" },
+  "/cover-letter-builder/": { fr: "/cover-letter/templates/", ar: "/cover-letter/templates/" },
+  "/free-resume-builder/": { fr: "/fr/creer-cv-gratuit/", ar: "/ar/free-resume-builder/" },
+  "/student-resume-builder/": { fr: "/fr/creer-cv-etudiant/" },
+  "/ats-checker/": { fr: "/ats-checker-fr/", ar: "/ats-checker-ar/" },
+  "/ats-resume-builder/": { fr: "/ats-checker-fr/", ar: "/ats-checker-ar/" },
+  "/pricing/": { fr: "/fr/pricing/" },
+  "/blog/": { fr: "/fr/blog/" },
+  "/examples/": { fr: "/examples/french-cv-example/" },
+  "/terms/": { fr: "/fr/terms/" },
+  "/privacy/": { fr: "/fr/privacy/" },
+  "/cookies/": { fr: "/fr/cookies/" },
+  "/gdpr/": { fr: "/fr/gdpr/" },
+  "/refund-policy/": { fr: "/fr/refund-policy/" },
+  "/ai-disclosure/": { fr: "/fr/ai-disclosure/" },
+};
+const LOCALE_LINK_WHITELIST = {
+  fr: new Set(["/about/", "/contact/", "/help/", "/changelog/", "/roadmap/", "/status/", "/accessibility/"]),
+  ar: new Set(["/blog/", "/about/", "/contact/", "/help/", "/changelog/", "/roadmap/", "/status/", "/accessibility/", "/pricing/", "/examples/", "/ats-resume-builder/", "/cover-letter-builder/", "/student-resume-builder/", "/canadian-resume-builder/", "/terms/", "/privacy/", "/cookies/", "/gdpr/", "/refund-policy/", "/ai-disclosure/"]),
+};
 
 for (const filePath of htmlFiles) {
   const html = fs.readFileSync(filePath, "utf8");
@@ -223,9 +247,45 @@ function addHttpCandidate(pathname, search = "") {
   else addPath(`${pathname}/`);
 }
 
+function pageLocale(page) {
+  const lang = page.html.match(/<html[^>]*\blang=["']([^"']+)["']/i)?.[1]?.toLowerCase().split("-")[0];
+  if (lang === "fr" || lang === "ar") return lang;
+  if (page.route.startsWith("/fr/")) return "fr";
+  if (page.route.startsWith("/ar/")) return "ar";
+  return "en";
+}
+
+function linkLocale(pathname, search = "") {
+  const params = new URLSearchParams(String(search || "").replace(/^\?/, ""));
+  const ui = params.get("ui") || params.get("docLang");
+  if (ui === "fr" || ui === "ar") return ui;
+  if (pathname === "/fr/" || pathname.startsWith("/fr/")) return "fr";
+  if (pathname === "/ar/" || pathname.startsWith("/ar/")) return "ar";
+  if (pathname === "/ats-checker-fr/") return "fr";
+  if (pathname === "/ats-checker-ar/") return "ar";
+  return "en";
+}
+
+function normalizePagePath(pathname) {
+  if (!pathname || pathname === "/") return "/";
+  if (/\.[a-z0-9]+$/i.test(pathname)) return pathname;
+  return pathname.endsWith("/") ? pathname : `${pathname}/`;
+}
+
+function visibleText(html) {
+  return html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function isLanguageSwitchLink(href, text) {
+  return /English|Anglais|Français|French|العربية|Arabic|Arabe|الفرنسية|الإنجليزية/i.test(`${href} ${text}`);
+}
+
 for (const page of pages) {
-  const links = [...page.html.matchAll(/href=["']([^"']+)["']/g)].map((match) => match[1]);
-  for (const href of links) {
+  const pageLang = pageLocale(page);
+  const anchorLinks = [...page.html.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)].map((match) => [match[1], visibleText(match[2]), true]);
+  const links = [...page.html.matchAll(/href=["']([^"']+)["']/g)].map((match) => [match[1], "", false]);
+  for (const item of anchorLinks) links.push(item);
+  for (const [href, text, isAnchor] of links) {
     if (href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) continue;
     if (/^https?:\/\//.test(href) && !href.startsWith(SITE + "/")) continue;
 
@@ -236,6 +296,15 @@ for (const page of pages) {
     let pathname = resolved ? resolved.pathname : href.split("#")[0].split("?")[0];
     const search = resolved ? resolved.search : "";
     if (!pathname || pathname === "/") continue;
+    const normalizedPath = normalizePagePath(pathname);
+    if (isAnchor && (pageLang === "fr" || pageLang === "ar") && !isLanguageSwitchLink(href, text) && linkLocale(normalizedPath, search) !== pageLang && !LOCALE_LINK_WHITELIST[pageLang]?.has(normalizedPath)) {
+      for (const [englishPath, locales] of Object.entries(LOCALIZED_ROUTE_MAP)) {
+        if (normalizedPath === englishPath && locales[pageLang]) {
+          errors.push(`${page.route}: ${pageLang} page links to non-localized internal URL ${href}; expected ${locales[pageLang]} or whitelisted`);
+          break;
+        }
+      }
+    }
     if (resolved && resolved.origin === SITE) addHttpCandidate(pathname, search);
     if (!/\.[a-z0-9]+$/i.test(pathname) && !pathname.endsWith("/") && sitemapPathSet.has(`${pathname}/`)) {
       errors.push(`${page.route}: internal href points to a sitemap page without trailing slash: ${href}`);

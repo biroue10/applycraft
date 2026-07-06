@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import { LOCALIZED_ROUTES, normalizeRoutePath } from "../src/seo/localizedRoutes.js";
+import { LOCALE_LINK_WHITELIST } from "./locale-link-policy.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const PUBLIC_DIR = join(ROOT, "public");
@@ -131,6 +132,19 @@ function cleanInternalHref(href) {
   return local.split("#")[0].split("?")[0] || "/";
 }
 
+function hrefLocale(href) {
+  const local = href.replace(/^https:\/\/applycraft\.io/i, "");
+  const [pathname, query = ""] = local.split("#")[0].split("?");
+  const params = new URLSearchParams(query);
+  const ui = params.get("ui") || params.get("docLang");
+  if (ui === "fr" || ui === "ar") return ui;
+  if (pathname === "/fr" || pathname.startsWith("/fr/")) return "fr";
+  if (pathname === "/ar" || pathname.startsWith("/ar/")) return "ar";
+  if (pathname === "/ats-checker-fr/") return "fr";
+  if (pathname === "/ats-checker-ar/") return "ar";
+  return "en";
+}
+
 function isEditorActionHref(href) {
   return href.startsWith("/resume-builder/?") || href.startsWith("https://applycraft.io/resume-builder/?");
 }
@@ -146,6 +160,8 @@ function checkLocalizedHref(file, lang, href, text) {
   const clean = cleanInternalHref(href);
   if (!clean || isLanguageSwitchAnchor(text, href)) return;
   const path = normalizeRoutePath(clean);
+  if (hrefLocale(href) === lang) return;
+  if (LOCALE_LINK_WHITELIST[lang]?.[path]) return;
 
   for (const [canonical, routes] of Object.entries(LOCALIZED_ROUTES)) {
     const english = normalizeRoutePath(routes.en || canonical);

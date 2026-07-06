@@ -12,9 +12,9 @@
 // ──────────────────────────────────────────────────────────────────────────
 
 // Interface languages that have full UI translations today. English/French/
-// Arabic are the first-class targets; Spanish/German dictionaries also exist.
+// Arabic are the first-class production targets.
 // To add a new interface language later: add its code here + its dictionaries.
-export const INTERFACE_LANGUAGES = ["en", "fr", "ar", "es", "de"];
+export const INTERFACE_LANGUAGES = ["en", "fr", "ar"];
 export const RTL_LANGUAGES = ["ar", "he", "fa", "ur", "ps", "sd", "yi"];
 
 export const INTERFACE_LANG_KEY = "ac_interface_language";
