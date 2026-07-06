@@ -63,5 +63,5 @@ That's it — the post is live and indexed.
 
 ### Tips
 - Good post length for SEO: 700–1500 words, with `<h2>` subheadings.
-- Always end with the `.cta-box` linking to `/resume/templates` — it converts readers.
+- Always end with the `.cta-box` linking to `/resume/templates/` — it converts readers.
 - Reuse the `tag` values so topics stay consistent (e.g. ATS, Cover Letters, Job Search, Interviews).

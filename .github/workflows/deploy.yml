@@ -45,6 +45,7 @@ jobs:
       - run: npm run seo:og
       - run: npm run seo:pages
       - run: npm run seo:sitemap
+      - run: npm run build
       - name: Check production IndexNow key
         run: |
           set -euo pipefail
@@ -82,3 +83,14 @@ jobs:
           fi
           echo "### Cloudflare cache" >> $GITHUB_STEP_SUMMARY
           echo "Cache purged successfully after deploy." >> $GITHUB_STEP_SUMMARY
+      - name: Production redirect-loop audit
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 20); do
+            if npm run seo:audit; then
+              exit 0
+            fi
+            echo "Production redirect audit failed before the new deploy was visible. Retry ${attempt}/20."
+            sleep 15
+          done
+          npm run seo:audit

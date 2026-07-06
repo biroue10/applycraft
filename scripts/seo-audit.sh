@@ -23,13 +23,16 @@ const fs = require("fs");
 const path = require("path");
 
 const SITE = "https://applycraft.io";
+const HTTP_SITE = (process.env.SEO_AUDIT_SITE_URL || SITE).replace(/\/+$/, "");
 const ROOT = process.cwd();
 const PUBLIC = path.join(ROOT, "public");
 const DIST = path.join(ROOT, "dist");
 const USE_DIST = fs.existsSync(path.join(DIST, "index.html")) && process.env.SEO_AUDIT_SOURCE !== "1";
 const HTML_ROOT = USE_DIST ? DIST : PUBLIC;
+const HTTP_CANDIDATES_PATH = path.join(ROOT, ".seo-http-urls");
 const errors = [];
 const warnings = [];
+const httpCandidates = new Set();
 
 function walk(dir, files = []) {
   for (const entry of fs.readdirSync(dir)) {
@@ -184,6 +187,9 @@ for (const loc of sitemapUrls) {
   if (sitemapSet.has(loc)) errors.push(`duplicate sitemap URL: ${loc}`);
   sitemapSet.add(loc);
   if (!loc.startsWith(SITE + "/")) errors.push(`sitemap URL must use ${SITE}: ${loc}`);
+  try {
+    addHttpCandidate(new URL(loc).pathname);
+  } catch {}
 }
 const sitemapPathSet = new Set(
   sitemapUrls
@@ -202,14 +208,35 @@ for (const loc of sitemapUrls) {
   if (!page) errors.push(`sitemap URL is not represented by a local canonical page: ${loc}`);
 }
 
+function addHttpCandidate(pathname, search = "") {
+  if (!pathname || !pathname.startsWith("/")) return;
+  if (pathname === "/") {
+    httpCandidates.add(`${HTTP_SITE}/`);
+    return;
+  }
+  if (/\.[a-z0-9]+$/i.test(pathname)) return;
+
+  const cleanSearch = search && search !== "?" ? search : "";
+  const addPath = (candidatePath) => httpCandidates.add(`${HTTP_SITE}${candidatePath}${cleanSearch}`);
+  addPath(pathname);
+  if (pathname.endsWith("/")) addPath(pathname.slice(0, -1));
+  else addPath(`${pathname}/`);
+}
+
 for (const page of pages) {
   const links = [...page.html.matchAll(/href=["']([^"']+)["']/g)].map((match) => match[1]);
   for (const href of links) {
     if (href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) continue;
     if (/^https?:\/\//.test(href) && !href.startsWith(SITE + "/")) continue;
 
-    let pathname = href.startsWith(SITE + "/") ? new URL(href).pathname : href.split("#")[0].split("?")[0];
+    let resolved = null;
+    try {
+      resolved = new URL(href, `${SITE}${page.route}`);
+    } catch {}
+    let pathname = resolved ? resolved.pathname : href.split("#")[0].split("?")[0];
+    const search = resolved ? resolved.search : "";
     if (!pathname || pathname === "/") continue;
+    if (resolved && resolved.origin === SITE) addHttpCandidate(pathname, search);
     if (!/\.[a-z0-9]+$/i.test(pathname) && !pathname.endsWith("/") && sitemapPathSet.has(`${pathname}/`)) {
       errors.push(`${page.route}: internal href points to a sitemap page without trailing slash: ${href}`);
     }
@@ -246,6 +273,7 @@ if (errors.length) {
   process.exit(1);
 }
 
+fs.writeFileSync(HTTP_CANDIDATES_PATH, `${[...httpCandidates].sort().join("\n")}\n`, "utf8");
 console.log(`Local SEO checks passed: ${pages.length} HTML files, ${sitemapUrls.length} sitemap URLs`);
 NODE
 
@@ -259,7 +287,7 @@ if [[ "${SEO_AUDIT_SKIP_HTTP:-0}" != "1" ]]; then
     node -e 'console.log(new URL(process.argv[2], process.argv[1]).toString())' "$1" "$2"
   }
 
-  check_sitemap_url() {
+  check_http_url() {
     local original_url="$1"
     local current_url="$original_url"
     local hops=0
@@ -268,33 +296,33 @@ if [[ "${SEO_AUDIT_SKIP_HTTP:-0}" != "1" ]]; then
 
     while true; do
       response="$(curl -sSI --max-redirs 0 --max-time 20 "$current_url")" || {
-        echo "SEO audit failed: sitemap URL request failed: $current_url" >&2
+        echo "SEO audit failed: HTTP URL request failed: $current_url" >&2
         exit 1
       }
       status="$(printf '%s\n' "$response" | awk 'BEGIN{code=""} /^HTTP\//{code=$2} END{print code}')"
       if [[ -z "$status" ]]; then
-        echo "SEO audit failed: sitemap URL returned no HTTP status: $current_url" >&2
+        echo "SEO audit failed: HTTP URL returned no HTTP status: $current_url" >&2
         exit 1
       fi
 
       if [[ "$status" =~ ^30[0-9]$ ]]; then
         location="$(printf '%s\n' "$response" | awk 'BEGIN{IGNORECASE=1} /^location:[[:space:]]*/{sub(/^[Ll]ocation:[[:space:]]*/, ""); sub(/\r$/, ""); print; exit}')"
         if [[ -z "$location" ]]; then
-          echo "SEO audit failed: redirect without Location for sitemap URL: $current_url ($status)" >&2
+          echo "SEO audit failed: redirect without Location for HTTP URL: $current_url ($status)" >&2
           exit 1
         fi
         hops=$((hops + 1))
         if (( hops > 5 )); then
-          echo "SEO audit failed: redirect chain exceeded 5 hops for sitemap URL: $original_url" >&2
+          echo "SEO audit failed: redirect chain exceeded 5 hops for HTTP URL: $original_url" >&2
           exit 1
         fi
         if (( hops > 1 )); then
-          echo "SEO audit failed: redirect chain exceeded 1 hop for sitemap URL: $original_url" >&2
+          echo "SEO audit failed: redirect chain exceeded 1 hop for HTTP URL: $original_url" >&2
           exit 1
         fi
         current_url="$(resolve_location "$current_url" "$location")"
         if [[ "$seen" == *"|$current_url|"* ]]; then
-          echo "SEO audit failed: redirect loop for sitemap URL: $original_url -> $current_url" >&2
+          echo "SEO audit failed: redirect loop for HTTP URL: $original_url -> $current_url" >&2
           exit 1
         fi
         seen="${seen}${current_url}|"
@@ -302,7 +330,7 @@ if [[ "${SEO_AUDIT_SKIP_HTTP:-0}" != "1" ]]; then
       fi
 
       if [[ "$status" != "200" ]]; then
-        echo "SEO audit failed: sitemap URL did not resolve to 200: $original_url (final $status at $current_url)" >&2
+        echo "SEO audit failed: HTTP URL did not resolve to 200: $original_url (final $status at $current_url)" >&2
         exit 1
       fi
       break
@@ -311,10 +339,10 @@ if [[ "${SEO_AUDIT_SKIP_HTTP:-0}" != "1" ]]; then
 
   while IFS= read -r url; do
     [[ -z "$url" ]] && continue
-    check_sitemap_url "$url"
-  done < <(grep -oE '<loc>[^<]+' "$SITEMAP_PATH" | sed 's#<loc>##')
+    check_http_url "$url"
+  done < "$ROOT_DIR/.seo-http-urls"
 
-  echo "Sitemap HTTP checks passed against $SITE_URL"
+  echo "HTTP redirect checks passed against $SITE_URL ($(grep -c . "$ROOT_DIR/.seo-http-urls") URLs)"
 fi
 
 echo "SEO audit passed"

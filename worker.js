@@ -32,6 +32,14 @@ const SHARE_TEMPLATE_IDS = new Set([
 ]);
 const TRAILING_SLASH_HTML_ASSETS = new Map([
   ["/resume-builder/", "/resume-builder.html"],
+  ["/resume/templates/", "/resume/templates.html"],
+  ["/resume/builder/", "/resume/builder.html"],
+  ["/cover-letter/templates/", "/cover-letter/templates.html"],
+  ["/job-tracker/", "/job-tracker.html"],
+  ["/master-profile/", "/master-profile.html"],
+  ["/email-signature/", "/email-signature.html"],
+  ["/personal-website/", "/personal-website.html"],
+  ["/r/", "/r.html"],
 ]);
 
 const ACTIONS = {

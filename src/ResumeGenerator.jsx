@@ -3057,8 +3057,8 @@ function routeFromAppPath(pathname = "/", hash = "") {
 
 function pathFromRoute({ appView, navPage, step, coverStep }) {
   if (appView !== "app") return "/";
-  if (navPage === "resume") return step === "form" ? "/resume-builder" : "/resume/templates";
-  if (navPage === "cover") return coverStep === "form" ? "/cover-letter/builder" : "/cover-letter/templates";
+  if (navPage === "resume") return step === "form" ? "/resume-builder/" : "/resume/templates/";
+  if (navPage === "cover") return coverStep === "form" ? "/cover-letter/builder" : "/cover-letter/templates/";
   if (navPage === "tracker") return "/job-tracker";
   if (navPage === "ats") return "/app/ats-checker";
   if (navPage === "master") return "/master-profile";
@@ -3275,7 +3275,7 @@ export default function ResumeGenerator() {
         pageCanvas.width = canvas.width;
         pageCanvas.height = currentSliceHeight;
         const ctx = pageCanvas.getContext("2d");
-        if (!ctx) throw new Error("canvas_context_unavailable");
+        if (!ctx) throw new Error("canvas");
         ctx.drawImage(canvas, 0, y, canvas.width, currentSliceHeight, 0, 0, canvas.width, currentSliceHeight);
         const imgData = pageCanvas.toDataURL("image/png");
         const imgHeight = pageWidth * (currentSliceHeight / canvas.width);
@@ -4799,7 +4799,7 @@ Awards: ${form.awards}`;
     track(EVENTS.RESUME_EXPORTED, { format: "docx", template: tpl?.id || "" });
     setTimeout(() => { setExportSuccess(""); setStatusMsg(""); }, 4500);
     } catch (error) {
-      console.error("Resume DOCX export failed", error);
+      console.error("DOCX export failed", error);
       setStatusMsg(st.docxFail);
       track(EVENTS.DOCX_EXPORT_FAILED, { document_type: "resume", language: docLang, template: tpl?.id || "" });
       setTimeout(() => setStatusMsg(""), 3500);
