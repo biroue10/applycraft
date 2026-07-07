@@ -1,5 +1,5 @@
 // ──────────────────────────────────────────────────────────────────────────
-import { ACTUAL_RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RESUME_TEMPLATE_COUNT } from "./documents/templateRegistry.js";
+import { COVER_TEMPLATE_COUNT, RESUME_TEMPLATE_COUNT } from "./documents/templateRegistry.js";
 import { INTERFACE_LANGUAGES } from "./i18n/languages.js";
 
 // PRODUCT — single source of truth for product facts that are repeated across
@@ -8,13 +8,11 @@ import { INTERFACE_LANGUAGES } from "./i18n/languages.js";
 //
 // These values are VERIFIED against the live code by scripts/product-tests.mjs
 // (run via `npm run test:product`), which fails the build if:
-//   • the marketed resume template count is higher than the real layouts,
-//   • cover template arrays drift from the declared count, or
+//   • the resume/cover template arrays drift from the declared counts, or
 //   • any static HTML page / README states a stale number.
 //
-// The user-facing resume template claim is intentionally the marketed count
-// used on the live site. The registry can contain extra internal/localized
-// layouts; product tests ensure the marketed count never exceeds real layouts.
+// Template and interface counts are derived from their registries so static
+// generation and runtime copy stay aligned when templates/languages change.
 //
 // Pricing/feature flags below describe the product as shipped. The actual
 // runtime gating of the optional account + paid pass lives in src/config.js
@@ -24,7 +22,6 @@ import { INTERFACE_LANGUAGES } from "./i18n/languages.js";
 export const PRODUCT = {
   // Counts — verified against TEMPLATES / COVER_TEMPLATES / WORLD_LANGUAGES.
   resumeTemplateCount: RESUME_TEMPLATE_COUNT,
-  actualResumeTemplateCount: ACTUAL_RESUME_TEMPLATE_COUNT,
   coverLetterTemplateCount: COVER_TEMPLATE_COUNT,
   writableLanguageCount: 99,      // WORLD_LANGUAGES — users can write content in these languages
   localizedDocumentLanguageCount: 3, // Production document labels: en, fr, ar

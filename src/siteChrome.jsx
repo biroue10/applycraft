@@ -53,17 +53,25 @@ function localizeNavHref(href, lang = "en") {
   return localizeRoute(href, lang);
 }
 
-function Logo({ compact = false, lang = "en" }) {
+function Logo({ compact = false, lang = "en", linked = true }) {
   const f = FOOTER_UI[lang] || FOOTER_UI.en;
+  const style = {
+    textDecoration: "none",
+    display: "inline-flex",
+    alignItems: "center",
+    lineHeight: 1,
+    flexShrink: 0,
+    overflow: "visible",
+  };
+  if (!linked) {
+    return (
+      <span aria-label={f.brandHome} style={style}>
+        <BrandLogoImage compact={compact} />
+      </span>
+    );
+  }
   return (
-    <a href={homeHrefForLang(lang)} aria-label={f.brandHome} style={{
-      textDecoration: "none",
-      display: "inline-flex",
-      alignItems: "center",
-      lineHeight: 1,
-      flexShrink: 0,
-      overflow: "visible",
-    }}>
+    <a href={homeHrefForLang(lang)} aria-label={f.brandHome} style={style}>
       <BrandLogoImage compact={compact} />
     </a>
   );
@@ -326,7 +334,7 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 40, marginBottom: 48 }}>
           <div style={{ maxWidth: 280 }}>
-            <Logo lang={lang} />
+            <Logo lang={lang} linked={false} />
             <p style={{ fontSize: 13, color: SITE_COLORS.text3, lineHeight: 1.75, margin: "12px 0 16px" }}>
               {footerText(f.brand)}
             </p>
@@ -360,12 +368,9 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
           flexWrap: "wrap",
           gap: 8,
         }}>
-          <div style={{ fontSize: 12.5, color: SITE_COLORS.text3 }}>{(() => {
-            const copy = footerText((f.copyrightLine || "© {year} ApplyCraft by Biroue Digital Ltd · applycraft.io").replace("{year}", new Date().getFullYear()));
-            const parts = copy.split("applycraft.io");
-            if (parts.length < 2) return copy;
-            return (<>{parts[0]}<a href={homeHrefForLang(lang)} className="ac-footer-legal-link" style={{ color: "inherit", textDecoration: "none" }}>applycraft.io</a>{parts.slice(1).join("applycraft.io")}</>);
-          })()}</div>
+          <div style={{ fontSize: 12.5, color: SITE_COLORS.text3 }}>
+            {footerText((f.copyrightLine || "© {year} ApplyCraft by Biroue Digital Ltd · applycraft.io").replace("{year}", new Date().getFullYear()))}
+          </div>
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
             <span style={badge}>{f.badge1}</span>
             <span style={badge}>{f.badge2}</span>

@@ -49,13 +49,9 @@ const docCount = [...wlBlock.matchAll(/code:\s*"/g)].length;
 const uiCount = (gen.match(/const UI_LANGS = new Set\(\[([^\]]*)\]/)?.[1].match(/"/g)?.length ?? 0) / 2;
 
 // 1. Code arrays match the declared counts.
-check("marketed resume template count is backed by real layouts", () => {
-  assert.equal(PRODUCT.resumeTemplateCount, 46, "live user-facing resume template claim should stay at 46 unless the product claim is deliberately changed");
-  assert.ok(PRODUCT.resumeTemplateCount <= resumeCount,
-    `product.js says ${PRODUCT.resumeTemplateCount} resume templates, but code only has ${resumeCount}`);
-  assert.equal(PRODUCT.actualResumeTemplateCount, resumeCount,
-    `product.js says ${PRODUCT.actualResumeTemplateCount} actual non-blank layouts, code has ${resumeCount}`);
-});
+check("resume template count matches code", () =>
+  assert.equal(PRODUCT.resumeTemplateCount, resumeCount,
+    `product.js says ${PRODUCT.resumeTemplateCount} non-blank resume templates, code has ${resumeCount}`));
 check("cover-letter template count matches code", () =>
   assert.equal(PRODUCT.coverLetterTemplateCount, coverCount,
     `product.js says ${PRODUCT.coverLetterTemplateCount} cover templates, code has ${coverCount}`));
@@ -86,7 +82,7 @@ function walkHtml(dir) {
   return out;
 }
 const outdatedLocalizedClaimRe = /99 document languages|99 langues de document|99 idiomas de documento|99 Dokumentsprachen/gi;
-const staleTemplateCountRe = /\b60 templates\b|\b60 modèles\b|\b60 قالب/u;
+const staleTemplateCountRe = /\b46 templates\b|\b46 modèles\b|\b46 قالب/u;
 const unsupportedCoverLetterStatRe = /83%\s+of\s+hiring\s+managers/i;
 const htmlFiles = walkHtml(path.join(root, "public"));
 const claimMismatches = [];
@@ -103,9 +99,9 @@ for (const f of htmlFiles) {
 check("static HTML avoids inaccurate 99 localized language claims", () =>
   assert.equal(claimMismatches.length, 0,
     `outdated language claims:\n       ${claimMismatches.join("\n       ")}`));
-check("static HTML uses the real resume template count", () =>
+check("static HTML avoids hardcoded old resume template counts", () =>
   assert.equal(templateCountMismatches.length, 0,
-    `stale template count claims; current count is ${PRODUCT.resumeTemplateCount}:\n       ${templateCountMismatches.join("\n       ")}`));
+    `hardcoded old template count claims; current count is ${PRODUCT.resumeTemplateCount}:\n       ${templateCountMismatches.join("\n       ")}`));
 check("cover-letter pages avoid unsupported precise hiring-manager statistics", () =>
   assert.equal(unsupportedStats.length, 0,
     `unsupported cover-letter statistics:\n       ${unsupportedStats.join("\n       ")}`));

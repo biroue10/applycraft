@@ -122,9 +122,9 @@ function enclosingComponent(path) {
 const findings = [];
 
 const PRODUCT_COPY_PATTERNS = [
-  { re: /\b60 templates\b/i, reason: "stale resume template count; use PRODUCT.resumeTemplateCount" },
-  { re: /\b60 modèles\b/i, reason: "stale French resume template count; use PRODUCT.resumeTemplateCount" },
-  { re: /\b60 قالب/u, reason: "stale Arabic resume template count; use PRODUCT.resumeTemplateCount" },
+  { re: /\b46 templates\b/i, reason: "hardcoded resume template count; use PRODUCT.resumeTemplateCount" },
+  { re: /\b46 modèles\b/i, reason: "hardcoded French resume template count; use PRODUCT.resumeTemplateCount" },
+  { re: /\b46 قالب/u, reason: "hardcoded Arabic resume template count; use PRODUCT.resumeTemplateCount" },
   { re: /83%\s+of\s+hiring\s+managers/i, reason: "unsupported cover-letter statistic" },
   { re: /\bunder 5 minutes\b/i, reason: "overly precise time promise" },
   { re: /\bless than 5 minutes\b/i, reason: "overly precise time promise" },

@@ -179,7 +179,7 @@ for (const page of pages) {
   if (page.twitterImage && !imageExists(page.twitterImage)) errors.push(`${label}: twitter:image does not map to an existing public file: ${page.twitterImage}`);
   if (/localhost|127\.0\.0\.1|0\.0\.0\.0|\.test|\.local/i.test(page.html)) errors.push(`${label}: development URL detected`);
   if (/<meta[^>]+name=["']keywords["']/i.test(page.html)) errors.push(`${label}: obsolete meta keywords tag found`);
-  if (/\b60 templates\b|\b60 modèles\b|\b60 قالب/u.test(page.html)) errors.push(`${label}: stale 60-template product count detected`);
+  if (/\b46 templates\b|\b46 modèles\b|\b46 قالب/u.test(page.html)) errors.push(`${label}: hardcoded old 46-template product count detected`);
   if (/83%\s+of\s+hiring\s+managers/i.test(page.html)) errors.push(`${label}: unsupported cover-letter statistic detected`);
   if (/\bunder 5 minutes\b|\bless than 5 minutes\b|\ben moins de 5 minutes\b|في أقل من 5 دقائق/iu.test(page.html)) errors.push(`${label}: overly precise time-to-finish promise detected`);
   if (page.route === "/cover-letter-builder/" && /Build My Resume Free/i.test(page.html)) errors.push(`${label}: cover-letter CTA says resume`);
@@ -285,11 +285,66 @@ function visibleText(html) {
   return html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
+function decodeHtml(value) {
+  return String(value || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, "\"")
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
+function footerLabel(html) {
+  return decodeHtml(visibleText(html)).replace(/\s+/g, " ").trim();
+}
+
+function normalizedFooterHref(href, route) {
+  const decoded = decodeHtml(href);
+  if (decoded.startsWith("mailto:") || decoded.startsWith("tel:") || decoded.startsWith("#")) return decoded;
+  try {
+    const url = new URL(decoded, `${SITE}${route}`);
+    if (url.origin === SITE) {
+      const pathname = normalizePagePath(url.pathname);
+      return `${pathname}${url.search}${url.hash}`;
+    }
+    return url.href;
+  } catch {
+    return decoded;
+  }
+}
+
+function auditFooterLinks(page) {
+  const footer = page.html.match(/<footer\b[^>]*\bdata-footer=["']unified["'][\s\S]*?<\/footer>/i)?.[0];
+  if (!footer) return;
+  const label = `${page.route} (${path.relative(ROOT, page.filePath)})`;
+  const pairs = [...footer.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)]
+    .map((match) => ({
+      href: normalizedFooterHref(match[1], page.route),
+      label: footerLabel(match[2]) || "(empty footer link)",
+    }));
+  const hrefLabels = new Map();
+  const labelHrefs = new Map();
+  for (const pair of pairs) {
+    if (!hrefLabels.has(pair.href)) hrefLabels.set(pair.href, new Set());
+    hrefLabels.get(pair.href).add(pair.label);
+    if (!labelHrefs.has(pair.label)) labelHrefs.set(pair.label, new Set());
+    labelHrefs.get(pair.label).add(pair.href);
+  }
+  for (const [href, labels] of hrefLabels.entries()) {
+    if (labels.size > 1) errors.push(`${label}: footer duplicate href ${href} with labels: ${[...labels].join(" | ")}`);
+  }
+  for (const [text, hrefs] of labelHrefs.entries()) {
+    if (hrefs.size > 1) errors.push(`${label}: footer duplicate label "${text}" with hrefs: ${[...hrefs].join(" | ")}`);
+  }
+}
+
 function isLanguageSwitchLink(href, text) {
   return /English|Anglais|Français|French|العربية|Arabic|Arabe|الفرنسية|الإنجليزية/i.test(`${href} ${text}`);
 }
 
 for (const page of pages) {
+  auditFooterLinks(page);
   const pageLang = pageLocale(page);
   const anchorLinks = [...page.html.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)].map((match) => [match[1], visibleText(match[2]), true]);
   const links = [...page.html.matchAll(/href=["']([^"']+)["']/g)].map((match) => [match[1], "", false]);

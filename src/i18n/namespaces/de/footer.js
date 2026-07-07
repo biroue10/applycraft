@@ -16,8 +16,6 @@ const footer = {
   "blog": "Blog",
   "help": "Hilfecenter",
   "resumeGuide": "Lebenslauf-Leitfaden",
-  "atsGuide": "ATS-Leitfaden",
-  "coverGuide": "Anschreiben-Leitfaden",
   "freeBuilder": "Kostenloser Lebenslauf-Generator",
   "studentBuilder": "Lebenslauf-Generator für Studenten",
   "canadianBuilder": "Kanadischer Lebenslauf-Generator",

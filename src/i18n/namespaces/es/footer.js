@@ -16,8 +16,6 @@ const footer = {
   "blog": "Blog",
   "help": "Centro de ayuda",
   "resumeGuide": "Guía del currículum",
-  "atsGuide": "Guía ATS",
-  "coverGuide": "Guía de la carta",
   "freeBuilder": "Creador de currículums gratis",
   "studentBuilder": "Creador de CV para estudiantes",
   "canadianBuilder": "Creador de CV canadiense",
