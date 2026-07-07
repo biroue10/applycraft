@@ -31,7 +31,7 @@ const EXCLUDE_FILES = new Set([
 // Tokens that are legitimately not translated. Matched case-sensitively as the
 // FULL trimmed literal (after stripping surrounding punctuation/whitespace).
 const ALLOW_EXACT = new Set([
-  "ApplyCraft", "Biroue Digital Ltd",
+  "ApplyCraft", "Biroue Digital Ltd", "applycraft.io",
   "PDF", "DOCX", "ATS", "AI", "URL", "JSON", "PDF/DOCX", "HTML", "CSS", "RTL", "LTR",
   "EN", "FR", "AR", "ES", "DE", "en", "fr", "ar",
   "LinkedIn", "GitHub", "Google", "Cloudflare", "Anthropic", "Claude", "Lemon Squeezy",
