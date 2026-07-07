@@ -18,7 +18,7 @@ const landing2 = {
     "s2t": "Saisissez vos informations",
     "s2d": "Saisissez directement dans le formulaire en direct. L'aperçu se met à jour en temps réel.",
     "s3t": "Téléchargez et postulez",
-    "s3d": "Exportez en PDF ou DOCX dans la langue choisie. Prêt à envoyer en moins de 5 minutes.",
+    "s3d": "Exportez en PDF ou DOCX dans la langue choisie. Prêt à télécharger rapidement.",
     "browse": "Parcourir les modèles"
   },
   "strip": {

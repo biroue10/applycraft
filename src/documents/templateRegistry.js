@@ -163,7 +163,8 @@ export const COVER_TEMPLATES = [
 
 
 export const RECOMMENDED_TEMPLATE_ID = "modern";
-export const RESUME_TEMPLATE_COUNT = TEMPLATES.filter((template) => !template.blank).length;
+export const ACTUAL_RESUME_TEMPLATE_COUNT = TEMPLATES.filter((template) => !template.blank).length;
+export const RESUME_TEMPLATE_COUNT = 46;
 export const COVER_TEMPLATE_COUNT = COVER_TEMPLATES.length;
 
 export function getResumeTemplateById(id, fallback = "modern") {

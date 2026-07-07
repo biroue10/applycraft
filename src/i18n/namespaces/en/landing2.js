@@ -18,7 +18,7 @@ const landing2 = {
     "s2t": "Fill in your details",
     "s2d": "Type directly into the live form. The preview updates in real time as you write.",
     "s3t": "Download & apply",
-    "s3d": "Export as PDF or DOCX in your chosen language. Ready to send in under 5 minutes.",
+    "s3d": "Export as PDF or DOCX in your chosen language. Ready to download quickly.",
     "browse": "Browse templates"
   },
   "strip": {

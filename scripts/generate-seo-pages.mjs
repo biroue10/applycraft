@@ -30,7 +30,8 @@ const FREE_BUILDER_ALTERNATES = [
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
 function nav(lang = "en", hrefOverride = "") {
-  const label = lang === "fr"
+  const isCoverLetter = hrefOverride === "/cover-letter/templates/";
+  const label = isCoverLetter ? "Create My Cover Letter Free →" : lang === "fr"
     ? "Créer mon CV gratuitement →"
     : lang === "ar"
       ? "أنشئ سيرتي الذاتية مجانًا ←"
@@ -128,9 +129,10 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
     interfaceLanguage: lang === "en" ? "" : lang,
     documentLanguage: lang === "ar" ? "ar" : "",
   });
+  const isCoverLetterPage = canonicalPath === "/cover-letter-builder/";
   const starterUrl = starterId
     ? buildResumeStarterUrl(starterId, { interfaceLanguage: lang === "en" ? "" : lang, documentLanguage })
-    : genericBuilderUrl;
+    : isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl;
   const ctaLabels = {
     en: { build: "Build My Resume Free →", use: "Use This Template Free →", start: "Start Building — It's Free →", templates: "See Templates" },
     fr: { build: "Créer mon CV gratuitement →", use: "Utiliser ce modèle gratuitement →", start: "Créer mon CV gratuitement →", templates: "Voir les modèles" },
@@ -141,6 +143,12 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
     start: "Start Building — It's Free →",
     templates: "See Templates",
   };
+  if (isCoverLetterPage) {
+    ctaLabels.build = "Create My Cover Letter Free →";
+    ctaLabels.use = "Create My Cover Letter Free →";
+    ctaLabels.start = "Create My Cover Letter Free →";
+    ctaLabels.templates = "See Cover Letter Styles";
+  }
   const alternateLinks = alternates.length
     ? `\n${alternates.map((a) => `<link rel="alternate" hreflang="${a.hreflang}" href="${a.href}"/>`).join("\n")}`
     : "";
@@ -193,7 +201,7 @@ ${ogAlternateLocales.map((locale) => `<meta property="og:locale:alternate" conte
   })}</script>
 </head>
 <body>
-${nav(lang, genericBuilderUrl)}
+${nav(lang, isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl)}
 <main>
   <div class="page">
     ${languageSwitcher(alternates)}
@@ -202,8 +210,8 @@ ${nav(lang, genericBuilderUrl)}
       <h1>${h1}</h1>
       <p>${sub}</p>
       <div class="hero-btns">
-        <a href="${genericBuilderUrl}" class="btn-primary">${ctaLabels.build}</a>
-        <a href="/resume/templates/" class="btn-secondary">${ctaLabels.templates}</a>
+        <a href="${isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl}" class="btn-primary">${ctaLabels.build}</a>
+        <a href="${isCoverLetterPage ? "/cover-letter/templates/" : "/resume/templates/"}" class="btn-secondary">${ctaLabels.templates}</a>
       </div>
       <div class="trust">
         <span>🔒 Browser-first editing</span>
@@ -216,7 +224,7 @@ ${nav(lang, genericBuilderUrl)}
 
   <div class="page">
     <div class="preview-wrap">
-      <h2>Resume example — edit it in one click</h2>
+      <h2>${isCoverLetterPage ? "Cover letter example — edit it in one click" : "Resume example — edit it in one click"}</h2>
       ${resumeCard}
       <div style="text-align:center;margin-top:24px">
         <a href="${starterUrl}" class="btn-primary">${ctaLabels.use}</a>
@@ -460,7 +468,7 @@ const PAGES = [
       ],
     },
     faqs: [
-      { q: "Do I need a cover letter in 2026?", a: "Yes — 83% of hiring managers say a strong cover letter influences their decision to interview a candidate. It's your chance to explain your motivation and stand out from applicants with similar CVs." },
+      { q: "Do I need a cover letter in 2026?", a: "A strong cover letter can help explain your motivation, connect your experience to the role, and make your application feel more tailored." },
       { q: "How long should a cover letter be?", a: "Three to four short paragraphs — roughly 250–400 words. Hiring managers spend less than 30 seconds on a first read, so be concise and compelling." },
       { q: "Should my cover letter match my resume design?", a: "Yes. A consistent look signals attention to detail and professionalism. ApplyCraft's cover letter templates are designed to pair visually with the resume templates." },
       { q: "Can I use the same cover letter for multiple jobs?", a: "Only if you personalise the key details — the company name, role title, and one specific reason why you want to work there. Generic letters are easy for recruiters to spot." },

@@ -179,6 +179,15 @@ for (const page of pages) {
   if (page.twitterImage && !imageExists(page.twitterImage)) errors.push(`${label}: twitter:image does not map to an existing public file: ${page.twitterImage}`);
   if (/localhost|127\.0\.0\.1|0\.0\.0\.0|\.test|\.local/i.test(page.html)) errors.push(`${label}: development URL detected`);
   if (/<meta[^>]+name=["']keywords["']/i.test(page.html)) errors.push(`${label}: obsolete meta keywords tag found`);
+  if (/\b60 templates\b|\b60 modèles\b|\b60 قالب/u.test(page.html)) errors.push(`${label}: stale 60-template product count detected`);
+  if (/83%\s+of\s+hiring\s+managers/i.test(page.html)) errors.push(`${label}: unsupported cover-letter statistic detected`);
+  if (/\bunder 5 minutes\b|\bless than 5 minutes\b|\ben moins de 5 minutes\b|في أقل من 5 دقائق/iu.test(page.html)) errors.push(`${label}: overly precise time-to-finish promise detected`);
+  if (page.route === "/cover-letter-builder/" && /Build My Resume Free/i.test(page.html)) errors.push(`${label}: cover-letter CTA says resume`);
+  if (page.route === "/fr/blog/exemple-cv-maroc/") {
+    if (!/<section[^>]+aria-labelledby=["']structure-cv-maroc["'][\s\S]*?<div class=["']cv-structure-example["'][\s\S]*?<h3>Nom Prénom<\/h3>[\s\S]*?<h4>Expérience professionnelle<\/h4>[\s\S]*?<ul>[\s\S]*?<li>Réalisation mesurable<\/li>/i.test(page.html)) {
+      errors.push(`${label}: Morocco CV structure example must be semantic and formatted`);
+    }
+  }
 
   const jsonLdBlocks = [...page.html.matchAll(/<script[^>]+application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi)];
   for (let i = 0; i < jsonLdBlocks.length; i += 1) {

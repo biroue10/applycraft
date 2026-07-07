@@ -71,6 +71,14 @@ const OLD_CLAIM_PATTERNS = [
   /thousands of job seekers/i,
   /6 Professional Templates/i,
   /6 professional templates/i,
+  /\b60 templates\b/i,
+  /\b60 modèles\b/i,
+  /\b60 قالب/u,
+  /83%\s+of\s+hiring\s+managers/i,
+  /\bunder 5 minutes\b/i,
+  /\bless than 5 minutes\b/i,
+  /\ben moins de 5 minutes\b/i,
+  /في أقل من 5 دقائق/u,
 ];
 
 const FRENCH_VISIBLE_ENGLISH_PATTERNS = [

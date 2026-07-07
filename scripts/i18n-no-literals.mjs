@@ -121,6 +121,58 @@ function enclosingComponent(path) {
 
 const findings = [];
 
+const PRODUCT_COPY_PATTERNS = [
+  { re: /\b60 templates\b/i, reason: "stale resume template count; use PRODUCT.resumeTemplateCount" },
+  { re: /\b60 modèles\b/i, reason: "stale French resume template count; use PRODUCT.resumeTemplateCount" },
+  { re: /\b60 قالب/u, reason: "stale Arabic resume template count; use PRODUCT.resumeTemplateCount" },
+  { re: /83%\s+of\s+hiring\s+managers/i, reason: "unsupported cover-letter statistic" },
+  { re: /\bunder 5 minutes\b/i, reason: "overly precise time promise" },
+  { re: /\bless than 5 minutes\b/i, reason: "overly precise time promise" },
+  { re: /\ben moins de 5 minutes\b/i, reason: "overly precise time promise" },
+  { re: /في أقل من 5 دقائق/u, reason: "overly precise time promise" },
+];
+
+const PRODUCT_COPY_FILES = files.concat(
+  (function collect(dir) {
+    const out = [];
+    for (const name of readdirSync(dir)) {
+      const p = join(dir, name);
+      const s = statSync(p);
+      if (s.isDirectory()) out.push(...collect(p));
+      else if (/\.(html|mjs|js|jsx)$/.test(name)) out.push(p);
+    }
+    return out;
+  })(join(ROOT, "public")),
+  (function collect(dir) {
+    const out = [];
+    for (const name of readdirSync(dir)) {
+      const p = join(dir, name);
+      const s = statSync(p);
+      if (s.isDirectory()) out.push(...collect(p));
+      else if (/\.(mjs|js)$/.test(name)) out.push(p);
+    }
+    return out;
+  })(join(ROOT, "scripts")),
+);
+
+for (const file of [...new Set(PRODUCT_COPY_FILES)]) {
+  if (file.endsWith("i18n-no-literals.mjs")) continue;
+  if (/-tests\.mjs$/.test(file) || file.endsWith("seo-audit.sh")) continue;
+  const code = readFileSync(file, "utf8");
+  for (const { re, reason } of PRODUCT_COPY_PATTERNS) {
+    const match = code.match(re);
+    if (match) {
+      const line = code.slice(0, match.index).split(/\r?\n/).length;
+      findings.push({ file, line, kind: "product-copy", text: `${match[0]} (${reason})` });
+    }
+  }
+  if (file.endsWith(join("public", "cover-letter-builder", "index.html")) && /Build My Resume Free/i.test(code)) {
+    const index = code.search(/Build My Resume Free/i);
+    const line = code.slice(0, index).split(/\r?\n/).length;
+    findings.push({ file, line, kind: "product-copy", text: "Build My Resume Free (cover-letter page CTA must mention cover letters)" });
+  }
+}
+
 for (const file of files) {
   const code = readFileSync(file, "utf8");
   let ast;

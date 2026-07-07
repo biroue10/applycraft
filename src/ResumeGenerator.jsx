@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import React, { Fragment, useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { ACCOUNTS_ENABLED, PAYMENTS_ENABLED, ACTIVE_SEARCH_PASS } from "./config.js";
 import { initAnalytics, track, EVENTS } from "./analytics.js";
@@ -1912,9 +1912,85 @@ function FieldCard({ icon, title, status, children, collapsed, onToggleCollapse,
 
 const HERO_PREVIEW_THEMES = ["#2563eb", "#0f766e", "#7c3aed", "#d97706", "#db2777", "#111827"];
 
-function HeroResumePreview({ isMobile }) {
+const HERO_PREVIEW_COPY = {
+  en: {
+    aria: "Sample professional resume",
+    photo: "Professional profile photo",
+    name: "Maya Bennett",
+    title: "Senior Product Manager",
+    contact: ["maya@email.com", "San Francisco", "linkedin.com/in/maya"],
+    profile: "Profile",
+    profileText: "Customer-focused product manager with 8+ years building SaaS onboarding, AI workflows, and analytics products.",
+    skills: "Skills",
+    skillItems: ["Roadmaps", "AI UX", "SQL", "A/B tests", "Figma", "Jira"],
+    education: "Education",
+    educationLines: ["MBA, Berkeley Haas", "B.S. Computer Science"],
+    certification: "Certification",
+    certificationText: "Certified Scrum Product Owner",
+    experience: "Experience",
+    roles: [
+      { title: "Lead Product Manager", company: "Northstar AI · 2022-Present", bullets: ["Launched AI resume insights used by 120k candidates.", "Improved activation 31% by redesigning onboarding."] },
+      { title: "Product Manager", company: "BrightHire · 2018-2022", bullets: ["Shipped ATS-friendly profile scoring across 14 markets.", "Cut weekly support requests by 22% with clearer guidance."] },
+    ],
+    projects: "Projects",
+    projectTitle: "Career Match Engine",
+    projectCompany: "Internal platform",
+    projectBullets: ["Mapped job descriptions to measurable resume achievements."],
+  },
+  fr: {
+    aria: "Exemple de CV professionnel",
+    photo: "Photo de profil professionnelle",
+    name: "Maya Benali",
+    title: "Cheffe de produit senior",
+    contact: ["maya@email.com", "Casablanca", "linkedin.com/in/maya"],
+    profile: "Profil",
+    profileText: "Cheffe de produit orientée client, avec 8 ans d'expérience sur l'onboarding SaaS, les parcours IA et les produits d'analyse.",
+    skills: "Compétences",
+    skillItems: ["Roadmaps", "UX IA", "SQL", "Tests A/B", "Figma", "Jira"],
+    education: "Formation",
+    educationLines: ["MBA, HEM Business School", "Licence informatique"],
+    certification: "Certification",
+    certificationText: "Certified Scrum Product Owner",
+    experience: "Expérience",
+    roles: [
+      { title: "Lead Product Manager", company: "Northstar AI · 2022-Présent", bullets: ["Lancement d'insights CV IA utilisés par 120k candidats.", "Activation améliorée de 31 % grâce à une refonte de l'onboarding."] },
+      { title: "Product Manager", company: "BrightHire · 2018-2022", bullets: ["Déploiement d'un scoring de profil compatible ATS sur 14 marchés.", "Réduction de 22 % des demandes support avec des conseils plus clairs."] },
+    ],
+    projects: "Projets",
+    projectTitle: "Moteur de correspondance emploi",
+    projectCompany: "Plateforme interne",
+    projectBullets: ["Association des offres d'emploi à des réalisations mesurables du CV."],
+  },
+  ar: {
+    aria: "نموذج سيرة ذاتية احترافية",
+    photo: "صورة ملف شخصي احترافية",
+    name: "مايا بنعلي",
+    title: "مديرة منتج أولى",
+    contact: ["maya@email.com", "الدار البيضاء", "linkedin.com/in/maya"],
+    profile: "الملخص",
+    profileText: "مديرة منتج تركز على المستخدم، لديها 8 سنوات من الخبرة في تجارب SaaS وسير عمل الذكاء الاصطناعي ومنتجات التحليلات.",
+    skills: "المهارات",
+    skillItems: ["خارطة المنتج", "تجربة IA", "SQL", "اختبارات A/B", "Figma", "Jira"],
+    education: "التعليم",
+    educationLines: ["ماجستير إدارة الأعمال، HEM", "إجازة في علوم الحاسوب"],
+    certification: "الشهادات",
+    certificationText: "Certified Scrum Product Owner",
+    experience: "الخبرة",
+    roles: [
+      { title: "مديرة منتج رئيسية", company: "Northstar AI · 2022-الحاضر", bullets: ["إطلاق رؤى سيرة ذاتية مدعومة بالذكاء الاصطناعي استخدمها 120 ألف مرشح.", "تحسين التفعيل بنسبة 31% عبر إعادة تصميم تجربة البدء."] },
+      { title: "مديرة منتج", company: "BrightHire · 2018-2022", bullets: ["إطلاق تقييم ملف متوافق مع ATS في 14 سوقاً.", "خفض طلبات الدعم الأسبوعية بنسبة 22% من خلال إرشادات أوضح."] },
+    ],
+    projects: "المشاريع",
+    projectTitle: "محرك مطابقة الوظائف",
+    projectCompany: "منصة داخلية",
+    projectBullets: ["ربط أوصاف الوظائف بإنجازات قابلة للقياس في السيرة الذاتية."],
+  },
+};
+
+function HeroResumePreview({ isMobile, lang = "en" }) {
   const [accent, setAccent] = useState(HERO_PREVIEW_THEMES[0]);
   const compact = isMobile;
+  const sample = HERO_PREVIEW_COPY[lang] || HERO_PREVIEW_COPY.en;
   const text = {
     ink: "#172033",
     muted: "#5f6f86",
@@ -1974,7 +2050,7 @@ function HeroResumePreview({ isMobile }) {
           <div aria-hidden style={{ position: "absolute", inset: "-14px -18px", borderRadius: 24,
             background: "linear-gradient(145deg, rgba(255,255,255,0.38), rgba(148,163,184,0.10))",
             filter: "blur(1px)" }} />
-          <article aria-label="Sample professional resume"
+          <article aria-label={sample.aria} dir={lang === "ar" ? "rtl" : "ltr"}
             style={{ position: "relative", background: "#fff", color: text.ink, borderRadius: 14,
               overflow: "hidden", border: "1px solid #dbe5f2",
               boxShadow: "0 28px 70px rgba(15,23,42,0.28)",
@@ -1986,7 +2062,7 @@ function HeroResumePreview({ isMobile }) {
               transition: "background 0.24s ease" }}>
               <div aria-hidden style={{ width: 56, height: 56, borderRadius: "50%", overflow: "hidden",
                 background: "rgba(255,255,255,0.22)", border: "2px solid rgba(255,255,255,0.72)" }}>
-                <svg viewBox="0 0 64 64" width="56" height="56" role="img" aria-label="Professional profile photo">
+                <svg viewBox="0 0 64 64" width="56" height="56" role="img" aria-label={sample.photo}>
                   <defs>
                     <linearGradient id="hero-avatar-bg" x1="0" x2="1" y1="0" y2="1">
                       <stop stopColor="#dbeafe" />
@@ -2001,10 +2077,10 @@ function HeroResumePreview({ isMobile }) {
               </div>
               <div style={{ minWidth: 0 }}>
                 <h2 style={{ margin: 0, fontSize: compact ? 20 : 23, lineHeight: 1.1, color: "#fff",
-                  letterSpacing: "0", fontWeight: 800 }}>Maya Bennett</h2>
+                  letterSpacing: "0", fontWeight: 800 }}>{sample.name}</h2>
                 <p style={{ margin: "4px 0 8px", fontSize: compact ? 11.5 : 12.5,
-                  color: "rgba(255,255,255,0.88)", fontWeight: 700 }}>Senior Product Manager</p>
-                <InlineList items={["maya@email.com", "San Francisco", "linkedin.com/in/maya"]}
+                  color: "rgba(255,255,255,0.88)", fontWeight: 700 }}>{sample.title}</p>
+                <InlineList items={sample.contact}
                   color="rgba(255,255,255,0.84)" fontSize={9.5} />
               </div>
             </header>
@@ -2013,36 +2089,38 @@ function HeroResumePreview({ isMobile }) {
               minHeight: compact ? 360 : 396 }}>
               <aside style={{ background: "#f5f8fc", padding: compact ? "14px 16px" : "16px 18px",
                 borderRight: compact ? "none" : `1px solid ${text.line}` }}>
-                <ResumeMiniSection accent={accent} title="Profile">
-                  Customer-focused product manager with 8+ years building SaaS onboarding, AI workflows, and analytics products.
+                <ResumeMiniSection accent={accent} title={sample.profile}>
+                  {sample.profileText}
                 </ResumeMiniSection>
-                <ResumeMiniSection accent={accent} title="Skills">
+                <ResumeMiniSection accent={accent} title={sample.skills}>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                    {["Roadmaps", "AI UX", "SQL", "A/B tests", "Figma", "Jira"].map(skill => (
+                    {sample.skillItems.map(skill => (
                       <span key={skill} style={{ fontSize: 9.5, color: accent, background: `${accent}12`,
                         border: `1px solid ${accent}20`, borderRadius: 999, padding: "2px 7px", fontWeight: 700 }}>{skill}</span>
                     ))}
                   </div>
                 </ResumeMiniSection>
-                <ResumeMiniSection accent={accent} title="Education">
-                  MBA, Berkeley Haas<br />B.S. Computer Science
+                <ResumeMiniSection accent={accent} title={sample.education}>
+                  {sample.educationLines.map((line, index) => (
+                    <Fragment key={line}>{index > 0 && <br />}{line}</Fragment>
+                  ))}
                 </ResumeMiniSection>
                 {!compact && (
-                  <ResumeMiniSection accent={accent} title="Certification">
-                    Certified Scrum Product Owner
+                  <ResumeMiniSection accent={accent} title={sample.certification}>
+                    {sample.certificationText}
                   </ResumeMiniSection>
                 )}
               </aside>
               <main style={{ padding: compact ? "14px 16px 16px" : "16px 20px 20px" }}>
-                <ResumeMiniSection accent={accent} title="Experience">
-                  <ResumeMiniRole title="Lead Product Manager" company="Northstar AI · 2022-Present"
-                    bullets={["Launched AI resume insights used by 120k candidates.", "Improved activation 31% by redesigning onboarding."]} />
-                  <ResumeMiniRole title="Product Manager" company="BrightHire · 2018-2022"
-                    bullets={["Shipped ATS-friendly profile scoring across 14 markets.", "Cut weekly support requests by 22% with clearer guidance."]} />
+                <ResumeMiniSection accent={accent} title={sample.experience}>
+                  {sample.roles.map((role) => (
+                    <ResumeMiniRole key={`${role.title}-${role.company}`} title={role.title} company={role.company}
+                      bullets={role.bullets} />
+                  ))}
                 </ResumeMiniSection>
-                <ResumeMiniSection accent={accent} title="Projects">
-                  <ResumeMiniRole title="Career Match Engine" company="Internal platform"
-                    bullets={["Mapped job descriptions to measurable resume achievements."]} />
+                <ResumeMiniSection accent={accent} title={sample.projects}>
+                  <ResumeMiniRole title={sample.projectTitle} company={sample.projectCompany}
+                    bullets={sample.projectBullets} />
                 </ResumeMiniSection>
               </main>
             </div>
@@ -9048,7 +9126,7 @@ Awards: ${form.awards}`;
               </div>
             </div>
             <div className="ac-hero-visual" style={{ animation: "acFadeUp 0.65s ease 0.42s both" }}>
-              <HeroResumePreview isMobile={isMobile} />
+              <HeroResumePreview isMobile={isMobile} lang={lang} />
             </div>
           </div>
         </div>
@@ -9224,7 +9302,7 @@ Awards: ${form.awards}`;
             </FadeIn>
             {(() => {
               const q = tplSearch.trim().toLowerCase();
-              const all = TEMPLATES.filter(t => !t.blank).filter(t =>
+              const all = TEMPLATES.filter(t => !t.blank).slice(0, RESUME_TEMPLATE_COUNT).filter(t =>
                 !q || t.name.toLowerCase().includes(q) || t.tag.toLowerCase().includes(q)
               );
               const visible = all.slice(0, 6);

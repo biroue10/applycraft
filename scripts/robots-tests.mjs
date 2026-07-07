@@ -13,6 +13,16 @@ if (!existsSync(ROBOTS)) {
   fail("public/robots.txt missing");
 } else {
   const text = readFileSync(ROBOTS, "utf8");
+  if (!text.endsWith("\n")) fail("robots.txt must end with a newline");
+  const directiveRe = /\b(?:User-agent|Allow|Disallow|Sitemap|Content-Signal):/gi;
+  for (const [index, line] of text.split(/\r?\n/).entries()) {
+    if (/^\s*#/.test(line)) continue;
+    const directives = line.match(directiveRe) || [];
+    if (directives.length > 1) fail(`line ${index + 1} contains multiple robots directives; keep each directive on its own line`);
+    if (directives.length === 1 && !new RegExp(`^\\s*${directives[0].replace(":", "\\:")}`, "i").test(line)) {
+      fail(`line ${index + 1} has a robots directive after other text; keep directives at the start of a line`);
+    }
+  }
   const cloudflareManagedAgents = [
     "Amazonbot",
     "Applebot-Extended",
