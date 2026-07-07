@@ -114,6 +114,13 @@
   .input-box{display:flex;flex-direction:column;gap:8px}
   .input-label{font-size:12px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px}
   .input-label span{font-weight:400;color:#475569;margin-left:6px;text-transform:none;letter-spacing:0}
+  .input-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .import-btn{display:inline-flex;align-items:center;gap:6px;background:#6366F114;border:1px solid #6366F140;border-radius:7px;
+    padding:6px 10px;color:#A5B4FC;font-family:'Inter',system-ui,sans-serif;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+  .import-btn:disabled{opacity:.65;cursor:wait}
+  #import-status{display:none;margin:0;font-size:12.5px;line-height:1.5;color:#94A3B8}
+  #import-status[data-kind="success"]{color:#4ade80}
+  #import-status[data-kind="error"]{color:#f87171}
   textarea{width:100%;background:#0D1117;border:1.5px solid #1A2740;border-radius:10px;
     color:#E4EBF5;font-family:'Inter',system-ui,sans-serif;font-size:13.5px;
     line-height:1.6;padding:14px 16px;resize:vertical;outline:none;transition:border-color .2s}
@@ -212,7 +219,11 @@
 
   <div class="input-grid">
     <div class="input-box">
-      <label class="input-label" for="resume-text">Votre CV <span>— coller en texte brut</span></label>
+      <div class="input-top">
+        <label class="input-label" for="resume-text">Votre CV <span>— coller en texte brut</span></label>
+        <button class="import-btn" id="import-btn" type="button">📎 Importer PDF/DOCX</button>
+        <input id="resume-import" type="file" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" style="display:none">
+      </div>
       <textarea id="resume-text" rows="18" placeholder="Collez votre CV complet ici…
 
 Marie Dupont
@@ -228,6 +239,7 @@ Google Analytics, SEO, Meta Ads, HubSpot, Figma, SQL
 
 FORMATION
 Master Marketing Digital — HEC Paris, 2019"></textarea>
+      <p id="import-status" role="status" aria-live="polite"></p>
     </div>
     <div class="input-box">
       <label class="input-label" for="jd-text">Description du poste <span>— optionnel, active l'analyse des mots-clés</span></label>
@@ -399,6 +411,11 @@ const LOCALE = {
   matchedKw:   'Mots-clés présents',
   noMissingKw: '✓ Aucun mot-clé manquant significatif !',
   allClear:    '✓ Aucun problème significatif détecté — votre CV est bien structuré pour les parseurs ATS.',
+  reading:     'Lecture du fichier…',
+  uploadBtn:   'Importer PDF/DOCX',
+  importSuccess: 'Texte du CV importé. Analyse mise à jour.',
+  importNoReadable: 'Ce fichier ne contient aucun texte lisible. S’il s’agit d’un PDF scanné ou composé d’images, collez le texte du CV manuellement.',
+  importError: 'Impossible de lire ce fichier. Collez le texte du CV manuellement ou essayez un PDF/DOCX avec texte sélectionnable.',
   issues: {
     noEmail:      { title: 'Aucune adresse e-mail détectée',                  detail: 'Les systèmes ATS extraient votre e-mail pour créer votre profil candidat. Sans lui, votre candidature ne peut pas être traitée par la plupart des systèmes.' },
     noExperience: { title: 'Aucune section expérience professionnelle détectée', detail: 'L\'expérience professionnelle est la section la plus pondérée dans le classement ATS. Assurez-vous que votre section expérience est clairement intitulée "Expérience" ou "Parcours professionnel".' },

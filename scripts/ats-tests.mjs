@@ -5,17 +5,26 @@
 // centralized, documented scoring rules.
 // ──────────────────────────────────────────────────────────────────────────
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { JSDOM } from "jsdom";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const { analyzeKeywords, detectLanguage } = await import(path.join(root, "src/ats/engine.js"));
 const { scoreFromIssues, scoreBand, READINESS_EXPLAINER, SCORE_WEIGHTS } =
   await import(path.join(root, "src/ats/scoring.js"));
+const { extractDocxText } = await import(path.join(root, "src/ats/docxText.js"));
+const { textItemsToLines } = await import(path.join(root, "src/ats/pdfText.js"));
+const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
 
 let failures = 0;
 const check = (name, fn) => {
   try { fn(); console.log(`  ok  ${name}`); }
+  catch (e) { failures++; console.error(`  FAIL ${name}\n       ${e.message}`); }
+};
+const checkAsync = async (name, fn) => {
+  try { await fn(); console.log(`  ok  ${name}`); }
   catch (e) { failures++; console.error(`  FAIL ${name}\n       ${e.message}`); }
 };
 
@@ -101,6 +110,164 @@ check("scoreBand labels are honest (no guarantee wording)", () => {
 check("readiness explainer names no specific ATS as reproduced + no guarantee", () => {
   for (const v of ["Workday", "Greenhouse", "Taleo", "Lever"]) assert.ok(READINESS_EXPLAINER.includes(v));
   assert.ok(/does not guarantee/i.test(READINESS_EXPLAINER));
+});
+
+function fixtureFile(name, type) {
+  const buffer = readFileSync(path.join(root, "tests/fixtures", name));
+  return {
+    name,
+    type,
+    arrayBuffer: async () => buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength),
+  };
+}
+
+async function extractFixtureResumeText(file) {
+  const buffer = Buffer.from(await file.arrayBuffer());
+  if (file.name.endsWith(".docx")) return extractDocxText(buffer);
+  if (file.name.endsWith(".pdf")) {
+    const doc = await pdfjs.getDocument({ data: new Uint8Array(buffer), useSystemFonts: true, isEvalSupported: false }).promise;
+    const pages = [];
+    for (let pageNumber = 1; pageNumber <= doc.numPages; pageNumber += 1) {
+      const page = await doc.getPage(pageNumber);
+      const content = await page.getTextContent();
+      pages.push(textItemsToLines(content.items).join("\n"));
+    }
+    await doc.destroy();
+    return pages.join("\n");
+  }
+  return buffer.toString("utf8");
+}
+
+function atsDom(locale) {
+  const dom = new JSDOM(`<!doctype html>
+    <textarea id="resume-text"></textarea>
+    <textarea id="jd-text"></textarea>
+    <button id="import-btn"></button>
+    <input id="resume-import" type="file">
+    <p id="import-status"></p>
+    <button id="check-btn"></button>
+    <div id="results"></div>
+    <path id="gauge-arc"></path>
+    <div id="score-num"></div>
+    <div id="score-label"></div>
+    <div id="summary-pills"></div>
+    <div id="kw-section"></div>
+    <div id="kw-pct"></div>
+    <div id="kw-present-count"></div>
+    <div id="kw-missing-count"></div>
+    <div id="kw-fill"></div>
+    <div id="kw-present-tags"></div>
+    <div id="kw-missing-tags"></div>
+    <div id="issues-list"></div>
+    <div id="all-clear"></div>`, {
+    url: "https://applycraft.io/ats-checker/",
+    runScripts: "outside-only",
+    pretendToBeVisual: true,
+  });
+  dom.window.LOCALE = locale;
+  dom.window.ApplyCraftATSImport = { extractResumeText: extractFixtureResumeText };
+  dom.window.HTMLElement.prototype.scrollIntoView = () => {};
+  dom.window.console = console;
+  dom.window.eval(readFileSync(path.join(root, "public/ats-engine.js"), "utf8"));
+  return dom;
+}
+
+const pageLocales = {
+  en: {
+    emptyAlert: "Paste first", analysing: "Analysing", recheck: "Re-check",
+    scoreLabels: { 80: "Strong", 60: "Needs work", 40: "Action required", 0: "Critical issues" },
+    pills: { critical: "Critical", warning: "Warning", info: "Info", allGood: "All good" },
+    badgeLabels: { critical: "critical", warning: "warning", info: "info" },
+    matchedKw: "Matched keywords", noMissingKw: "No missing", allClear: "All clear",
+    reading: "Reading file...", uploadBtn: "Upload PDF/DOCX",
+    importSuccess: "Resume text imported. Analysis updated.",
+    importNoReadable: "No readable text.", importError: "Could not read.",
+  },
+  fr: {
+    emptyAlert: "Collez d'abord", analysing: "Analyse", recheck: "Relancer",
+    scoreLabels: { 80: "Fort", 60: "À améliorer", 40: "Action", 0: "Critique" },
+    pills: { critical: "Critique", warning: "Avertissement", info: "Info", allGood: "Aucun problème" },
+    badgeLabels: { critical: "Critique", warning: "Avertissement", info: "Info" },
+    matchedKw: "Mots-clés", noMissingKw: "Aucun", allClear: "Tout est bon",
+    reading: "Lecture...", uploadBtn: "Importer PDF/DOCX",
+    importSuccess: "Texte du CV importé. Analyse mise à jour.",
+    importNoReadable: "Aucun texte lisible.", importError: "Impossible de lire.",
+  },
+  ar: {
+    emptyAlert: "الصق أولاً", analysing: "تحليل", recheck: "إعادة",
+    scoreLabels: { 80: "قوي", 60: "تحسين", 40: "إجراء", 0: "حرج" },
+    pills: { critical: "حرج", warning: "تحذير", info: "معلومة", allGood: "سليم" },
+    badgeLabels: { critical: "حرج", warning: "تحذير", info: "معلومة" },
+    matchedKw: "كلمات", noMissingKw: "لا يوجد", allClear: "سليم",
+    reading: "قراءة...", uploadBtn: "رفع PDF/DOCX",
+    importSuccess: "تم استيراد نص السيرة الذاتية وتحديث التحليل.",
+    importNoReadable: "لا يوجد نص.", importError: "تعذرت القراءة.",
+  },
+};
+for (const locale of Object.values(pageLocales)) {
+  locale.issues = {
+    noEmail: { title: "email", detail: "email" },
+    noExperience: { title: "experience", detail: "experience" },
+    noSkills: { title: "skills", detail: "skills" },
+    noPhone: { title: "phone", detail: "phone" },
+    noLinkedin: { title: "linkedin", detail: "linkedin" },
+    noSummary: { title: "summary", detail: "summary" },
+    noNumbers: { title: "numbers", detail: "numbers" },
+    noDates: { title: "dates", detail: "dates" },
+    noEducation: { title: "education", detail: "education" },
+    weakBullets: () => ({ title: "weak", detail: "weak" }),
+    longLines: () => ({ title: "long", detail: "long" }),
+    tooShort: () => ({ title: "short", detail: "short" }),
+    tooLong: () => ({ title: "long resume", detail: "long resume" }),
+    kwLow: () => ({ title: "kw low", detail: "kw low" }),
+    kwMed: () => ({ title: "kw med", detail: "kw med" }),
+  };
+}
+
+for (const [lang, locale] of Object.entries(pageLocales)) {
+  for (const [label, file] of [
+    ["PDF", fixtureFile("french-import-resume.pdf", "application/pdf")],
+    ["DOCX", fixtureFile("french-import-resume.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")],
+  ]) {
+    await checkAsync(`static ATS ${lang} imports ${label} into textarea`, async () => {
+      const dom = atsDom(locale);
+      await dom.window.importResumeFile(file, locale);
+      await new Promise((resolve) => setTimeout(resolve, 380));
+      const text = dom.window.document.getElementById("resume-text").value;
+      assert.ok(text.length > 80, `expected imported text, got ${text.length} chars`);
+      assert.match(text, /Camille|Expérience|Compétences/i);
+      assert.equal(dom.window.document.getElementById("import-status").dataset.kind, "success");
+      assert.notEqual(dom.window.document.getElementById("score-num").textContent, "");
+      dom.window.close();
+    });
+  }
+}
+
+await checkAsync("static ATS import shows paste-manually message when no text is readable", async () => {
+  const dom = atsDom(pageLocales.fr);
+  dom.window.ApplyCraftATSImport = { extractResumeText: async () => "" };
+  await dom.window.importResumeFile(fixtureFile("french-import-resume.pdf", "application/pdf"), pageLocales.fr);
+  const status = dom.window.document.getElementById("import-status");
+  assert.equal(status.dataset.kind, "error");
+  assert.equal(status.textContent, pageLocales.fr.importNoReadable);
+  assert.equal(dom.window.document.getElementById("resume-text").value, "");
+  dom.window.close();
+});
+
+check("static ATS pages expose localized import controls", () => {
+  const pages = [
+    ["public/ats-checker/index.html", /Upload PDF\/DOCX/, /Resume text imported/],
+    ["public/ats-checker-fr/index.html", /Importer PDF\/DOCX/, /Texte du CV importé/],
+    ["public/ats-checker-ar/index.html", /رفع PDF\/DOCX/, /تم استيراد نص السيرة الذاتية/],
+  ];
+  for (const [file, button, success] of pages) {
+    const html = readFileSync(path.join(root, file), "utf8");
+    assert.match(html, /id="resume-import"/);
+    assert.match(html, /id="import-btn"/);
+    assert.match(html, /id="import-status"/);
+    assert.match(html, button);
+    assert.match(html, success);
+  }
 });
 
 console.log("");

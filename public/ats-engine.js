@@ -219,8 +219,89 @@ function runCheck(locale) {
   }, 320);
 }
 
+function setImportStatus(message, kind = 'info') {
+  const status = document.getElementById('import-status');
+  if (!status) return;
+  status.textContent = message || '';
+  status.style.display = message ? 'block' : 'none';
+  status.dataset.kind = kind;
+}
+
+let atsImportPromise = null;
+function loadATSImport(locale) {
+  if (window.ApplyCraftATSImport && typeof window.ApplyCraftATSImport.extractResumeText === 'function') {
+    return Promise.resolve(window.ApplyCraftATSImport);
+  }
+  if (atsImportPromise) return atsImportPromise;
+  atsImportPromise = import('/ats-import.js').then((mod) => {
+    const helper = window.ApplyCraftATSImport || mod;
+    if (helper && typeof helper.extractResumeText === 'function') return helper;
+    throw new Error('ATS import helper did not initialize');
+  }).catch((error) => {
+    atsImportPromise = null;
+    setImportStatus(locale.importError, 'error');
+    throw error;
+  });
+  return atsImportPromise;
+}
+
+async function importResumeFile(file, locale) {
+  const input = document.getElementById('resume-import');
+  const button = document.getElementById('import-btn');
+  const resume = document.getElementById('resume-text');
+  if (!file || !resume) return;
+
+  const resetInput = () => { if (input) input.value = ''; };
+  const restoreButton = () => {
+    if (!button) return;
+    button.disabled = false;
+    button.textContent = `📎 ${locale.uploadBtn}`;
+  };
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = locale.reading;
+  }
+  setImportStatus(locale.reading, 'info');
+
+  try {
+    const helper = await loadATSImport(locale);
+    const text = await helper.extractResumeText(file);
+    const clean = String(text || '').replace(/\n{3,}/g, '\n\n').trim();
+    if (!clean) {
+      setImportStatus(locale.importNoReadable, 'error');
+      return;
+    }
+    resume.value = clean;
+    resume.dispatchEvent(new Event('input', { bubbles: true }));
+    setImportStatus(locale.importSuccess, 'success');
+    if (clean.length >= 40) runCheck(locale);
+  } catch (error) {
+    console.error('ATS import failed', error);
+    setImportStatus(locale.importError, 'error');
+  } finally {
+    restoreButton();
+    resetInput();
+  }
+}
+
+function setupImport(locale) {
+  const input = document.getElementById('resume-import');
+  const button = document.getElementById('import-btn');
+  if (!input || !button) return;
+  button.addEventListener('click', () => input.click());
+  input.addEventListener('change', (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (file) importResumeFile(file, locale);
+  });
+}
+
 function openInBuilder() {
   window.location.href = '/';
+}
+
+if (typeof LOCALE !== 'undefined') {
+  setupImport(LOCALE);
 }
 
 document.addEventListener('keydown', e => {

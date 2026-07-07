@@ -114,6 +114,13 @@
   .input-box{display:flex;flex-direction:column;gap:8px}
   .input-label{font-size:12px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px}
   .input-label span{font-weight:400;color:#475569;margin-right:6px;text-transform:none;letter-spacing:0}
+  .input-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .import-btn{display:inline-flex;align-items:center;gap:6px;background:#6366F114;border:1px solid #6366F140;border-radius:7px;
+    padding:6px 10px;color:#A5B4FC;font-family:'Inter',system-ui,sans-serif;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+  .import-btn:disabled{opacity:.65;cursor:wait}
+  #import-status{display:none;margin:0;font-size:12.5px;line-height:1.5;color:#94A3B8}
+  #import-status[data-kind="success"]{color:#4ade80}
+  #import-status[data-kind="error"]{color:#f87171}
   textarea{width:100%;background:#0D1117;border:1.5px solid #1A2740;border-radius:10px;
     color:#E4EBF5;font-family:'Inter',system-ui,sans-serif;font-size:13.5px;
     line-height:1.7;padding:14px 16px;resize:vertical;outline:none;transition:border-color .2s}
@@ -212,7 +219,11 @@
 
   <div class="input-grid">
     <div class="input-box">
-      <label class="input-label" for="resume-text">سيرتك الذاتية <span>— الصق النص العادي</span></label>
+      <div class="input-top">
+        <label class="input-label" for="resume-text">سيرتك الذاتية <span>— الصق النص العادي</span></label>
+        <button class="import-btn" id="import-btn" type="button">📎 رفع PDF/DOCX</button>
+        <input id="resume-import" type="file" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" style="display:none">
+      </div>
       <textarea id="resume-text" dir="auto" rows="18" placeholder="الصق سيرتك الذاتية الكاملة هنا…
 
 أحمد العمري
@@ -228,6 +239,7 @@ Python, React, AWS, Terraform, PostgreSQL
 
 التعليم
 بكالوريوس علوم الحاسب — جامعة الملك عبدالعزيز، 2019"></textarea>
+      <p id="import-status" role="status" aria-live="polite"></p>
     </div>
     <div class="input-box">
       <label class="input-label" for="jd-text">وصف الوظيفة <span>— اختياري، يُفعّل تحليل الكلمات المفتاحية</span></label>
@@ -399,6 +411,11 @@ const LOCALE = {
   matchedKw:   'الكلمات المفتاحية المطابقة',
   noMissingKw: '✓ لا توجد كلمات مفتاحية غائبة بشكل ملحوظ!',
   allClear:    '✓ لم يتم اكتشاف مشكلات جوهرية — سيرتك الذاتية منظمة بشكل جيد لأنظمة ATS.',
+  reading:     'جارٍ قراءة الملف…',
+  uploadBtn:   'رفع PDF/DOCX',
+  importSuccess: 'تم استيراد نص السيرة الذاتية وتحديث التحليل.',
+  importNoReadable: 'لا يحتوي هذا الملف على نص قابل للقراءة. إذا كان PDF ممسوحاً ضوئياً أو صوراً فقط، الصق نص السيرة الذاتية يدوياً.',
+  importError: 'تعذّرت قراءة هذا الملف. الصق نص السيرة الذاتية يدوياً أو جرّب ملف PDF/DOCX يحتوي على نص قابل للتحديد.',
   issues: {
     noEmail:      { title: 'لم يتم اكتشاف عنوان بريد إلكتروني',    detail: 'تستخرج أنظمة ATS بريدك الإلكتروني لإنشاء ملفك الشخصي كمرشح. بدونه، لن تتمكن معظم الأنظمة من معالجة طلبك.' },
     noExperience: { title: 'لم يتم اكتشاف قسم الخبرة المهنية',      detail: 'الخبرة المهنية هي القسم الأعلى وزنًا في تصنيف ATS. تأكد من تسمية قسم الخبرة بوضوح بعنوان مثل "الخبرة" أو "المسيرة المهنية".' },

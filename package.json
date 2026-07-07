@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite-react-ssg build",
+    "build": "node scripts/build-ats-import.mjs && vite-react-ssg build",
     "preview": "vite preview",
     "seo:sitemap": "node scripts/generate-sitemap.mjs",
     "seo:pages": "node scripts/generate-seo-pages.mjs && node scripts/generate-localized-seo-pages.mjs && node scripts/generate-company-pages.mjs && node scripts/refresh-static-footers.mjs",
