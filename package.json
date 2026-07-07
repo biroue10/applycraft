@@ -37,6 +37,7 @@
     "test:contact-links": "node scripts/contact-link-tests.mjs",
     "test:free-exports": "node scripts/free-export-tests.mjs",
     "test:i18n-strings": "node scripts/i18n-no-literals.mjs",
+    "test:dead-links": "node scripts/dead-links.mjs",
     "test:starters": "node scripts/starter-tests.mjs",
     "test:ux": "node scripts/ux-tests.mjs",
     "test:localized-links": "node scripts/localized-link-tests.mjs",

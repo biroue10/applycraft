@@ -414,4 +414,10 @@ if [[ "${SEO_AUDIT_SKIP_HTTP:-0}" != "1" ]]; then
   echo "HTTP redirect checks passed against $SITE_URL ($(grep -c . "$ROOT_DIR/.seo-http-urls") URLs)"
 fi
 
+# Dead internal-link check: every internal href in the build must resolve to a
+# built page or static asset (or a known redirect source). Only runs against dist.
+if [[ -f "$ROOT_DIR/dist/index.html" ]]; then
+  node "$ROOT_DIR/scripts/dead-links.mjs"
+fi
+
 echo "SEO audit passed"

@@ -1,17 +1,11 @@
-# No catch-all SPA fallback.
-# Cloudflare Pages will serve /404.html for unknown URLs, avoiding soft-404s.
-/resume-builder/ /resume-builder.html 200
-/resume/templates/ /resume/templates.html 200
-/resume/builder/ /resume/builder.html 200
-/cover-letter/templates/ /cover-letter/templates.html 200
-/job-tracker/ /job-tracker.html 200
-/master-profile/ /master-profile.html 200
-/email-signature/ /email-signature.html 200
-/personal-website/ /personal-website.html 200
-/r/ /r.html 200
-/resume-builder /resume-builder/ 301
-/resume/templates /resume/templates/ 301
-/cover-letter/templates /cover-letter/templates/ 301
+# No catch-all SPA fallback; unknown URLs fall through to /404.html (no soft-404s).
+#
+# Trailing-slash handling for the prerendered flat-`<route>.html` builds
+# (/resume-builder/, /resume/templates/, /cover-letter/templates/, /job-tracker/,
+# /master-profile/, /email-signature/, /personal-website/, /r/) is done in
+# worker.js (TRAILING_SLASH_HTML_ASSETS): the canonical slash URL is served 200
+# and the no-slash form 301s to it. Do NOT re-add `<route> <route>/ 301` rules
+# here — combined with Workers Assets html_handling they create a redirect loop.
 /app/ats-checker /ats-checker/ 301
 /app/ats-checker/ /ats-checker/ 301
 /cover-letter/builder /cover-letter-builder/ 301
