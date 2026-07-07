@@ -288,6 +288,56 @@ for (const [lang, locale] of Object.entries(pageLocales)) {
   }
 }
 
+for (const [lang, locale] of Object.entries(pageLocales)) {
+  await checkAsync(`static ATS ${lang} auto-runs readiness score after resume paste without job description`, async () => {
+    const dom = atsDom(locale);
+    const resume = dom.window.document.getElementById("resume-text");
+    const jd = dom.window.document.getElementById("jd-text");
+    resume.value = `Alex Martin
+alex@example.com
++1 555 123 4567
+
+Experience
+Developer at Acme 2021 - 2024
+Responsible for web apps
+
+Skills
+JavaScript, React`;
+    jd.value = "";
+    resume.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+    await new Promise((resolve) => setTimeout(resolve, 780));
+    assert.notEqual(dom.window.document.getElementById("score-num").textContent, "");
+    assert.equal(dom.window.document.getElementById("results").style.display, "block");
+    assert.equal(dom.window.document.getElementById("kw-section").style.display, "none");
+    assert.notEqual(dom.window.document.getElementById("score-label").textContent, "");
+    dom.window.close();
+  });
+
+  await checkAsync(`static ATS ${lang} auto-adds keyword analysis after job description paste`, async () => {
+    const dom = atsDom(locale);
+    const resume = dom.window.document.getElementById("resume-text");
+    const jd = dom.window.document.getElementById("jd-text");
+    resume.value = `Alex Martin
+alex@example.com
++1 555 123 4567
+
+Experience
+Developer at Acme 2021 - 2024
+Responsible for web apps
+
+Skills
+JavaScript, React`;
+    resume.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+    await new Promise((resolve) => setTimeout(resolve, 780));
+    jd.value = "Python SQL AWS Kubernetes analytics cloud security data pipelines stakeholder management";
+    jd.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+    await new Promise((resolve) => setTimeout(resolve, 780));
+    assert.equal(dom.window.document.getElementById("kw-section").style.display, "block");
+    assert.notEqual(dom.window.document.getElementById("kw-pct").textContent, "");
+    dom.window.close();
+  });
+}
+
 await checkAsync("static ATS import shows paste-manually message when no text is readable", async () => {
   const dom = atsDom(pageLocales.fr);
   dom.window.ApplyCraftATSImport = { extractResumeText: async () => "" };

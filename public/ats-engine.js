@@ -242,6 +242,18 @@ function runCheck(locale) {
   }, 320);
 }
 
+let atsAutoCheckTimer = null;
+function scheduleAutoCheck(locale, options = {}) {
+  const resume = document.getElementById('resume-text');
+  if (!resume || resume.value.trim().length < 40) return;
+  if (options.requireVisibleResults) {
+    const results = document.getElementById('results');
+    if (!results || results.style.display !== 'block') return;
+  }
+  clearTimeout(atsAutoCheckTimer);
+  atsAutoCheckTimer = setTimeout(() => runCheck(locale), options.delay || 420);
+}
+
 function setImportStatus(message, kind = 'info') {
   const status = document.getElementById('import-status');
   if (!status) return;
@@ -298,7 +310,10 @@ async function importResumeFile(file, locale) {
     resume.value = clean;
     resume.dispatchEvent(new Event('input', { bubbles: true }));
     setImportStatus(locale.importSuccess, 'success');
-    if (clean.length >= 40) runCheck(locale);
+    if (clean.length >= 40) {
+      clearTimeout(atsAutoCheckTimer);
+      runCheck(locale);
+    }
   } catch (error) {
     console.error('ATS import failed', error);
     setImportStatus(locale.importError, 'error');
@@ -319,12 +334,24 @@ function setupImport(locale) {
   });
 }
 
+function setupAutoAnalysis(locale) {
+  const resume = document.getElementById('resume-text');
+  const jd = document.getElementById('jd-text');
+  if (resume) {
+    resume.addEventListener('input', () => scheduleAutoCheck(locale));
+  }
+  if (jd) {
+    jd.addEventListener('input', () => scheduleAutoCheck(locale, { requireVisibleResults: true }));
+  }
+}
+
 function openInBuilder() {
   window.location.href = '/';
 }
 
 if (typeof LOCALE !== 'undefined') {
   setupImport(LOCALE);
+  setupAutoAnalysis(LOCALE);
 }
 
 document.addEventListener('keydown', e => {
