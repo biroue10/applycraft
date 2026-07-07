@@ -3739,6 +3739,14 @@ export default function ResumeGenerator() {
     track(EVENTS.RESUME_STARTED, { source });
   }, [tpl, recommendedTemplate]);
 
+  // Open the full template gallery (not the editor). Used by "Browse all templates".
+  const browseTemplates = useCallback((source = "browse") => {
+    setNavPage("resume");
+    setStep("templates");
+    setAppView("app");
+    trackUxEvent("template_gallery_opened", { source });
+  }, []);
+
   // ── Multiple resumes (save / open / new) with the free-tier limit ─────────
   const [savedResumes, setSavedResumes] = useState(() => resumes.listResumes());
   const [currentResumeId, setCurrentResumeId] = useState(null);
@@ -9262,15 +9270,17 @@ Awards: ${form.awards}`;
               ))}
             </div>
             <FadeIn delay={420} style={{ textAlign: "center", marginTop: 48 }}>
-              <button onClick={() => startResume("how_it_works")}
-                style={{ background: "transparent", border: `1.5px solid ${C.borderHi}`,
+              <a href={localizeRoute("/resume/templates/", lang)}
+                onClick={e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return; e.preventDefault(); browseTemplates("how_it_works"); }}
+                style={{ display: "inline-block", textDecoration: "none", background: "transparent",
+                  border: `1.5px solid ${C.borderHi}`,
                   borderRadius: 3, padding: "13px 36px", fontSize: 14.5, fontWeight: 600,
                   color: C.text1, cursor: "pointer", fontFamily: "inherit",
                   transition: "background 0.2s, border-color 0.2s" }}
                 onMouseEnter={e => { e.currentTarget.style.background = `${C.borderHi}18`; e.currentTarget.style.borderColor = C.accent2; }}
                 onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = C.borderHi; }}>
                 {l2.strip.browseAllPre} {RESUME_TEMPLATE_COUNT} {l2.strip.browseAllSuf}
-              </button>
+              </a>
               <div style={{ fontSize: 12, color: C.text3, marginTop: 10 }}>
                 {all.length > 6 ? `${l2.strip.showingPre} ${all.length} ${l2.strip.templatesWord}` : `${all.length} ${l2.strip.templatesWord} ${l2.strip.foundSuf}`}
               </div>
@@ -11133,10 +11143,14 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
       raf = requestAnimationFrame(() => {
         const frameRect = frame.getBoundingClientRect();
         const frameWidth = frameRect.width;
-        const frameHeight = frameRect.height;
-        if (!frameWidth || !frameHeight) return;
+        // Height is provided by the frame's aspect-ratio; if it hasn't resolved
+        // yet (reports 0 while width is set) derive it from the width so the
+        // scale below can never collapse to 0 and blank out the preview.
+        const frameHeight = frameRect.height || (frameWidth * DOCUMENT_PREVIEW_PAGE_HEIGHT / DOCUMENT_PREVIEW_WIDTH);
+        if (!frameWidth) return;
 
-        const scale = Math.min(frameWidth / DOCUMENT_PREVIEW_WIDTH, frameHeight / DOCUMENT_PREVIEW_PAGE_HEIGHT);
+        const rawScale = Math.min(frameWidth / DOCUMENT_PREVIEW_WIDTH, frameHeight / DOCUMENT_PREVIEW_PAGE_HEIGHT);
+        const scale = rawScale > 0 && Number.isFinite(rawScale) ? rawScale : (isMobile ? 0.28 : 0.38);
         const scaledWidth = DOCUMENT_PREVIEW_WIDTH * scale;
         const contentHeight = content.scrollHeight || DOCUMENT_PREVIEW_PAGE_HEIGHT;
         const pageCount = contentHeight > DOCUMENT_PREVIEW_PAGE_HEIGHT + 12
