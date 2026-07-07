@@ -19,6 +19,7 @@ const ats = {
   "allClear": "Tout est bon",
   "keywordMatch": "Correspondance des mots-clés",
   "crossLangPre": "Correspondance multilingue —",
+  "crossLangVs": "contre",
   "resumeWord": "CV",
   "jdWord": "description du poste",
   "kwMatchJd": "de correspondance avec l'offre",

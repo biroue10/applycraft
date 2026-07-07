@@ -189,7 +189,8 @@ export default defineConfig({
         manualChunks(id) {
           if (
             id.includes("/src/i18n/namespaces/es/landing2.js") ||
-            id.includes("/src/i18n/namespaces/de/landing2.js")
+            id.includes("/src/i18n/namespaces/de/landing2.js") ||
+            id.includes("/src/i18n/atsResults/")
           ) {
             return;
           }

@@ -173,6 +173,39 @@ for (const file of [...new Set(PRODUCT_COPY_FILES)]) {
   }
 }
 
+const ATS_RESULT_LITERAL_PATTERNS = [
+  { re: /Needs work/i, reason: "ATS score tier must come from ats.scoreBands" },
+  { re: /Several fixable issues/i, reason: "ATS score summary must come from ats.scoreBands" },
+  { re: /Action required/i, reason: "ATS score tier must come from ats.scoreBands" },
+  { re: /Critical issues/i, reason: "ATS score tier must come from ats.scoreBands" },
+  { re: /Low keyword match/i, reason: "ATS issue title must come from ats.issueText" },
+  { re: /Only .*meaningful keywords/i, reason: "ATS issue detail must come from ats.issueText" },
+  { re: /Education section not detected/i, reason: "ATS issue title must come from ats.issueText" },
+  { re: /Some ATS systems require at least one education entry/i, reason: "ATS issue detail must come from ats.issueText" },
+];
+
+const atsRendererFile = join(SRC, "ResumeGenerator.jsx");
+if (files.includes(atsRendererFile)) {
+  const code = readFileSync(atsRendererFile, "utf8");
+  const guardedBlocks = [
+    ["const scoreRawResume", "  // Form completion tracker"],
+    ["const band = result ? scoreBand", "          {/* Fix CTA */}"],
+  ];
+  for (const [startNeedle, endNeedle] of guardedBlocks) {
+    const start = code.indexOf(startNeedle);
+    const end = start >= 0 ? code.indexOf(endNeedle, start) : -1;
+    if (start < 0 || end < 0) continue;
+    const block = code.slice(start, end);
+    for (const { re, reason } of ATS_RESULT_LITERAL_PATTERNS) {
+      const match = block.match(re);
+      if (match) {
+        const line = code.slice(0, start + match.index).split(/\r?\n/).length;
+        findings.push({ file: atsRendererFile, line, kind: "ats-result-copy", text: `${match[0]} (${reason})` });
+      }
+    }
+  }
+}
+
 for (const file of files) {
   const code = readFileSync(file, "utf8");
   let ast;

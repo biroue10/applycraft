@@ -16,6 +16,9 @@ const { scoreFromIssues, scoreBand, READINESS_EXPLAINER, SCORE_WEIGHTS } =
   await import(path.join(root, "src/ats/scoring.js"));
 const { extractDocxText } = await import(path.join(root, "src/ats/docxText.js"));
 const { textItemsToLines } = await import(path.join(root, "src/ats/pdfText.js"));
+const { default: atsEn } = await import(path.join(root, "src/i18n/atsResults/en.js"));
+const { default: atsFr } = await import(path.join(root, "src/i18n/atsResults/fr.js"));
+const { default: atsAr } = await import(path.join(root, "src/i18n/atsResults/ar.js"));
 const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
 
 let failures = 0;
@@ -110,6 +113,48 @@ check("scoreBand labels are honest (no guarantee wording)", () => {
 check("readiness explainer names no specific ATS as reproduced + no guarantee", () => {
   for (const v of ["Workday", "Greenhouse", "Taleo", "Lever"]) assert.ok(READINESS_EXPLAINER.includes(v));
   assert.ok(/does not guarantee/i.test(READINESS_EXPLAINER));
+});
+
+const issueCodes = [
+  "NO_EMAIL", "NO_EXPERIENCE", "NO_SKILLS", "NO_PHONE", "NO_LINKEDIN",
+  "NO_SUMMARY", "NO_NUMBERS", "NO_DATES", "WEAK_BULLETS", "LONG_LINES",
+  "TOO_SHORT", "NO_EDUCATION", "TOO_LONG", "KW_LOW", "KW_MED",
+];
+const scoreBandCodes = ["strong", "needsWork", "actionRequired", "criticalIssues"];
+const forbiddenLocalizedAtsEnglish = [
+  /Needs work/i,
+  /Several fixable issues/i,
+  /Low keyword match/i,
+  /Only \{pct\}% of the meaningful keywords/i,
+  /Education section not detected/i,
+  /Some ATS systems require/i,
+  /Action required/i,
+  /Critical issues/i,
+];
+
+check("ATS result translations cover every issue code and score band", () => {
+  for (const [lang, messages] of Object.entries({ en: atsEn, fr: atsFr, ar: atsAr })) {
+    for (const code of scoreBandCodes) {
+      assert.ok(messages.scoreBands?.[code]?.label, `${lang} missing score band label ${code}`);
+      assert.ok(messages.scoreBands?.[code]?.meaning, `${lang} missing score band meaning ${code}`);
+    }
+    for (const code of issueCodes) {
+      assert.ok(messages.issueText?.[code]?.title, `${lang} missing issue title ${code}`);
+      assert.ok(messages.issueText?.[code]?.detail, `${lang} missing issue detail ${code}`);
+    }
+  }
+});
+
+check("French and Arabic ATS result translations do not fallback to English result copy", () => {
+  for (const [lang, messages] of Object.entries({ fr: atsFr, ar: atsAr })) {
+    const serialized = JSON.stringify({
+      scoreBands: messages.scoreBands,
+      issueText: messages.issueText,
+    });
+    for (const re of forbiddenLocalizedAtsEnglish) {
+      assert.ok(!re.test(serialized), `${lang} contains English fallback result copy matching ${re}`);
+    }
+  }
 });
 
 function fixtureFile(name, type) {
@@ -268,6 +313,13 @@ check("static ATS pages expose localized import controls", () => {
     assert.match(html, button);
     assert.match(html, success);
   }
+});
+
+check("static ATS engine emits structured issue codes before localization", () => {
+  const source = readFileSync(path.join(root, "public/ats-engine.js"), "utf8");
+  assert.match(source, /code:'NO_EMAIL'/);
+  assert.match(source, /code:'KW_LOW'/);
+  assert.doesNotMatch(source, /\.\.\.locale\.issues\./);
 });
 
 console.log("");

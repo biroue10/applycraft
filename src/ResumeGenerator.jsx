@@ -49,6 +49,19 @@ const LANDING2_LOADERS = {
   es: () => import("./i18n/namespaces/es/landing2.js"),
   de: () => import("./i18n/namespaces/de/landing2.js"),
 };
+const ATS_RESULT_LOADERS = {
+  en: () => import("./i18n/atsResults/en.js"),
+  fr: () => import("./i18n/atsResults/fr.js"),
+  ar: () => import("./i18n/atsResults/ar.js"),
+};
+const atsResultCache = new Map();
+async function loadAtsResultCopy(language) {
+  const code = ATS_RESULT_LOADERS[language] ? language : "en";
+  if (atsResultCache.has(code)) return atsResultCache.get(code);
+  const module = await ATS_RESULT_LOADERS[code]();
+  atsResultCache.set(code, module.default);
+  return module.default;
+}
 
 // ── UI translation codes (languages with full UI translation) ──────
 const UI_LANGS = new Set(["en", "fr", "ar"]);
@@ -3199,6 +3212,7 @@ export default function ResumeGenerator() {
   const [interfaceLanguage, setInterfaceLanguage] = useState(() => isInterfaceLang(initialInterfaceLang) ? initialInterfaceLang : initialInterfaceLanguage());
   const [documentLanguage, setDocumentLanguage] = useState(() => isDocumentLang(initialDocumentLang) ? initialDocumentLang : initialDocumentLanguage());
   const [lazyLanding2, setLazyLanding2] = useState(null);
+  const [lazyAtsResults, setLazyAtsResults] = useState(null);
   const selectedLang = languageByCode(interfaceLanguage);
   const selectedDocumentLang = languageByCode(documentLanguage);
   const lang = UI_LANGS.has(interfaceLanguage) ? interfaceLanguage : "en";
@@ -3549,6 +3563,21 @@ export default function ResumeGenerator() {
     }
   }, [appView, navPage, step, coverStep]);
 
+  useEffect(() => {
+    if (navPage !== "ats") return undefined;
+    let cancelled = false;
+    loadAtsResultCopy(lang)
+      .then((dictionary) => {
+        if (!cancelled) setLazyAtsResults({ language: lang, dictionary });
+      })
+      .catch(() => {
+        if (!cancelled) setLazyAtsResults(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [navPage, lang]);
+
   const t = UI[lang];
   const documentBaseT = UI[UI_LANGS.has(docLang) ? docLang : "en"] || UI.en;
   const docLabels = ["en", "fr", "ar"].includes(docLang) ? documentLabelsFor(docLang).sections : {};
@@ -3559,6 +3588,7 @@ export default function ResumeGenerator() {
   const bu = BUILDER_UI[lang] || BUILDER_UI.en; // resume-builder chrome strings
   const cu = COVER_UI[lang] || COVER_UI.en; // cover-letter-builder chrome strings
   const ats = ATS_UI[lang] || ATS_UI.en; // ATS checker strings
+  const atsResults = lazyAtsResults?.language === lang ? lazyAtsResults.dictionary : null;
   const tk = TRACKER_UI[lang] || TRACKER_UI.en; // job tracker strings
   const ms = MASTER_UI[lang] || MASTER_UI.en; // master profile strings
   const st = STATUS_UI[lang] || STATUS_UI.en; // toast / status messages
@@ -5849,19 +5879,19 @@ Awards: ${form.awards}`;
     const longLines     = lines.filter(l => l.length > 180);
     const wordCount     = text.split(/\s+/).filter(Boolean).length;
 
-    if (!hasEmail)      issues.push({ level:"critical", icon:"✉️", title:"No email address detected", detail:"ATS systems extract your email to create your candidate profile. Without it, your application cannot be processed." });
-    if (!hasExperience) issues.push({ level:"critical", icon:"📋", title:"No work experience section detected", detail:"Work experience is the most heavily weighted section in ATS ranking. Ensure your experience is clearly labeled." });
-    if (!hasSkills)     issues.push({ level:"critical", icon:"⚡", title:"No skills section detected", detail:"ATS systems scan skills for exact keyword matches against the job description. Add a Skills or Technologies section." });
-    if (!hasPhone)      issues.push({ level:"warning",  icon:"📞", title:"No phone number detected", detail:"Phone is extracted by ATS systems for your candidate profile." });
-    if (!hasLinkedin)   issues.push({ level:"warning",  icon:"🔗", title:"No LinkedIn URL", detail:"Many ATS systems score completeness partly on LinkedIn presence." });
-    if (!hasSummary)    issues.push({ level:"warning",  icon:"📝", title:"No professional summary detected", detail:"A 2–4 sentence summary increases keyword density and gives ATS immediate context before parsing experience." });
-    if (hasExperience && !hasNumbers) issues.push({ level:"warning", icon:"🔢", title:"No quantified achievements", detail:"Bullets without numbers (%, $, team size) score lower. Add at least one metric per role." });
-    if (hasExperience && !hasDates)   issues.push({ level:"warning", icon:"📅", title:"No dates found in experience", detail:"ATS systems calculate tenure from year ranges. Include start/end years on each role." });
-    if (weakLines.length > 0) issues.push({ level:"warning", icon:"✍️", title:`${weakLines.length} passive bullet opener${weakLines.length > 1 ? "s" : ""}`, detail:`Phrases like "Responsible for" or "Helped" are passive. Use "Led", "Built", "Reduced" instead.` });
-    if (longLines.length > 0) issues.push({ level:"warning", icon:"📏", title:`${longLines.length} line${longLines.length > 1 ? "s" : ""} over 180 characters`, detail:"Very long lines are truncated or misread by ATS parsers. Split into focused bullets under 160 characters." });
-    if (wordCount < 200) issues.push({ level:"warning", icon:"📄", title:`Resume too short (${wordCount} words)`, detail:"A strong resume has 350–800 words. Add detail: specific projects, technologies, and measurable outcomes." });
-    if (!hasEducation)  issues.push({ level:"info", icon:"🎓", title:"Education section not detected", detail:"Some ATS systems require at least one education entry to complete parsing." });
-    if (wordCount > 1200) issues.push({ level:"info", icon:"📏", title:`Resume may be too long (${wordCount} words)`, detail:"Most ATS systems prefer resumes under 2 pages (~800 words). Condense to recent, relevant experience." });
+    if (!hasEmail)      issues.push({ level:"critical", icon:"✉️", code:"NO_EMAIL" });
+    if (!hasExperience) issues.push({ level:"critical", icon:"📋", code:"NO_EXPERIENCE" });
+    if (!hasSkills)     issues.push({ level:"critical", icon:"⚡", code:"NO_SKILLS" });
+    if (!hasPhone)      issues.push({ level:"warning",  icon:"📞", code:"NO_PHONE" });
+    if (!hasLinkedin)   issues.push({ level:"warning",  icon:"🔗", code:"NO_LINKEDIN" });
+    if (!hasSummary)    issues.push({ level:"warning",  icon:"📝", code:"NO_SUMMARY" });
+    if (hasExperience && !hasNumbers) issues.push({ level:"warning", icon:"🔢", code:"NO_NUMBERS" });
+    if (hasExperience && !hasDates)   issues.push({ level:"warning", icon:"📅", code:"NO_DATES" });
+    if (weakLines.length > 0) issues.push({ level:"warning", icon:"✍️", code:"WEAK_BULLETS", data:{ count: weakLines.length } });
+    if (longLines.length > 0) issues.push({ level:"warning", icon:"📏", code:"LONG_LINES", data:{ count: longLines.length } });
+    if (wordCount < 200) issues.push({ level:"warning", icon:"📄", code:"TOO_SHORT", data:{ words: wordCount } });
+    if (!hasEducation)  issues.push({ level:"info", icon:"🎓", code:"NO_EDUCATION" });
+    if (wordCount > 1200) issues.push({ level:"info", icon:"📏", code:"TOO_LONG", data:{ words: wordCount } });
 
     let kwGap = null;
     if (jdText && jdText.trim().length > 30) {
@@ -5871,9 +5901,9 @@ Awards: ${form.awards}`;
         const pct = a.pct;
         kwGap = { present: a.present, missing: a.missing, pct, total: a.total,
           crossLanguage: a.crossLanguage, langResume: a.langResume, langJd: a.langJd };
-        const xl = a.crossLanguage ? ` (cross-language: ${String(a.langResume || "").toUpperCase()} resume vs ${String(a.langJd || "").toUpperCase()} job)` : "";
-        if (pct < 30) issues.unshift({ level:"critical", icon:"🎯", title:`Low keyword match: ${pct}% vs. job description${xl}`, detail:`Only ${pct}% of the meaningful keywords in this job description appear in your resume. Adding more of the role's genuine keywords generally improves overlap.` });
-        else if (pct < 45) issues.unshift({ level:"warning", icon:"🎯", title:`Keyword match: ${pct}%${xl}`, detail:`You match ${pct}% of this job description's keywords. Weaving in more of the role's real terms (where they truly apply) tends to help.` });
+        const data = { pct, crossLanguage: a.crossLanguage, langResume: String(a.langResume || "").toUpperCase(), langJd: String(a.langJd || "").toUpperCase() };
+        if (pct < 30) issues.unshift({ level:"critical", icon:"🎯", code:"KW_LOW", data });
+        else if (pct < 45) issues.unshift({ level:"warning", icon:"🎯", code:"KW_MED", data });
       }
     }
 
@@ -7776,6 +7806,12 @@ Awards: ${form.awards}`;
       track(EVENTS.ATS_STARTED);
       setRunning(true);
       setTimeout(async () => {
+        try {
+          const dictionary = await loadAtsResultCopy(lang);
+          setLazyAtsResults({ language: lang, dictionary });
+        } catch {
+          setLazyAtsResults(null);
+        }
         const r = await scoreRawResume(localText, localJd);
         setResult(r);
         setAtsResult(r);
@@ -7799,11 +7835,28 @@ Awards: ${form.awards}`;
 
     const band = result ? scoreBand(result.score) : null;
     const scoreColor = band ? band.color : C.accent2;
-    const scoreLabel = band ? band.label : "";
+    const localizedBand = band ? atsResults?.scoreBands?.[band.code] : null;
+    const scoreLabel = localizedBand?.label || band?.label || "";
+    const scoreMeaning = localizedBand?.meaning || band?.meaning || ats.scoreDesc;
+    const formatIssueText = (issue, field) => {
+      const entry = atsResults?.issueText?.[issue.code] || {};
+      const data = issue.data || {};
+      const cross = data.crossLanguage && atsResults?.crossLangIssue
+        ? atsResults.crossLangIssue
+            .replace("{resumeLang}", data.langResume || "")
+            .replace("{jobLang}", data.langJd || "")
+        : "";
+      return String(entry[field] || (field === "title" ? issue.code : ""))
+        .replace("{count}", data.count ?? "")
+        .replace("{words}", data.words ?? "")
+        .replace("{pct}", data.pct ?? "")
+        .replace("{cross}", cross);
+    };
 
     const IssueRow = ({ issue }) => {
       const bColor = issue.level === "critical" ? "#f87171" : issue.level === "warning" ? "#fbbf24" : "#60a5fa";
       const bBg    = issue.level === "critical" ? "#450a0a44" : issue.level === "warning" ? "#431407aa" : "#1e3a5f44";
+      const severityLabel = issue.level === "critical" ? ats.critical : issue.level === "warning" ? ats.warning : ats.info;
       return (
         <div style={{ background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 10,
           padding: "14px 16px", marginBottom: 10, display: "flex", gap: 14, alignItems: "flex-start" }}>
@@ -7811,14 +7864,14 @@ Awards: ${form.awards}`;
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 13.5, fontWeight: 700, color: C.text1, marginBottom: 4,
               display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-              {issue.title}
+              {formatIssueText(issue, "title")}
               <span style={{ fontSize: 10, fontWeight: 800, padding: "2px 8px", borderRadius: 999,
                 background: bBg, color: bColor, border: `1px solid ${bColor}22`,
                 textTransform: "uppercase", letterSpacing: ".8px", flexShrink: 0 }}>
-                {issue.level} · −{issueCost(issue)}
+                {severityLabel} · −{issueCost(issue)}
               </span>
             </div>
-            <div style={{ fontSize: 12.5, color: C.text2, lineHeight: 1.6 }}>{issue.detail}</div>
+            <div style={{ fontSize: 12.5, color: C.text2, lineHeight: 1.6 }}>{formatIssueText(issue, "detail")}</div>
           </div>
         </div>
       );
@@ -7909,7 +7962,7 @@ Awards: ${form.awards}`;
             </div>
             <div style={{ fontSize: 15, fontWeight: 700, color: scoreColor, marginTop: 6 }}>{scoreLabel}</div>
             <div style={{ fontSize: 12.5, color: C.text3, marginTop: 8, maxWidth: 400, margin: "8px auto 0" }}>
-              {band ? band.meaning : ats.scoreDesc}
+              {scoreMeaning}
             </div>
             <details style={{ marginTop: 14, maxWidth: 460, marginInline: "auto", textAlign: "left" }}>
               <summary style={{ cursor: "pointer", fontSize: 12, color: C.accent2, fontWeight: 700 }}>{ats.howCalculated}</summary>
@@ -7947,7 +8000,7 @@ Awards: ${form.awards}`;
               <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>{ats.keywordMatch}</div>
               {result.kwGap.crossLanguage && (
                 <div style={{ fontSize: 11.5, color: C.accent2, marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
-                  🌍 {ats.crossLangPre} {String(result.kwGap.langResume || "").toUpperCase()} {ats.resumeWord} vs {String(result.kwGap.langJd || "").toUpperCase()} {ats.jdWord}
+                  🌍 {ats.crossLangPre} {String(result.kwGap.langResume || "").toUpperCase()} {ats.resumeWord} {ats.crossLangVs} {String(result.kwGap.langJd || "").toUpperCase()} {ats.jdWord}
                 </div>
               )}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>

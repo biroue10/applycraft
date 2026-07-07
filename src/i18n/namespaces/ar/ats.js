@@ -19,6 +19,7 @@ const ats = {
   "allClear": "كل شيء سليم",
   "keywordMatch": "تطابق الكلمات المفتاحية",
   "crossLangPre": "تطابق متعدد اللغات —",
+  "crossLangVs": "مقابل",
   "resumeWord": "السيرة الذاتية",
   "jdWord": "وصف الوظيفة",
   "kwMatchJd": "تطابق مع الوصف الوظيفي",

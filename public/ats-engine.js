@@ -58,29 +58,29 @@ function computeATS(text, jdText) {
   };
 }
 
-function buildIssues(flags, locale) {
+function buildIssues(flags) {
   const f = flags;
   const issues = [];
 
-  if (!f.hasEmail)      issues.push({ level:'critical', icon:'✉️', ...locale.issues.noEmail });
-  if (!f.hasExperience) issues.push({ level:'critical', icon:'📋', ...locale.issues.noExperience });
-  if (!f.hasSkills)     issues.push({ level:'critical', icon:'⚡', ...locale.issues.noSkills });
+  if (!f.hasEmail)      issues.push({ level:'critical', icon:'✉️', code:'NO_EMAIL' });
+  if (!f.hasExperience) issues.push({ level:'critical', icon:'📋', code:'NO_EXPERIENCE' });
+  if (!f.hasSkills)     issues.push({ level:'critical', icon:'⚡', code:'NO_SKILLS' });
 
-  if (!f.hasPhone)                      issues.push({ level:'warning', icon:'📞', ...locale.issues.noPhone });
-  if (!f.hasLinkedin)                   issues.push({ level:'warning', icon:'🔗', ...locale.issues.noLinkedin });
-  if (!f.hasSummary)                    issues.push({ level:'warning', icon:'📝', ...locale.issues.noSummary });
-  if (f.hasExperience && !f.hasNumbers) issues.push({ level:'warning', icon:'🔢', ...locale.issues.noNumbers });
-  if (f.hasExperience && !f.hasDates)   issues.push({ level:'warning', icon:'📅', ...locale.issues.noDates });
-  if (f.weakLinesCount > 0)             issues.push({ level:'warning', icon:'✍️', ...locale.issues.weakBullets(f.weakLinesCount) });
-  if (f.longLinesCount > 0)             issues.push({ level:'warning', icon:'📏', ...locale.issues.longLines(f.longLinesCount) });
-  if (f.wordCount < 200)                issues.push({ level:'warning', icon:'📄', ...locale.issues.tooShort(f.wordCount) });
+  if (!f.hasPhone)                      issues.push({ level:'warning', icon:'📞', code:'NO_PHONE' });
+  if (!f.hasLinkedin)                   issues.push({ level:'warning', icon:'🔗', code:'NO_LINKEDIN' });
+  if (!f.hasSummary)                    issues.push({ level:'warning', icon:'📝', code:'NO_SUMMARY' });
+  if (f.hasExperience && !f.hasNumbers) issues.push({ level:'warning', icon:'🔢', code:'NO_NUMBERS' });
+  if (f.hasExperience && !f.hasDates)   issues.push({ level:'warning', icon:'📅', code:'NO_DATES' });
+  if (f.weakLinesCount > 0)             issues.push({ level:'warning', icon:'✍️', code:'WEAK_BULLETS', data:{ count:f.weakLinesCount } });
+  if (f.longLinesCount > 0)             issues.push({ level:'warning', icon:'📏', code:'LONG_LINES', data:{ count:f.longLinesCount } });
+  if (f.wordCount < 200)                issues.push({ level:'warning', icon:'📄', code:'TOO_SHORT', data:{ words:f.wordCount } });
 
-  if (!f.hasEducation)  issues.push({ level:'info', icon:'🎓', ...locale.issues.noEducation });
-  if (f.wordCount > 1200) issues.push({ level:'info', icon:'📏', ...locale.issues.tooLong(f.wordCount) });
+  if (!f.hasEducation)  issues.push({ level:'info', icon:'🎓', code:'NO_EDUCATION' });
+  if (f.wordCount > 1200) issues.push({ level:'info', icon:'📏', code:'TOO_LONG', data:{ words:f.wordCount } });
 
   if (f.kwPct !== null) {
-    if (f.kwPct < 30)       issues.unshift({ level:'critical', icon:'🎯', type:'kw', ...locale.issues.kwLow(f.kwPct) });
-    else if (f.kwPct < 45)  issues.unshift({ level:'warning',  icon:'🎯', type:'kw', ...locale.issues.kwMed(f.kwPct) });
+    if (f.kwPct < 30)       issues.unshift({ level:'critical', icon:'🎯', type:'kw', code:'KW_LOW', data:{ pct:f.kwPct } });
+    else if (f.kwPct < 45)  issues.unshift({ level:'warning',  icon:'🎯', type:'kw', code:'KW_MED', data:{ pct:f.kwPct } });
   }
 
   const score = Math.max(0, 100
@@ -89,6 +89,28 @@ function buildIssues(flags, locale) {
     - issues.filter(i => i.level === 'info').length     * 3);
 
   return { score, issues };
+}
+
+function issueLocaleEntry(issue, locale) {
+  const old = locale.issues || {};
+  switch (issue.code) {
+    case 'NO_EMAIL': return old.noEmail;
+    case 'NO_EXPERIENCE': return old.noExperience;
+    case 'NO_SKILLS': return old.noSkills;
+    case 'NO_PHONE': return old.noPhone;
+    case 'NO_LINKEDIN': return old.noLinkedin;
+    case 'NO_SUMMARY': return old.noSummary;
+    case 'NO_NUMBERS': return old.noNumbers;
+    case 'NO_DATES': return old.noDates;
+    case 'NO_EDUCATION': return old.noEducation;
+    case 'WEAK_BULLETS': return old.weakBullets && old.weakBullets(issue.data && issue.data.count);
+    case 'LONG_LINES': return old.longLines && old.longLines(issue.data && issue.data.count);
+    case 'TOO_SHORT': return old.tooShort && old.tooShort(issue.data && issue.data.words);
+    case 'TOO_LONG': return old.tooLong && old.tooLong(issue.data && issue.data.words);
+    case 'KW_LOW': return old.kwLow && old.kwLow(issue.data && issue.data.pct);
+    case 'KW_MED': return old.kwMed && old.kwMed(issue.data && issue.data.pct);
+    default: return null;
+  }
 }
 
 function setGauge(score) {
@@ -131,7 +153,7 @@ function runCheck(locale) {
 
   setTimeout(() => {
     const { flags, kwGap } = computeATS(text, jdText);
-    const { score, issues } = buildIssues(flags, locale);
+    const { score, issues } = buildIssues(flags);
 
     const results = document.getElementById('results');
     results.style.display = 'block';
@@ -190,6 +212,7 @@ function runCheck(locale) {
       document.getElementById('all-clear').style.display = 'none';
       clearNode(list);
       nonKwIssues.forEach(issue => {
+        const localizedIssue = issueLocaleEntry(issue, locale) || { title: issue.code || '', detail: '' };
         const card = document.createElement('div');
         card.className = 'issue-card';
         const icon = document.createElement('div');
@@ -200,13 +223,13 @@ function runCheck(locale) {
         const title = document.createElement('div');
         title.className = 'issue-title';
         const titleText = document.createElement('span');
-        titleText.textContent = issue.title;
+        titleText.textContent = localizedIssue.title;
         const badge = document.createElement('span');
         badge.className = `badge badge-${issue.level}`;
         badge.textContent = locale.badgeLabels[issue.level];
         const detail = document.createElement('div');
         detail.className = 'issue-detail';
-        detail.textContent = issue.detail;
+        detail.textContent = localizedIssue.detail;
         title.append(titleText, badge);
         body.append(title, detail);
         card.append(icon, body);

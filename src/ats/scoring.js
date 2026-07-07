@@ -29,10 +29,10 @@ export const issueCost = (issue) => SCORE_WEIGHTS[issue?.level] || 0;
 // Readiness bands. `meaning` is descriptive guidance, NOT a promise of outcomes
 // and NOT presented as a universal industry threshold.
 export const SCORE_BANDS = [
-  { min: 80, label: "Strong",          color: "#4ade80", meaning: "Few readiness issues found by our checks. Still review by hand and tailor to each role." },
-  { min: 60, label: "Needs work",      color: "#fbbf24", meaning: "Several fixable issues. Address the flagged items to improve parse-ability." },
-  { min: 40, label: "Action required", color: "#fb923c", meaning: "Important elements are missing or weak. Work through the critical issues first." },
-  { min: 0,  label: "Critical issues", color: "#f87171", meaning: "Key sections an ATS relies on appear to be missing. Fix the critical issues before applying." },
+  { min: 80, code: "strong",         label: "Strong",          color: "#4ade80", meaning: "Few readiness issues found by our checks. Still review by hand and tailor to each role." },
+  { min: 60, code: "needsWork",      label: "Needs work",      color: "#fbbf24", meaning: "Several fixable issues. Address the flagged items to improve parse-ability." },
+  { min: 40, code: "actionRequired", label: "Action required", color: "#fb923c", meaning: "Important elements are missing or weak. Work through the critical issues first." },
+  { min: 0,  code: "criticalIssues", label: "Critical issues", color: "#f87171", meaning: "Key sections an ATS relies on appear to be missing. Fix the critical issues before applying." },
 ];
 
 export function scoreBand(score) {

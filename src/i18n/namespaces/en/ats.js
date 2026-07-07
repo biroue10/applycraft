@@ -19,6 +19,7 @@ const ats = {
   "allClear": "All clear",
   "keywordMatch": "Keyword Match",
   "crossLangPre": "Cross-language matching —",
+  "crossLangVs": "vs.",
   "resumeWord": "resume",
   "jdWord": "job description",
   "kwMatchJd": "keyword match with JD",
