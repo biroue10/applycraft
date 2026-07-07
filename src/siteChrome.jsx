@@ -126,6 +126,10 @@ export function SiteHeader({
         outline-offset: 3px;
         box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
       }
+      .ac-footer-legal-link:hover {
+        color: ${SITE_COLORS.text2};
+        text-decoration: underline;
+      }
       @media (max-width: 720px) {
         .ac-site-header > div {
           height: 60px !important;
@@ -356,7 +360,12 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
           flexWrap: "wrap",
           gap: 8,
         }}>
-          <div style={{ fontSize: 12.5, color: SITE_COLORS.text3 }}>{footerText((f.copyrightLine || "© {year} ApplyCraft by Biroue Digital Ltd · applycraft.io").replace("{year}", new Date().getFullYear()))}</div>
+          <div style={{ fontSize: 12.5, color: SITE_COLORS.text3 }}>{(() => {
+            const copy = footerText((f.copyrightLine || "© {year} ApplyCraft by Biroue Digital Ltd · applycraft.io").replace("{year}", new Date().getFullYear()));
+            const parts = copy.split("applycraft.io");
+            if (parts.length < 2) return copy;
+            return (<>{parts[0]}<a href={homeHrefForLang(lang)} className="ac-footer-legal-link" style={{ color: "inherit", textDecoration: "none" }}>applycraft.io</a>{parts.slice(1).join("applycraft.io")}</>);
+          })()}</div>
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
             <span style={badge}>{f.badge1}</span>
             <span style={badge}>{f.badge2}</span>

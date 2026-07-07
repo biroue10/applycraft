@@ -39,7 +39,9 @@ export function footerHtml(lang = "en") {
       </nav>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 ApplyCraft by Biroue Digital Ltd · applycraft.io</span>
+      <span>${footerText(f.copyrightLine || "© {year} ApplyCraft by Biroue Digital Ltd · applycraft.io")
+        .replace("{year}", new Date().getFullYear())
+        .replace("applycraft.io", `<a href="${homeHref}" class="footer-legal-link">applycraft.io</a>`)}</span>
       <span>${f.badge1} · ${f.badge2} · ${f.badge3}</span>
     </div>
   </div>
