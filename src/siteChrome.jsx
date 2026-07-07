@@ -318,7 +318,7 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
   const badge = { fontSize: 12, color: SITE_COLORS.text3 };
 
   return (
-    <footer className={className} style={{ padding: "56px 24px 32px" }}>
+    <footer className={className} data-footer="unified" style={{ padding: "56px 24px 32px" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 40, marginBottom: 48 }}>
           <div style={{ maxWidth: 280 }}>

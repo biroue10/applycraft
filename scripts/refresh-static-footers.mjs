@@ -35,7 +35,10 @@ for (const file of walk(ROOT)) {
   const lang = html.match(/<html[^>]*\blang="([^"]+)"/i)?.[1]?.slice(0, 2) || "en";
   const homeHref = localizeRoute("/", lang);
   const next = html
-    .replace(/<footer class="site-footer">[\s\S]*?<\/footer>/, footerHtml(lang))
+    // Match the footer open tag with any extra attributes (e.g. role="contentinfo"),
+    // otherwise pages whose footer tag isn't exactly `<footer class="site-footer">`
+    // are silently skipped and keep a stale/minimal hand-written footer.
+    .replace(/<footer class="site-footer"[^>]*>[\s\S]*?<\/footer>/, footerHtml(lang))
     .replace(/<a href="\/" class="nav-logo"/, `<a href="${homeHref}" class="nav-logo"`);
   const localized = localizeInternalAnchors(next, lang);
   if (localized === html) continue;

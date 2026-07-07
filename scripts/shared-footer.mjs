@@ -26,7 +26,7 @@ export function footerHtml(lang = "en") {
           }).join("")}
         </div>`).join("\n        ");
 
-  return `<footer class="site-footer">
+  return `<footer class="site-footer" data-footer="unified">
   <div class="footer-shell">
     <div class="footer-top">
       <div class="footer-brand">

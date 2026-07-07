@@ -420,4 +420,10 @@ if [[ -f "$ROOT_DIR/dist/index.html" ]]; then
   node "$ROOT_DIR/scripts/dead-links.mjs"
 fi
 
+# Unified-footer check: every built page must carry the shared footer marker
+# (builder workspace views exempt). Only runs against dist.
+if [[ -f "$ROOT_DIR/dist/index.html" ]]; then
+  node "$ROOT_DIR/scripts/footer-guard.mjs"
+fi
+
 echo "SEO audit passed"
