@@ -6,7 +6,7 @@
 
 **The CV builder that actually works in English, French, and Arabic, while letting candidates write in any language.**
 
-ATS-conscious templates · live preview · PDF and DOCX · no watermark · no credit card required.
+60+ ATS-friendly templates with country-specific formats (Canada, Morocco, Gulf, International) · localized EN/FR/AR interface with RTL · live preview · unlimited free PDF and DOCX · no watermark · no sign-up.
 
 [![Live site](https://img.shields.io/badge/Live%20site-applycraft.io-6366F1?style=flat-square)](https://applycraft.io)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
@@ -23,7 +23,7 @@ ATS-conscious templates · live preview · PDF and DOCX · no watermark · no cr
 
 ApplyCraft is a free, privacy-first resume and cover letter builder built for the global job market. No account. No watermark. No paywall. Just open the browser, pick a template, fill in your details, and download a polished PDF or DOCX in under 5 minutes.
 
-**Registry-backed template library · localized EN/FR/AR support · ∞ free downloads**
+**60+ ATS-friendly templates with country-specific formats · fully localized EN/FR/AR interface (write in any language) · ∞ free PDF/DOCX downloads**
 
 ---
 
@@ -143,11 +143,10 @@ ApplyCraft is the only resume builder designed from the ground up for multilingu
 - No watermarks
 - No account required
 - No credit card
-- No paid tier or "Pro" upsell
 - Browser-first editing — your resume data never leaves your machine
 - PDF and DOCX downloads included
 
-**Everything above. Zero cost. Forever.**
+**The core editor is free forever — unlimited resumes and exports. Optional power-ups (AI tailoring, sync) use a one-time 7-day pass, never a subscription.**
 
 ---
 
