@@ -76,10 +76,10 @@ function faqSchema(items) {
   return JSON.stringify({
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: items.map(({ q, a }) => ({
+    mainEntity: items.map(({ q, a, schemaText }) => ({
       "@type": "Question",
       name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
+      acceptedAnswer: { "@type": "Answer", text: schemaText || a },
     })),
   });
 }
@@ -119,7 +119,7 @@ function faqHtml(items, lang = "en") {
   const heading = lang === "fr" ? "Questions fréquentes" : lang === "ar" ? "الأسئلة الشائعة" : "Frequently Asked Questions";
   return `<section class="faq page">
   <h2>${heading}</h2>
-  ${items.map(({ q, a }) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("\n  ")}
+  ${items.map(({ q, a, html }) => `<details><summary>${q}</summary><p>${html || a}</p></details>`).join("\n  ")}
 </section>`;
 }
 
@@ -790,7 +790,11 @@ const PAGES = [
       { q: "Quel est le format standard d'un CV canadien ?", a: "Un CV canadien contient vos coordonnées, une accroche professionnelle, l'expérience en ordre chronologique inversé, la formation, les compétences et les langues. Il ne contient pas de photo, d'âge, de situation familiale ou de numéro d'identité." },
       { q: "Puis-je utiliser un CV en français pour postuler au Canada ?", a: "Oui, surtout au Québec et pour les postes francophones. Pour les provinces anglophones ou les entreprises internationales, préparez aussi une version anglaise claire et adaptée aux intitulés locaux." },
       { q: "Comment adapter mon CV marocain au marché canadien ?", a: "Retirez la photo et les données personnelles sensibles, raccourcissez le document à une ou deux pages, quantifiez vos résultats et remplacez les formulations générales par des réalisations concrètes." },
-      { q: "Où trouver le guide CV canadien depuis le Maroc ?", a: "Le guide dédié est disponible dans le blog français : CV canadien depuis le Maroc. Vous pouvez aussi créer directement votre CV canadien avec les modèles Canada." },
+      {
+        q: "Où trouver le guide CV canadien depuis le Maroc ?",
+        a: "Le guide dédié est disponible dans le blog français : CV canadien depuis le Maroc. Vous pouvez aussi créer directement votre CV canadien avec les modèles Canada.",
+        html: 'Le guide dédié est disponible dans le blog français : <a href="/fr/blog/cv-canadien-maroc/">CV canadien depuis le Maroc</a>. Vous pouvez aussi créer directement votre CV canadien avec les modèles Canada.',
+      },
     ],
   },
 

@@ -319,14 +319,32 @@ function auditFooterLinks(page) {
   const footer = page.html.match(/<footer\b[^>]*\bdata-footer=["']unified["'][\s\S]*?<\/footer>/i)?.[0];
   if (!footer) return;
   const label = `${page.route} (${path.relative(ROOT, page.filePath)})`;
-  const pairs = [...footer.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)]
+  const pageLang = pageLocale(page);
+  const expectedHomeHref = pageLang === "fr" ? "/fr/" : pageLang === "ar" ? "/ar/" : "/";
+  const anchors = [...footer.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)];
+  const pairs = anchors
     .map((match) => ({
+      tag: match[0],
       href: normalizedFooterHref(match[1], page.route),
       label: footerLabel(match[2]) || "(empty footer link)",
     }));
+  const domainLink = pairs.find((pair) => pair.label === "applycraft.io");
+  if (!domainLink) {
+    errors.push(`${label}: footer bottom must link visible text "applycraft.io"`);
+  } else if (domainLink.href !== expectedHomeHref) {
+    errors.push(`${label}: footer applycraft.io link must point to ${expectedHomeHref}, found ${domainLink.href}`);
+  }
+  const logoLink = pairs.find((pair) => /\bclass=["'][^"']*\bfooter-logo\b/i.test(pair.tag));
+  if (!logoLink) {
+    errors.push(`${label}: footer logo must be wrapped in a home link`);
+  } else if (logoLink.href !== expectedHomeHref) {
+    errors.push(`${label}: footer logo link must point to ${expectedHomeHref}, found ${logoLink.href}`);
+  }
   const hrefLabels = new Map();
   const labelHrefs = new Map();
   for (const pair of pairs) {
+    if (/\bclass=["'][^"']*\bfooter-logo\b/i.test(pair.tag)) continue;
+    if (/\bclass=["'][^"']*\b(?:footer-legal-link|ac-footer-legal-link)\b/i.test(pair.tag)) continue;
     if (!hrefLabels.has(pair.href)) hrefLabels.set(pair.href, new Set());
     hrefLabels.get(pair.href).add(pair.label);
     if (!labelHrefs.has(pair.label)) labelHrefs.set(pair.label, new Set());

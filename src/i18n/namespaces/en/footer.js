@@ -35,7 +35,7 @@ const footer = {
   "primaryTools": "Primary tools",
   "menu": "Menu",
   "footerRegion": "Footer",
-  "copyrightLine": "© {year} ApplyCraft by Biroue Digital Ltd · applycraft.io"
+  "copyrightPrefix": "© {year} ApplyCraft by Biroue Digital Ltd"
 };
 
 export default footer;

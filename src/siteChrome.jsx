@@ -325,16 +325,27 @@ function footerText(value) {
 
 export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
   const f = FOOTER_UI[lang] || FOOTER_UI.en;
+  const homeHref = homeHrefForLang(lang);
   const col = { fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px", color: SITE_COLORS.text3, marginBottom: 16 };
   const lk = { display: "block", fontSize: 13.5, color: SITE_COLORS.text2, textDecoration: "none", padding: "4px 0" };
   const badge = { fontSize: 12, color: SITE_COLORS.text3 };
+  const legalLink = { color: "inherit", textDecoration: "none" };
 
   return (
     <footer className={className} data-footer="unified" style={{ padding: "56px 24px 32px" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 40, marginBottom: 48 }}>
           <div style={{ maxWidth: 280 }}>
-            <Logo lang={lang} linked={false} />
+            <a href={homeHref} className="footer-logo" aria-label={f.brandHome} style={{
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              lineHeight: 1,
+              flexShrink: 0,
+              overflow: "visible",
+            }}>
+              <BrandLogoImage />
+            </a>
             <p style={{ fontSize: 13, color: SITE_COLORS.text3, lineHeight: 1.75, margin: "12px 0 16px" }}>
               {footerText(f.brand)}
             </p>
@@ -369,7 +380,9 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
           gap: 8,
         }}>
           <div style={{ fontSize: 12.5, color: SITE_COLORS.text3 }}>
-            {footerText((f.copyrightLine || "© {year} ApplyCraft by Biroue Digital Ltd · applycraft.io").replace("{year}", new Date().getFullYear()))}
+            {footerText((f.copyrightPrefix || "© {year} ApplyCraft by Biroue Digital Ltd").replace("{year}", new Date().getFullYear()))}
+            {" · "}
+            <a className="ac-footer-legal-link" href={homeHref} style={legalLink}>applycraft.io</a>
           </div>
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
             <span style={badge}>{f.badge1}</span>
