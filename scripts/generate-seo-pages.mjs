@@ -123,7 +123,7 @@ function faqHtml(items, lang = "en") {
 </section>`;
 }
 
-function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard, features, faqs, canonicalPath, _cssPath, lang = "en", dir = "", ogLocale = "en_US", ogAlternateLocales = [], alternates = [], socialImage, socialImageAlt, builderHref = "", templateHref = "", starterHref = "" }) {
+function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard, features, faqs, canonicalPath, _cssPath, lang = "en", dir = "", ogLocale = "en_US", ogAlternateLocales = [], alternates = [], socialImage, socialImageAlt, builderHref = "", templateHref = "", starterHref = "", guideHref = "", guideLabel = "" }) {
   const canonical = `${SITE}${canonicalPath}`;
   const cssRel = _cssPath || CSS_PATH;
   const htmlAttrs = dir ? `lang="${lang}" dir="${dir}"` : `lang="${lang}"`;
@@ -236,6 +236,7 @@ ${nav(lang, isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl)}
       <div class="hero-btns">
         <a href="${isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl}" class="btn-primary">${ctaLabels.build}</a>
         <a href="${secondaryHref}" class="btn-secondary">${ctaLabels.templates}</a>
+        ${guideHref && guideLabel ? `<a href="${guideHref}" class="btn-secondary">${guideLabel}</a>` : ""}
       </div>
       <div class="trust">
         ${uiText.trust.map((item, index) => `<span>${["🔒", "⚡", "💳", "📄"][index]} ${item.replace("&", "&amp;")}</span>`).join("\n        ")}
@@ -757,6 +758,8 @@ const PAGES = [
     builderHref: "/resume-builder/?starter=canadian&ui=fr&docLang=fr&country=canada",
     templateHref: "/resume/templates/?ui=fr&docLang=fr&country=canada",
     starterHref: "/resume-builder/?starter=canadian&ui=fr&docLang=fr&country=canada",
+    guideHref: "/fr/blog/cv-canadien-maroc/",
+    guideLabel: "Lire le guide complet →",
     resumeCard: rcGeneric({
       name: "Yassine El Amrani", title: "Analyste financier",
       email: "yassine.elamrani@email.com", city: "Montréal, QC",
@@ -787,7 +790,7 @@ const PAGES = [
       { q: "Quel est le format standard d'un CV canadien ?", a: "Un CV canadien contient vos coordonnées, une accroche professionnelle, l'expérience en ordre chronologique inversé, la formation, les compétences et les langues. Il ne contient pas de photo, d'âge, de situation familiale ou de numéro d'identité." },
       { q: "Puis-je utiliser un CV en français pour postuler au Canada ?", a: "Oui, surtout au Québec et pour les postes francophones. Pour les provinces anglophones ou les entreprises internationales, préparez aussi une version anglaise claire et adaptée aux intitulés locaux." },
       { q: "Comment adapter mon CV marocain au marché canadien ?", a: "Retirez la photo et les données personnelles sensibles, raccourcissez le document à une ou deux pages, quantifiez vos résultats et remplacez les formulations générales par des réalisations concrètes." },
-      { q: "Où trouver le guide CV canadien depuis le Maroc ?", a: "Le guide dédié sera publié dans le blog français. En attendant, vous pouvez consulter les ressources CV et créer directement votre CV canadien avec les modèles Canada." },
+      { q: "Où trouver le guide CV canadien depuis le Maroc ?", a: "Le guide dédié est disponible dans le blog français : CV canadien depuis le Maroc. Vous pouvez aussi créer directement votre CV canadien avec les modèles Canada." },
     ],
   },
 
