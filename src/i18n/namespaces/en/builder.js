@@ -35,6 +35,8 @@ const builder = {
   "documentLanguage": "Document language",
   "chooseDocumentLanguage": "Choose document language",
   "languageSeparationNote": "Changing the document language updates section labels, date formatting, direction, and layout. It does not translate your written resume content.",
+  "documentLanguageContentPrompt": "Labels are now in {language}. Translate the resume content too?",
+  "documentLanguageContentPromptCta": "Translate content",
   "translateContentButton": "Translate resume content to {language}",
   "translatingContentButton": "Translating content...",
   "translateContentConfirm": "To translate your résumé, ApplyCraft needs to process the text you wrote using the translation assistant. Your original résumé will stay unchanged, and a translated copy will be created.",

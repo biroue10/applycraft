@@ -102,6 +102,11 @@ assert.match(app, /setDocumentLanguagePreference[\s\S]{0,500}setDocumentLanguage
 assert.doesNotMatch(app, /setDocumentLanguagePreference[\s\S]{0,700}callAi\("translate-resume"/, "changing document language must not call translation");
 assert.match(app, /setTranslationConfirm\(\{ open: true/, "translation must require explicit confirmation");
 assert.match(app, /setTranslationReview\(\{\s*open: true/, "translation should open a review modal before applying translated content");
+const translateCvSource = app.slice(app.indexOf("async function translateCV"), app.indexOf("function scrollToError"));
+assert.doesNotMatch(translateCvSource, /if \(langCode === "en"\) return;/, "resume content translation must support English as an on-demand target");
+assert.match(app, /showDocumentLanguageTranslationPrompt/, "changing document labels to a different content language should surface an explicit translation prompt");
+assert.match(app, /documentLanguageContentPrompt/, "document-language mismatch prompt should use localized copy");
+assert.match(app, /resumeTranslationLanguageSample\(sourceForm\)/, "translation source language should be detected from resume content, not only document labels");
 assert.match(app, /resumes\.upsertResume\(\{ title: copyTitle, data: nextForm \}\)/, "translation should create a separate resume copy");
 assert.match(app, /sourceVersionId: sourceId/, "translated resume copies should retain their source version id");
 assert.match(app, /setCurrentResumeId\(newId\)/, "editor should switch to the translated resume version after acceptance");

@@ -35,6 +35,8 @@ const builder = {
   "documentLanguage": "لغة المستند",
   "chooseDocumentLanguage": "اختر لغة المستند",
   "languageSeparationNote": "تغيير لغة المستند يحدّث عناوين الأقسام وتنسيق التواريخ واتجاه الصفحة والتخطيط، لكنه لا يترجم محتوى السيرة الذاتية الذي كتبته.",
+  "documentLanguageContentPrompt": "أصبحت التسميات الآن باللغة {language}. هل تريد ترجمة محتوى السيرة الذاتية أيضاً؟",
+  "documentLanguageContentPromptCta": "ترجمة المحتوى",
   "translateContentButton": "ترجمة محتوى السيرة الذاتية إلى {language}",
   "translatingContentButton": "جارٍ ترجمة المحتوى...",
   "translateContentConfirm": "لترجمة سيرتك الذاتية، يحتاج ApplyCraft إلى معالجة النص الذي كتبته باستخدام مساعد الترجمة. ستبقى سيرتك الأصلية دون تغيير وسيتم إنشاء نسخة مترجمة.",

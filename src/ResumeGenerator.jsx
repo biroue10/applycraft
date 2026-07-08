@@ -1079,6 +1079,10 @@ function languageByCode(code, fallback = "en") {
   return WORLD_LANGUAGES.find((l) => l.code === code) || WORLD_LANGUAGES.find((l) => l.code === fallback) || WORLD_LANGUAGES[0];
 }
 
+function resumeTranslationLanguageSample(resumeForm = {}) {
+  return TRANSLATABLE_RESUME_FIELDS.map((key) => resumeForm?.[key]).filter(Boolean).join("\n");
+}
+
 function getInitialSiteLanguage() {
   if (typeof window === "undefined") return languageByCode("en");
   try {
@@ -4238,6 +4242,10 @@ export default function ResumeGenerator() {
 
   const selectedDocumentLanguageName = selectedDocumentLang?.native || selectedDocumentLang?.name || docLang;
   const selectedDocumentLanguageLabel = translationLanguageName(docLang);
+  const hasResumeTranslatableContent = TRANSLATABLE_RESUME_FIELDS.some((key) => String(form?.[key] || "").trim());
+  const detectedResumeContentLanguage = hasResumeTranslatableContent
+    ? (form.translationMeta?.targetLanguage || form.documentLanguage || detectImportedResumeLanguage(resumeTranslationLanguageSample(form)))
+    : "";
   const activeTranslationMeta = form.translationMeta || {};
   const activeTranslatedToSelected = Boolean(
     activeTranslationMeta.targetLanguage
@@ -4253,11 +4261,18 @@ export default function ResumeGenerator() {
       return sourceVersionId ? meta.sourceVersionId === sourceVersionId : true;
     }) || null
   ), [currentResumeId, docLang, savedResumes]);
+  const showDocumentLanguageTranslationPrompt = Boolean(
+    hasResumeTranslatableContent
+    && detectedResumeContentLanguage
+    && detectedResumeContentLanguage !== docLang
+    && !activeTranslatedToSelected
+    && !translationConfirm.open
+    && !translationReview.open
+  );
 
   function requestResumeTranslation({ allowDuplicate = false } = {}) {
     if (translating) return;
     const langCode = docLang || "en";
-    if (langCode === "en") return;
     if (activeTranslatedToSelected) return;
     const existing = !allowDuplicate ? findExistingTranslatedVersion(langCode, currentResumeId) : null;
     if (existing) {
@@ -4379,7 +4394,6 @@ export default function ResumeGenerator() {
     if (translating) return;
     const confirm = translationConfirm;
     const langCode = confirm.target?.code || docLang || "en";
-    if (langCode === "en") return;
     const targetName = confirm.target?.native || confirm.target?.name || selectedDocumentLang?.native || selectedDocumentLang?.name || langCode;
     const sourceResume = confirm.retranslate && confirm.sourceResumeId ? resumes.getResume(confirm.sourceResumeId) : null;
     const sourceForm = sourceResume?.data ? migrateForm({ ...emptyResumeForm, ...sourceResume.data }) : form;
@@ -4389,7 +4403,7 @@ export default function ResumeGenerator() {
     setStatusMsg(statusText("translateStarted"));
     try {
       const request = buildResumeTranslationRequest(sourceForm, {
-        sourceLanguage: sourceForm.translationMeta?.targetLanguage || sourceForm.documentLanguage || "auto",
+        sourceLanguage: sourceForm.translationMeta?.targetLanguage || sourceForm.documentLanguage || detectImportedResumeLanguage(resumeTranslationLanguageSample(sourceForm)) || "auto",
         targetLanguage: langCode,
         targetLanguageName: targetName,
       });
@@ -5944,7 +5958,7 @@ Awards: ${form.awards}`;
       : translating
         ? bu.translatingContentButton
         : translateLabel(bu.translateContentButton, { language: selectedDocumentLang?.native || selectedDocumentLang?.name || docLang });
-  const translationButtonDisabled = translating || translationLimitReached || activeTranslatedToSelected;
+  const translationButtonDisabled = translating || translationLimitReached || activeTranslatedToSelected || !hasResumeTranslatableContent;
   const versionOptionLabel = useCallback((resume) => {
     const meta = resume?.data?.translationMeta || {};
     const code = meta.targetLanguage || resume?.data?.documentLanguage || "en";
@@ -6039,61 +6053,59 @@ Awards: ${form.awards}`;
                 <p style={{ margin: "10px 0 0", fontSize: 11.5, color: C.text3, lineHeight: 1.5 }}>
                   {bu.languageSeparationNote}
                 </p>
-                {docLang !== "en" && (
-                  <div style={{ marginTop: 10 }}>
+                <div style={{ marginTop: 10 }}>
+                  <button
+                    type="button"
+                    onClick={requestResumeTranslation}
+                    disabled={translationButtonDisabled}
+                    style={{
+                      width: "100%",
+                      minHeight: 38,
+                      borderRadius: 9,
+                      border: `1px solid ${translationButtonDisabled ? C.border : `${C.accent}55`}`,
+                      background: translationButtonDisabled ? C.elevated : `${C.accent}18`,
+                      color: translationButtonDisabled ? C.text3 : C.accent2,
+                      fontSize: 12.5,
+                      fontWeight: 850,
+                      cursor: translating ? "wait" : translationButtonDisabled ? "not-allowed" : "pointer",
+                      fontFamily: "inherit",
+                      padding: "8px 10px",
+                    }}
+                  >
+                    {translationButtonText}
+                  </button>
+                  {activeTranslatedToSelected && (
                     <button
                       type="button"
-                      onClick={requestResumeTranslation}
-                      disabled={translationButtonDisabled}
+                      onClick={requestResumeRetranslation}
+                      disabled={translating || translationLimitReached}
                       style={{
                         width: "100%",
-                        minHeight: 38,
+                        minHeight: 34,
+                        marginTop: 8,
                         borderRadius: 9,
-                        border: `1px solid ${translationButtonDisabled ? C.border : `${C.accent}55`}`,
-                        background: translationButtonDisabled ? C.elevated : `${C.accent}18`,
-                        color: translationButtonDisabled ? C.text3 : C.accent2,
-                        fontSize: 12.5,
-                        fontWeight: 850,
-                        cursor: translating ? "wait" : translationButtonDisabled ? "not-allowed" : "pointer",
+                        border: `1px solid ${C.border}`,
+                        background: "transparent",
+                        color: translationLimitReached ? C.text3 : C.text2,
+                        fontSize: 12,
+                        fontWeight: 800,
+                        cursor: translating ? "wait" : translationLimitReached ? "not-allowed" : "pointer",
                         fontFamily: "inherit",
-                        padding: "8px 10px",
+                        padding: "7px 10px",
                       }}
                     >
-                      {translationButtonText}
+                      {bu.retranslateFromOriginal}
                     </button>
-                    {activeTranslatedToSelected && (
-                      <button
-                        type="button"
-                        onClick={requestResumeRetranslation}
-                        disabled={translating || translationLimitReached}
-                        style={{
-                          width: "100%",
-                          minHeight: 34,
-                          marginTop: 8,
-                          borderRadius: 9,
-                          border: `1px solid ${C.border}`,
-                          background: "transparent",
-                          color: translationLimitReached ? C.text3 : C.text2,
-                          fontSize: 12,
-                          fontWeight: 800,
-                          cursor: translating ? "wait" : translationLimitReached ? "not-allowed" : "pointer",
-                          fontFamily: "inherit",
-                          padding: "7px 10px",
-                        }}
-                      >
-                        {bu.retranslateFromOriginal}
-                      </button>
-                    )}
-                    {translationLimitReached && (
-                      <p style={{ margin: "7px 0 0", fontSize: 11, color: C.text3, lineHeight: 1.45 }}>
-                        {statusText("translateLimitReached")} {bu.upgradeTranslateMore}
-                      </p>
-                    )}
+                  )}
+                  {translationLimitReached && (
                     <p style={{ margin: "7px 0 0", fontSize: 11, color: C.text3, lineHeight: 1.45 }}>
-                      {bu.translateContentHint}
+                      {statusText("translateLimitReached")} {bu.upgradeTranslateMore}
                     </p>
-                  </div>
-                )}
+                  )}
+                  <p style={{ margin: "7px 0 0", fontSize: 11, color: C.text3, lineHeight: 1.45 }}>
+                    {bu.translateContentHint}
+                  </p>
+                </div>
               </div>
             )}
           </div>
@@ -6200,6 +6212,25 @@ Awards: ${form.awards}`;
               {bu.importLanguageDismiss}
             </button>
           </span>
+        </div>
+      )}
+
+      {showDocumentLanguageTranslationPrompt && (
+        <div role="status" style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+          gap: 10, flexWrap: "wrap", padding: "10px 12px", background: `${C.accent}10`,
+          border: `1px solid ${C.accent}28`, borderRadius: 10, marginBottom: 14,
+          color: C.text2, fontSize: 12.5, lineHeight: 1.45 }}>
+          <span>
+            {translateLabel(bu.documentLanguageContentPrompt, { language: selectedDocumentLanguageLabel })}
+          </span>
+          <button type="button"
+            onClick={requestResumeTranslation}
+            disabled={translationButtonDisabled}
+            style={{ border: "none", background: `${C.accent}18`, color: translationButtonDisabled ? C.text3 : C.accent2,
+              borderRadius: 8, padding: "7px 10px", fontSize: 12, fontWeight: 850,
+              cursor: translationButtonDisabled ? "not-allowed" : "pointer", fontFamily: "inherit" }}>
+            {bu.documentLanguageContentPromptCta}
+          </button>
         </div>
       )}
 
