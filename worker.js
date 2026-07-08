@@ -31,21 +31,20 @@ const SHARE_TEMPLATE_IDS = new Set([
   "delta", "terra", "metro", "verve", "consultant", "founder", "graduate", "clinical",
 ]);
 // Prerendered SPA routes whose canonical URL carries a trailing slash but whose
-// build output is a flat `<route>.html` file. Maps the canonical slash URL to
-// the EXTENSIONLESS pretty asset path: fetching the pretty path makes Workers
-// Assets `auto-trailing-slash` html_handling return the file with 200, whereas
-// fetching the `.html` path makes it 307-redirect (which previously combined
-// with the trailing-slash `_redirects` rules to form an infinite loop).
+// Vite SSG output is a flat `<route>.html` file. Cloudflare Assets is configured
+// with `html_handling: "force-trailing-slash"`, so the slash URL is served as
+// the canonical 200 and the slashless form redirects to it. The worker keeps the
+// slashless redirect explicit for these app routes so sitemap URLs remain 0-hop.
 const TRAILING_SLASH_HTML_ASSETS = new Map([
-  ["/resume-builder/", "/resume-builder"],
-  ["/resume/templates/", "/resume/templates"],
-  ["/resume/builder/", "/resume/builder"],
-  ["/cover-letter/templates/", "/cover-letter/templates"],
-  ["/job-tracker/", "/job-tracker"],
-  ["/master-profile/", "/master-profile"],
-  ["/email-signature/", "/email-signature"],
-  ["/personal-website/", "/personal-website"],
-  ["/r/", "/r"],
+  ["/resume-builder/", "/resume-builder.html"],
+  ["/resume/templates/", "/resume/templates.html"],
+  ["/resume/builder/", "/resume/builder.html"],
+  ["/cover-letter/templates/", "/cover-letter/templates.html"],
+  ["/job-tracker/", "/job-tracker.html"],
+  ["/master-profile/", "/master-profile.html"],
+  ["/email-signature/", "/email-signature.html"],
+  ["/personal-website/", "/personal-website.html"],
+  ["/r/", "/r.html"],
 ]);
 
 const ACTIONS = {
@@ -957,13 +956,6 @@ export default {
     if (url.pathname === "/api/feedback") return handleFeedback(request, env);
     if (url.pathname === "/api/share" || url.pathname.startsWith("/api/share/")) return handleShare(request, env, url);
     if (request.method === "GET" || request.method === "HEAD") {
-      // Serve a flat-html route at its canonical trailing-slash URL (200, no redirect).
-      const prettyAsset = TRAILING_SLASH_HTML_ASSETS.get(url.pathname);
-      if (prettyAsset) {
-        const assetUrl = new URL(prettyAsset, url.origin);
-        assetUrl.search = url.search;
-        return withSecurityHeaders(await env.ASSETS.fetch(new Request(assetUrl, request)));
-      }
       // Canonicalize the no-trailing-slash form of those routes with a single 301.
       if (url.pathname !== "/" && TRAILING_SLASH_HTML_ASSETS.has(`${url.pathname}/`)) {
         return new Response(null, {

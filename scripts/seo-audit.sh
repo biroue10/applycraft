@@ -471,12 +471,40 @@ if [[ "${SEO_AUDIT_SKIP_HTTP:-0}" != "1" ]]; then
     done
   }
 
+  check_sitemap_url_zero_redirect() {
+    local url="$1"
+    local response status location
+    response="$(curl -sSI --max-redirs 0 --max-time 20 "$url")" || {
+      echo "SEO audit failed: sitemap URL request failed: $url" >&2
+      exit 1
+    }
+    status="$(printf '%s\n' "$response" | awk 'BEGIN{code=""} /^HTTP\//{code=$2} END{print code}')"
+    if [[ -z "$status" ]]; then
+      echo "SEO audit failed: sitemap URL returned no HTTP status: $url" >&2
+      exit 1
+    fi
+    if [[ "$status" =~ ^30[0-9]$ ]]; then
+      location="$(printf '%s\n' "$response" | awk 'BEGIN{IGNORECASE=1} /^location:[[:space:]]*/{sub(/^[Ll]ocation:[[:space:]]*/, ""); sub(/\r$/, ""); print; exit}')"
+      echo "SEO audit failed: sitemap URL must return 200 with zero redirects: $url ($status -> ${location:-no Location})" >&2
+      exit 1
+    fi
+    if [[ "$status" != "200" ]]; then
+      echo "SEO audit failed: sitemap URL did not resolve to direct 200: $url ($status)" >&2
+      exit 1
+    fi
+  }
+
+  while IFS= read -r url; do
+    [[ -z "$url" ]] && continue
+    check_sitemap_url_zero_redirect "$url"
+  done < <(node -e 'const fs=require("fs"); const xml=fs.readFileSync(process.argv[1],"utf8"); for (const m of xml.matchAll(/<loc>(.*?)<\/loc>/g)) console.log(m[1]);' "$SITEMAP_PATH")
+
   while IFS= read -r url; do
     [[ -z "$url" ]] && continue
     check_http_url "$url"
   done < "$ROOT_DIR/.seo-http-urls"
 
-  echo "HTTP redirect checks passed against $SITE_URL ($(grep -c . "$ROOT_DIR/.seo-http-urls") URLs)"
+  echo "HTTP redirect checks passed against $SITE_URL ($(grep -c . "$ROOT_DIR/.seo-http-urls") URLs; sitemap URLs are 0-hop)"
 fi
 
 # Dead internal-link check: every internal href in the build must resolve to a
