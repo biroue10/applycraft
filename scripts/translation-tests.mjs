@@ -7,12 +7,14 @@ import {
   createTranslatedResumeCopy,
   parseTranslationJson,
   postProcessTranslatedResume,
+  serializeResumeTranslationContent,
   TRANSLATION_STATUSES,
 } from "../src/translation.js";
 
 const app = await readFile(new URL("../src/ResumeGenerator.jsx", import.meta.url), "utf8");
 const translationSource = await readFile(new URL("../src/translation.js", import.meta.url), "utf8");
 const translationDevBypassSource = await readFile(new URL("../src/translationDevBypass.js", import.meta.url), "utf8");
+const workerSource = await readFile(new URL("../worker.js", import.meta.url), "utf8");
 
 const original = {
   name: "ISAAC BIROUE",
@@ -92,6 +94,29 @@ assert.equal(inEditorRequest.type, "resume");
 assert.equal(inEditorRequest.content.summary, inEditorResume.summary);
 assert.equal(inEditorRequest.content.experience, inEditorResume.experience);
 assert.equal(inEditorRequest.content.skills, inEditorResume.skills);
+
+const importedEditorState = {
+  ...inEditorResume,
+  documentLanguage: "fr",
+  experience: "<p>Lancement d'un portail client.</p><p>Coordination produit.</p>",
+};
+const importTimeRequest = buildResumeTranslationRequest(importedEditorState, {
+  sourceLanguage: "fr",
+  targetLanguage: "en",
+  targetLanguageName: "English",
+});
+const onDemandRequest = buildResumeTranslationRequest(importedEditorState, {
+  sourceLanguage: "fr",
+  targetLanguage: "en",
+  targetLanguageName: "English",
+});
+
+assert.deepEqual(onDemandRequest.content, importTimeRequest.content, "import-time and on-demand translation should use the same serializer");
+assert.equal(onDemandRequest.content.experience, "Lancement d'un portail client.\nCoordination produit.");
+assert.deepEqual(serializeResumeTranslationContent({ summary: "  Bonjour&nbsp; ", experience: "<p>Ligne 1</p><p>Ligne 2</p>" }), {
+  summary: "Bonjour",
+  experience: "Ligne 1\nLigne 2",
+});
 
 const inEditorCopy = createTranslatedResumeCopy(inEditorResume, {
   title: "Digital Project Manager",
@@ -185,6 +210,10 @@ assert.match(app, /EVENTS\.TRANSLATION_COPY_CREATED/, "copy-created analytics sh
 assert.match(translationSource, /\/api\/translate-document/, "translation must call the dedicated backend endpoint");
 assert.match(translationSource, /title stays title, institution\/school stays institution\/school/, "translation rules must preserve education field mapping");
 assert.match(translationSource, /translation_limit_reached/, "frontend should handle worker translation limits");
+assert.match(translationSource, /class TranslationRequestError/, "translation helper should preserve API status and error codes");
+assert.match(workerSource, /translation_upstream_failed/, "worker should distinguish upstream failures from quota and network failures");
+assert.match(app, /translationErrorMessage/, "builder should map translation failures to specific localized messages");
+assert.match(app, /serializeResumeTranslationContent\(form\)/, "builder should use the shared serializer for on-demand translation state");
 assert.doesNotMatch(app, /callAi\("translate-resume"/, "translation must not use the generic frontend AI endpoint");
 assert.match(app, /translatedBadge/, "AI translated fields should show a review badge");
 assert.match(app, /bu\.acceptTranslation/, "review modal should use explicit translated-copy action copy");

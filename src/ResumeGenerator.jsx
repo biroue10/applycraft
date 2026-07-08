@@ -22,6 +22,7 @@ import {
   extractProtectedTerms,
   parseTranslationJson,
   postProcessTranslatedResume,
+  serializeResumeTranslationContent,
   translateDocumentContent,
   TRANSLATABLE_RESUME_FIELDS,
   TRANSLATION_STATUSES,
@@ -3618,6 +3619,25 @@ export default function ResumeGenerator() {
   const statusText = useCallback((key, values = {}) => (
     translateLabel(st[key] || STATUS_UI.en[key] || key, values)
   ), [st, translateLabel]);
+  const translationErrorMessage = useCallback((error) => {
+    switch (error?.message) {
+      case "translation-unavailable":
+        return statusText("translateUnavailable");
+      case "translation-rate-limited":
+        return statusText("translateRateLimited");
+      case "translation-timeout":
+      case "translation-network":
+        return statusText("translateNetworkFail");
+      case "translation-payload-too-large":
+        return statusText("translatePayloadTooLarge");
+      case "translation-invalid-request":
+      case "translation-bad-response":
+      case "translation-server":
+        return statusText("translateServerFail");
+      default:
+        return statusText("translateFail");
+    }
+  }, [statusText]);
   const accountText = useCallback((key, values = {}) => (
     translateLabel(at[key] || ACCT_UI.en[key] || key, values)
   ), [at, translateLabel]);
@@ -4244,7 +4264,8 @@ export default function ResumeGenerator() {
   }
 
   const selectedDocumentLanguageLabel = translationLanguageName(docLang);
-  const hasResumeTranslatableContent = TRANSLATABLE_RESUME_FIELDS.some((key) => String(form?.[key] || "").trim());
+  const resumeTranslationContent = serializeResumeTranslationContent(form);
+  const hasResumeTranslatableContent = Object.keys(resumeTranslationContent).length > 0;
   const detectedResumeContentLanguage = hasResumeTranslatableContent
     ? (form.translationMeta?.targetLanguage || form.documentLanguage || detectImportedResumeLanguage(resumeTranslationLanguageSample(form)))
     : "";
@@ -4406,7 +4427,7 @@ export default function ResumeGenerator() {
     setStatusMsg(statusText("translateStarted"));
     try {
       const request = buildResumeTranslationRequest(sourceForm, {
-        sourceLanguage: sourceForm.translationMeta?.targetLanguage || sourceForm.documentLanguage || detectImportedResumeLanguage(resumeTranslationLanguageSample(sourceForm)) || "auto",
+        sourceLanguage: detectImportedResumeLanguage(resumeTranslationLanguageSample(sourceForm)) || sourceForm.translationMeta?.targetLanguage || sourceForm.documentLanguage || "auto",
         targetLanguage: langCode,
         targetLanguageName: targetName,
       });
@@ -4509,9 +4530,7 @@ export default function ResumeGenerator() {
         setTimeout(() => setStatusMsg(""), 4500);
       }
     } catch (error) {
-      const message = error?.message === "translation-unavailable" ? statusText("translateUnavailable")
-        : error?.message === "translation-rate-limited" ? statusText("translateRateLimited")
-        : statusText("translateFail");
+      const message = translationErrorMessage(error);
       setTranslationConfirm((current) => ({ ...current, error: message }));
       setStatusMsg(message);
       setTimeout(() => setStatusMsg(""), 3500);
@@ -7113,9 +7132,7 @@ Awards: ${form.awards}`;
       setStatusMsg(statusText("translateSuccess"));
       setTimeout(() => setStatusMsg(""), 4500);
     } catch (error) {
-      const message = error?.message === "translation-unavailable" ? statusText("translateUnavailable")
-        : error?.message === "translation-rate-limited" ? statusText("translateRateLimited")
-        : statusText("translateFail");
+      const message = translationErrorMessage(error);
       setTranslationConfirm((current) => ({ ...current, error: message }));
       setStatusMsg(message);
       setTimeout(() => setStatusMsg(""), 3500);

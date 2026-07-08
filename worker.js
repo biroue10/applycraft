@@ -525,7 +525,7 @@ async function handleTranslateDocument(request, env) {
       });
     }
   }
-  const apiKey = env.ANTHROPIC_API_KEY;
+  const apiKey = String(env.ANTHROPIC_API_KEY || "").trim();
   if (!apiKey) return jsonResponse({ ok: false, error: "translation_unavailable" }, 503, cors.headers);
   const limitedBody = await readLimitedBody(request, MAX_TRANSLATION_BODY_BYTES);
   if (limitedBody.tooLarge) return jsonResponse({ ok: false, error: "payload_too_large" }, 413, cors.headers);
@@ -537,8 +537,15 @@ async function handleTranslateDocument(request, env) {
   }
   const validation = validateTranslationRequest(body);
   if (validation.error) {
-    const [, , status] = validation.error;
-    return jsonResponse({ ok: false, error: status === 413 ? "payload_too_large" : "invalid_request" }, status, cors.headers);
+    const [code, , status] = validation.error;
+    console.warn(JSON.stringify({
+      ts: new Date().toISOString(),
+      action: "translate-document",
+      ok: false,
+      validation_error: code,
+      status,
+    }));
+    return jsonResponse({ ok: false, error: status === 413 ? "payload_too_large" : "invalid_request", code }, status, cors.headers);
   }
 
   const promptParts = buildTranslationPrompt(validation.value);
@@ -567,13 +574,19 @@ async function handleTranslateDocument(request, env) {
     target_language: validation.value.targetLanguage,
     ok: upstream?.ok,
     status: upstream?.status,
+    upstream_code: upstream?.code || "",
     model: usedModel,
     duration_ms: Date.now() - started,
     size_bucket: validation.value.chars < 1000 ? "small" : validation.value.chars < 4000 ? "medium" : "large",
   }));
   if (!upstream.ok) {
     const status = upstream.code === "AI_TIMEOUT" ? 504 : 502;
-    return jsonResponse({ ok: false, error: upstream.code === "AI_TIMEOUT" ? "translation_timeout" : "translation_failed" }, status, cors.headers);
+    return jsonResponse({
+      ok: false,
+      error: upstream.code === "AI_TIMEOUT" ? "translation_timeout" : "translation_upstream_failed",
+      upstream_status: upstream.status || status,
+      upstream_code: upstream.code || "AI_REQUEST_FAILED",
+    }, status, cors.headers);
   }
   try {
     const parsed = parseAnthropicJson(upstream.output);
@@ -589,7 +602,7 @@ async function handleTranslateDocument(request, env) {
       document: translatedDocument,
     }, 200, cors.headers);
   } catch {
-    return jsonResponse({ ok: false, error: "translation_failed" }, 502, cors.headers);
+    return jsonResponse({ ok: false, error: "translation_bad_response" }, 502, cors.headers);
   }
 }
 
@@ -862,7 +875,7 @@ async function handleAi(request, env) {
     });
   }
 
-  const apiKey = env.ANTHROPIC_API_KEY;
+  const apiKey = String(env.ANTHROPIC_API_KEY || "").trim();
   if (!apiKey) {
     return errorResponse("AI_NOT_CONFIGURED", "AI is temporarily unavailable.", 503, cors.headers);
   }

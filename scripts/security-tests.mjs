@@ -17,7 +17,7 @@ function request(path, init = {}) {
 
 function env() {
   return {
-    ANTHROPIC_API_KEY: "test-key",
+    ANTHROPIC_API_KEY: " test-key\n",
     ASSETS: { fetch: async () => new Response("<!doctype html><title>ok</title>", { headers: { "Content-Type": "text/html" } }) },
   };
 }
@@ -86,6 +86,7 @@ async function testWorkerUpstreamControls() {
     assert.ok(!("metadata" in upstreamBody));
   }, async (_url, init) => {
     upstreamBody = JSON.parse(init.body);
+    assert.equal(init.headers["x-api-key"], "test-key");
     return new Response(JSON.stringify({ content: [{ type: "text", text: "Improved bullet." }] }), { headers: { "Content-Type": "application/json" } });
   });
 }
@@ -165,6 +166,7 @@ async function testTranslateDocumentEndpoint() {
     assert.ok(!("metadata" in upstreamBody));
   }, async (_url, init) => {
     upstreamBody = JSON.parse(init.body);
+    assert.equal(init.headers["x-api-key"], "test-key");
     return new Response(JSON.stringify({
       content: [{ type: "text", text: JSON.stringify({
         title: "محلل دعم فني من المستوى الثاني",
@@ -204,7 +206,20 @@ async function testTranslateDocumentEndpoint() {
       body: JSON.stringify(translationBody),
     }), env());
     assert.equal(response.status, 502);
-    assert.deepEqual(await readJson(response), { ok: false, error: "translation_failed" });
+    assert.deepEqual(await readJson(response), {
+      ok: false,
+      error: "translation_upstream_failed",
+      upstream_status: 500,
+      upstream_code: "AI_REQUEST_FAILED",
+    });
+  }, async () => new Response(JSON.stringify({ error: { message: "provider down" } }), { status: 500, headers: { "Content-Type": "application/json" } }));
+
+  await withMockFetch(async () => {
+    const response = await worker.fetch(request("/api/translate-document", {
+      body: JSON.stringify(translationBody),
+    }), env());
+    assert.equal(response.status, 502);
+    assert.deepEqual(await readJson(response), { ok: false, error: "translation_bad_response" });
   }, async () => new Response(JSON.stringify({ content: [{ type: "text", text: "not-json" }] }), { headers: { "Content-Type": "application/json" } }));
 
   await withMockFetch(async () => {

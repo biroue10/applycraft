@@ -41,6 +41,15 @@ export const TRANSLATABLE_RESUME_FIELDS = [
   "extracurricular",
 ];
 
+export class TranslationRequestError extends Error {
+  constructor(message, { status = 0, code = "translation_failed", body = null } = {}) {
+    super(message);
+    this.status = status;
+    this.code = code;
+    this.body = body;
+  }
+}
+
 export function extractProtectedTerms(value, glossary = PRESERVE_TERMS) {
   const text = String(value || "");
   const found = new Set();
@@ -56,12 +65,28 @@ export function extractProtectedTerms(value, glossary = PRESERVE_TERMS) {
   return Array.from(found);
 }
 
-export function buildResumeTranslationRequest(form, { sourceLanguage = "auto", targetLanguage = "en", targetLanguageName = "English" } = {}) {
+function normalizeTranslationText(value) {
+  return String(value || "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>\s*<p[^>]*>/gi, "\n")
+    .replace(/<\/?[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\u00a0/g, " ")
+    .replace(/\r\n?/g, "\n")
+    .trim();
+}
+
+export function serializeResumeTranslationContent(form) {
   const content = {};
   for (const key of TRANSLATABLE_RESUME_FIELDS) {
-    const value = String(form?.[key] || "").trim();
+    const value = normalizeTranslationText(form?.[key]);
     if (value) content[key] = value;
   }
+  return content;
+}
+
+export function buildResumeTranslationRequest(form, { sourceLanguage = "auto", targetLanguage = "en", targetLanguageName = "English" } = {}) {
+  const content = serializeResumeTranslationContent(form);
   const protectedTerms = Array.from(new Set(Object.values(content).flatMap((value) => extractProtectedTerms(value))));
   return {
     type: "resume",
@@ -139,29 +164,47 @@ export async function translateDocumentContent({
 } = {}) {
   const headers = { "Content-Type": "application/json" };
   if (devBypassToken && devBypassHeader && import.meta.env.VITE_DEV_BYPASS) headers[devBypassHeader] = devBypassToken;
-  const res = await fetch("/api/translate-document", {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      documentType,
-      sourceLanguage,
-      targetLanguage,
-      protectedTerms,
-      payload,
-    }),
-  });
+  const requestBody = {
+    documentType,
+    sourceLanguage,
+    targetLanguage,
+    protectedTerms,
+    payload,
+  };
+  let res;
+  try {
+    res = await fetch("/api/translate-document", {
+      method: "POST",
+      headers,
+      body: JSON.stringify(requestBody),
+    });
+  } catch (error) {
+    throw new TranslationRequestError("translation-network", {
+      status: 0,
+      code: "network_error",
+      body: { message: error?.message || "" },
+    });
+  }
   let data = null;
+  const status = res.status;
   try {
     data = await res.json();
   } catch {
-    throw new Error("translation-failed");
+    throw new TranslationRequestError("translation-bad-response", { status, code: "bad_json_response", body: null });
   }
   if (!res.ok || !data?.ok) {
-    if (data?.error === "translation_unavailable") throw new Error("translation-unavailable");
-    if (data?.error === "rate_limited" || data?.error === "translation_limit_reached") throw new Error("translation-rate-limited");
-    throw new Error("translation-failed");
+    const code = data?.error || (res.ok ? "translation_failed" : "http_error");
+    if (code === "translation_unavailable") throw new TranslationRequestError("translation-unavailable", { status, code, body: data });
+    if (code === "rate_limited" || code === "translation_limit_reached") throw new TranslationRequestError("translation-rate-limited", { status, code, body: data });
+    if (code === "translation_timeout") throw new TranslationRequestError("translation-timeout", { status, code, body: data });
+    if (code === "payload_too_large") throw new TranslationRequestError("translation-payload-too-large", { status, code, body: data });
+    if (code === "invalid_request" || code === "invalid_json") throw new TranslationRequestError("translation-invalid-request", { status, code, body: data });
+    if (code === "translation_bad_response") throw new TranslationRequestError("translation-bad-response", { status, code, body: data });
+    throw new TranslationRequestError("translation-server", { status, code, body: data });
   }
-  if (!data.document || typeof data.document !== "object") throw new Error("translation-failed");
+  if (!data.document || typeof data.document !== "object") {
+    throw new TranslationRequestError("translation-bad-response", { status, code: "missing_document", body: data });
+  }
   return data;
 }
 
