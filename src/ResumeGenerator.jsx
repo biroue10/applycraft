@@ -3275,7 +3275,7 @@ export default function ResumeGenerator() {
   const [exportSuccess, setExportSuccess] = useState("");
   const [aiPolished, setAiPolished] = useState(false);
   const [translating, setTranslating] = useState(false);
-  const [translationConfirm, setTranslationConfirm] = useState({ open: false, target: null });
+  const [translationConfirm, setTranslationConfirm] = useState({ open: false, target: null, error: "" });
   const [importLanguageNotice, setImportLanguageNotice] = useState({ open: false, detected: "", previous: "" });
   const [translationReview, setTranslationReview] = useState({ open: false, original: null, translated: null, fields: [], meta: null, warning: "" });
   const [translationDuplicate, setTranslationDuplicate] = useState({ open: false, existingId: "", target: null });
@@ -3634,6 +3634,9 @@ export default function ResumeGenerator() {
     };
     return localized[lang]?.[code] || languageByCode(code)?.name || code;
   }, [lang]);
+  const translationTargetLabel = useCallback((target, fallbackCode = docLang) => (
+    translationLanguageName(target?.code || fallbackCode || "en")
+  ), [docLang, translationLanguageName]);
   useEffect(() => {
     setTranslationUsage((usage) => {
       const next = { ...usage, limit: translationLimit };
@@ -4240,7 +4243,6 @@ export default function ResumeGenerator() {
     if (phoneError) setPhoneError(validatePhone(e.target.value));
   }
 
-  const selectedDocumentLanguageName = selectedDocumentLang?.native || selectedDocumentLang?.name || docLang;
   const selectedDocumentLanguageLabel = translationLanguageName(docLang);
   const hasResumeTranslatableContent = TRANSLATABLE_RESUME_FIELDS.some((key) => String(form?.[key] || "").trim());
   const detectedResumeContentLanguage = hasResumeTranslatableContent
@@ -4284,7 +4286,7 @@ export default function ResumeGenerator() {
       setTimeout(() => setStatusMsg(""), 3500);
       return;
     }
-    setTranslationConfirm({ open: true, target: selectedDocumentLang || languageByCode(langCode), kind: "resume" });
+    setTranslationConfirm({ open: true, target: selectedDocumentLang || languageByCode(langCode), kind: "resume", error: "" });
   }
 
   function requestResumeRetranslation() {
@@ -4308,6 +4310,7 @@ export default function ResumeGenerator() {
       kind: "resume",
       retranslate: true,
       sourceResumeId: sourceId,
+      error: "",
     });
   }
 
@@ -4394,11 +4397,11 @@ export default function ResumeGenerator() {
     if (translating) return;
     const confirm = translationConfirm;
     const langCode = confirm.target?.code || docLang || "en";
-    const targetName = confirm.target?.native || confirm.target?.name || selectedDocumentLang?.native || selectedDocumentLang?.name || langCode;
+    const targetName = translationLanguageName(langCode);
     const sourceResume = confirm.retranslate && confirm.sourceResumeId ? resumes.getResume(confirm.sourceResumeId) : null;
     const sourceForm = sourceResume?.data ? migrateForm({ ...emptyResumeForm, ...sourceResume.data }) : form;
     const sourceVersionId = confirm.retranslate ? confirm.sourceResumeId : currentResumeId;
-    setTranslationConfirm({ open: false, target: null });
+    setTranslationConfirm((current) => ({ ...current, error: "" }));
     setTranslating(true);
     setStatusMsg(statusText("translateStarted"));
     try {
@@ -4408,12 +4411,16 @@ export default function ResumeGenerator() {
         targetLanguageName: targetName,
       });
       if (Object.keys(request.content).length === 0) {
-        setStatusMsg(statusText("translateNoContent"));
+        const message = statusText("translateNoContent");
+        setTranslationConfirm((current) => ({ ...current, error: message }));
+        setStatusMsg(message);
         setTimeout(() => setStatusMsg(""), 3000);
         return;
       }
       if (translationLimitReached) {
-        setStatusMsg(statusText("translateLimitReached"));
+        const message = statusText("translateLimitReached");
+        setTranslationConfirm((current) => ({ ...current, error: message }));
+        setStatusMsg(message);
         setTimeout(() => setStatusMsg(""), 3500);
         return;
       }
@@ -4480,6 +4487,7 @@ export default function ResumeGenerator() {
         return postProcessTranslatedResume(next, langCode);
       })();
       const preservedSections = nextForm.translationMeta?.preservedSections || [];
+      setTranslationConfirm({ open: false, target: null, error: "" });
       setTranslationReview({
         open: true,
         original: originalSnapshot,
@@ -4501,9 +4509,11 @@ export default function ResumeGenerator() {
         setTimeout(() => setStatusMsg(""), 4500);
       }
     } catch (error) {
-      setStatusMsg(error?.message === "translation-unavailable" ? statusText("translateUnavailable")
+      const message = error?.message === "translation-unavailable" ? statusText("translateUnavailable")
         : error?.message === "translation-rate-limited" ? statusText("translateRateLimited")
-        : statusText("translateFail"));
+        : statusText("translateFail");
+      setTranslationConfirm((current) => ({ ...current, error: message }));
+      setStatusMsg(message);
       setTimeout(() => setStatusMsg(""), 3500);
     } finally {
       setTranslating(false);
@@ -5957,7 +5967,7 @@ Awards: ${form.awards}`;
       ? translateLabel(bu.alreadyTranslatedTo, { language: selectedDocumentLanguageLabel })
       : translating
         ? bu.translatingContentButton
-        : translateLabel(bu.translateContentButton, { language: selectedDocumentLang?.native || selectedDocumentLang?.name || docLang });
+        : translateLabel(bu.translateContentButton, { language: selectedDocumentLanguageLabel });
   const translationButtonDisabled = translating || translationLimitReached || activeTranslatedToSelected || !hasResumeTranslatableContent;
   const versionOptionLabel = useCallback((resume) => {
     const meta = resume?.data?.translationMeta || {};
@@ -6199,7 +6209,7 @@ Awards: ${form.awards}`;
             <button type="button"
               onClick={() => {
                 const target = languageByCode(importLanguageNotice.previous);
-                setTranslationConfirm({ open: true, target, kind: "resume" });
+                setTranslationConfirm({ open: true, target, kind: "resume", error: "" });
                 setImportLanguageNotice({ open: false, detected: "", previous: "" });
               }}
               style={{ border: "none", background: `${C.accent}18`, color: C.accent2, borderRadius: 8,
@@ -6801,7 +6811,7 @@ Awards: ${form.awards}`;
             style={{ width: "min(560px, 100%)", background: C.surface, color: C.text1, borderRadius: 14,
               boxShadow: "0 26px 80px rgba(0,0,0,0.52)", padding: 20, direction: rtl ? "rtl" : "ltr" }}>
             <h2 id="resume-translation-duplicate-title" style={{ margin: 0, fontSize: 18, lineHeight: 1.25 }}>
-              {translateLabel(bu.existingTranslationTitle, { language: translationDuplicate.target?.name || selectedDocumentLang?.name || docLang })}
+              {translateLabel(bu.existingTranslationTitle, { language: translationTargetLabel(translationDuplicate.target) })}
             </h2>
             <p style={{ margin: "10px 0 16px", color: C.text2, fontSize: 13.5, lineHeight: 1.55 }}>
               {bu.existingTranslationBody}
@@ -6832,6 +6842,7 @@ Awards: ${form.awards}`;
                     kind: "resume",
                     retranslate: true,
                     sourceResumeId: currentResumeId,
+                    error: "",
                   });
                 }}
                 style={{ border: "none", background: C.elevated, color: C.text1, borderRadius: 9,
@@ -6847,7 +6858,7 @@ Awards: ${form.awards}`;
           role="dialog"
           aria-modal="true"
           aria-labelledby="resume-translation-confirm-title"
-          onClick={() => setTranslationConfirm({ open: false, target: null })}
+          onClick={() => !translating && setTranslationConfirm({ open: false, target: null, error: "" })}
           style={{ position: "fixed", inset: 0, zIndex: 9600, background: "rgba(0,0,0,0.62)",
             display: "flex", alignItems: "center", justifyContent: "center", padding: 18 }}
         >
@@ -6857,17 +6868,24 @@ Awards: ${form.awards}`;
             <h2 id="resume-translation-confirm-title" style={{ margin: 0, fontSize: 18, lineHeight: 1.25 }}>
               {translationConfirm.retranslate
                 ? bu.retranslateFromOriginal
-                : translateLabel(translationConfirm.kind === "cover" ? cu.translateContentButton : bu.translateContentButton, { language: translationConfirm.target?.native || translationConfirm.target?.name || docLang })}
+                : translateLabel(translationConfirm.kind === "cover" ? cu.translateContentButton : bu.translateContentButton, { language: translationTargetLabel(translationConfirm.target) })}
             </h2>
             <p style={{ margin: "10px 0 16px", color: C.text2, fontSize: 13.5, lineHeight: 1.55 }}>
               {translationConfirm.retranslate
                 ? bu.retranslateConfirm
                 : translationConfirm.kind === "cover" ? cu.translateContentConfirm : bu.translateContentConfirm}
             </p>
+            {translationConfirm.error && (
+              <div role="alert" style={{ margin: "0 0 14px", background: "#ef444418", border: "1px solid #ef444455",
+                color: C.text1, borderRadius: 10, padding: "10px 12px", fontSize: 12.5, lineHeight: 1.45 }}>
+                {translationConfirm.error}
+              </div>
+            )}
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", flexWrap: "wrap" }}>
-              <button type="button" onClick={() => setTranslationConfirm({ open: false, target: null })}
+              <button type="button" onClick={() => setTranslationConfirm({ open: false, target: null, error: "" })} disabled={translating}
                 style={{ border: "none", background: C.elevated, color: C.text1, borderRadius: 9,
-                  padding: "10px 14px", fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                  padding: "10px 14px", fontSize: 13, fontWeight: 800, cursor: translating ? "not-allowed" : "pointer", fontFamily: "inherit",
+                  opacity: translating ? 0.7 : 1 }}>
                 {bu.translateContentCancelButton}
               </button>
               <button type="button" onClick={translationConfirm.kind === "cover" ? translateCoverLetter : translateCV} disabled={translating}
@@ -7039,17 +7057,19 @@ Awards: ${form.awards}`;
 
   async function translateCoverLetter() {
     if (translating) return;
-    const langCode = docLang || "en";
-    if (langCode === "en") return;
-    const targetName = selectedDocumentLang?.native || selectedDocumentLang?.name || langCode;
+    const confirm = translationConfirm;
+    const langCode = confirm.target?.code || docLang || "en";
+    const targetName = translationLanguageName(langCode);
     const contentKeys = ["jobTitle", "subject", "opening", "body", "closing", "signoff"];
     const content = Object.fromEntries(contentKeys.filter((key) => coverForm[key]?.trim()).map((key) => [key, coverForm[key]]));
     if (!Object.keys(content).length) {
-      setStatusMsg(statusText("translateNoContent"));
+      const message = statusText("translateNoContent");
+      setTranslationConfirm((current) => ({ ...current, error: message }));
+      setStatusMsg(message);
       setTimeout(() => setStatusMsg(""), 3000);
       return;
     }
-    setTranslationConfirm({ open: false, target: null });
+    setTranslationConfirm((current) => ({ ...current, error: "" }));
     setTranslating(true);
     setStatusMsg(statusText("translateStarted"));
     try {
@@ -7089,12 +7109,15 @@ Awards: ${form.awards}`;
           }])),
         },
       }));
+      setTranslationConfirm({ open: false, target: null, error: "" });
       setStatusMsg(statusText("translateSuccess"));
       setTimeout(() => setStatusMsg(""), 4500);
     } catch (error) {
-      setStatusMsg(error?.message === "translation-unavailable" ? statusText("translateUnavailable")
+      const message = error?.message === "translation-unavailable" ? statusText("translateUnavailable")
         : error?.message === "translation-rate-limited" ? statusText("translateRateLimited")
-        : statusText("translateFail"));
+        : statusText("translateFail");
+      setTranslationConfirm((current) => ({ ...current, error: message }));
+      setStatusMsg(message);
       setTimeout(() => setStatusMsg(""), 3500);
     } finally {
       setTranslating(false);
@@ -7570,13 +7593,13 @@ Awards: ${form.awards}`;
                     uiBadge={builderText("langBadgeUi")}
                   />
                   {docLang !== "en" && (
-                    <button type="button" onClick={() => setTranslationConfirm({ open: true, target: selectedDocumentLang || languageByCode(docLang), kind: "cover" })}
+                    <button type="button" onClick={() => setTranslationConfirm({ open: true, target: selectedDocumentLang || languageByCode(docLang), kind: "cover", error: "" })}
                       disabled={translating}
                       title={cu.translateContentHint}
                       style={{ width: "100%", marginTop: 10, minHeight: 36, borderRadius: 8, border: "none",
                         background: `${C.accent}18`, color: translating ? C.text3 : C.accent2,
                         fontSize: 12.5, fontWeight: 850, cursor: translating ? "wait" : "pointer", fontFamily: "inherit" }}>
-                      {translating ? cu.translatingContentButton : translateLabel(cu.translateContentButton, { language: selectedDocumentLang.native || selectedDocumentLang.name })}
+                      {translating ? cu.translatingContentButton : translateLabel(cu.translateContentButton, { language: selectedDocumentLanguageLabel })}
                     </button>
                   )}
                   {coverForm.translationMeta?.fields && (

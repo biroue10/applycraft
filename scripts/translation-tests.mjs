@@ -73,6 +73,44 @@ assert.equal(copy.translationMeta.fields.summary.targetLanguage, "ar");
 assert.equal(copy.translationMeta.sourceVersionId, "original-en");
 assert.equal(copy.translationMeta.reviewed, false);
 
+const inEditorResume = {
+  name: "Sofia Amrani",
+  email: "sofia@example.com",
+  title: "Cheffe de projet digital",
+  summary: "Pilotage de projets web et coordination des équipes produit.",
+  experience: "Lancement d'un portail client avec réduction des délais de traitement.",
+  skills: "Gestion de projet, UX, Analytics",
+};
+
+const inEditorRequest = buildResumeTranslationRequest(inEditorResume, {
+  sourceLanguage: "fr",
+  targetLanguage: "en",
+  targetLanguageName: "English",
+});
+
+assert.equal(inEditorRequest.type, "resume");
+assert.equal(inEditorRequest.content.summary, inEditorResume.summary);
+assert.equal(inEditorRequest.content.experience, inEditorResume.experience);
+assert.equal(inEditorRequest.content.skills, inEditorResume.skills);
+
+const inEditorCopy = createTranslatedResumeCopy(inEditorResume, {
+  title: "Digital Project Manager",
+  summary: "Led web projects and coordinated product teams.",
+  experience: "Launched a client portal that reduced processing time.",
+  skills: "Project management, UX, Analytics",
+}, {
+  sourceLanguage: "fr",
+  targetLanguage: "en",
+  targetLanguageName: "English",
+  translatedAt: "2026-07-03T00:00:00.000Z",
+  sourceVersionId: "",
+});
+
+assert.equal(inEditorCopy.summary, "Led web projects and coordinated product teams.");
+assert.equal(inEditorCopy.translationMeta.fields.summary.translationStatus, TRANSLATION_STATUSES.aiTranslated);
+assert.equal(inEditorCopy.translationMeta.targetLanguage, "en");
+assert.equal(inEditorCopy.translationMeta.reviewed, false);
+
 const structuredArabic = postProcessTranslatedResume({
   educationEntries: [{
     title: "دبلوم مهندس دولة في المعلوماتية",
@@ -104,6 +142,15 @@ assert.match(app, /setTranslationConfirm\(\{ open: true/, "translation must requ
 assert.match(app, /setTranslationReview\(\{\s*open: true/, "translation should open a review modal before applying translated content");
 const translateCvSource = app.slice(app.indexOf("async function translateCV"), app.indexOf("function scrollToError"));
 assert.doesNotMatch(translateCvSource, /if \(langCode === "en"\) return;/, "resume content translation must support English as an on-demand target");
+const translateCvBeforeServiceCall = translateCvSource.slice(0, translateCvSource.indexOf("const response = await translateDocumentContent"));
+assert.doesNotMatch(translateCvBeforeServiceCall, /setTranslationConfirm\(\{\s*open:\s*false/, "on-demand resume translation must keep the confirmation modal open while loading");
+assert.match(translateCvSource, /setTranslating\(true\);[\s\S]{0,1800}const response = await translateDocumentContent/, "on-demand resume translation should show loading before the shared service call");
+assert.match(translateCvSource, /setTranslationReview\(\{\s*open: true/, "on-demand resume translation should open the shared diff review modal");
+assert.match(translateCvSource, /setTranslationConfirm\(\(current\) => \(\{ \.\.\.current, error: message \}\)\)/, "translation failures should render a modal-local error instead of failing silently");
+assert.match(app, /translationConfirm\.error && \([\s\S]{0,220}<div role="alert"/, "translation confirmation modal should expose localized failure text");
+assert.match(app, /translationTargetLabel\(translationConfirm\.target\)/, "translation confirmation title should use localized target language names");
+assert.doesNotMatch(app, /translateContentButton[\s\S]{0,180}target\?\.native \|\| translationConfirm\.target\?\.name/, "translation confirmation title must not interpolate raw native language names");
+assert.doesNotMatch(app, /translateContentButton[\s\S]{0,180}selectedDocumentLang(?:\?|\.)\.native \|\| selectedDocumentLang(?:\?|\.)\.name/, "translation entry point labels must use UI-localized language names");
 assert.match(app, /showDocumentLanguageTranslationPrompt/, "changing document labels to a different content language should surface an explicit translation prompt");
 assert.match(app, /documentLanguageContentPrompt/, "document-language mismatch prompt should use localized copy");
 assert.match(app, /resumeTranslationLanguageSample\(sourceForm\)/, "translation source language should be detected from resume content, not only document labels");
