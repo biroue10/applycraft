@@ -14,6 +14,8 @@ if (!existsSync(ROBOTS)) {
 } else {
   const text = readFileSync(ROBOTS, "utf8");
   if (!text.endsWith("\n")) fail("robots.txt must end with a newline");
+  const directiveLines = text.split(/\r?\n/).filter((line) => /^\s*(?:User-agent|Allow|Disallow|Sitemap|Content-Signal):/i.test(line));
+  if (directiveLines.length < 25) fail(`robots.txt appears minified or incomplete: expected at least 25 directive lines, found ${directiveLines.length}`);
   const directiveRe = /\b(?:User-agent|Allow|Disallow|Sitemap|Content-Signal):/gi;
   for (const [index, line] of text.split(/\r?\n/).entries()) {
     if (/^\s*#/.test(line)) continue;
@@ -52,10 +54,13 @@ if (!existsSync(ROBOTS)) {
   const wildcardBlocks = userAgentBlocks.filter((block) => /^User-agent:\s*\*/im.test(block));
   if (wildcardBlocks.length > 1) fail(`expected at most one User-agent: * block, found ${wildcardBlocks.length}`);
   if (wildcardBlocks.some((block) => /^Disallow:\s*\/\s*$/im.test(block))) fail("User-agent: * must not disallow /");
-  if (!/Sitemap:\s*https:\/\/applycraft\.io\/sitemap\.xml/i.test(text)) fail("robots.txt must expose sitemap.xml");
-  if (/BEGIN Cloudflare Managed content/i.test(text) || /Content-Signal:/i.test(text)) {
-    fail("Cloudflare Managed Content Signals are injected in production and must not be duplicated in public/robots.txt");
+  if (wildcardBlocks.length !== 1) fail("User-agent: * block missing");
+  if (wildcardBlocks.length === 1 && !/^Content-Signal:\s*search=yes,ai-train=no,use=reference\s*$/im.test(wildcardBlocks[0])) {
+    fail("User-agent: * must keep the AI/training Content-Signal exactly once");
   }
+  if (!/Sitemap:\s*https:\/\/applycraft\.io\/sitemap\.xml/i.test(text)) fail("robots.txt must expose sitemap.xml");
+  const contentSignalCount = (text.match(/^Content-Signal:/gim) || []).length;
+  if (contentSignalCount !== 1) fail(`expected exactly one Content-Signal directive, found ${contentSignalCount}`);
 
   for (const bot of ["Googlebot", "Googlebot-Image", "Bingbot"]) {
     const block = userAgentBlocks.find((candidate) => new RegExp(`^User-agent:\\s*${bot}\\s*$`, "im").test(candidate));
@@ -68,7 +73,8 @@ if (!existsSync(ROBOTS)) {
 
   for (const bot of cloudflareManagedAgents) {
     const block = userAgentBlocks.find((candidate) => new RegExp(`^User-agent:\\s*${bot}\\s*$`, "im").test(candidate));
-    if (block) fail(`${bot} is managed by Cloudflare and must not be repeated in public/robots.txt`);
+    if (!block) fail(`${bot} block missing`);
+    else if (!/^Disallow:\s*\/\s*$/im.test(block)) fail(`${bot} must disallow /`);
   }
 }
 

@@ -48,7 +48,8 @@ function appSchema(lang) {
   return JSON.stringify({
     "@context": "https://schema.org",
     "@type": ["WebApplication", "SoftwareApplication"],
-    name: "ApplyCraft",
+    name: "ApplyCraft.io",
+    alternateName: "ApplyCraft",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     url: `${SITE}/`,
@@ -89,7 +90,7 @@ function page(config) {
 <link rel="canonical" href="${canonical}"/>
 ${alternates(config.alternates)}
 <meta property="og:type" content="website"/>
-<meta property="og:site_name" content="ApplyCraft"/>
+<meta property="og:site_name" content="ApplyCraft.io"/>
 <meta property="og:locale" content="${config.ogLocale}"/>
 ${localeAlternates(config.ogAlternateLocales)}
 <meta property="og:url" content="${canonical}"/>

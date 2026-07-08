@@ -30,6 +30,10 @@ function localizeInternalAnchors(html, lang) {
 function refreshProductCounts(html) {
   const count = PRODUCT.resumeTemplateCount;
   return html
+    .replace(/\b22 templates\b/g, `${count} templates`)
+    .replace(/\b22 modèles\b/g, `${count} modèles`)
+    .replace(/\b22 قالباً/g, `${count} قالباً`)
+    .replace(/\b22 قالب\b/g, `${count} قالب`)
     .replace(/\b46 templates\b/g, `${count} templates`)
     .replace(/\b46 modèles\b/g, `${count} modèles`)
     .replace(/\b46 قالباً/g, `${count} قالباً`)

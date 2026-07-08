@@ -1,5 +1,5 @@
 const footer = {
-  "brand": "Free resume and cover letter builder with {tpl} templates, free PDF and DOCX exports, no watermark, no signup, browser-first editing, and production-ready English, French, and Arabic localization.",
+  "brand": "ApplyCraft.io — Free Resume & Cover Letter Builder. {tpl} templates, PDF/DOCX, no watermark, no signup, EN/FR/AR",
   "product": "Product",
   "company": "Company",
   "resources": "Resources",

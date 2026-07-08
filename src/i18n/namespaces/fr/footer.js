@@ -1,5 +1,5 @@
 const footer = {
-  "brand": "Créateur gratuit de CV et de lettres de motivation pour le marché mondial. Rédigez dans n'importe quelle langue, avec une prise en charge complète en anglais, français et arabe, {tpl} modèles, sans inscription.",
+  "brand": "ApplyCraft.io — Créateur gratuit de CV et lettres. {tpl} modèles, PDF/DOCX, sans filigrane, sans inscription, EN/FR/AR",
   "product": "Produit",
   "company": "Entreprise",
   "resources": "Ressources",

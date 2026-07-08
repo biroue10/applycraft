@@ -1,7 +1,7 @@
 // ──────────────────────────────────────────────────────────────────────────
 // ATS engine + scoring tests (Phase 3). Pure, SSR-safe — no browser needed.
 // Run: npm run test:ats
-// Covers tokenization/keyword matching for all 5 interface languages plus the
+// Covers tokenization/keyword matching for supported interface languages plus the
 // centralized, documented scoring rules.
 // ──────────────────────────────────────────────────────────────────────────
 import assert from "node:assert/strict";

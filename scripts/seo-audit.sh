@@ -225,7 +225,13 @@ for (const filePath of htmlFiles) {
     canonical: link(html, "canonical"),
     robots: meta(html, "robots"),
     h1: visibleH1Count(html),
+    ogTitle: prop(html, "og:title"),
+    ogDescription: prop(html, "og:description"),
+    ogUrl: prop(html, "og:url"),
     ogImage: prop(html, "og:image"),
+    twitterCard: meta(html, "twitter:card"),
+    twitterTitle: meta(html, "twitter:title"),
+    twitterDescription: meta(html, "twitter:description"),
     twitterImage: meta(html, "twitter:image"),
     noindex: isNoindex(html),
   };
@@ -247,13 +253,21 @@ for (const page of pages) {
   if (!page.canonical) errors.push(`${label}: missing canonical URL`);
   if (!page.appShell && page.h1 !== 1) errors.push(`${label}: expected exactly one H1, found ${page.h1}`);
   if (page.canonical && !page.canonical.startsWith(SITE + "/")) errors.push(`${label}: canonical must use ${SITE}`);
+  if (!page.ogTitle) errors.push(`${label}: missing og:title`);
+  if (!page.ogDescription) errors.push(`${label}: missing og:description`);
+  if (!page.ogUrl) errors.push(`${label}: missing og:url`);
+  if (page.ogUrl && page.canonical && page.ogUrl !== page.canonical) errors.push(`${label}: og:url must match canonical URL`);
   if (page.ogImage && !imageExists(page.ogImage)) errors.push(`${label}: og:image does not map to an existing public file: ${page.ogImage}`);
   if (!page.ogImage) errors.push(`${label}: missing og:image`);
+  if (!page.twitterCard) errors.push(`${label}: missing twitter:card`);
+  if (!page.twitterTitle) errors.push(`${label}: missing twitter:title`);
+  if (!page.twitterDescription) errors.push(`${label}: missing twitter:description`);
   if (!page.twitterImage) errors.push(`${label}: missing twitter:image`);
   if (page.twitterImage && !imageExists(page.twitterImage)) errors.push(`${label}: twitter:image does not map to an existing public file: ${page.twitterImage}`);
   if (/localhost|127\.0\.0\.1|0\.0\.0\.0|\.test|\.local/i.test(page.html)) errors.push(`${label}: development URL detected`);
   if (/<meta[^>]+name=["']keywords["']/i.test(page.html)) errors.push(`${label}: obsolete meta keywords tag found`);
-  if (/\b46 templates\b|\b46 modèles\b|\b46 قالب/u.test(page.html)) errors.push(`${label}: hardcoded old 46-template product count detected`);
+  if (/\b(?:22|46) templates\b|\b(?:22|46) modèles\b|\b(?:22|46) قالب/u.test(page.html)) errors.push(`${label}: stale resume template count detected`);
+  if (/50\+\s*languages|99\s+languages|\ball languages\b/i.test(page.html)) errors.push(`${label}: stale or overbroad language claim detected`);
   if (/83%\s+of\s+hiring\s+managers/i.test(page.html)) errors.push(`${label}: unsupported cover-letter statistic detected`);
   if (/\bunder 5 minutes\b|\bless than 5 minutes\b|\ben moins de 5 minutes\b|في أقل من 5 دقائق/iu.test(page.html)) errors.push(`${label}: overly precise time-to-finish promise detected`);
   if (page.route === "/cover-letter-builder/" && /Build My Resume Free/i.test(page.html)) errors.push(`${label}: cover-letter CTA says resume`);
@@ -264,13 +278,25 @@ for (const page of pages) {
   }
 
   const jsonLdBlocks = [...page.html.matchAll(/<script[^>]+application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi)];
+  const jsonLdTypes = [];
   for (let i = 0; i < jsonLdBlocks.length; i += 1) {
     try {
-      JSON.parse(jsonLdBlocks[i][1].trim());
+      const parsed = JSON.parse(jsonLdBlocks[i][1].trim());
+      const type = parsed?.["@type"];
+      if (Array.isArray(type)) jsonLdTypes.push(...type);
+      else if (type) jsonLdTypes.push(type);
     } catch (error) {
       errors.push(`${label}: invalid JSON-LD block ${i + 1}: ${error.message}`);
     }
   }
+  const hasSchemaType = (types) => types.some((type) => jsonLdTypes.includes(type));
+  if (["/", "/fr/", "/ar/"].includes(page.route) && !hasSchemaType(["Organization", "WebApplication", "SoftwareApplication", "FAQPage"])) {
+    errors.push(`${label}: homepage must include Organization/WebApplication/FAQ JSON-LD`);
+  }
+  if (page.route === "/cover-letter-builder/" && !hasSchemaType(["FAQPage", "BreadcrumbList", "WebPage"])) errors.push(`${label}: cover-letter page missing expected JSON-LD`);
+  if (page.route === "/ats-checker/" && !hasSchemaType(["SoftwareApplication", "FAQPage"])) errors.push(`${label}: ATS checker page missing expected JSON-LD`);
+  if (page.route === "/fr/blog/exemple-cv-maroc/" && !hasSchemaType(["Article", "FAQPage", "BreadcrumbList"])) errors.push(`${label}: Morocco CV article missing expected JSON-LD`);
+  if (page.route === "/fr/creer-cv-etudiant/" && !hasSchemaType(["FAQPage", "BreadcrumbList", "WebPage"])) errors.push(`${label}: French student CV page missing expected JSON-LD`);
 }
 
 auditManifestIcons();

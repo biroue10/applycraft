@@ -81,8 +81,8 @@ function walkHtml(dir) {
   }
   return out;
 }
-const outdatedLocalizedClaimRe = /99 document languages|99 langues de document|99 idiomas de documento|99 Dokumentsprachen/gi;
-const staleTemplateCountRe = /\b46 templates\b|\b46 modèles\b|\b46 قالب/u;
+const outdatedLocalizedClaimRe = /50\+\s*languages|50\+\s*langues|50\+\s*لغة|99\s+languages|99\s+document languages|99\s+langues|99\s+لغات|all languages/giu;
+const staleTemplateCountRe = /\b22 templates\b|\b22 modèles\b|\b22 قالب|\b46 templates\b|\b46 modèles\b|\b46 قالب/u;
 const unsupportedCoverLetterStatRe = /83%\s+of\s+hiring\s+managers/i;
 const htmlFiles = walkHtml(path.join(root, "public"));
 const claimMismatches = [];
@@ -96,7 +96,7 @@ for (const f of htmlFiles) {
   const unsupportedStat = html.match(unsupportedCoverLetterStatRe);
   if (unsupportedStat) unsupportedStats.push(`${path.relative(root, f)}: "${unsupportedStat[0]}"`);
 }
-check("static HTML avoids inaccurate 99 localized language claims", () =>
+check("static HTML avoids stale broad language claims", () =>
   assert.equal(claimMismatches.length, 0,
     `outdated language claims:\n       ${claimMismatches.join("\n       ")}`));
 check("static HTML avoids hardcoded old resume template counts", () =>

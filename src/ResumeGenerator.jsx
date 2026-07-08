@@ -1954,6 +1954,9 @@ const HERO_PREVIEW_COPY = {
     projectTitle: "Career Match Engine",
     projectCompany: "Internal platform",
     projectBullets: ["Mapped job descriptions to measurable resume achievements."],
+    atsFriendly: "ATS friendly",
+    aiSuggestions: "AI tips",
+    aiSuggestionItems: [],
   },
   fr: {
     aria: "Exemple de CV professionnel",
@@ -1978,6 +1981,9 @@ const HERO_PREVIEW_COPY = {
     projectTitle: "Moteur de correspondance emploi",
     projectCompany: "Plateforme interne",
     projectBullets: ["Association des offres d'emploi à des réalisations mesurables du CV."],
+    atsFriendly: "Compatible ATS",
+    aiSuggestions: "Conseils IA",
+    aiSuggestionItems: [],
   },
   ar: {
     aria: "نموذج سيرة ذاتية احترافية",
@@ -2002,6 +2008,9 @@ const HERO_PREVIEW_COPY = {
     projectTitle: "محرك مطابقة الوظائف",
     projectCompany: "منصة داخلية",
     projectBullets: ["ربط أوصاف الوظائف بإنجازات قابلة للقياس في السيرة الذاتية."],
+    atsFriendly: "متوافق مع ATS",
+    aiSuggestions: "اقتراحات IA",
+    aiSuggestionItems: [],
   },
 };
 
@@ -2159,7 +2168,7 @@ function HeroResumePreview({ isMobile, lang = "en" }) {
             ))}
           </div>
 
-          <div aria-label="ATS Friendly" style={{ ...panel, position: "absolute", top: compact ? 62 : 84,
+          <div aria-label={sample.atsFriendly} style={{ ...panel, position: "absolute", top: compact ? 62 : 84,
             left: compact ? 4 : -28, borderRadius: 999, padding: compact ? "7px 10px" : "9px 13px",
             display: "inline-flex", alignItems: "center", gap: 6, color: "#166534",
             fontSize: compact ? 10.5 : 12, fontWeight: 800 }}>
@@ -2167,7 +2176,7 @@ function HeroResumePreview({ isMobile, lang = "en" }) {
               display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
               <LineIcon name="check" size={12} color="#16a34a" />
             </span>
-            ATS Friendly
+            {sample.atsFriendly}
           </div>
 
           <div style={{ ...panel, position: "absolute", right: compact ? 4 : -44,
@@ -2176,9 +2185,9 @@ function HeroResumePreview({ isMobile, lang = "en" }) {
             <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7,
               fontSize: compact ? 11.5 : 12.5, fontWeight: 900 }}>
               <LineIcon name="spark" size={14} color={accent} />
-              AI-powered suggestions
+              {sample.aiSuggestions}
             </div>
-            {["Improved your achievement with measurable results.", "Rewrote this bullet using stronger action verbs."].map(item => (
+            {sample.aiSuggestionItems.map(item => (
               <p key={item} style={{ display: "flex", gap: 6, margin: "5px 0 0", fontSize: compact ? 9.5 : 10.5,
                 lineHeight: 1.4, color: text.muted }}>
                 <LineIcon name="check" size={11} color="#16a34a" style={{ marginTop: 1 }} />

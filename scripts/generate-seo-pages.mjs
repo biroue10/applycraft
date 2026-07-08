@@ -187,7 +187,7 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
 <meta name="description" content="${description}"/>
 <link rel="canonical" href="${canonical}"/>${alternateLinks}
 <meta property="og:type" content="website"/>
-<meta property="og:site_name" content="ApplyCraft"/>
+<meta property="og:site_name" content="ApplyCraft.io"/>
 <meta property="og:locale" content="${ogLocale}"/>
 ${ogAlternateLocales.map((locale) => `<meta property="og:locale:alternate" content="${locale}"/>`).join("\n")}
 <meta property="og:url" content="${canonical}"/>
@@ -223,7 +223,7 @@ ${ogAlternateLocales.map((locale) => `<meta property="og:locale:alternate" conte
     name: title,
     description,
     url: canonical,
-    publisher: { "@type": "Organization", name: "ApplyCraft", url: SITE },
+    publisher: { "@type": "Organization", name: "ApplyCraft.io", alternateName: "ApplyCraft", url: SITE },
   })}</script>
 </head>
 <body>

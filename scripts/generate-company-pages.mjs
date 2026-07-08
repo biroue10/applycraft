@@ -22,9 +22,9 @@ function shell(title, description, canonicalPath, content, extraHead = "") {
 <meta name="description" content="${description}"/>
 <link rel="canonical" href="${SITE}${canonicalPath}"/>
 <meta property="og:type" content="website"/>
-<meta property="og:site_name" content="ApplyCraft"/>
+<meta property="og:site_name" content="ApplyCraft.io"/>
 <meta property="og:locale" content="en_US"/>
-<meta property="og:title" content="${title} | ApplyCraft"/>
+<meta property="og:title" content="${title} | ApplyCraft.io"/>
 <meta property="og:description" content="${description}"/>
 <meta property="og:url" content="${SITE}${canonicalPath}"/>
 <meta property="og:image" content="${SOCIAL_IMAGE}"/>
@@ -34,7 +34,7 @@ function shell(title, description, canonicalPath, content, extraHead = "") {
 <meta property="og:image:height" content="630"/>
 <meta property="og:image:alt" content="${SOCIAL_IMAGE_ALT}"/>
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="${title} | ApplyCraft"/>
+<meta name="twitter:title" content="${title} | ApplyCraft.io"/>
 <meta name="twitter:description" content="${description}"/>
 <meta name="twitter:image" content="${SOCIAL_IMAGE}"/>
 <meta name="twitter:image:alt" content="${SOCIAL_IMAGE_ALT}"/>
@@ -47,6 +47,14 @@ function shell(title, description, canonicalPath, content, extraHead = "") {
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="../_seo.css"/>
+<script type="application/ld+json">${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "ApplyCraft.io",
+    alternateName: "ApplyCraft",
+    url: `${SITE}/`,
+    logo: `${SITE}/assets/brand/applycraft-logo-navbar.png`,
+  })}</script>
 ${extraHead}
 <style>
   .prose{max-width:720px;margin:0 auto;padding:64px 24px 100px}
@@ -185,14 +193,14 @@ const PAGES = {
 
   "about": {
     path: "/about/",
-    title: "About ApplyCraft",
-    description: "Learn why ApplyCraft stands out: a browser-first resume builder with no sign-up, no watermarks, ATS-conscious templates, multilingual support, and privacy-respecting design.",
+    title: "About ApplyCraft.io",
+    description: "Learn why ApplyCraft.io stands out: a browser-first free resume and cover letter builder with no sign-up, no watermarks, ATS-conscious templates, multilingual support, and privacy-respecting design.",
     content: `
-<h1>About ApplyCraft</h1>
-<p class="lead">ApplyCraft is a resume and cover letter builder for people who need a polished document quickly, without surrendering their career data, fighting a paywall, or learning a complicated design tool.</p>
+<h1>About ApplyCraft.io</h1>
+<p class="lead">ApplyCraft.io — Free Resume & Cover Letter Builder — helps people create polished application documents quickly, without surrendering career data, fighting a paywall, or learning a complicated design tool.</p>
 
 <h2>Who we are</h2>
-<p>ApplyCraft is built and operated by Biroue Digital Ltd. We created it after seeing the same pattern across too many resume builders: users spend time entering personal details, then discover that downloading, removing a watermark, or using a useful template requires payment or an account.</p>
+<p>ApplyCraft.io is built and operated by Biroue Digital Ltd. We created it after seeing the same pattern across too many resume builders: users spend time entering personal details, then discover that downloading, removing a watermark, or using a useful template requires payment or an account.</p>
 <p>ApplyCraft takes the opposite approach. The core builder is fast, useful, and available before you create an account. Your resume should feel like your document from the first minute, not a file being held hostage until checkout.</p>
 <p>ApplyCraft is independent. It is not built around advertising profiles, hidden resume databases, or forced cloud storage. The product is designed around a simple standard: help job seekers create better applications with less friction.</p>
 
