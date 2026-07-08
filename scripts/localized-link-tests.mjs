@@ -32,6 +32,7 @@ const STATIC_APP_ROUTES = new Set([
   "/student-resume-builder/",
   "/fr/creer-cv-etudiant/",
   "/canadian-resume-builder/",
+  "/fr/creer-cv-canadien/",
   "/resume-in-french/",
   "/resume-in-arabic/",
   "/terms/",

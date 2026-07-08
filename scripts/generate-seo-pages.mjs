@@ -27,6 +27,11 @@ const FREE_BUILDER_ALTERNATES = [
   { hreflang: "ar", href: `${SITE}/ar/free-resume-builder/` },
   { hreflang: "x-default", href: `${SITE}/free-resume-builder/` },
 ];
+const CANADIAN_BUILDER_ALTERNATES = [
+  { hreflang: "en", href: `${SITE}/canadian-resume-builder/` },
+  { hreflang: "fr", href: `${SITE}/fr/creer-cv-canadien/` },
+  { hreflang: "x-default", href: `${SITE}/canadian-resume-builder/` },
+];
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
 function nav(lang = "en", hrefOverride = "") {
@@ -110,29 +115,30 @@ function breadcrumbSchema(canonicalPath) {
   });
 }
 
-function faqHtml(items) {
+function faqHtml(items, lang = "en") {
+  const heading = lang === "fr" ? "Questions fréquentes" : lang === "ar" ? "الأسئلة الشائعة" : "Frequently Asked Questions";
   return `<section class="faq page">
-  <h2>Frequently Asked Questions</h2>
+  <h2>${heading}</h2>
   ${items.map(({ q, a }) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("\n  ")}
 </section>`;
 }
 
-function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard, features, faqs, canonicalPath, _cssPath, lang = "en", dir = "", ogLocale = "en_US", ogAlternateLocales = [], alternates = [], socialImage, socialImageAlt }) {
+function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard, features, faqs, canonicalPath, _cssPath, lang = "en", dir = "", ogLocale = "en_US", ogAlternateLocales = [], alternates = [], socialImage, socialImageAlt, builderHref = "", templateHref = "", starterHref = "" }) {
   const canonical = `${SITE}${canonicalPath}`;
   const cssRel = _cssPath || CSS_PATH;
   const htmlAttrs = dir ? `lang="${lang}" dir="${dir}"` : `lang="${lang}"`;
   const starterId = starterIdForSlug(slug);
   const documentLanguage = starterId === "arabic-resume" ? "ar" : starterId === "french-cv" ? "fr" : undefined;
-  const genericBuilderUrl = canonicalPath.startsWith("/examples/")
+  const genericBuilderUrl = builderHref || (canonicalPath.startsWith("/examples/")
     ? "/"
     : buildResumeStarterUrl("", {
     interfaceLanguage: lang === "en" ? "" : lang,
     documentLanguage: lang === "ar" ? "ar" : "",
-  });
+  }));
   const isCoverLetterPage = canonicalPath === "/cover-letter-builder/";
-  const starterUrl = starterId
+  const starterUrl = starterHref || (starterId
     ? buildResumeStarterUrl(starterId, { interfaceLanguage: lang === "en" ? "" : lang, documentLanguage })
-    : isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl;
+    : isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl);
   const ctaLabels = {
     en: { build: "Build My Resume Free →", use: "Use This Template Free →", start: "Start Building — It's Free →", templates: "See Templates" },
     fr: { build: "Créer mon CV gratuitement →", use: "Utiliser ce modèle gratuitement →", start: "Créer mon CV gratuitement →", templates: "Voir les modèles" },
@@ -149,6 +155,24 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
     ctaLabels.start = "Create My Cover Letter Free →";
     ctaLabels.templates = "See Cover Letter Styles";
   }
+  const uiText = {
+    en: {
+      trust: ["Browser-first editing", "No sign-up needed", "Free to use", "PDF & DOCX export"],
+      preview: isCoverLetterPage ? "Cover letter example — edit it in one click" : "Resume example — edit it in one click",
+    },
+    fr: {
+      trust: ["Édition dans le navigateur", "Sans inscription", "Gratuit", "Export PDF et DOCX"],
+      preview: isCoverLetterPage ? "Exemple de lettre de motivation — modifiez-le en un clic" : "Exemple de CV — modifiez-le en un clic",
+    },
+    ar: {
+      trust: ["تحرير داخل المتصفح", "دون تسجيل", "مجاني", "تصدير PDF و DOCX"],
+      preview: isCoverLetterPage ? "مثال خطاب تقديم — عدّله بنقرة واحدة" : "مثال سيرة ذاتية — عدّله بنقرة واحدة",
+    },
+  }[lang] || {
+    trust: ["Browser-first editing", "No sign-up needed", "Free to use", "PDF & DOCX export"],
+    preview: isCoverLetterPage ? "Cover letter example — edit it in one click" : "Resume example — edit it in one click",
+  };
+  const secondaryHref = templateHref || (isCoverLetterPage ? "/cover-letter/templates/" : "/resume/templates/");
   const alternateLinks = alternates.length
     ? `\n${alternates.map((a) => `<link rel="alternate" hreflang="${a.hreflang}" href="${a.href}"/>`).join("\n")}`
     : "";
@@ -211,20 +235,17 @@ ${nav(lang, isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl)}
       <p>${sub}</p>
       <div class="hero-btns">
         <a href="${isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl}" class="btn-primary">${ctaLabels.build}</a>
-        <a href="${isCoverLetterPage ? "/cover-letter/templates/" : "/resume/templates/"}" class="btn-secondary">${ctaLabels.templates}</a>
+        <a href="${secondaryHref}" class="btn-secondary">${ctaLabels.templates}</a>
       </div>
       <div class="trust">
-        <span>🔒 Browser-first editing</span>
-        <span>⚡ No sign-up needed</span>
-        <span>💳 Free to use</span>
-        <span>📄 PDF &amp; DOCX export</span>
+        ${uiText.trust.map((item, index) => `<span>${["🔒", "⚡", "💳", "📄"][index]} ${item.replace("&", "&amp;")}</span>`).join("\n        ")}
       </div>
     </div>
   </div>
 
   <div class="page">
     <div class="preview-wrap">
-      <h2>${isCoverLetterPage ? "Cover letter example — edit it in one click" : "Resume example — edit it in one click"}</h2>
+      <h2>${uiText.preview}</h2>
       ${resumeCard}
       <div style="text-align:center;margin-top:24px">
         <a href="${starterUrl}" class="btn-primary">${ctaLabels.use}</a>
@@ -242,7 +263,7 @@ ${nav(lang, isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl)}
     </section>
   </div>
 
-  ${faqHtml(faqs)}
+  ${faqHtml(faqs, lang)}
 
   <div class="page">
     ${ctaStrip(features.ctaHeading || "Ready to land your next job?", features.ctaSub || "Create a professional resume in minutes — free, no sign-up required.", starterUrl, ctaLabels.start)}
@@ -676,6 +697,7 @@ const PAGES = [
   {
     slug: "canadian-resume-builder",
     canonicalPath: "/canadian-resume-builder/",
+    alternates: CANADIAN_BUILDER_ALTERNATES,
     title: "Canadian Resume Builder — Format & Templates | ApplyCraft",
     description: "Build a resume in the Canadian format. No photo, no age, reverse-chronological. ATS-friendly templates designed for the Canadian job market. Free.",
     eyebrow: "Canadian Resume",
@@ -714,6 +736,58 @@ const PAGES = [
       { q: "Should I include my full address on a Canadian resume?", a: "No. In Canada it's standard to include only your city and province (e.g., Toronto, ON). A full street address is considered outdated and may raise privacy concerns." },
       { q: "Is a one-page resume standard in Canada?", a: "For candidates with fewer than 10 years of experience, a one-page resume is ideal. Two pages are acceptable for senior professionals. Never go beyond two pages." },
       { q: "Do Canadian employers expect a cover letter?", a: "Yes. Canadian employers typically expect a tailored cover letter alongside your resume. Our free cover letter builder can help you write one in minutes." },
+    ],
+  },
+
+  {
+    slug: "fr/creer-cv-canadien",
+    canonicalPath: "/fr/creer-cv-canadien/",
+    alternates: CANADIAN_BUILDER_ALTERNATES,
+    lang: "fr",
+    _cssPath: "../../_seo.css",
+    ogLocale: "fr_FR",
+    ogAlternateLocales: ["en_US"],
+    title: "Créateur de CV canadien — Format Canada & modèles | ApplyCraft",
+    description: "Créez un CV au format canadien en français ou en anglais: sans photo, orienté réalisations, adapté au Québec et au Canada anglophone. Gratuit, sans inscription.",
+    eyebrow: "CV canadien",
+    h1: "Créateur de CV canadien pour candidater depuis le Maroc",
+    sub: "Préparez un CV adapté aux recruteurs canadiens: pas de photo, pas d'âge, une structure claire, des réalisations chiffrées et des modèles pensés pour le Québec comme pour le Canada anglophone.",
+    keywords: "créateur cv canadien, cv canadien maroc, format cv canada, modèle cv canadien, cv québec",
+    socialImage: `${SITE}/og/canadian-resume-builder.png`,
+    builderHref: "/resume-builder/?starter=canadian&ui=fr&docLang=fr&country=canada",
+    templateHref: "/resume/templates/?ui=fr&docLang=fr&country=canada",
+    starterHref: "/resume-builder/?starter=canadian&ui=fr&docLang=fr&country=canada",
+    resumeCard: rcGeneric({
+      name: "Yassine El Amrani", title: "Analyste financier",
+      email: "yassine.elamrani@email.com", city: "Montréal, QC",
+      skills: ["Analyse financière", "Excel avancé", "SQL", "IFRS", "Power BI", "Prévisions budgétaires", "Français", "Anglais"],
+      jobs: [
+        { role: "Analyste financier", company: "Groupe bancaire international", date: "Mai 2021 – Présent",
+          desc: "Préparé des modèles financiers pour 18 dossiers d'investissement et réduit le délai de reporting mensuel de 30 % grâce à l'automatisation Excel et Power BI." },
+        { role: "Analyste junior", company: "Cabinet conseil", date: "2018 – 2021",
+          desc: "Suivi un portefeuille de 42 clients PME, produit des tableaux de bord de marge et contribué à une amélioration de 12 % de la précision des prévisions." },
+      ],
+      edu: [{ degree: "Master Finance", school: "Université Hassan II", date: "2016 – 2018" }],
+    }),
+    features: {
+      heading: "Ce qui change dans un CV canadien",
+      intro: "Un CV destiné au Canada n'est pas une simple traduction d'un CV marocain ou européen. Les recruteurs attendent un document plus neutre, plus direct et centré sur les résultats.",
+      ctaHeading: "Créer votre CV canadien maintenant",
+      ctaSub: "Modèles Canada, export PDF/DOCX gratuit, sans inscription et sans filigrane.",
+      items: [
+        { icon: "🚫", title: "Pas de photo ni d'informations personnelles sensibles", body: "Évitez la photo, l'âge, la situation familiale, la nationalité et le numéro d'identité. Au Canada, ces informations ne doivent pas influencer le recrutement." },
+        { icon: "📍", title: "Ville et province, pas d'adresse complète", body: "Indiquez une localisation simple comme Montréal, QC ou Toronto, ON. Une adresse complète est rarement nécessaire et peut sembler datée." },
+        { icon: "📊", title: "Réalisations chiffrées avant les responsabilités", body: "Remplacez les longues listes de tâches par des résultats: pourcentage gagné, temps économisé, budget suivi, volume traité ou taille d'équipe." },
+        { icon: "🗣️", title: "Québec ou Canada anglophone", body: "Pour le Québec, un CV en français professionnel est naturel. Pour les provinces anglophones, préparez une version anglaise avec les intitulés de poste adaptés." },
+        { icon: "📋", title: "Format chronologique inversé", body: "Présentez l'expérience la plus récente en premier, avec une accroche courte, les expériences, la formation, les compétences et les langues." },
+        { icon: "🤖", title: "Compatible ATS", body: "Utilisez des titres de sections standards, évitez les zones de texte et gardez un format lisible par les systèmes de suivi des candidatures." },
+      ],
+    },
+    faqs: [
+      { q: "Quel est le format standard d'un CV canadien ?", a: "Un CV canadien contient vos coordonnées, une accroche professionnelle, l'expérience en ordre chronologique inversé, la formation, les compétences et les langues. Il ne contient pas de photo, d'âge, de situation familiale ou de numéro d'identité." },
+      { q: "Puis-je utiliser un CV en français pour postuler au Canada ?", a: "Oui, surtout au Québec et pour les postes francophones. Pour les provinces anglophones ou les entreprises internationales, préparez aussi une version anglaise claire et adaptée aux intitulés locaux." },
+      { q: "Comment adapter mon CV marocain au marché canadien ?", a: "Retirez la photo et les données personnelles sensibles, raccourcissez le document à une ou deux pages, quantifiez vos résultats et remplacez les formulations générales par des réalisations concrètes." },
+      { q: "Où trouver le guide CV canadien depuis le Maroc ?", a: "Le guide dédié sera publié dans le blog français. En attendant, vous pouvez consulter les ressources CV et créer directement votre CV canadien avec les modèles Canada." },
     ],
   },
 

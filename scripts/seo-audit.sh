@@ -121,6 +121,7 @@ const LOCALIZED_ROUTE_MAP = {
   "/cover-letter-builder/": { fr: "/cover-letter/templates/", ar: "/cover-letter/templates/" },
   "/free-resume-builder/": { fr: "/fr/creer-cv-gratuit/", ar: "/ar/free-resume-builder/" },
   "/student-resume-builder/": { fr: "/fr/creer-cv-etudiant/" },
+  "/canadian-resume-builder/": { fr: "/fr/creer-cv-canadien/" },
   "/ats-checker/": { fr: "/ats-checker-fr/", ar: "/ats-checker-ar/" },
   "/ats-resume-builder/": { fr: "/ats-checker-fr/", ar: "/ats-checker-ar/" },
   "/pricing/": { fr: "/fr/pricing/" },

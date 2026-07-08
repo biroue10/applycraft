@@ -76,7 +76,7 @@ if (existsSync(workerFile)) {
 const SHARE_RE = /^\/r\/[A-Za-z0-9_-]{8,24}\/?$/;
 
 // ── Extract and check internal hrefs ──
-const HREF_RE = /(?:href|src)\s*=\s*"([^"]+)"/g;
+const HREF_RE = /(?:href|src)\s*=\s*(["'])(.*?)\1/g;
 const failures = [];
 const checked = new Set();
 
@@ -99,7 +99,7 @@ function resolves(pathOnly) {
 for (const file of htmlFiles) {
   const html = readFileSync(file, "utf8");
   for (const m of html.matchAll(HREF_RE)) {
-    const rawHref = m[1].replace(/&amp;/g, "&");
+    const rawHref = m[2].replace(/&amp;/g, "&");
     if (!isInternal(rawHref)) continue;
     const pathOnly = rawHref.split(/[?#]/)[0] || "/";
     const key = `${relative(DIST, file)}::${pathOnly}`;

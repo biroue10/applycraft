@@ -16,7 +16,7 @@ export const LOCALIZED_ROUTES = {
     ar: "/blog/",
   },
   "/examples/": { en: "/examples/", fr: "/examples/french-cv-example/" },
-  "/canadian-resume-builder/": { en: "/canadian-resume-builder/", fr: "/resume/templates/?ui=fr&docLang=fr&country=canada", ar: "/resume/templates/?ui=ar&docLang=ar&country=canada" },
+  "/canadian-resume-builder/": { en: "/canadian-resume-builder/", fr: "/fr/creer-cv-canadien/", ar: "/resume/templates/?ui=ar&docLang=ar&country=canada" },
   "/resume-in-french/": { en: "/resume-in-french/", fr: "/fr/", ar: "/ar/" },
   "/resume-in-arabic/": { en: "/resume-in-arabic/", fr: "/fr/", ar: "/ar/" },
   "/terms/": { en: "/terms/", fr: "/fr/terms/" },
