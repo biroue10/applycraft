@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "seo:sitemap": "node scripts/generate-sitemap.mjs",
     "seo:pages": "node scripts/generate-seo-pages.mjs && node scripts/generate-localized-seo-pages.mjs && node scripts/generate-company-pages.mjs && node scripts/refresh-static-footers.mjs",
+    "seo:icons": "node scripts/generate-icons.mjs",
     "seo:og": "node scripts/generate-og-images.mjs",
     "seo:audit": "bash scripts/seo-audit.sh",
     "seo:compare": "python3 scripts/compare-seo-pages.py",

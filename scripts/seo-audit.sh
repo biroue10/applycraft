@@ -11,7 +11,7 @@ fi
 
 cd "$ROOT_DIR"
 
-for required in package.json index.html public public/robots.txt public/sitemap.xml public/og.png public/favicon.svg; do
+for required in package.json index.html public public/robots.txt public/sitemap.xml public/og.png public/favicon.ico public/favicon.svg public/favicon-16x16.png public/favicon-32x32.png public/apple-touch-icon.png public/site.webmanifest; do
   if [[ ! -e "$required" ]]; then
     echo "SEO audit failed: missing required file: $required" >&2
     exit 1
@@ -95,6 +95,78 @@ function imageExists(imageUrl) {
   return fs.existsSync(path.join(HTML_ROOT, assetPath)) || fs.existsSync(path.join(PUBLIC, assetPath));
 }
 
+function publicAssetPathFromHref(href, route = "/") {
+  if (!href) return "";
+  try {
+    const url = new URL(href, `${SITE}${route}`);
+    if (url.origin !== SITE) return "";
+    return url.pathname.replace(/^\/+/, "");
+  } catch {
+    return href.split("#")[0].split("?")[0].replace(/^\/+/, "");
+  }
+}
+
+function publicAssetExists(href, route = "/") {
+  const assetPath = publicAssetPathFromHref(href, route);
+  if (!assetPath) return false;
+  return fs.existsSync(path.join(HTML_ROOT, assetPath)) || fs.existsSync(path.join(PUBLIC, assetPath));
+}
+
+function headLinkTags(html) {
+  const head = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] || html;
+  return [...head.matchAll(/<link\b[^>]*>/gi)].map((match) => ({ tag: match[0], attrs: attrs(match[0]) }));
+}
+
+function relTokens(linkAttrs) {
+  return String(linkAttrs.rel || "").toLowerCase().split(/\s+/).filter(Boolean);
+}
+
+function auditIconHead(page) {
+  const label = `${page.route} (${path.relative(ROOT, page.filePath)})`;
+  const links = headLinkTags(page.html);
+  const iconLinks = links.filter((item) => relTokens(item.attrs).includes("icon"));
+  const appleLinks = links.filter((item) => relTokens(item.attrs).includes("apple-touch-icon"));
+  const manifestLinks = links.filter((item) => relTokens(item.attrs).includes("manifest"));
+
+  if (!iconLinks.length) errors.push(`${label}: missing rel=icon link`);
+  if (!appleLinks.length) errors.push(`${label}: missing rel=apple-touch-icon link`);
+  if (!manifestLinks.length) errors.push(`${label}: missing rel=manifest link`);
+
+  for (const item of [...iconLinks, ...appleLinks, ...manifestLinks]) {
+    if (!item.attrs.href) {
+      errors.push(`${label}: icon/manifest link missing href: ${item.tag}`);
+    } else if (!publicAssetExists(item.attrs.href, page.route)) {
+      errors.push(`${label}: icon/manifest link does not resolve to an existing public file: ${item.attrs.href}`);
+    }
+  }
+}
+
+function auditManifestIcons() {
+  const manifestPath = path.join(PUBLIC, "site.webmanifest");
+  let manifest;
+  try {
+    manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  } catch (error) {
+    errors.push(`public/site.webmanifest: invalid JSON: ${error.message}`);
+    return;
+  }
+
+  if (!Array.isArray(manifest.icons) || !manifest.icons.length) {
+    errors.push("public/site.webmanifest: missing icons array");
+    return;
+  }
+
+  for (const icon of manifest.icons) {
+    if (!icon.src) {
+      errors.push("public/site.webmanifest: manifest icon missing src");
+    } else if (!publicAssetExists(icon.src)) {
+      errors.push(`public/site.webmanifest: manifest icon src does not resolve to an existing public file: ${icon.src}`);
+    }
+    if (!icon.sizes) errors.push(`public/site.webmanifest: manifest icon missing sizes for ${icon.src || "(missing src)"}`);
+    if (!icon.type) errors.push(`public/site.webmanifest: manifest icon missing type for ${icon.src || "(missing src)"}`);
+  }
+}
+
 const htmlFiles = USE_DIST ? walk(HTML_ROOT) : [path.join(ROOT, "index.html"), ...walk(PUBLIC)];
 const pages = [];
 const routeMap = new Map();
@@ -169,6 +241,7 @@ for (const filePath of htmlFiles) {
 
 for (const page of pages) {
   const label = `${page.route} (${path.relative(ROOT, page.filePath)})`;
+  auditIconHead(page);
   if (!page.title) errors.push(`${label}: missing <title>`);
   if (!page.description) errors.push(`${label}: missing meta description`);
   if (!page.canonical) errors.push(`${label}: missing canonical URL`);
@@ -199,6 +272,8 @@ for (const page of pages) {
     }
   }
 }
+
+auditManifestIcons();
 
 function duplicateRows(map, label) {
   for (const [value, routes] of map.entries()) {

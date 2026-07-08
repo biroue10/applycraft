@@ -1,9 +1,11 @@
-import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import sharp from "sharp";
 
 const ROOT = new URL("../public/og/", import.meta.url);
+const LOGO_PATH = new URL("../public/assets/brand/logo-master.png", import.meta.url);
 mkdirSync(ROOT, { recursive: true });
+const logoDataUrl = `data:image/png;base64,${readFileSync(LOGO_PATH).toString("base64")}`;
 
 const images = [
   ["home", "ApplyCraft", "Resume Builder & Cover Letter Maker", "Fast, ATS-friendly documents"],
@@ -39,6 +41,7 @@ function svg([id, eyebrow, title, subtitle]) {
   <circle cx="1040" cy="90" r="220" fill="#2563EB" opacity="0.16"/>
   <circle cx="180" cy="560" r="230" fill="#2DD4BF" opacity="0.10"/>
   <rect x="72" y="72" width="1056" height="486" rx="28" fill="#0D1424" stroke="#20324E" stroke-width="2"/>
+  <image href="${logoDataUrl}" x="${isArabic ? 96 : 844}" y="106" width="260" height="67" preserveAspectRatio="xMidYMid meet"/>
   <text x="${x}" y="158" direction="${dir}" text-anchor="${anchor}" fill="#93C5FD" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="800" letter-spacing="1.5">${esc(eyebrow)}</text>
   <text x="${x}" y="286" direction="${dir}" text-anchor="${anchor}" fill="#F8FAFC" font-family="Inter, Arial, sans-serif" font-size="${titleSize}" font-weight="900">${esc(title)}</text>
   <text x="${x}" y="360" direction="${dir}" text-anchor="${anchor}" fill="#B6C2D6" font-family="Inter, Arial, sans-serif" font-size="${subtitleSize}" font-weight="650">${esc(subtitle)}</text>

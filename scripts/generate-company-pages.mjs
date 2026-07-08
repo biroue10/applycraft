@@ -38,10 +38,12 @@ function shell(title, description, canonicalPath, content, extraHead = "") {
 <meta name="twitter:description" content="${description}"/>
 <meta name="twitter:image" content="${SOCIAL_IMAGE}"/>
 <meta name="twitter:image:alt" content="${SOCIAL_IMAGE_ALT}"/>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
-<link rel="icon" href="/favicon.png" type="image/png"/>
-<link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
-<link rel="manifest" href="/site.webmanifest"/>
+<link rel="icon" href="/favicon.ico?v=2" sizes="any"/>
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml"/>
+<link rel="icon" href="/favicon-32x32.png?v=2" type="image/png" sizes="32x32"/>
+<link rel="icon" href="/favicon-16x16.png?v=2" type="image/png" sizes="16x16"/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2"/>
+<link rel="manifest" href="/site.webmanifest?v=2"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="../_seo.css"/>
