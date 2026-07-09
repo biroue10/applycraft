@@ -29,9 +29,12 @@ const MAX_INITIAL_CHUNK_GZ = 192_000;   // current app shell baseline
 // Rebaselined for the shipped 5-language interface i18n (en/fr/es/ar/de), whose
 // inline string dictionaries live in the app chunk. The per-chunk cap below and
 // the lazy-only library guard are unchanged.
+// Bumped +1 KB for locale-aware letter defaults (src/i18n/letterDefaults.js:
+// per-language date formatting + cover-letter sign-offs for en/fr/es/ar/de), so
+// non-English documents no longer render English dates/closings.
 // TODO(perf): code-split the non-English dictionaries (load fr/es/ar/de on
 // language switch) and lower this back toward 200 KB.
-const MAX_INITIAL_TOTAL_GZ = 260_000;   // current multilingual app shell baseline
+const MAX_INITIAL_TOTAL_GZ = 261_000;   // current multilingual app shell baseline
 
 // Max raw (uncompressed) size of any image served from /public, in bytes.
 const MAX_IMAGE_SIZE = 250_000;         // 250 KB

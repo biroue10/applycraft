@@ -44,6 +44,7 @@ import {
 } from "./i18n/languages.js";
 import { LANGUAGE_SCHEMA_VERSION, LANGUAGE_SCHEMA_VERSION_KEY } from "./i18n/config.js";
 import { documentLabelsFor } from "./i18n/documentLabels.js";
+import { formatLetterDate, defaultCoverSignoff, COVER_SIGNOFFS, LETTER_LOCALE } from "./i18n/letterDefaults.js";
 import { localizeRoute } from "./seo/localizedRoutes.js";
 
 const LANDING2_LOADERS = {
@@ -3537,12 +3538,33 @@ export default function ResumeGenerator() {
       : null
   ));
   const [mobileCoverMode, setMobileCoverMode] = useState("edit");
-  const [coverForm, setCoverForm] = useState({
-    name: "", jobTitle: "", email: "", phone: "", location: "",
-    date: new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
-    recipientName: "", recipientTitle: "", company: "", companyAddress: "",
-    subject: "", opening: "", body: "", closing: "", signoff: "Sincerely",
+  // Tracks the last auto-generated (locale-derived) date/signoff so we can re-localize
+  // them when the document language changes — but only while the user has not edited them.
+  const coverAutoDefaults = useRef({ date: "", signoff: "" });
+  const [coverForm, setCoverForm] = useState(() => {
+    const date = formatLetterDate(new Date(), docLang);
+    const signoff = defaultCoverSignoff(docLang);
+    coverAutoDefaults.current = { date, signoff };
+    return {
+      name: "", jobTitle: "", email: "", phone: "", location: "",
+      date,
+      recipientName: "", recipientTitle: "", company: "", companyAddress: "",
+      subject: "", opening: "", body: "", closing: "", signoff,
+    };
   });
+  // Re-localize the date and sign-off default when the document language changes,
+  // unless the user has customized them (value differs from the previous auto-default).
+  useEffect(() => {
+    const date = formatLetterDate(new Date(), docLang);
+    const signoff = defaultCoverSignoff(docLang);
+    setCoverForm((f) => {
+      const next = { ...f };
+      if (f.date === coverAutoDefaults.current.date) next.date = date;
+      if (f.signoff === coverAutoDefaults.current.signoff) next.signoff = signoff;
+      return next;
+    });
+    coverAutoDefaults.current = { date, signoff };
+  }, [docLang]);
   // Collapse state for the cover-letter section cards (collapsed by default, like the resume builder).
   const [coverCollapsed, setCoverCollapsed] = useState({ recipient: true, sender: true, opening: true, body: true, closing: true });
   const toggleCoverCollapse = useCallback((k) => setCoverCollapsed(c => ({ ...c, [k]: !c[k] })), []);
@@ -5186,7 +5208,7 @@ Awards: ${form.awards}`;
                 <button type="button" onClick={() => openResume(r.id)}
                   style={{ background: "none", border: "none", textAlign: rtl ? "right" : "left", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
                   <div style={{ fontSize: 14.5, fontWeight: 800, color: C.text1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title || bu.untitledResume}</div>
-                  <div style={{ fontSize: 11.5, color: C.text3, marginTop: 3 }}>{bu.updated} {new Date(r.updatedAt || Date.now()).toLocaleDateString()}</div>
+                  <div style={{ fontSize: 11.5, color: C.text3, marginTop: 3 }}>{bu.updated} {new Date(r.updatedAt || Date.now()).toLocaleDateString(LETTER_LOCALE[lang] || undefined)}</div>
                 </button>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <button type="button" onClick={() => openResume(r.id)}
@@ -7224,7 +7246,7 @@ Awards: ${form.awards}`;
       }
       y += 4;
       doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(50,50,50);
-      doc.text(`${safe(d.signoff || "Sincerely")},`, margin, y); y += 14;
+      doc.text(`${safe(d.signoff || defaultCoverSignoff(docLang))},`, margin, y); y += 14;
       doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(17,17,17);
       doc.text(safe(d.name), margin, y);
       // Footer on every page: name (left) | page X / Y (right)
@@ -7338,7 +7360,7 @@ Awards: ${form.awards}`;
           });
         }
       }
-      addTextParagraph(children, `${d.signoff || "Sincerely"},`, {
+      addTextParagraph(children, `${d.signoff || defaultCoverSignoff(docLang)},`, {
         run: { size: 21, color: "333333" },
         spacing: { before: 120, after: 220 },
       });
@@ -7716,8 +7738,13 @@ Awards: ${form.awards}`;
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <div style={{ flex: 1 }}>
                   <IconInput icon="✍️">
-                    <input id="cover-field-signoff" value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
+                    <input id="cover-field-signoff" list="cover-signoff-options" value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
                       placeholder={cu.phSignoff} style={inputStyle} />
+                    <datalist id="cover-signoff-options">
+                      {(COVER_SIGNOFFS[docLang] || COVER_SIGNOFFS.en).map((option) => (
+                        <option key={option} value={option} />
+                      ))}
+                    </datalist>
                   </IconInput>
                 </div>
                 <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
