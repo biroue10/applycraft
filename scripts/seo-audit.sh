@@ -249,6 +249,10 @@ for (const page of pages) {
   const label = `${page.route} (${path.relative(ROOT, page.filePath)})`;
   auditIconHead(page);
   if (!page.title) errors.push(`${label}: missing <title>`);
+  if (page.title && !page.appShell) {
+    const titleLen = [...page.title].length;
+    if (titleLen > 60) warnings.push(`${label}: <title> is ${titleLen} chars (> 60, may be truncated in search results): ${JSON.stringify(page.title)}`);
+  }
   if (!page.description) errors.push(`${label}: missing meta description`);
   if (!page.canonical) errors.push(`${label}: missing canonical URL`);
   if (!page.appShell && page.h1 !== 1) errors.push(`${label}: expected exactly one H1, found ${page.h1}`);

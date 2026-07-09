@@ -149,7 +149,7 @@ const pages = [
     alternates: HOME_ALTERNATES,
     image: "/og/home-fr.png",
     imageAlt: "Aperçu du créateur de CV et de lettres de motivation ApplyCraft",
-    title: "Créateur de CV et lettre de motivation — rapide et compatible ATS | ApplyCraft",
+    title: "Créateur de CV gratuit en ligne | ApplyCraft",
     description: "Créez un CV compatible ATS et une lettre de motivation assortie avec aperçu en direct, libellés multilingues et export PDF ou DOCX.",
     eyebrow: "Créateur de CV + lettre de motivation",
     h1: "Créez rapidement un CV compatible ATS et une lettre assortie.",
