@@ -116,6 +116,8 @@ const builder = {
   ,"templatePreviewEyebrow": "Template preview"
   ,"useThisTemplate": "Use this template"
   ,"closeExpandedPreview": "Close expanded preview"
+  ,"expandPreview": "Click to enlarge"
+  ,"expandedPreview": "Expanded preview"
   ,"dismissRecommendation": "Dismiss recommendation"
   ,"countryCode": "Country code"
   ,"closeAchievementCoach": "Close achievement coach"

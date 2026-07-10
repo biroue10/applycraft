@@ -3261,8 +3261,6 @@ export default function ResumeGenerator() {
   const [skillsError, setSkillsError] = useState("");
   const [shakeField, setShakeField] = useState("");
   const [phoneCode, setPhoneCode] = useState(() => LANG_CODE[interfaceLanguage] || "+1");
-  const [zoomed, setZoomed] = useState(false);
-  const [previewZoom, setPreviewZoom] = useState(86);
   const [mobileResumeMode, setMobileResumeMode] = useState("edit");
   const [exporting, setExporting] = useState("");
   const [activeToolbarPanel, setActiveToolbarPanel] = useState(null);
@@ -6792,60 +6790,29 @@ Awards: ${form.awards}`;
         {/* ── Preview column ── */}
         <div className="ac-panel-noscroll" style={{ minWidth: 0, ...(isMobile ? { padding: "10px 8px 84px", marginTop: 0, display: mobileResumeMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
           padding: "12px 14px 28px" }) }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12,
-            marginTop: isMobile ? 8 : 0, flexWrap: "wrap" }}>
-            <span style={{ ...badge, ...(aiPolished ? badgePolished : badgeLive),
-              background: "transparent",
-              color: aiPolished ? tpl.accent : C.text3 }}>
-              {aiPolished ? `✦ ${bu.aiPolished}` : `● ${bu.livePreview}`}
-            </span>
-            <div aria-label={builderText("previewControls")} style={{ display: "flex", alignItems: "center", gap: 4,
-              background: "transparent", borderRadius: 10, padding: 3 }}>
-              <button type="button" onClick={() => setPreviewZoom(z => Math.max(60, z - 10))}
-                aria-label={builderText("zoomPreviewOut")} style={{ ...previewToolBtn }}>−</button>
-              <span style={{ color: C.text3, fontSize: 12, minWidth: 42, textAlign: "center" }}>{previewZoom}%</span>
-              <button type="button" onClick={() => setPreviewZoom(z => Math.min(120, z + 10))}
-                aria-label={builderText("zoomPreviewIn")} style={{ ...previewToolBtn }}>+</button>
-              <button type="button" onClick={() => setPreviewZoom(86)}
-                style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>{bu.fit}</button>
-            </div>
-          </div>
-          <div
-            onClick={() => setZoomed(z => !z)}
-            title={zoomed ? undefined : "Click to enlarge"}
-            style={{
-              cursor: zoomed ? "zoom-out" : "default",
-              ...(zoomed ? {
-                position: "fixed", inset: 0, zIndex: 9000,
-                background: "rgba(0,0,0,0.88)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                padding: "20px", overflowY: "auto",
-              } : { position: "relative", overflowX: "auto" }),
+          <PreviewPane
+            ref={resumePrintRef}
+            rtl={documentRtl}
+            badge={
+              <span style={{ ...badge, ...(aiPolished ? badgePolished : badgeLive),
+                background: "transparent",
+                color: aiPolished ? tpl.accent : C.text3 }}>
+                {aiPolished ? `✦ ${bu.aiPolished}` : `● ${bu.livePreview}`}
+              </span>
+            }
+            labels={{
+              controls: builderText("previewControls"), zoomOut: builderText("zoomPreviewOut"),
+              zoomIn: builderText("zoomPreviewIn"), fit: bu.fit, expand: builderText("expandPreview"),
+              close: builderText("closeExpandedPreview"), expandedTitle: builderText("expandedPreview"),
             }}
-          >
-            {!zoomed && result && (
+            overlay={result ? (
               <button onClick={(e) => { e.stopPropagation(); copyOut(); }} style={copyBtn}>
                 {copied ? t.copied : t.copy}
               </button>
-            )}
-            <div ref={resumePrintRef} style={zoomed ? { width: "min(780px, 94vw)", maxHeight: "94vh", overflowY: "auto", borderRadius: 8 } : {
-              maxWidth: 760, margin: "0 auto", transform: `scale(${previewZoom / 100})`, transformOrigin: "top center",
-              transition: "transform 0.18s ease", paddingBottom: `${Math.max(0, 100 - previewZoom) * 2}px`
-            }}>
-              <ResumePaper tpl={tpl} result={result || liveData} rtl={documentRtl} lang={docLang} uiLang={lang} placeholder={false} />
-            </div>
-            {zoomed && (
-              <button
-                onClick={(e) => { e.stopPropagation(); setZoomed(false); }}
-                style={{ position: "fixed", top: 14, right: 14, zIndex: 9001,
-                  width: 34, height: 34, borderRadius: "50%", border: "none",
-                  background: C.surface, color: C.text2, fontSize: 16,
-                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                  fontFamily: "inherit" }}>
-                ✕
-              </button>
-            )}
-          </div>
+            ) : null}
+          >
+            <ResumePaper tpl={tpl} result={result || liveData} rtl={documentRtl} lang={docLang} uiLang={lang} placeholder={false} />
+          </PreviewPane>
         </div>
       </div>
       {translationDuplicate.open && (
@@ -7767,27 +7734,18 @@ Awards: ${form.awards}`;
 
           <div className="ac-panel-noscroll" style={{ minWidth: 0, ...(isMobile ? { padding: "10px 8px 84px", marginTop: 0, display: mobileCoverMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
             padding: "12px 14px 28px" }) }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 12,
-              marginTop: isMobile ? 8 : 0, flexWrap: "wrap" }}>
-              <span style={{ ...badge, ...badgeLive, background: "transparent", color: C.text3 }}>● {bu.livePreview}</span>
-              <div aria-label={builderText("previewControls")} style={{ display: "flex", alignItems: "center", gap: 4,
-                background: "transparent", borderRadius: 10, padding: 3 }}>
-                <button type="button" onClick={() => setPreviewZoom(z => Math.max(60, z - 10))}
-                  aria-label={builderText("zoomPreviewOut")} style={{ ...previewToolBtn }}>−</button>
-                <span style={{ color: C.text3, fontSize: 12, minWidth: 42, textAlign: "center" }}>{previewZoom}%</span>
-                <button type="button" onClick={() => setPreviewZoom(z => Math.min(120, z + 10))}
-                  aria-label={builderText("zoomPreviewIn")} style={{ ...previewToolBtn }}>+</button>
-                <button type="button" onClick={() => setPreviewZoom(86)}
-                  style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>{bu.fit}</button>
-              </div>
-            </div>
-            <div style={{ overflowX: "auto" }}>
-              <div ref={coverPrintRef} style={{ maxWidth: 760, margin: "0 auto", transform: `scale(${previewZoom / 100})`,
-                transformOrigin: "top center", transition: "transform 0.18s ease",
-                paddingBottom: `${Math.max(0, 100 - previewZoom) * 2}px` }}>
-                <CoverLetterPaper tpl={coverTpl} data={coverForm} rtl={documentRtl} lang={docLang} />
-              </div>
-            </div>
+            <PreviewPane
+              ref={coverPrintRef}
+              rtl={documentRtl}
+              badge={<span style={{ ...badge, ...badgeLive, background: "transparent", color: C.text3 }}>● {bu.livePreview}</span>}
+              labels={{
+                controls: builderText("previewControls"), zoomOut: builderText("zoomPreviewOut"),
+                zoomIn: builderText("zoomPreviewIn"), fit: bu.fit, expand: builderText("expandPreview"),
+                close: builderText("closeExpandedPreview"), expandedTitle: builderText("expandedPreview"),
+              }}
+            >
+              <CoverLetterPaper tpl={coverTpl} data={coverForm} rtl={documentRtl} lang={docLang} />
+            </PreviewPane>
           </div>
         </div>
         {isMobile && (
@@ -11338,6 +11296,117 @@ const softBtn = {
   borderRadius: 9, minHeight: 38, padding: "0 12px", fontSize: 13, fontWeight: 800,
   cursor: "pointer", fontFamily: "inherit",
 };
+
+const PREVIEW_ZOOM_MIN = 60;
+const PREVIEW_ZOOM_MAX = 120;
+const PREVIEW_ZOOM_DEFAULT = 86;
+const PREVIEW_ZOOM_STEP = 10;
+
+// Shared live-preview pane for both the resume and cover-letter builders: a header
+// (status badge + zoom controls) over a document that can be clicked to expand to a
+// full-screen overlay. Owns its own zoom + expanded state so both builders stay
+// consistent from one implementation. `printRef` is forwarded to the document
+// container so PDF/DOCX export can capture it in either state. Keyboard-accessible
+// (Esc to close, focus trap) and RTL-correct (close button flips side, dir set).
+const PreviewPane = React.forwardRef(function PreviewPane({
+  rtl = false, badge: badgeNode, labels = {}, overlay = null, children,
+}, printRef) {
+  const [zoom, setZoom] = useState(PREVIEW_ZOOM_DEFAULT);
+  const [expanded, setExpanded] = useState(false);
+  const overlayRef = useRef(null);
+  const closeRef = useRef(null);
+  const restoreFocusRef = useRef(null);
+
+  useEffect(() => {
+    if (!expanded || typeof document === "undefined") return;
+    restoreFocusRef.current = document.activeElement;
+    const raf = requestAnimationFrame(() => { if (closeRef.current) closeRef.current.focus(); });
+    const focusable = () => (overlayRef.current
+      ? Array.from(overlayRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+        .filter((el) => !el.disabled && el.offsetParent !== null)
+      : []);
+    const onKey = (e) => {
+      if (e.key === "Escape") { e.preventDefault(); setExpanded(false); return; }
+      if (e.key === "Tab") {
+        const items = focusable();
+        if (!items.length) return;
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      cancelAnimationFrame(raf);
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+      const prev = restoreFocusRef.current;
+      if (prev && typeof prev.focus === "function") prev.focus();
+    };
+  }, [expanded]);
+
+  return (
+    <>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+        marginBottom: 12, flexWrap: "wrap" }}>
+        {badgeNode}
+        <div aria-label={labels.controls} style={{ display: "flex", alignItems: "center", gap: 4,
+          background: "transparent", borderRadius: 10, padding: 3 }}>
+          <button type="button" onClick={() => setZoom((z) => Math.max(PREVIEW_ZOOM_MIN, z - PREVIEW_ZOOM_STEP))}
+            aria-label={labels.zoomOut} style={{ ...previewToolBtn }}>−</button>
+          <span style={{ color: C.text3, fontSize: 12, minWidth: 42, textAlign: "center" }}>{zoom}%</span>
+          <button type="button" onClick={() => setZoom((z) => Math.min(PREVIEW_ZOOM_MAX, z + PREVIEW_ZOOM_STEP))}
+            aria-label={labels.zoomIn} style={{ ...previewToolBtn }}>+</button>
+          <button type="button" onClick={() => setZoom(PREVIEW_ZOOM_DEFAULT)}
+            style={{ ...previewToolBtn, width: "auto", padding: "0 9px", fontSize: 11.5 }}>{labels.fit}</button>
+        </div>
+      </div>
+      <div
+        ref={overlayRef}
+        onClick={() => setExpanded((e) => !e)}
+        title={expanded ? undefined : labels.expand}
+        role={expanded ? "dialog" : undefined}
+        aria-modal={expanded ? "true" : undefined}
+        aria-label={expanded ? labels.expandedTitle : undefined}
+        dir={rtl ? "rtl" : "ltr"}
+        style={{
+          cursor: expanded ? "zoom-out" : "pointer",
+          ...(expanded ? {
+            position: "fixed", inset: 0, zIndex: 9000,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "20px", overflowY: "auto",
+          } : { position: "relative", overflowX: "auto" }),
+        }}
+      >
+        {!expanded && overlay}
+        <div ref={printRef} style={expanded ? { width: "min(780px, 94vw)", maxHeight: "94vh", overflowY: "auto", borderRadius: 8 } : {
+          maxWidth: 760, margin: "0 auto", transform: `scale(${zoom / 100})`, transformOrigin: "top center",
+          transition: "transform 0.18s ease", paddingBottom: `${Math.max(0, 100 - zoom) * 2}px`,
+        }}>
+          {children}
+        </div>
+        {expanded && (
+          <button
+            ref={closeRef}
+            onClick={(e) => { e.stopPropagation(); setExpanded(false); }}
+            aria-label={labels.close}
+            style={{ position: "fixed", top: 14, [rtl ? "left" : "right"]: 14, zIndex: 9001,
+              width: 34, height: 34, borderRadius: "50%", border: "none",
+              background: C.surface, color: C.text2, fontSize: 16,
+              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "inherit" }}>
+            ✕
+          </button>
+        )}
+      </div>
+    </>
+  );
+});
 const ghostIconBtn = {
   border: "none", background: "transparent", color: C.text2,
   borderRadius: 10, minHeight: 40, minWidth: 40, padding: 0,

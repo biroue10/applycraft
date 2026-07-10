@@ -116,6 +116,8 @@ const builder = {
   ,"templatePreviewEyebrow": "معاينة القالب"
   ,"useThisTemplate": "استخدم هذا القالب"
   ,"closeExpandedPreview": "إغلاق المعاينة الموسعة"
+  ,"expandPreview": "انقر للتكبير"
+  ,"expandedPreview": "معاينة موسعة"
   ,"dismissRecommendation": "إخفاء التوصية"
   ,"countryCode": "رمز البلد"
   ,"closeAchievementCoach": "إغلاق مساعد الإنجازات"

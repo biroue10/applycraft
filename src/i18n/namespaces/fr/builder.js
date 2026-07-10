@@ -116,6 +116,8 @@ const builder = {
   ,"templatePreviewEyebrow": "Aperçu du modèle"
   ,"useThisTemplate": "Utiliser ce modèle"
   ,"closeExpandedPreview": "Fermer l'aperçu agrandi"
+  ,"expandPreview": "Cliquez pour agrandir"
+  ,"expandedPreview": "Aperçu agrandi"
   ,"dismissRecommendation": "Ignorer la recommandation"
   ,"countryCode": "Indicatif pays"
   ,"closeAchievementCoach": "Fermer l'assistant de réalisations"
