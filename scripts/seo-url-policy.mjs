@@ -8,6 +8,7 @@ export const INDEXABLE_APP_PATHS = [
   "/resume-builder/",
   "/resume/templates/",
   "/cover-letter/templates/",
+  "/job-tracker/",
 ];
 
 export const REDIRECTED_CANONICAL_PATHS = new Map([
@@ -25,7 +26,6 @@ const PRIVATE_PREFIXES = [
 const NON_INDEXABLE_PATHS = new Set([
   "/cover-letter/builder/",
   "/email-signature/",
-  "/job-tracker/",
   "/master-profile/",
   "/personal-website/",
   "/resume/builder/",

@@ -60,6 +60,13 @@ const ROUTE_META = {
     imageAlt: "ApplyCraft cover letter template gallery preview",
     locale: "en_US",
   },
+  "/job-tracker": {
+    title: "Job Tracker — Organize Your Applications | ApplyCraft",
+    description: "Track every job application in one board — saved, applied, interviewing, offer — with ApplyCraft's free browser-based job tracker.",
+    image: "https://applycraft.io/og/home.png",
+    imageAlt: "ApplyCraft job application tracker board preview",
+    locale: "en_US",
+  },
 };
 
 const ROUTE_FAQS = {

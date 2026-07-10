@@ -8,6 +8,7 @@ const footer = {
   "resumeTemplates": "Modèles de CV",
   "coverLetter": "Lettre de motivation",
   "atsChecker": "Vérificateur ATS",
+  "jobTracker": "Suivi des candidatures",
   "pricing": "Tarifs",
   "changelog": "Journal des modifications",
   "roadmap": "Feuille de route",

@@ -8,6 +8,7 @@ const footer = {
   "resumeTemplates": "قوالب السيرة الذاتية",
   "coverLetter": "خطاب التقديم",
   "atsChecker": "فاحص ATS",
+  "jobTracker": "متابعة الوظائف",
   "pricing": "الأسعار",
   "changelog": "سجل التغييرات",
   "roadmap": "خارطة الطريق",

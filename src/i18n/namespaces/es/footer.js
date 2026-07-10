@@ -7,6 +7,7 @@ const footer = {
   "resumeBuilder": "Creador de currículums",
   "coverLetter": "Carta de presentación",
   "atsChecker": "Verificador ATS",
+  "jobTracker": "Seguimiento de candidaturas",
   "pricing": "Precios",
   "changelog": "Registro de cambios",
   "roadmap": "Hoja de ruta",

@@ -30,7 +30,7 @@ import {
 import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID, TEMPLATE_COUNTRIES, templateCountries } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
-import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter } from "./siteChrome.jsx";
+import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter, HEADER_HEIGHT, HEADER_HEIGHT_MOBILE } from "./siteChrome.jsx";
 import { UI, ENTRY_UI, ACCT_UI, LANDING_UI, BUILDER_UI, COVER_UI, ATS_UI, TRACKER_UI, MASTER_UI, STATUS_UI, MODAL_UI, LANDING2_UI, FOOTER_UI } from "./i18n/index.js";
 import {
   INTERFACE_LANGUAGES,
@@ -5117,7 +5117,7 @@ Awards: ${form.awards}`;
     <header style={{ position: "sticky", top: 0, zIndex: 50,
       background: `linear-gradient(180deg, ${C.bg}f7 0%, ${C.bg}e8 100%)`,
       backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)" }}>
-      <div style={{ width: "100%", minHeight: isMobile ? 60 : 64,
+      <div className="ac-app-header" style={{ width: "100%", height: isMobile ? HEADER_HEIGHT_MOBILE : HEADER_HEIGHT,
         padding: isMobile ? "0 16px" : "0 32px", display: "flex", alignItems: "center", gap: 14 }}>
         <button type="button" onClick={() => setAppView("landing")}
           style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer",
@@ -5172,7 +5172,7 @@ Awards: ${form.awards}`;
       <header style={{ position: "sticky", top: 0, zIndex: 50, margin: isMobile ? "0 -4px 24px" : "0 0 42px",
         background: `linear-gradient(180deg, ${C.bg}f7 0%, ${C.bg}e8 100%)`,
         backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)" }}>
-        <div style={{ width: "100%", minHeight: isMobile ? 60 : 64,
+        <div className="ac-app-header" style={{ width: "100%", height: isMobile ? HEADER_HEIGHT_MOBILE : HEADER_HEIGHT,
           padding: isMobile ? "0 16px" : "0 32px", display: "flex", alignItems: "center", gap: 14 }}>
           <button type="button" onClick={() => setAppView("landing")}
             style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer",
@@ -6074,8 +6074,9 @@ Awards: ${form.awards}`;
       boxSizing: "border-box", padding: isMobile ? "8px 4px" : "10px 16px" }}>
 
       {/* ── Builder top bar ── */}
-      <div style={{ position: "sticky", top: 0, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
-        padding: isMobile ? "10px 12px" : "11px 18px", background: `${C.bg}f4`, backdropFilter: "blur(14px)",
+      <div className="ac-app-header" style={{ position: "sticky", top: 0, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
+        height: isMobile ? "auto" : HEADER_HEIGHT, boxSizing: "border-box",
+        padding: isMobile ? "10px 12px" : "0 18px", background: `${C.bg}f4`, backdropFilter: "blur(14px)",
         boxShadow: "0 10px 28px rgba(0,0,0,0.14)", display: "flex", alignItems: "center", gap: 10, flexWrap: isMobile ? "wrap" : "nowrap" }}>
         <button onClick={() => setStep("templates")} aria-label={bu.backToTemplates}
           style={{ ...ghostIconBtn, margin: 0, fontSize: 18 }}>←</button>
@@ -7576,8 +7577,9 @@ Awards: ${form.awards}`;
     return (
       <div style={{ display: "flex", flexDirection: "column", height: "100%",
         boxSizing: "border-box", padding: isMobile ? "8px 4px" : "10px 16px" }}>
-        <div style={{ position: "sticky", top: 0, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
-          padding: isMobile ? "10px 12px" : "11px 18px", background: `${C.bg}f4`, backdropFilter: "blur(14px)",
+        <div className="ac-app-header" style={{ position: "sticky", top: 0, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
+          height: isMobile ? "auto" : HEADER_HEIGHT, boxSizing: "border-box",
+          padding: isMobile ? "10px 12px" : "0 18px", background: `${C.bg}f4`, backdropFilter: "blur(14px)",
           boxShadow: "0 10px 28px rgba(0,0,0,0.14)", display: "flex", alignItems: "center", gap: 10, flexWrap: isMobile ? "wrap" : "nowrap" }}>
           <button onClick={() => setCoverStep("templates")} aria-label={bu.backToTemplates}
             style={{ ...ghostIconBtn, margin: 0, fontSize: 18 }}>←</button>
@@ -9131,6 +9133,7 @@ Awards: ${form.awards}`;
             { id: "resume", label: footerNav.resumeBuilder, onClick: () => { setLandingMenuOpen(false); setAppView("app"); setNavPage("resume"); setStep("templates"); } },
             { id: "cover", label: footerNav.coverLetter, onClick: () => { setLandingMenuOpen(false); setAppView("app"); setNavPage("cover"); setCoverStep("templates"); } },
             { id: "ats", label: footerNav.atsChecker, onClick: () => { setLandingMenuOpen(false); setAppView("app"); setNavPage("ats"); } },
+            { id: "tracker", label: footerNav.jobTracker, onClick: () => { setLandingMenuOpen(false); setAppView("app"); setNavPage("tracker"); } },
           ]}
         />
         <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)} at={at}

@@ -14,6 +14,14 @@ export const SITE_COLORS = {
   grad: "linear-gradient(135deg,#6366F1 0%,#3B82F6 100%)",
 };
 
+// Single source of truth for header height across every context (site navbar,
+// resume/cover-letter builder, ATS checker). Headers set this FIXED height — never
+// content-derived — so navigating between contexts never shifts the layout. Mobile
+// (<=720px) uses the shorter value. The content offset below a fixed header must
+// use the same token (see HEADER_OFFSET).
+export const HEADER_HEIGHT = 64;         // desktop, px
+export const HEADER_HEIGHT_MOBILE = 60;  // <=720px, px
+
 const AUTHOR_EMAIL = "hello@applycraft.io";
 const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
 
@@ -82,6 +90,7 @@ const DEFAULT_NAV_LINKS = [
   { href: "/resume/templates/", footerKey: "resumeTemplates", fallback: "Resume Templates" },
   { href: "/cover-letter/templates/", footerKey: "coverLetter", fallback: "Cover Letter" },
   { href: "/ats-checker/", footerKey: "atsChecker", fallback: "ATS Checker" },
+  { href: "/job-tracker/", footerKey: "jobTracker", fallback: "Job Tracker" },
 ];
 
 function actionProps(item) {
@@ -140,7 +149,7 @@ export function SiteHeader({
       }
       @media (max-width: 720px) {
         .ac-site-header > div {
-          height: 60px !important;
+          height: ${HEADER_HEIGHT_MOBILE}px !important;
           padding: 0 16px !important;
         }
         .ac-nav-logo {
@@ -192,7 +201,7 @@ export function SiteHeader({
     }}>
       <div style={{
         width: "100%",
-        height: 76,
+        height: HEADER_HEIGHT,
         margin: "0 auto",
         padding: "0 32px",
         display: "flex",

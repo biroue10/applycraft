@@ -8,6 +8,7 @@ export const FOOTER_LINK_SECTIONS = [
       { href: "/resume/templates/", labelKey: "resumeTemplates" },
       { href: "/cover-letter/templates/", labelKey: "coverLetter" },
       { href: "/ats-checker/", labelKey: "atsChecker" },
+      { href: "/job-tracker/", labelKey: "jobTracker" },
       { href: "/pricing/", labelKey: "pricing" },
       { href: "/changelog/", labelKey: "changelog" },
       { href: "/roadmap/", labelKey: "roadmap" },

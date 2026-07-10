@@ -3,7 +3,7 @@ import { decodeShare, fetchShortSharedDocument, normalizeSharedDocument, SHARE_I
 import { isRtlLang } from "./i18n/languages.js";
 import { ResumePaper, CoverLetterPaper } from "./documents/DocumentPapers.jsx";
 import { getResumeTemplateById, getCoverTemplateById } from "./documents/templateRegistry.js";
-import { AppShell, SITE_COLORS } from "./siteChrome.jsx";
+import { AppShell, SITE_COLORS, HEADER_HEIGHT } from "./siteChrome.jsx";
 
 // Public viewer for a shared resume / cover letter. The encoded payload lives
 // entirely in the URL fragment, so no resume content is uploaded to ApplyCraft.
@@ -87,7 +87,7 @@ function SharedStyles({ pageSize }) {
       .ac-shared-stage {
         max-width: 1120px;
         margin: 0 auto;
-        padding: calc(76px + 2rem) 1rem 3rem;
+        padding: calc(${HEADER_HEIGHT}px + 2rem) 1rem 3rem;
         display: flex;
         justify-content: center;
       }
