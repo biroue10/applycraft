@@ -35,7 +35,11 @@ export const COLORS = {
   paperMuted: "#6B7280",
 };
 
-const channels = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+const channels = (hex) => {
+  const h = String(hex).replace("#", "");
+  const full = h.length === 3 ? h.replace(/./g, (c) => c + c) : h;
+  return [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
+};
 
 function luminance(hex) {
   const [r, g, b] = channels(hex)
@@ -67,8 +71,10 @@ export function compositeOver(fg, alpha, bg) {
 export function readableInk(fg, bg, min = 4.5) {
   if (contrastRatio(fg, bg) >= min) return fg;
   const base = channels(fg);
-  for (let step = 1; step <= 16; step++) {
-    const factor = 1 - step * 0.05;
+  // 2.5% steps: darken only as far as the threshold requires, so a template's
+  // accent keeps its hue and reads as the same colour.
+  for (let step = 1; step <= 32; step++) {
+    const factor = 1 - step * 0.025;
     const ink = "#" + base.map((v) => Math.round(v * factor).toString(16).padStart(2, "0")).join("");
     if (contrastRatio(ink, bg) >= min) return ink;
   }
@@ -91,4 +97,37 @@ export const INPUT_FILL = { color: "#ffffff", alpha: 13 / 255 };
 /** Readable text colour for an accent chip tinted at `alpha` over `surface`. */
 export function chipInk(accent, surface, alpha = 0x12 / 255) {
   return readableInk(accent, compositeOver(accent, alpha, surface));
+}
+
+// Resume/cover templates paint their accent three ways on white paper: as text,
+// as a ~9%-tinted chip carrying accent text, and as a block carrying white text.
+// One normalization covers all three. The chip is the binding constraint (its
+// background is a lightened accent, so it has the least headroom), and contrast
+// is symmetric, so an accent readable on its own chip is also readable on white
+// and safe under white text.
+//
+// 11 of the 32 shipped accents failed as text on white: amber #D97706 (3.19:1),
+// emerald #10B981 (2.54:1), orange #F97316 (2.80:1), cyan #06B6D4 (2.43:1), ...
+export const PAPER_BG = "#ffffff";
+export const ACCENT_CHIP_ALPHA = 0x18 / 255;
+
+export function accentOnPaper(accent, min = 4.5) {
+  const base = channels(accent);
+  for (let step = 0; step <= 32; step++) {
+    const factor = 1 - step * 0.025;
+    const ink = "#" + base.map((v) => Math.round(v * factor).toString(16).padStart(2, "0")).join("");
+    if (contrastRatio(ink, compositeOver(ink, ACCENT_CHIP_ALPHA, PAPER_BG)) >= min) return ink;
+  }
+  return "#000000";
+}
+
+// Sidebar templates mute white text with `opacity` over an accent-filled block.
+// On a vivid accent (white reads only ~5.2:1) any real muting drops below AA,
+// while a dark accent has plenty of headroom. Raise the alpha only as far as the
+// contrast requires, so dark sidebars keep the muting the designer chose.
+export function mutedAlphaOnAccent(accent, desired, min = 4.5) {
+  for (let alpha = desired; alpha < 1; alpha += 0.02) {
+    if (contrastRatio(compositeOver(PAPER_BG, alpha, accent), accent) >= min) return Math.round(alpha * 100) / 100;
+  }
+  return 1;
 }

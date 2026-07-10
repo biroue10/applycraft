@@ -17,6 +17,11 @@ export function LinkifyLinksProvider({ enabled = true, children }) {
   );
 }
 
+/** False inside a non-interactive paper (gallery thumbnails, template previews). */
+export function useLinkifyLinksEnabled() {
+  return useContext(LinkifyLinksEnabledContext);
+}
+
 function renderText(value, keyPrefix) {
   const chunks = String(value || "").split("\n");
   return chunks.flatMap((chunk, index) => (

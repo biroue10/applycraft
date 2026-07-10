@@ -14,7 +14,7 @@
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { COLORS, TEXT_ON_BACKGROUNDS, INPUT_FILL, readableInk } from "../src/theme/colors.js";
+import { COLORS, TEXT_ON_BACKGROUNDS, INPUT_FILL, readableInk, accentOnPaper, compositeOver, ACCENT_CHIP_ALPHA, PAPER_BG } from "../src/theme/colors.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const AA_NORMAL = 4.5;
@@ -64,6 +64,22 @@ for (const bgName of ["surface", "elevated"]) {
 
 // Light (paper) surfaces of the resume previews.
 assertContrast("paperMuted", COLORS.paperMuted, "paper white", "#FFFFFF");
+
+// Every resume/cover template accent, after accentOnPaper() normalization, must
+// read as text on white paper (it is also used tinted and under white text; the
+// tinted chip is the binding case). This is the fix for the 11 accents that
+// failed as text on white.
+{
+  const registry = readFileSync(join(ROOT, "src", "documents", "templateRegistry.js"), "utf8");
+  const accents = [...new Set([...registry.matchAll(/accent:\s*"(#[0-9a-fA-F]{6})"/g)].map((m) => m[1]))];
+  if (accents.length < 20) failures.push(`template accent scan found only ${accents.length} accents — regex drift?`);
+  for (const accent of accents) {
+    const ink = accentOnPaper(accent);
+    const chipBg = composite(ink, ACCENT_CHIP_ALPHA, PAPER_BG);
+    assertContrast(`accent ${accent}`, ink, "paper white", PAPER_BG);
+    assertContrast(`accent ${accent} chip`, ink, "accent chip tint", chipBg);
+  }
+}
 
 // Preview skill chips paint the accent as text on a 7% tint of the same accent
 // over the template sidebar. readableInk() must rescue every accent we ship.

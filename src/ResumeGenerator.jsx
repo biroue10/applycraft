@@ -32,7 +32,7 @@ import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT
 import { PRODUCT } from "./product.js";
 import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter, HEADER_HEIGHT } from "./siteChrome.jsx";
 import { primaryNavLabelKey } from "./nav/navItems.js";
-import { COLORS, chipInk } from "./theme/colors.js";
+import { COLORS, chipInk, accentOnPaper } from "./theme/colors.js";
 import { UI, ENTRY_UI, ACCT_UI, LANDING_UI, BUILDER_UI, COVER_UI, ATS_UI, TRACKER_UI, MASTER_UI, STATUS_UI, MODAL_UI, LANDING2_UI, FOOTER_UI } from "./i18n/index.js";
 import {
   INTERFACE_LANGUAGES,
@@ -4751,7 +4751,9 @@ Awards: ${form.awards}`;
       parseInt(h.slice(3,5),16),
       parseInt(h.slice(5,7),16),
     ];
-    const [ar, ag, ab] = hex2rgb(tpl.accent);
+    // Same WCAG-AA accent as the on-screen paper (DocumentPapers.withAccessibleAccent):
+    // the exported PDF gets the darker, more readable/ATS-friendly heading colour too.
+    const [ar, ag, ab] = hex2rgb(accentOnPaper(tpl.accent));
 
     const addPage = () => { doc.addPage(); y = margin; };
     const checkY = (need = 10) => { if (y + need > 280) addPage(); };
@@ -4887,7 +4889,7 @@ Awards: ${form.awards}`;
       doc.line(margin, 286, pageW - margin, 286);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
-      doc.setTextColor(160, 160, 160);
+      doc.setTextColor(107, 114, 128); // paperMuted, AA on white
       doc.text(safe(src.name || ""), margin, 291);
       if (pdfEmail) doc.text(pdfEmail, pageW / 2, 291, { align: "center" });
       doc.text(`${i} / ${totalPages}`, pageW - margin, 291, { align: "right" });
@@ -4932,7 +4934,7 @@ Awards: ${form.awards}`;
     track(EVENTS.DOCX_EXPORT_STARTED, { document_type: "resume", language: docLang, template: tpl?.id || "" });
     const { Document, Packer, Paragraph, TextRun, BorderStyle, AlignmentType, ExternalHyperlink } = await import("docx");
 
-    const accent = tpl.accent.replace("#", "").toUpperCase();
+    const accent = accentOnPaper(tpl.accent).replace("#", "").toUpperCase();
     const docxRtl = isRtlLang(docLang);
     const docxAlignment = docxRtl ? AlignmentType.RIGHT : AlignmentType.LEFT;
     const docxFont = docxRtl ? "Noto Sans Arabic" : "Aptos";
@@ -7149,16 +7151,17 @@ Awards: ${form.awards}`;
         setTimeout(() => setStatusMsg(""), 6000);
       }
       const checkY = (h = 10) => { if (y + h > 277) { doc.addPage(); y = margin; } };
+      const coverAccent = accentOnPaper(coverTpl.accent);
       const [ar, ag, ab] = [
-        parseInt(coverTpl.accent.slice(1,3),16),
-        parseInt(coverTpl.accent.slice(3,5),16),
-        parseInt(coverTpl.accent.slice(5,7),16),
+        parseInt(coverAccent.slice(1,3),16),
+        parseInt(coverAccent.slice(3,5),16),
+        parseInt(coverAccent.slice(5,7),16),
       ];
       doc.setFont("helvetica", "bold"); doc.setFontSize(18); doc.setTextColor(17,17,17);
       doc.text(safe(d.name), margin, y); y += 7;
       if (d.jobTitle) { doc.setFont("helvetica","italic"); doc.setFontSize(11); doc.setTextColor(ar,ag,ab); doc.text(safe(d.jobTitle), margin, y); y += 5; }
       if ([d.email, d.phone, d.location].filter(Boolean).length) {
-        doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(120,120,120);
+        doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(107, 114, 128);
         y += drawPdfContactItems(doc, [d.email, d.phone, d.location], {
           x: pageW / 2,
           y,
@@ -7174,7 +7177,7 @@ Awards: ${form.awards}`;
       if (d.recipientName) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(30,30,30); doc.text(safe(d.recipientName), margin, y); y += 5; }
       if (d.recipientTitle) { doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.text(safe(d.recipientTitle), margin, y); y += 5; }
       if (d.company) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(ar,ag,ab); doc.text(safe(d.company), margin, y); y += 5; }
-      if (d.companyAddress) { doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(120,120,120); doc.text(safe(d.companyAddress), margin, y); y += 6; }
+      if (d.companyAddress) { doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor(107, 114, 128); doc.text(safe(d.companyAddress), margin, y); y += 6; }
       y += 2;
       if (d.subject) { doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(30,30,30); doc.text(`Re: ${safe(d.subject)}`, margin, y); y += 6; }
       if (d.opening) { doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(50,50,50); doc.text(`Dear ${safe(d.opening)},`, margin, y); y += 8; }
@@ -7200,7 +7203,7 @@ Awards: ${form.awards}`;
         doc.line(margin, 286, pageW2 - margin, 286);
         doc.setFont("helvetica", "normal");
         doc.setFontSize(8);
-        doc.setTextColor(160, 160, 160);
+        doc.setTextColor(107, 114, 128); // paperMuted, AA on white
         doc.text(safe(d.name || ""), margin, 291);
         doc.text(`${i} / ${totalPages2}`, pageW2 - margin, 291, { align: "right" });
       }
@@ -7228,7 +7231,7 @@ Awards: ${form.awards}`;
     try {
       track(EVENTS.DOCX_EXPORT_STARTED, { document_type: "cover", language: docLang, template: coverTpl?.id || "" });
       const { Document, Packer, Paragraph, TextRun, BorderStyle, AlignmentType, ExternalHyperlink } = await import("docx");
-      const accent = coverTpl.accent.replace("#", "").toUpperCase();
+      const accent = accentOnPaper(coverTpl.accent).replace("#", "").toUpperCase();
       const docxRtl = isRtlLang(docLang);
       const docxAlignment = docxRtl ? AlignmentType.RIGHT : AlignmentType.LEFT;
       const docxFont = docxRtl ? "Noto Sans Arabic" : "Aptos";

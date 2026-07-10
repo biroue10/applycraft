@@ -1,19 +1,39 @@
 import React from "react";
-import LinkifiedText, { LinkifyLinksProvider } from "../components/LinkifiedText.jsx";
+import LinkifiedText, { LinkifyLinksProvider, useLinkifyLinksEnabled } from "../components/LinkifiedText.jsx";
 import { isPlaceholderOnly, normalizeDateRange } from "../resumeQuality.js";
 import { getContactHref, normalizeContactItems } from "../utils/contactLinks.js";
 import { asArray, emptyResumePreviewMessage, isResumeDataEmpty, normalizeResumeData } from "../resumeData.js";
 import { defaultCoverSignoff } from "../i18n/letterDefaults.js";
-import { COLORS } from "../theme/colors.js";
+import { COLORS, accentOnPaper, mutedAlphaOnAccent } from "../theme/colors.js";
+
+// Templates use `tpl.accent` as text, as a tinted chip and as a block under white
+// text. Nudging it once here keeps every usage above WCAG AA without touching the
+// 56 call sites, and leaves accents that already pass exactly as designed.
+function withAccessibleAccent(tpl) {
+  if (!tpl?.accent) return tpl;
+  const accent = accentOnPaper(tpl.accent);
+  return accent === tpl.accent ? tpl : { ...tpl, accent };
+}
+
+// WCAG 2.2 AA "Target Size (Minimum)": 24x24 CSS px. Vertical padding on an
+// *inline* box grows its hit area without growing the line box, and the negative
+// inline margin cancels the horizontal padding, so the contact line still renders
+// as one compact CV header row rather than a strip of buttons. Both properties
+// are flow-relative, so this is RTL-safe.
+const CONTACT_TOUCH_TARGET = { paddingBlock: 6, paddingInline: 3, marginInline: -3 };
 
 function ContactLink({ item, style }) {
   const href = getContactHref(item);
+  // Thumbnails and template previews render the paper at a fraction of full size;
+  // a 7px-tall mailto link there is not a usable target (and not a useful link),
+  // so those papers render contact details as plain text.
+  const interactive = useLinkifyLinksEnabled();
   const content = (
     <bdi dir="auto" className="contact-item" style={{ unicodeBidi: "isolate", overflowWrap: "anywhere", wordBreak: "normal" }}>
       {item.value}
     </bdi>
   );
-  if (!href) {
+  if (!href || !interactive) {
     return <span className="contact-link contact-link--plain" style={{ color: "inherit", textDecoration: "none", ...style }}>{content}</span>;
   }
   const isExternal = /^https?:\/\//i.test(href);
@@ -23,7 +43,7 @@ function ContactLink({ item, style }) {
       href={href}
       target={isExternal ? "_blank" : undefined}
       rel={isExternal ? "noopener noreferrer" : undefined}
-      style={{ color: "inherit", textDecoration: "none", ...style }}
+      style={{ color: "inherit", textDecoration: "none", ...CONTACT_TOUCH_TARGET, ...style }}
     >
       {content}
     </a>
@@ -34,7 +54,7 @@ function ContactLine({ items, separator = " · ", style }) {
   const values = normalizeContactItems(items);
   if (!values.length) return null;
   return (
-    <span className="resume-contact-row" style={{ display: "inline-flex", flexWrap: "wrap", alignItems: "baseline", gap: "0.15rem 0.35rem", lineHeight: 1.35, ...style }}>
+    <span className="resume-contact-row" style={{ display: "inline-flex", flexWrap: "wrap", alignItems: "baseline", gap: "0.15rem 0.45rem", lineHeight: 1.35, ...style }}>
       {values.map((item, index) => (
         <React.Fragment key={`${item.type}-${item.value}-${index}`}>
           {index > 0 && <span className="contact-separator" aria-hidden="true" style={{ color: "currentColor", opacity: 0.55 }}>{separator}</span>}
@@ -49,7 +69,7 @@ function ContactStack({ items, style, itemStyle }) {
   const values = normalizeContactItems(items);
   if (!values.length) return null;
   return (
-    <div className="resume-contact-block" style={{ display: "flex", flexDirection: "column", gap: "0.18rem", lineHeight: 1.38, ...style }}>
+    <div className="resume-contact-block" style={{ display: "flex", flexDirection: "column", gap: "0.5rem", lineHeight: 1.38, ...style }}>
       {values.map((item, index) => (
         <ContactLink key={`${item.type}-${item.value}-${index}`} item={item} style={itemStyle} />
       ))}
@@ -235,7 +255,8 @@ function ResumeSectionBody({ section, lang = "en", sidebar = false, accent = "#2
 }
 
 export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = lang, placeholder = true, preview = false }) {
-  const tpl = rawTpl.variant ? { ...rawTpl, id: rawTpl.variant } : rawTpl;
+  const resolvedTpl = rawTpl.variant ? { ...rawTpl, id: rawTpl.variant } : rawTpl;
+  const tpl = withAccessibleAccent(resolvedTpl);
   const data = normalizeResumeData(result);
   const empty = isResumeDataEmpty(data);
   const paper = { background: "#fff", color: "#1a1a1a",
@@ -366,15 +387,15 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
               </div>
             )}
             <div style={{ fontSize: 19, fontWeight: 800, lineHeight: rtl ? 1.35 : 1.2, marginBottom: 4 }}>{data.name}</div>
-            <div style={{ fontSize: 11, opacity: 0.72, marginBottom: 18, fontStyle: "italic", lineHeight: rtl ? 1.45 : undefined }}>{data.title}</div>
+            <div style={{ fontSize: 11, opacity: mutedAlphaOnAccent(tpl.accent, 0.72), marginBottom: 18, fontStyle: "italic", lineHeight: rtl ? 1.45 : undefined }}>{data.title}</div>
             <div style={{ height: 1, background: "rgba(255,255,255,0.22)", marginBottom: 14 }} />
-            <ContactStack items={data.contact} style={{ fontSize: 10.5, opacity: 0.86, marginBottom: 10, gap: rtl ? "0.3rem" : "0.18rem" }} />
+            <ContactStack items={data.contact} style={{ fontSize: 10.5, opacity: mutedAlphaOnAccent(tpl.accent, 0.86), marginBottom: 10, gap: rtl ? "0.3rem" : "0.18rem" }} />
             {sideS.map((s, i) => (
               <div key={i} style={{ marginTop: 20 }}>
                 <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px",
-                  opacity: 0.55, marginBottom: 9 }}>{s.heading}</div>
+                  opacity: mutedAlphaOnAccent(tpl.accent, 0.55), marginBottom: 9 }}>{s.heading}</div>
                 {renderSectionBody(s, {
-                  tagStyle: { fontSize: 10, padding: "2px 9px", borderRadius: 999, background: "rgba(255,255,255,0.16)", color: "#fff", fontWeight: 500 },
+                  tagStyle: { fontSize: 10, padding: "2px 9px", borderRadius: 999, background: "rgba(0,0,0,0.16)", color: "#fff", fontWeight: 500 },
                 })}
               </div>
             ))}
@@ -413,7 +434,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
             <div style={{ fontSize: 30, fontWeight: 800, color: "#111", letterSpacing: "-0.5px",
               lineHeight: 1.1 }}>{data.name}</div>
             {data.title && <div style={{ fontSize: 13, color: "#666", marginTop: 5 }}>{data.title}</div>}
-            <div style={{ fontSize: 11, color: "#999", marginTop: 8, lineHeight: 1.9 }}>
+            <div style={{ fontSize: 11, color: COLORS.paperMuted, marginTop: 8, lineHeight: 1.9 }}>
               <ContactLine items={data.contact} separator="   ·   " />
             </div>
             <div style={{ height: 2, background: tpl.accent, width: 36, marginTop: 14 }} />
@@ -425,7 +446,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
             <div key={i} style={{ marginBottom: 20 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
                 <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase",
-                  letterSpacing: "2px", color: "#aaa", whiteSpace: "nowrap" }}>{s.heading}</div>
+                  letterSpacing: "2px", color: COLORS.paperMuted, whiteSpace: "nowrap" }}>{s.heading}</div>
                 <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
               </div>
               {isSidebar(s) ? (
@@ -503,7 +524,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
                 <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px",
                   color: tpl.accent, marginBottom: 9 }}>{s.heading}</div>
                 {renderSectionBody(s, {
-                  tagStyle: { fontSize: 10, padding: "2px 8px", borderRadius: 3, border: `1px solid ${tpl.accent}66`, color: tpl.accent + "cc", background: "#fff" },
+                  tagStyle: { fontSize: 10, padding: "2px 8px", borderRadius: 3, border: `1px solid ${tpl.accent}66`, color: tpl.accent, background: "#fff" },
                 })}
               </div>
             ))}
@@ -596,15 +617,15 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
               }
             </div>
             <div style={{ fontSize: 17, fontWeight: 800, lineHeight: 1.2, marginBottom: 3 }}>{data.name}</div>
-            <div style={{ fontSize: 10.5, opacity: 0.72, marginBottom: 18, fontStyle: "italic" }}>{data.title}</div>
+            <div style={{ fontSize: 10.5, opacity: mutedAlphaOnAccent(tpl.accent, 0.72), marginBottom: 18, fontStyle: "italic" }}>{data.title}</div>
             <div style={{ height: 1, background: "rgba(255,255,255,0.22)", marginBottom: 14 }} />
-            <ContactStack items={data.contact} style={{ fontSize: 10, opacity: 0.8, marginBottom: 7 }} />
+            <ContactStack items={data.contact} style={{ fontSize: 10, opacity: mutedAlphaOnAccent(tpl.accent, 0.8), marginBottom: 7 }} />
             {sideS.map((s, i) => (
               <div key={i} style={{ marginTop: 18 }}>
                 <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "1.5px",
-                  opacity: 0.55, marginBottom: 9 }}>{s.heading}</div>
+                  opacity: mutedAlphaOnAccent(tpl.accent, 0.55), marginBottom: 9 }}>{s.heading}</div>
                 {renderSectionBody(s, {
-                  tagStyle: { fontSize: 10, padding: "2px 8px", borderRadius: 999, background: "rgba(255,255,255,0.18)", color: "#fff", fontWeight: 500 },
+                  tagStyle: { fontSize: 10, padding: "2px 8px", borderRadius: 999, background: "rgba(0,0,0,0.18)", color: "#fff", fontWeight: 500 },
                 })}
               </div>
             ))}
@@ -654,7 +675,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
                 letterSpacing: "1px" }}>── {s.heading.toUpperCase()} ──</div>
               {isSidebar(s) ? (
                 renderSectionBody(s, {
-                  tagStyle: { fontSize: 10.5, padding: "2px 9px", borderRadius: 3, border: `1px solid ${tpl.accent}55`, color: tpl.accent + "cc" },
+                  tagStyle: { fontSize: 10.5, padding: "2px 9px", borderRadius: 3, border: `1px solid ${tpl.accent}55`, color: tpl.accent },
                 })
               ) : renderSectionBody(s, {
                 titleStyle: { fontSize: 12.5, color: "#f8fafc" },
@@ -925,7 +946,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
             {data.title && <div style={{ fontSize: 13, color: "#666", marginTop: 6,
               fontStyle: "italic", fontWeight: 400 }}>{data.title}</div>}
             <div style={{ height: 1, background: tpl.accent, width: "100%", marginTop: 18 }} />
-            <div style={{ fontSize: 10.5, color: "#888", marginTop: 10, lineHeight: 2 }}>
+            <div style={{ fontSize: 10.5, color: COLORS.paperMuted, marginTop: 10, lineHeight: 2 }}>
               <ContactLine items={data.contact} separator="   ·   " />
             </div>
           </div>
@@ -980,7 +1001,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
               </div>
               {isSidebar(s) ? (
                 renderSectionBody(s, {
-                  tagStyle: { fontSize: 10.5, padding: "2px 9px", borderRadius: 3, border: `1px solid ${tpl.accent}66`, color: tpl.accent + "cc" },
+                  tagStyle: { fontSize: 10.5, padding: "2px 9px", borderRadius: 3, border: `1px solid ${tpl.accent}66`, color: tpl.accent },
                 })
               ) : renderSectionBody(s, {
                 titleStyle: { fontSize: 12.5, color: "#f0ece3" },
@@ -1337,7 +1358,8 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
 }
 
 export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en", preview = false }) {
-  const tpl = rawTpl.variant ? { ...rawTpl, id: rawTpl.variant } : rawTpl;
+  const resolvedTpl = rawTpl.variant ? { ...rawTpl, id: rawTpl.variant } : rawTpl;
+  const tpl = withAccessibleAccent(resolvedTpl);
   const paper = {
     background: "#fff", color: "#1a1a1a",
     borderRadius: 0, minHeight: preview ? "100%" : 900,
@@ -1401,18 +1423,18 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
           <div style={{ marginBottom: 20 }}>
             <div style={{ fontSize: 20, fontWeight: 700, color: "#111" }}><LinkifiedText text={d.name} /></div>
             {d.jobTitle && <div style={{ fontSize: 12, color: tpl.accent, marginTop: 3, fontStyle: "italic" }}><LinkifiedText text={d.jobTitle} /></div>}
-            <div style={{ fontSize: 11, color: "#888", marginTop: 6 }}>
+            <div style={{ fontSize: 11, color: COLORS.paperMuted, marginTop: 6 }}>
               <ContactLine items={[d.email, d.phone, d.location]} separator="  ·  " />
             </div>
             <div style={{ height: 1, background: tpl.accent + "55", marginTop: 12 }} />
           </div>
-          {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 18 }}><LinkifiedText text={d.date} /></div>}
+          {d.date && <div style={{ fontSize: 11.5, color: COLORS.paperMuted, marginBottom: 18 }}><LinkifiedText text={d.date} /></div>}
           {(d.recipientName || d.company) && (
             <div style={{ marginBottom: 20, fontSize: 12.5, lineHeight: 1.7, color: "#333" }}>
               {d.recipientName && <div style={{ fontWeight: 600 }}><LinkifiedText text={d.recipientName} /></div>}
               {d.recipientTitle && <div><LinkifiedText text={d.recipientTitle} /></div>}
               {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}><LinkifiedText text={d.company} /></div>}
-              {d.companyAddress && <div style={{ color: "#999", fontSize: 12 }}><LinkifiedText text={d.companyAddress} /></div>}
+              {d.companyAddress && <div style={{ color: COLORS.paperMuted, fontSize: 12 }}><LinkifiedText text={d.companyAddress} /></div>}
             </div>
           )}
           {d.subject && <div style={{ fontSize: 12.5, fontWeight: 600, color: "#111", marginBottom: 16 }}>Re: <LinkifiedText text={d.subject} /></div>}
@@ -1434,19 +1456,19 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
         <div style={{ display: "flex", minHeight: "100%" }}>
           <div style={{ width: "32%", background: tpl.accent, color: "#fff", padding: "28px 16px", flexShrink: 0 }}>
             <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.2, marginBottom: 4 }}><LinkifiedText text={d.name} /></div>
-            {d.jobTitle && <div style={{ fontSize: 11, opacity: 0.72, marginBottom: 18, fontStyle: "italic" }}><LinkifiedText text={d.jobTitle} /></div>}
+            {d.jobTitle && <div style={{ fontSize: 11, opacity: mutedAlphaOnAccent(tpl.accent, 0.72), marginBottom: 18, fontStyle: "italic" }}><LinkifiedText text={d.jobTitle} /></div>}
             <div style={{ height: 1, background: "rgba(255,255,255,0.22)", marginBottom: 14 }} />
-            <ContactStack items={[d.email, d.phone, d.location]} style={{ fontSize: 10.5, opacity: 0.82, marginBottom: 7 }} />
+            <ContactStack items={[d.email, d.phone, d.location]} style={{ fontSize: 10.5, opacity: mutedAlphaOnAccent(tpl.accent, 0.82), marginBottom: 7 }} />
           </div>
           <div style={{ flex: 1, padding: "28px 22px" }}>
-            {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 18 }}><LinkifiedText text={d.date} /></div>}
+            {d.date && <div style={{ fontSize: 11.5, color: COLORS.paperMuted, marginBottom: 18 }}><LinkifiedText text={d.date} /></div>}
             {(d.recipientName || d.company) && (
               <div style={{ marginBottom: 20, fontSize: 12, lineHeight: 1.7,
                 paddingBottom: 16, borderBottom: "1px solid #e5e7eb" }}>
                 {d.recipientName && <div style={{ fontWeight: 600, color: "#111" }}><LinkifiedText text={d.recipientName} /></div>}
                 {d.recipientTitle && <div style={{ color: "#555" }}><LinkifiedText text={d.recipientTitle} /></div>}
                 {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}><LinkifiedText text={d.company} /></div>}
-                {d.companyAddress && <div style={{ color: "#999", fontSize: 11.5 }}><LinkifiedText text={d.companyAddress} /></div>}
+                {d.companyAddress && <div style={{ color: COLORS.paperMuted, fontSize: 11.5 }}><LinkifiedText text={d.companyAddress} /></div>}
               </div>
             )}
             {d.subject && <div style={{ fontSize: 12.5, fontWeight: 700, color: tpl.accent, marginBottom: 14 }}>Re: <LinkifiedText text={d.subject} /></div>}
@@ -1470,18 +1492,18 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
           <div style={{ marginBottom: 24 }}>
             <div style={{ fontSize: 28, fontWeight: 800, color: "#111", letterSpacing: "-0.5px" }}><LinkifiedText text={d.name} /></div>
             {d.jobTitle && <div style={{ fontSize: 12.5, color: "#666", marginTop: 4 }}><LinkifiedText text={d.jobTitle} /></div>}
-            <div style={{ fontSize: 11, color: "#999", marginTop: 8 }}>
+            <div style={{ fontSize: 11, color: COLORS.paperMuted, marginTop: 8 }}>
               <ContactLine items={[d.email, d.phone, d.location]} separator="   ·   " />
             </div>
             <div style={{ height: 2, background: tpl.accent, width: 36, marginTop: 14 }} />
           </div>
-          {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 20 }}><LinkifiedText text={d.date} /></div>}
+          {d.date && <div style={{ fontSize: 11.5, color: COLORS.paperMuted, marginBottom: 20 }}><LinkifiedText text={d.date} /></div>}
           {(d.recipientName || d.company) && (
             <div style={{ marginBottom: 22, fontSize: 12, lineHeight: 1.7, color: "#555" }}>
               {d.recipientName && <div style={{ fontWeight: 600, color: "#222" }}><LinkifiedText text={d.recipientName} /></div>}
               {d.recipientTitle && <div><LinkifiedText text={d.recipientTitle} /></div>}
               {d.company && <div style={{ fontWeight: 500 }}><LinkifiedText text={d.company} /></div>}
-              {d.companyAddress && <div style={{ color: "#999" }}><LinkifiedText text={d.companyAddress} /></div>}
+              {d.companyAddress && <div style={{ color: COLORS.paperMuted }}><LinkifiedText text={d.companyAddress} /></div>}
             </div>
           )}
           {d.subject && <div style={{ fontSize: 11, fontWeight: 700, color: "#555", marginBottom: 18,
@@ -1509,14 +1531,14 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
           </div>
         </div>
         <div style={{ padding: "24px 28px" }}>
-          {d.date && <div style={{ fontSize: 11.5, color: "#888", marginBottom: 18 }}><LinkifiedText text={d.date} /></div>}
+          {d.date && <div style={{ fontSize: 11.5, color: COLORS.paperMuted, marginBottom: 18 }}><LinkifiedText text={d.date} /></div>}
           {(d.recipientName || d.company) && (
             <div style={{ marginBottom: 20, fontSize: 12, lineHeight: 1.7,
               paddingBottom: 16, borderBottom: `2px solid ${tpl.accent}33` }}>
               {d.recipientName && <div style={{ fontWeight: 600 }}><LinkifiedText text={d.recipientName} /></div>}
               {d.recipientTitle && <div style={{ color: "#555" }}><LinkifiedText text={d.recipientTitle} /></div>}
               {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}><LinkifiedText text={d.company} /></div>}
-              {d.companyAddress && <div style={{ color: "#999", fontSize: 11.5 }}><LinkifiedText text={d.companyAddress} /></div>}
+              {d.companyAddress && <div style={{ color: COLORS.paperMuted, fontSize: 11.5 }}><LinkifiedText text={d.companyAddress} /></div>}
             </div>
           )}
           {d.subject && (
@@ -1561,7 +1583,7 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
                 {d.recipientName && <div style={{ fontWeight: 600, color: "#111" }}><LinkifiedText text={d.recipientName} /></div>}
                 {d.recipientTitle && <div style={{ color: "#555" }}><LinkifiedText text={d.recipientTitle} /></div>}
                 {d.company && <div style={{ fontWeight: 500, color: tpl.accent }}><LinkifiedText text={d.company} /></div>}
-                {d.companyAddress && <div style={{ color: "#999", fontSize: 11.5 }}><LinkifiedText text={d.companyAddress} /></div>}
+                {d.companyAddress && <div style={{ color: COLORS.paperMuted, fontSize: 11.5 }}><LinkifiedText text={d.companyAddress} /></div>}
               </div>
             )}
             {d.subject && <div style={{ fontSize: 12.5, fontWeight: 600, color: tpl.accent,
