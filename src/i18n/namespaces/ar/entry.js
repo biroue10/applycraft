@@ -1,5 +1,6 @@
 const entry = {
   "editHeading": "تعديل العنوان",
+  "sectionError": "تعذّر عرض هذا القسم. حاول طيّه ثم إعادة فتحه.",
   "addEntry": "إضافة",
   "remove": "حذف",
   "show": "إظهار في السيرة",

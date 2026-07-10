@@ -108,6 +108,47 @@ test.describe("Resume flow", () => {
   });
 });
 
+test.describe("Cover letter builder sections", () => {
+  // Regression guard: opening "Closing & signature" used to crash the whole app
+  // (IconInput cloned a single child but received an <input> + <datalist> sibling,
+  // so children.props.style was undefined -> "Cannot read properties of undefined").
+  // Every section must open without taking the app down.
+  const SECTIONS = ["Recipient & company", "Your info", "Opening", "Body", "Closing & signature"];
+
+  test("every section opens without crashing the app", async ({ page }) => {
+    const ignoreKnownHydration = (message) => /Minified React error #(418|423|425)\b/.test(message);
+    const errors = [];
+    page.on("pageerror", (e) => { const t = String(e); if (!ignoreKnownHydration(t)) errors.push(t); });
+
+    await page.goto("/cover-letter/builder");
+    // The React error screen must never appear.
+    const crashScreen = page.getByText(/Unexpected Application Error/i);
+
+    for (const title of SECTIONS) {
+      await page.getByRole("heading", { name: title, exact: true }).click();
+      // Section body rendered (not the error-boundary fallback, not a crash).
+      await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
+      await expect(crashScreen).toHaveCount(0);
+    }
+
+    // Closing section specifically renders the sign-off field with a locale default.
+    await expect(page.locator("#cover-field-signoff")).toBeVisible();
+    await expect(page.locator("#cover-field-signoff")).toHaveValue("Sincerely");
+    await expect(page.locator("#cover-field-date")).not.toHaveValue("");
+    expect(errors, errors.join("\n")).toHaveLength(0);
+  });
+
+  test("French letter defaults are localized", async ({ page }) => {
+    await page.goto("/cover-letter/builder?ui=fr&docLang=fr");
+    // Date lives in "Destinataire et entreprise"; sign-off in "Conclusion et signature".
+    await page.getByRole("heading", { name: "Destinataire et entreprise", exact: true }).click();
+    await expect(page.locator("#cover-field-date")).toHaveValue(/^\d+ \p{L}+ \d{4}$/u); // e.g. "9 juillet 2026"
+    await page.getByRole("heading", { name: "Conclusion et signature", exact: true }).click();
+    await expect(page.locator("#cover-field-signoff")).toHaveValue("Cordialement");
+    await expect(page.getByText(/Unexpected Application Error/i)).toHaveCount(0);
+  });
+});
+
 test.describe("ATS checker", () => {
   test("shows the ApplyCraft ATS Readiness Score after a check", async ({ page }) => {
     await page.goto("/app/ats-checker");

@@ -1,5 +1,6 @@
 const entry = {
   "editHeading": "Edit heading",
+  "sectionError": "This section couldn’t be displayed. Try closing and reopening it.",
   "addEntry": "Add entry",
   "remove": "Remove",
   "show": "Show in resume",

@@ -1850,31 +1850,63 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, b
         </span>
       </header>
       {!collapsed && (
-        <div style={{ padding: "8px 16px 16px" }}>
-          <div onDragOver={(e) => { e.preventDefault(); }}>
-            {list.map((entry, i) => (
-              <EntryRow key={entry.id} sectionKey={sectionKey} entry={entry} index={i} eui={eui} rtl={rtl}
-                expanded={expandedId === entry.id}
-                onToggleExpand={() => setExpandedId((id) => (id === entry.id ? null : entry.id))}
-                onChange={(ch) => onChangeEntry(entry.id, ch)}
-                onDelete={() => onDeleteEntry(entry.id)}
-                onToggleVisible={() => onToggleVisible(entry.id)}
-                dnd={dnd}
-                dropSide={over && over.index === i && dragFrom.current != null && dragFrom.current !== i ? over.side : null} />
-            ))}
+        <SectionErrorBoundary label={eui?.sectionError} resetKey={collapsed}>
+          <div style={{ padding: "8px 16px 16px" }}>
+            <div onDragOver={(e) => { e.preventDefault(); }}>
+              {list.map((entry, i) => (
+                <EntryRow key={entry.id} sectionKey={sectionKey} entry={entry} index={i} eui={eui} rtl={rtl}
+                  expanded={expandedId === entry.id}
+                  onToggleExpand={() => setExpandedId((id) => (id === entry.id ? null : entry.id))}
+                  onChange={(ch) => onChangeEntry(entry.id, ch)}
+                  onDelete={() => onDeleteEntry(entry.id)}
+                  onToggleVisible={() => onToggleVisible(entry.id)}
+                  dnd={dnd}
+                  dropSide={over && over.index === i && dragFrom.current != null && dragFrom.current !== i ? over.side : null} />
+              ))}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: SECTION_TOKENS.gap3 }}>
+              <button type="button" onClick={() => { const id = onAdd(); if (id) setExpandedId(id); }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 6, background: `${C.accent}18`,
+                  border: "none", borderRadius: 999, padding: "8px 18px", fontSize: 13, fontWeight: 700,
+                  color: C.accent2, cursor: "pointer", fontFamily: "inherit" }}>
+                + {eui.addEntry}
+              </button>
+            </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: SECTION_TOKENS.gap3 }}>
-            <button type="button" onClick={() => { const id = onAdd(); if (id) setExpandedId(id); }}
-              style={{ display: "inline-flex", alignItems: "center", gap: 6, background: `${C.accent}18`,
-                border: "none", borderRadius: 999, padding: "8px 18px", fontSize: 13, fontWeight: 700,
-                color: C.accent2, cursor: "pointer", fontFamily: "inherit" }}>
-              + {eui.addEntry}
-            </button>
-          </div>
-        </div>
+        </SectionErrorBoundary>
       )}
     </section>
   );
+}
+
+// Isolates a single builder section so a render error inside one panel shows a
+// localized fallback instead of crashing the entire builder to the React error
+// screen. `resetKey` lets a section recover: changing it (e.g. collapse/reopen)
+// clears the error and re-renders the children.
+class SectionErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidUpdate(prevProps) {
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false });
+    }
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div role="alert" style={{ padding: "12px 14px", borderRadius: 10, background: `${C.warn || "#f59e0b"}14`,
+          color: C.text2, fontSize: 13, lineHeight: 1.5 }}>
+          {this.props.label || "This section couldn’t be displayed."}
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 // Same card chrome as SectionCard, but for fixed-field sections (Personal Info,
@@ -1924,7 +1956,13 @@ function FieldCard({ icon, title, status, children, collapsed, onToggleCollapse,
           {collapsed ? "▸" : "▾"}
         </span>
       </header>
-      {!collapsed && <div style={{ padding: "8px 16px 16px" }}>{children}</div>}
+      {!collapsed && (
+        <div style={{ padding: "8px 16px 16px" }}>
+          <SectionErrorBoundary label={eui?.sectionError} resetKey={collapsed}>
+            {children}
+          </SectionErrorBoundary>
+        </div>
+      )}
     </section>
   );
 }
@@ -7707,12 +7745,12 @@ Awards: ${form.awards}`;
                   <IconInput icon="✍️">
                     <input id="cover-field-signoff" list="cover-signoff-options" value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
                       placeholder={cu.phSignoff} style={inputStyle} />
-                    <datalist id="cover-signoff-options">
-                      {(COVER_SIGNOFFS[docLang] || COVER_SIGNOFFS.en).map((option) => (
-                        <option key={option} value={option} />
-                      ))}
-                    </datalist>
                   </IconInput>
+                  <datalist id="cover-signoff-options">
+                    {(COVER_SIGNOFFS[docLang] || COVER_SIGNOFFS.en).map((option) => (
+                      <option key={option} value={option} />
+                    ))}
+                  </datalist>
                 </div>
                 <span style={{ fontSize: 13.5, color: C.text2 }} aria-hidden="true">,</span>
               </div>
@@ -11106,13 +11144,17 @@ function Hint({ text }) {
 }
 
 function IconInput({ icon, children }) {
+  // Clone only a single element child to inject the icon padding. Guarding against
+  // a non-element / multiple children keeps a stray sibling (e.g. a <datalist>)
+  // from crashing on `children.props` being undefined.
+  const child = React.isValidElement(children) ? children : null;
   return (
     <div style={{ position: "relative" }}>
       <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)",
         fontSize: 14, opacity: 0.45, pointerEvents: "none", lineHeight: 1 }}>{icon}</span>
-      {React.cloneElement(children, {
-        style: { ...children.props.style, paddingLeft: 34 }
-      })}
+      {child
+        ? React.cloneElement(child, { style: { ...child.props.style, paddingLeft: 34 } })
+        : children}
     </div>
   );
 }

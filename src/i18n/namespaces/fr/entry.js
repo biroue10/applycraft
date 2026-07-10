@@ -1,5 +1,6 @@
 const entry = {
   "editHeading": "Modifier le titre",
+  "sectionError": "Cette section n’a pas pu s’afficher. Réduisez-la puis rouvrez-la.",
   "addEntry": "Ajouter",
   "remove": "Supprimer",
   "show": "Afficher dans le CV",

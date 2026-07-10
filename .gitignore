@@ -9,5 +9,9 @@ dist
 .wrangler
 .seo-http-urls
 
+# Playwright e2e output
+test-results
+playwright-report
+
 # Local Cloudflare Functions secrets
 .dev.vars
