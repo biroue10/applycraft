@@ -4,6 +4,7 @@ import { isPlaceholderOnly, normalizeDateRange } from "../resumeQuality.js";
 import { getContactHref, normalizeContactItems } from "../utils/contactLinks.js";
 import { asArray, emptyResumePreviewMessage, isResumeDataEmpty, normalizeResumeData } from "../resumeData.js";
 import { defaultCoverSignoff } from "../i18n/letterDefaults.js";
+import { COLORS } from "../theme/colors.js";
 
 function ContactLink({ item, style }) {
   const href = getContactHref(item);
@@ -255,7 +256,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
 
   if (empty) {
     return <div className="resume-paper" lang={lang} dir={rtl ? "rtl" : "ltr"} style={{ ...paper, display: "flex", alignItems: "center", justifyContent: "center",
-      color: "#9ca3af", fontFamily: "'Inter', sans-serif", fontSize: 14, padding: 30, textAlign: "center" }}>
+      color: COLORS.paperMuted, fontFamily: "'Inter', sans-serif", fontSize: 14, padding: 30, textAlign: "center" }}>
       {emptyResumePreviewMessage(uiLang)}
     </div>;
   }

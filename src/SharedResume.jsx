@@ -212,7 +212,7 @@ export default function SharedResume() {
     <AppShell lang={doc?.l || "en"}>
       <SharedStyles pageSize={doc?.p || "a4"} />
 
-      <main className="ac-shared-main" style={{ flex: 1 }}>
+      <main id="main-content" tabIndex={-1} className="ac-shared-main" style={{ flex: 1 }}>
         {!ready ? (
           <div style={{ color: TEXT3, textAlign: "center", padding: 60 }}>{copy.loading}</div>
         ) : !doc || !resolved ? (

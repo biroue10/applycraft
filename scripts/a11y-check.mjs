@@ -16,51 +16,80 @@ import { fileURLToPath } from "url";
 import { JSDOM } from "jsdom";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const distHtml = resolve(__dirname, "../dist/index.html");
 const axePath = resolve(__dirname, "../node_modules/axe-core/axe.js");
-
-const html = readFileSync(distHtml, "utf8");
 const axeSource = readFileSync(axePath, "utf8");
 
-const dom = new JSDOM(html, {
-  url: "https://applycraft.io/",
-  runScripts: "dangerously",
-  resources: "usable",
-});
+// The homepage in each prerendered locale, so an RTL- or translation-only
+// regression cannot slip through an English-only audit.
+const PAGES = [
+  { file: "dist/index.html", url: "https://applycraft.io/" },
+  { file: "dist/fr/index.html", url: "https://applycraft.io/fr/" },
+  { file: "dist/ar/index.html", url: "https://applycraft.io/ar/" },
+];
 
-const { window } = dom;
+async function audit({ file, url }) {
+  const dom = new JSDOM(readFileSync(resolve(__dirname, "..", file), "utf8"), {
+    url,
+    runScripts: "dangerously",
+    resources: "usable",
+  });
+  const { window } = dom;
+  const scriptEl = window.document.createElement("script");
+  scriptEl.textContent = axeSource;
+  window.document.head.appendChild(scriptEl);
 
-// Inject axe-core into the jsdom window context
-const scriptEl = window.document.createElement("script");
-scriptEl.textContent = axeSource;
-window.document.head.appendChild(scriptEl);
+  const run = (options) =>
+    new Promise((res, rej) => {
+      window.setTimeout(() => window.axe.run(window.document, options).then(res).catch(rej), 100);
+    });
 
-// Wait a tick for the script to run, then execute axe
-const results = await new Promise((resolve, reject) => {
-  window.setTimeout(() => {
-    window.axe
-      .run(window.document, {
-        runOnly: {
-          type: "tag",
-          values: ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"],
-        },
-      })
-      .then(resolve)
-      .catch(reject);
-  }, 100);
-});
+  const wcag = await run({ runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"] } });
 
-if (results.violations.length === 0) {
+  // axe's own `skip-link` rule needs layout, so it is inapplicable under jsdom.
+  // Assert the contract directly instead: a skip link must point at an element
+  // that exists and can take focus, or activating it does nothing.
+  const violations = [...wcag.violations];
+  const doc = window.document;
+  for (const link of doc.querySelectorAll('a.skip-link, a[href^="#"].skip-link')) {
+    const id = link.getAttribute("href")?.slice(1);
+    const target = id && doc.getElementById(id);
+    if (!target) {
+      violations.push({
+        id: "skip-link",
+        impact: "serious",
+        description: `skip link targets #${id}, which does not exist on this page`,
+        helpUrl: "https://dequeuniversity.com/rules/axe/4.9/skip-link",
+        nodes: [{ html: link.outerHTML }],
+      });
+    } else if (!target.hasAttribute("tabindex") && !/^(a|button|input|select|textarea)$/i.test(target.tagName)) {
+      violations.push({
+        id: "skip-link",
+        impact: "serious",
+        description: `skip-link target #${id} is not focusable (add tabindex="-1")`,
+        helpUrl: "https://dequeuniversity.com/rules/axe/4.9/skip-link",
+        nodes: [{ html: target.outerHTML.slice(0, 120) }],
+      });
+    }
+  }
+
+  return { file, violations, passes: wcag.passes.length, incomplete: wcag.incomplete.length };
+}
+
+const results = [];
+for (const page of PAGES) results.push(await audit(page));
+
+const failed = results.filter((r) => r.violations.length);
+if (failed.length === 0) {
   console.log("✓ No WCAG 2.2 AA violations found in pre-rendered HTML.\n");
-  console.log(
-    `  Passed: ${results.passes.length} rules · Incomplete: ${results.incomplete.length} (need manual review)`
-  );
+  for (const r of results) {
+    console.log(`  ${r.file}: passed ${r.passes} rules · ${r.incomplete} incomplete (need manual review)`);
+  }
   process.exit(0);
-} else {
-  console.error(
-    `\n✗ ${results.violations.length} WCAG 2.2 AA violation(s) in dist/index.html:\n`
-  );
-  for (const v of results.violations) {
+}
+
+for (const r of failed) {
+  console.error(`\n✗ ${r.violations.length} accessibility violation(s) in ${r.file}:\n`);
+  for (const v of r.violations) {
     console.error(`  [${v.impact?.toUpperCase()}] ${v.id}: ${v.description}`);
     console.error(`    Help: ${v.helpUrl}`);
     for (const node of v.nodes.slice(0, 2)) {
@@ -68,5 +97,5 @@ if (results.violations.length === 0) {
     }
     console.error("");
   }
-  process.exit(1);
 }
+process.exit(1);

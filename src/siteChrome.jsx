@@ -4,18 +4,9 @@ import { FOOTER_UI, LANDING_UI } from "./i18n/index.js";
 import { PRIMARY_NAV_ITEMS } from "./nav/navItems.js";
 import { PRODUCT } from "./product.js";
 import { localizeRoute } from "./seo/localizedRoutes.js";
+import { COLORS } from "./theme/colors.js";
 
-export const SITE_COLORS = {
-  bg: "#06080F",
-  surface: "#0D1424",
-  border: "#20324E",
-  text1: "#EEF2FF",
-  text2: "#B6C2D6",
-  text3: "#7186A6",
-  accent: "#6366F1",
-  accent2: "#818CF8",
-  grad: "linear-gradient(135deg,#6366F1 0%,#3B82F6 100%)",
-};
+export const SITE_COLORS = { ...COLORS };
 
 // Single source of truth for header height across every context (site navbar,
 // resume/cover-letter builder, ATS checker). Headers set this FIXED height — never

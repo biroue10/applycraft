@@ -45,7 +45,8 @@
     "test:localized-links": "node scripts/localized-link-tests.mjs",
     "test:builder-sections": "node scripts/builder-section-tests.mjs",
     "test:visual": "node scripts/visual-regression.mjs",
-    "audit:high": "npm audit --audit-level=high"
+    "audit:high": "npm audit --audit-level=high",
+    "test:contrast": "node scripts/contrast-tests.mjs"
   },
   "dependencies": {
     "docx": "^9.7.1",

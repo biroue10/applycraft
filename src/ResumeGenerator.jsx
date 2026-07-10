@@ -32,6 +32,7 @@ import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT
 import { PRODUCT } from "./product.js";
 import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter, HEADER_HEIGHT } from "./siteChrome.jsx";
 import { primaryNavLabelKey } from "./nav/navItems.js";
+import { COLORS, chipInk } from "./theme/colors.js";
 import { UI, ENTRY_UI, ACCT_UI, LANDING_UI, BUILDER_UI, COVER_UI, ATS_UI, TRACKER_UI, MASTER_UI, STATUS_UI, MODAL_UI, LANDING2_UI, FOOTER_UI } from "./i18n/index.js";
 import {
   INTERFACE_LANGUAGES,
@@ -2162,7 +2163,8 @@ function HeroResumePreview({ isMobile, lang = "en" }) {
                 <ResumeMiniSection accent={accent} title={sample.skills}>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                     {sample.skillItems.map(skill => (
-                      <span key={skill} style={{ fontSize: 9.5, color: accent, background: `${accent}12`,
+                      <span key={skill} style={{ fontSize: 9.5, color: chipInk(accent, "#f5f8fc"),
+                        background: `${accent}12`,
                         border: `1px solid ${accent}20`, borderRadius: 999, padding: "2px 7px", fontWeight: 700 }}>{skill}</span>
                     ))}
                   </div>
@@ -2876,7 +2878,7 @@ function ResumeLivePreview({ demo, tpl, lang, accent, activeField, compact, expa
             <PreviewSection title={lang.skills} accent={accent}>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: isRTL ? "flex-end" : "flex-start" }}>
                 {["UX Strategy", "Figma", "Research", "A/B Testing", "Design Systems"].map(skill => (
-                  <span key={skill} style={{ color: accent, background: `${accent}12`, border: `1px solid ${accent}24`,
+                  <span key={skill} style={{ color: chipInk(accent, tpl.side), background: `${accent}12`, border: `1px solid ${accent}24`,
                     borderRadius: 999, padding: "3px 8px", fontSize: expanded ? 12 : 10.5, fontWeight: 800 }}>{skill}</span>
                 ))}
               </div>
@@ -9130,6 +9132,9 @@ Awards: ${form.awards}`;
           </div>
         )}
 
+        {/* The skip link in index.html targets #main-content; tabIndex -1 lets it
+            actually receive focus when the link is activated. */}
+        <main id="main-content" tabIndex={-1}>
         {/* Hero */}
         <div style={{ background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${C.glow} 0%, transparent 70%)` }}>
           <div className="ac-hero-grid" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "108px 20px 48px" : "144px 24px 72px",
@@ -9691,6 +9696,8 @@ Awards: ${form.awards}`;
           </div>
         </div>
 
+        </main>
+
         {/* Footer */}
         <SharedSiteFooter lang={lang} />
       </div>
@@ -9821,7 +9828,7 @@ Awards: ${form.awards}`;
       )}
 
       {/* ── Main content ── */}
-      <main id="main-content" style={{ flex: 1, minWidth: 0, overflow: isFormView ? "hidden" : "auto",
+      <main id="main-content" tabIndex={-1} style={{ flex: 1, minWidth: 0, overflow: isFormView ? "hidden" : "auto",
         padding: isFormView || isFocusedToolView ? 0 : (isMobile ? "8px 4px" : "16px 24px"),
         ...(isFormView ? { display: "flex", flexDirection: "column" } : {}) }}>
         <div style={{ width: "100%",
@@ -11113,19 +11120,7 @@ function PageFooter({ t }) {
 }
 
 const C = {
-  bg:       "#06080F",   // deepest background
-  sidebar:  "#080D18",   // sidebar background
-  surface:  "#0D1424",   // shell / cards
-  elevated: "#132036",   // inputs, selects
-  border:   "#20324E",   // default border
-  borderHi: "#344967",   // stronger border
-  text1:    "#EEF2FF",   // headings
-  text2:    "#B6C2D6",   // body / labels
-  text3:    "#7186A6",   // muted / placeholder
-  accent:   "#6366F1",   // indigo primary
-  accent2:  "#818CF8",   // lighter indigo
-  blue:     "#3B82F6",   // blue secondary
-  grad:     "linear-gradient(135deg,#6366F1 0%,#3B82F6 100%)", // CTA gradient
+  ...COLORS,             // bg / sidebar / surface / elevated / border / text / accent / grad
   gradHov:  "linear-gradient(135deg,#5254CC 0%,#2563EB 100%)",
   glow:     "rgba(99,102,241,0.14)",  // indigo glow
   glowBlue: "rgba(59,130,246,0.10)", // blue glow

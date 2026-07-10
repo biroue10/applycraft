@@ -177,15 +177,29 @@
     </noscript>
 
     <style>
+      /* Design tokens — mirror of src/theme/colors.js (see public/_seo.css for
+         the static-page copy). Contrast is enforced by scripts/contrast-tests.mjs. */
+      :root {
+        --color-bg-page: #06080F;
+        --color-bg-surface: #0D1424;
+        --color-bg-elevated: #132036;
+        --color-text-primary: #EEF2FF;
+        --color-text-secondary: #B6C2D6;
+        --color-text-muted: #8B9EB8;
+        --color-accent-primary: #6366F1;
+        --color-accent-secondary: #818CF8;
+      }
       *, *::before, *::after { box-sizing: border-box; }
-      body { margin: 0; background: #06080F; }
+      body { margin: 0; background: var(--color-bg-page); }
       ::-webkit-scrollbar { width: 5px; height: 5px; }
       ::-webkit-scrollbar-track { background: transparent; }
       ::-webkit-scrollbar-thumb { background: #1A2740; border-radius: 99px; }
       ::-webkit-scrollbar-thumb:hover { background: #253A58; }
       .ac-panel-noscroll { scrollbar-width: none; -ms-overflow-style: none; }
       .ac-panel-noscroll::-webkit-scrollbar { display: none; }
-      input::placeholder, textarea::placeholder { color: #2D4060; }
+      /* Placeholders are text: they must clear 4.5:1 like any other label.
+         The previous near-navy tone measured 1.56:1 against the input fill. */
+      input::placeholder, textarea::placeholder { color: var(--color-text-muted); opacity: 1; }
       button { font-family: inherit; }
       input:focus, textarea:focus, select:focus {
         border-color: #6366F1 !important;

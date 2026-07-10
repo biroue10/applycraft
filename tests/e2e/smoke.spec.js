@@ -206,10 +206,10 @@ test.describe("Legal pages & footer", () => {
 });
 
 test.describe("Keyboard accessibility", () => {
-  test("skip link is reachable and focus is visible", async ({ page }) => {
+  // Depth on the skip link lives in tests/e2e/skip-link.spec.js.
+  test("skip link is the first tab stop", async ({ page }) => {
     await page.goto("/");
     await page.keyboard.press("Tab");
-    const active = await page.evaluate(() => document.activeElement?.textContent || "");
-    expect(active.length).toBeGreaterThanOrEqual(0); // focus lands somewhere focusable
+    await expect(page.locator("a.skip-link")).toBeFocused();
   });
 });
