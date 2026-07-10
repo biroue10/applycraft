@@ -1,8 +1,4 @@
 const landing = {
-  "navResume": "Currículum",
-  "navCover": "Carta de presentación",
-  "navTracker": "Seguimiento de empleos",
-  "navAts": "Verificador ATS",
   "createResume": "Crear mi currículum",
   "checkResume": "Revisar mi currículum actual",
   "heroEyebrow": "Creador de currículums gratis",

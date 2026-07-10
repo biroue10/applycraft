@@ -1,8 +1,4 @@
 const landing = {
-  "navResume": "Lebenslauf",
-  "navCover": "Anschreiben",
-  "navTracker": "Bewerbungs-Tracker",
-  "navAts": "ATS-Prüfer",
   "createResume": "Lebenslauf erstellen",
   "checkResume": "Meinen bestehenden Lebenslauf prüfen",
   "heroEyebrow": "Kostenloser Lebenslauf-Generator",

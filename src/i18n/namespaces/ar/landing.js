@@ -1,8 +1,4 @@
 const landing = {
-  "navResume": "السيرة الذاتية",
-  "navCover": "خطاب التقديم",
-  "navTracker": "متابعة الوظائف",
-  "navAts": "فاحص ATS",
   "createResume": "أنشئ سيرتي الذاتية",
   "checkResume": "افحص سيرتي الذاتية الحالية",
   "heroEyebrow": "منشئ سيرة ذاتية وخطاب تقديم",

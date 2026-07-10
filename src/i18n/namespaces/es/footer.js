@@ -29,7 +29,10 @@ const footer = {
   "accessibility": "Accesibilidad",
   "badge1": "Sin cuenta requerida",
   "badge2": "Asistentes de IA opcionales",
-  "badge3": "Edición en el navegador"
+  "badge3": "Edición en el navegador",
+  "menu": "Menú",
+  "openMenu": "Abrir el menú",
+  "closeMenu": "Cerrar el menú"
 };
 
 export default footer;

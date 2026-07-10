@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FOOTER_LINK_SECTIONS, localizedFooterHref } from "./footerLinks.js";
 import { FOOTER_UI, LANDING_UI } from "./i18n/index.js";
+import { PRIMARY_NAV_ITEMS } from "./nav/navItems.js";
 import { PRODUCT } from "./product.js";
 import { localizeRoute } from "./seo/localizedRoutes.js";
 
@@ -11,6 +12,8 @@ export const SITE_COLORS = {
   text1: "#EEF2FF",
   text2: "#B6C2D6",
   text3: "#7186A6",
+  accent: "#6366F1",
+  accent2: "#818CF8",
   grad: "linear-gradient(135deg,#6366F1 0%,#3B82F6 100%)",
 };
 
@@ -85,38 +88,43 @@ function Logo({ compact = false, lang = "en", linked = true }) {
   );
 }
 
-const DEFAULT_NAV_LINKS = [
-  { href: "/", footerKey: "resumeBuilder", fallback: "Resume Builder" },
-  { href: "/resume/templates/", footerKey: "resumeTemplates", fallback: "Resume Templates" },
-  { href: "/cover-letter/templates/", footerKey: "coverLetter", fallback: "Cover Letter" },
-  { href: "/ats-checker/", footerKey: "atsChecker", fallback: "ATS Checker" },
-  { href: "/job-tracker/", footerKey: "jobTracker", fallback: "Job Tracker" },
-];
-
-function actionProps(item) {
-  return item.onClick
-    ? { as: "button", props: { type: "button", onClick: item.onClick } }
-    : { as: "a", props: { href: item.href } };
+// A nav item becomes a link on the marketing site and a button inside the SPA,
+// where navigation is client-side state (onNavigate) rather than a page load.
+function actionProps(item, onNavigate) {
+  if (item.onClick) return { as: "button", props: { type: "button", onClick: item.onClick } };
+  if (onNavigate) return { as: "button", props: { type: "button", onClick: () => onNavigate(item) } };
+  return { as: "a", props: { href: item.href } };
 }
 
+// The ONE navbar. `variant="app"` swaps the marketing chrome (fixed position, CTA)
+// for the in-app chrome (sticky position, save-state slot) without forking the
+// component: same height token, same logo, same items, same order, same labels.
 export function SiteHeader({
   lang = "en",
   navItems,
+  activeId,
+  onNavigate,
   onLogoClick,
   ctaHref,
   ctaLabel,
   onCtaClick,
+  showCta = true,
   renderLanguageSelector,
+  keepLanguageOnMobile = false,
+  endSlot = null,
+  variant = "site",
+  headerStyle,
   mobileMenuOpen = false,
   onMobileMenuToggle,
 }) {
   const [internalMenuOpen, setInternalMenuOpen] = useState(false);
+  const isApp = variant === "app";
   const l = LANDING_UI[lang] || LANDING_UI.en;
   const f = FOOTER_UI[lang] || FOOTER_UI.en;
-  const items = (navItems || DEFAULT_NAV_LINKS).map((item) => ({
+  const items = (navItems || PRIMARY_NAV_ITEMS).map((item) => ({
     ...item,
     href: item.href ? localizeNavHref(item.href, lang) : item.href,
-    label: item.label || (item.footerKey ? f[item.footerKey] : "") || (item.labelKey ? l[item.labelKey] : "") || item.fallback || item.id || "",
+    label: item.label || (item.labelKey ? f[item.labelKey] || l[item.labelKey] : "") || item.id || "",
   }));
   const LogoTag = onLogoClick ? "button" : "a";
   const cta = ctaLabel || l.createResume || "Create my resume";
@@ -169,6 +177,12 @@ export function SiteHeader({
         .ac-site-header-language {
           display: none !important;
         }
+        .ac-site-header-language.ac-keep-mobile {
+          display: block !important;
+        }
+        .ac-site-header-status {
+          display: none !important;
+        }
         .ac-site-mobile-menu {
           display: flex !important;
         }
@@ -190,16 +204,20 @@ export function SiteHeader({
       }
     `}</style>
     <header className="ac-site-header" style={{
-      position: "fixed",
+      position: isApp ? "sticky" : "fixed",
       top: 0,
-      left: 0,
-      right: 0,
-      zIndex: 100,
-      background: `${SITE_COLORS.bg}cc`,
+      ...(isApp ? {} : { left: 0, right: 0 }),
+      zIndex: isApp ? 50 : 100,
+      background: isApp
+        ? `linear-gradient(180deg, ${SITE_COLORS.bg}f7 0%, ${SITE_COLORS.bg}e8 100%)`
+        : `${SITE_COLORS.bg}cc`,
       backdropFilter: "blur(14px)",
       WebkitBackdropFilter: "blur(14px)",
+      ...headerStyle,
     }}>
-      <div style={{
+      {/* Height is the token — never derived from content — so switching between
+          the marketing site and the app produces zero layout shift. */}
+      <div className={isApp ? "ac-app-header" : undefined} style={{
         width: "100%",
         height: HEADER_HEIGHT,
         margin: "0 auto",
@@ -207,6 +225,7 @@ export function SiteHeader({
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        boxSizing: "border-box",
       }}>
         <LogoTag
           {...(onLogoClick ? { type: "button", onClick: onLogoClick } : { href: homeHrefForLang(lang) })}
@@ -230,20 +249,24 @@ export function SiteHeader({
         </LogoTag>
         <nav aria-label={f.primaryTools} className="ac-site-nav-links" style={{ display: "flex", gap: 4, marginInlineStart: 18 }}>
           {items.map((item) => {
-            const action = actionProps(item);
+            const action = actionProps(item, onNavigate);
             const Tag = action.as;
+            const active = !!activeId && item.id === activeId;
             return (
-            <Tag key={item.href || item.id || item.label} {...action.props} style={{
+            <Tag key={item.href || item.id || item.label} {...action.props}
+              aria-current={active ? "page" : undefined}
+              style={{
               border: "none",
               borderRadius: 8,
               padding: "9px 12px",
-              background: "transparent",
-              color: SITE_COLORS.text2,
+              background: active ? `${SITE_COLORS.accent}18` : "transparent",
+              color: active ? SITE_COLORS.accent2 : SITE_COLORS.text2,
               textDecoration: "none",
               fontSize: 13.5,
-              fontWeight: 650,
+              fontWeight: active ? 800 : 650,
               fontFamily: "inherit",
               cursor: "pointer",
+              whiteSpace: "nowrap",
             }}>
               {item.label}
             </Tag>
@@ -251,12 +274,17 @@ export function SiteHeader({
           })}
         </nav>
         <div style={{ flex: 1 }} />
+        {endSlot && (
+          <div className="ac-site-header-status" style={{ flexShrink: 0, marginInlineEnd: 12 }}>
+            {endSlot}
+          </div>
+        )}
         {renderLanguageSelector && (
-          <div className="ac-site-header-language" style={{ flexShrink: 0, marginInlineEnd: 10 }}>
+          <div className={`ac-site-header-language${keepLanguageOnMobile ? " ac-keep-mobile" : ""}`} style={{ flexShrink: 0, marginInlineEnd: 10 }}>
             {renderLanguageSelector()}
           </div>
         )}
-        {onCtaClick ? (
+        {!showCta ? null : onCtaClick ? (
           <button className="ac-nav-cta" type="button" onClick={onCtaClick} style={{
             background: SITE_COLORS.grad,
             color: "#fff",
@@ -285,7 +313,7 @@ export function SiteHeader({
           {cta}
         </a>
         )}
-        <button type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen}
+        <button type="button" aria-label={menuOpen ? f.closeMenu : f.openMenu} aria-expanded={menuOpen}
             onClick={toggleMobileMenu}
             className="ac-site-mobile-menu-button"
             style={{ marginInlineStart: 8, width: 40, height: 40, borderRadius: 10, border: `1px solid ${SITE_COLORS.border}`,
@@ -301,8 +329,10 @@ export function SiteHeader({
           {items.map((item) => {
             return (
               <button key={item.href || item.id || item.label} type="button"
+                aria-current={activeId && item.id === activeId ? "page" : undefined}
                 onClick={() => {
                   if (item.onClick) item.onClick();
+                  else if (onNavigate) onNavigate(item);
                   else if (item.href) window.location.href = item.href;
                   closeMobileMenu();
                 }}

@@ -35,6 +35,8 @@ const footer = {
   "brandHome": "Accueil ApplyCraft",
   "primaryTools": "Outils principaux",
   "menu": "Menu",
+  "openMenu": "Ouvrir le menu",
+  "closeMenu": "Fermer le menu",
   "footerRegion": "Pied de page",
   "copyrightPrefix": "© {year} ApplyCraft par Biroue Digital Ltd"
 };

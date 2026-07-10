@@ -1,8 +1,4 @@
 const landing = {
-  "navResume": "CV",
-  "navCover": "Lettre de motivation",
-  "navTracker": "Suivi des candidatures",
-  "navAts": "Vérificateur ATS",
   "createResume": "Créer mon CV",
   "checkResume": "Vérifier mon CV existant",
   "heroEyebrow": "Créateur de CV + lettre de motivation",

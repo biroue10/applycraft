@@ -1,8 +1,4 @@
 const landing = {
-  "navResume": "Resume",
-  "navCover": "Cover Letter",
-  "navTracker": "Job Tracker",
-  "navAts": "ATS Checker",
   "createResume": "Create my resume",
   "checkResume": "Check my existing resume",
   "heroEyebrow": "Resume builder + cover letter maker",

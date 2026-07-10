@@ -30,7 +30,8 @@ import {
 import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID, TEMPLATE_COUNTRIES, templateCountries } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
-import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter, HEADER_HEIGHT, HEADER_HEIGHT_MOBILE } from "./siteChrome.jsx";
+import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter, HEADER_HEIGHT } from "./siteChrome.jsx";
+import { primaryNavLabelKey } from "./nav/navItems.js";
 import { UI, ENTRY_UI, ACCT_UI, LANDING_UI, BUILDER_UI, COVER_UI, ATS_UI, TRACKER_UI, MASTER_UI, STATUS_UI, MODAL_UI, LANDING2_UI, FOOTER_UI } from "./i18n/index.js";
 import {
   INTERFACE_LANGUAGES,
@@ -5106,120 +5107,52 @@ Awards: ${form.awards}`;
     .sort((a, b) => (a.id === RECOMMENDED_TEMPLATE_ID ? -1 : b.id === RECOMMENDED_TEMPLATE_ID ? 1 : 0));
 
   const isTemplateGalleryView = navPage === "resume" && step === "templates";
-  const primaryToolNav = [
-    { id: "resume", label: lx.navResume },
-    { id: "cover", label: lx.navCover },
-    { id: "tracker", label: lx.navTracker },
-    { id: "ats", label: lx.navAts },
-  ];
 
-  const AppToolHeader = () => (
-    <header style={{ position: "sticky", top: 0, zIndex: 50,
-      background: `linear-gradient(180deg, ${C.bg}f7 0%, ${C.bg}e8 100%)`,
-      backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)" }}>
-      <div className="ac-app-header" style={{ width: "100%", height: isMobile ? HEADER_HEIGHT_MOBILE : HEADER_HEIGHT,
-        padding: isMobile ? "0 16px" : "0 32px", display: "flex", alignItems: "center", gap: 14 }}>
-        <button type="button" onClick={() => setAppView("landing")}
-          style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer",
-            display: "inline-flex", alignItems: "center", fontFamily: "inherit" }}>
-          <AppBrandLogo compact={isMobile} />
-        </button>
-        {!isMobile && (
-          <nav aria-label={builderText("primaryToolsNav")} style={{ display: "flex", gap: 4, marginLeft: rtl ? 0 : 18, marginRight: rtl ? 18 : 0 }}>
-            {primaryToolNav.map((item) => (
-              <button key={item.id} type="button" onClick={() => {
-                  setNavPage(item.id);
-                  if (item.id === "resume") setStep("templates");
-                  if (item.id === "cover") setCoverStep("templates");
-                }}
-                aria-current={navPage === item.id ? "page" : undefined}
-                style={{ border: "none", borderRadius: 8, padding: "9px 12px",
-                  background: navPage === item.id ? `${C.accent}18` : "transparent",
-                  color: navPage === item.id ? C.accent2 : C.text2, cursor: "pointer",
-                  fontSize: 13.5, fontWeight: navPage === item.id ? 800 : 650, fontFamily: "inherit" }}>
-                {item.label}
-              </button>
-            ))}
-          </nav>
-        )}
-        <div style={{ flex: 1 }} />
-        {!isMobile && (
-          <span title={builderText("notSavedHeaderTooltip")}
-            style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
-            <LineIcon name="alert" size={14} color={C.text3} /> {bu.notSavedAutomatically}
-          </span>
-        )}
-        <LanguageDropdown
-          selected={selectedLang}
-          onSelect={setSiteLanguage}
-          siteOnly
-          {...(INTERFACE_LANGUAGE_DROPDOWN_COPY[lang] || INTERFACE_LANGUAGE_DROPDOWN_COPY.en)}
-        />
-        {isMobile && (
-          <button type="button" onClick={() => setSidebarOpen(true)} aria-label={builderText("openToolsMenu")}
-            style={{ width: 44, height: 44, borderRadius: 10, border: `1px solid ${C.border}`,
-              background: C.surface, color: C.text2, cursor: "pointer", fontFamily: "inherit",
-              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>
-            ☰
-          </button>
-        )}
-      </div>
-    </header>
+  // Client-side equivalent of following a nav item's href: the SPA renders the
+  // tool in place instead of loading its route.
+  const enterPrimaryTool = (item) => {
+    setNavPage(item.id);
+    if (item.id === "resume") setStep("templates");
+    if (item.id === "cover") setCoverStep("templates");
+  };
+
+  const renderHeaderLanguageSelector = () => (
+    <LanguageDropdown
+      selected={selectedLang}
+      onSelect={setSiteLanguage}
+      siteOnly
+      {...(INTERFACE_LANGUAGE_DROPDOWN_COPY[lang] || INTERFACE_LANGUAGE_DROPDOWN_COPY.en)}
+    />
+  );
+
+  // The in-app navbar IS the marketing navbar (src/siteChrome.jsx) — same height
+  // token, logo, item order and labels. The app-only chrome (active tool, save
+  // state, tools drawer) is passed in as props, never forked into a second component.
+  const AppToolHeader = ({ headerStyle } = {}) => (
+    <SharedSiteHeader
+      variant="app"
+      lang={lang}
+      activeId={navPage}
+      onNavigate={enterPrimaryTool}
+      onLogoClick={() => setAppView("landing")}
+      showCta={false}
+      keepLanguageOnMobile
+      renderLanguageSelector={renderHeaderLanguageSelector}
+      headerStyle={headerStyle}
+      endSlot={(
+        <span title={builderText("notSavedHeaderTooltip")}
+          style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
+          <LineIcon name="alert" size={14} color={C.text3} /> {bu.notSavedAutomatically}
+        </span>
+      )}
+      mobileMenuOpen={false}
+      onMobileMenuToggle={() => setSidebarOpen(true)}
+    />
   );
 
   const mainContent = step === "templates" ? (
     <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
-      <header style={{ position: "sticky", top: 0, zIndex: 50, margin: isMobile ? "0 -4px 24px" : "0 0 42px",
-        background: `linear-gradient(180deg, ${C.bg}f7 0%, ${C.bg}e8 100%)`,
-        backdropFilter: "blur(18px)", WebkitBackdropFilter: "blur(18px)" }}>
-        <div className="ac-app-header" style={{ width: "100%", height: isMobile ? HEADER_HEIGHT_MOBILE : HEADER_HEIGHT,
-          padding: isMobile ? "0 16px" : "0 32px", display: "flex", alignItems: "center", gap: 14 }}>
-          <button type="button" onClick={() => setAppView("landing")}
-            style={{ border: "none", background: "transparent", padding: 0, cursor: "pointer",
-              display: "inline-flex", alignItems: "center", fontFamily: "inherit" }}>
-            <AppBrandLogo compact={isMobile} />
-          </button>
-          {!isMobile && (
-            <nav aria-label={builderText("primaryToolsNav")} style={{ display: "flex", gap: 4, marginLeft: rtl ? 0 : 18, marginRight: rtl ? 18 : 0 }}>
-              {primaryToolNav.map((item) => (
-                <button key={item.id} type="button" onClick={() => {
-                    setNavPage(item.id);
-                    if (item.id === "resume") setStep("templates");
-                    if (item.id === "cover") setCoverStep("templates");
-                  }}
-                  aria-current={navPage === item.id ? "page" : undefined}
-                  style={{ border: "none", borderRadius: 8, padding: "9px 12px",
-                    background: navPage === item.id ? `${C.accent}18` : "transparent",
-                    color: navPage === item.id ? C.accent2 : C.text2, cursor: "pointer",
-                    fontSize: 13.5, fontWeight: navPage === item.id ? 800 : 650, fontFamily: "inherit" }}>
-                  {item.label}
-                </button>
-              ))}
-            </nav>
-          )}
-          <div style={{ flex: 1 }} />
-          {!isMobile && (
-            <span title={builderText("notSavedHeaderTooltip")}
-              style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
-              <LineIcon name="alert" size={14} color={C.text3} /> {bu.notSavedAutomatically}
-            </span>
-          )}
-          <LanguageDropdown
-            selected={selectedLang}
-            onSelect={setSiteLanguage}
-            siteOnly
-            {...(INTERFACE_LANGUAGE_DROPDOWN_COPY[lang] || INTERFACE_LANGUAGE_DROPDOWN_COPY.en)}
-          />
-          {isMobile && (
-            <button type="button" onClick={() => setSidebarOpen(true)} aria-label={builderText("openToolsMenu")}
-              style={{ width: 44, height: 44, borderRadius: 10, border: `1px solid ${C.border}`,
-                background: C.surface, color: C.text2, cursor: "pointer", fontFamily: "inherit",
-                display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>
-              ☰
-            </button>
-          )}
-        </div>
-      </header>
+      <AppToolHeader headerStyle={{ margin: isMobile ? "0 -4px 24px" : "0 0 42px" }} />
 
       {savedResumes.length > 0 && (
         <section aria-label={builderText("myResumesRegion")} style={{ maxWidth: 1180, margin: "0 auto 6px", padding: isMobile ? "0 4px" : "0 28px" }}>
@@ -7821,12 +7754,15 @@ Awards: ${form.awards}`;
   })() : null;
 
   // ── Sidebar nav items ──────────────────────────────────────────────
+  // Primary tools take their label from the shared navbar config, so the sidebar,
+  // the mobile drawer and the navbar never disagree about what a tool is called.
+  const toolLabel = (id) => (FOOTER_UI[lang] || FOOTER_UI.en)[primaryNavLabelKey(id)];
   const NAV = [
-    { id: "resume",    icon: "📄", label: builderText("resumeNav") },
+    { id: "resume",    icon: "📄", label: toolLabel("resume") },
     { id: "master",    icon: "⭐", label: builderText("masterProfileNav") },
-    { id: "cover",     icon: "✉️",  label: builderText("coverLetterNav") },
-    { id: "tracker",   icon: "📋", label: builderText("jobTrackerNav") },
-    { id: "ats",       icon: "🎯", label: builderText("atsCheckerNav") },
+    { id: "cover",     icon: "✉️",  label: toolLabel("cover") },
+    { id: "tracker",   icon: "📋", label: toolLabel("tracker") },
+    { id: "ats",       icon: "🎯", label: toolLabel("ats") },
     { id: "signature", icon: "✍️",  label: builderText("emailSignatureNav"), soon: true },
     { id: "website",   icon: "🌐", label: builderText("personalWebsiteNav"), soon: true },
     { id: "about",     icon: "ℹ️",  label: builderText("aboutNav") },
@@ -9110,7 +9046,6 @@ Awards: ${form.awards}`;
       if (page === "resume") startResume("landing_link");
       else { setNavPage(page); setAppView("app"); }
     };
-    const footerNav = FOOTER_UI[lang] || FOOTER_UI.en;
     return (
       <div style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", overflowX: "hidden" }}>
         <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
@@ -9130,12 +9065,7 @@ Awards: ${form.awards}`;
           )}
           mobileMenuOpen={landingMenuOpen}
           onMobileMenuToggle={() => setLandingMenuOpen(o => !o)}
-          navItems={[
-            { id: "resume", label: footerNav.resumeBuilder, onClick: () => { setLandingMenuOpen(false); setAppView("app"); setNavPage("resume"); setStep("templates"); } },
-            { id: "cover", label: footerNav.coverLetter, onClick: () => { setLandingMenuOpen(false); setAppView("app"); setNavPage("cover"); setCoverStep("templates"); } },
-            { id: "ats", label: footerNav.atsChecker, onClick: () => { setLandingMenuOpen(false); setAppView("app"); setNavPage("ats"); } },
-            { id: "tracker", label: footerNav.jobTracker, onClick: () => { setLandingMenuOpen(false); setAppView("app"); setNavPage("tracker"); } },
-          ]}
+          onNavigate={(item) => { setLandingMenuOpen(false); setAppView("app"); enterPrimaryTool(item); }}
         />
         <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)} at={at}
           onLogin={user => {
