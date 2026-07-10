@@ -3,7 +3,11 @@
 // renderers (DocumentPapers) so English defaults can never leak into a non-English
 // document. The i18n guard (scripts/i18n-no-literals.mjs) enforces that date
 // formatting and default sign-offs go through these helpers rather than hardcoded
-// en-US / "Sincerely" literals.
+// locale-specific English literals.
+
+import enCover from "./namespaces/en/cover.js";
+import frCover from "./namespaces/fr/cover.js";
+import arCover from "./namespaces/ar/cover.js";
 
 // BCP-47 locales used to format letter dates in the document's language.
 export const LETTER_LOCALE = { en: "en-US", fr: "fr-FR", es: "es-ES", ar: "ar-MA", de: "de-DE" };
@@ -21,14 +25,14 @@ export function formatLetterDate(date, docLang) {
 }
 
 // Locale-aware cover-letter closings (sign-offs). Non-EN documents must not default to
-// the English "Sincerely". First entry is the default; the rest are offered as
+// an English closing. First entry is the default; the rest are offered as
 // alternatives in the editor.
 export const COVER_SIGNOFFS = {
-  en: ["Sincerely", "Best regards"],
-  fr: ["Cordialement", "Salutations distinguées", "Bien cordialement"],
-  es: ["Atentamente", "Cordialmente"],
-  ar: ["مع خالص التقدير", "وتفضلوا بقبول فائق الاحترام"],
-  de: ["Mit freundlichen Grüßen", "Freundliche Grüße"],
+  en: enCover.signoffOptions,
+  fr: frCover.signoffOptions,
+  es: ["Atentamente,", "Cordialmente,"],
+  ar: arCover.signoffOptions,
+  de: ["Mit freundlichen Grüßen,", "Freundliche Grüße,"],
 };
 
 export function defaultCoverSignoff(docLang) {

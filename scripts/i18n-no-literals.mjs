@@ -215,17 +215,17 @@ if (files.includes(atsRendererFile)) {
 // ── Locale-aware letter defaults ────────────────────────────────────────────
 // The cover-letter date and default sign-off must derive from the document
 // language via src/i18n/letterDefaults.js — never a hardcoded en-US date format
-// or an English "Sincerely" fallback, which would ship English defaults inside a
+// or an English closing fallback, which would ship English defaults inside a
 // French or Arabic letter (the same class of leak as the ATS strings above, which
 // live in JS config outside the JSX-literal scan).
 const LETTER_DEFAULTS_SOURCE = join(SRC, "i18n", "letterDefaults.js");
 const LOCALE_DEFAULT_PATTERNS = [
   { re: /toLocaleDateString\(\s*["']en-US["']/, reason: "hardcoded en-US letter date; use formatLetterDate(date, docLang)" },
   { re: /Intl\.DateTimeFormat\(\s*["']en-US["']/, reason: "hardcoded en-US letter date; use formatLetterDate(date, docLang)" },
-  { re: /(?:\|\||\?\?)\s*["']Sincerely["']/, reason: "English sign-off fallback; use defaultCoverSignoff(docLang)" },
+  { re: /(?:\|\||\?\?)\s*["']Sincerely,?["']/, reason: "English sign-off fallback; use defaultCoverSignoff(docLang)" },
 ];
 // Scan the letter renderers (builder + document papers), excluding the single
-// source of truth where "en-US"/"Sincerely" legitimately live.
+// source of truth where locale mappings legitimately live.
 const LETTER_DEFAULT_SCAN_FILES = [...new Set([...files, join(SRC, "documents", "DocumentPapers.jsx")])]
   .filter((f) => f !== LETTER_DEFAULTS_SOURCE);
 for (const file of LETTER_DEFAULT_SCAN_FILES) {
@@ -238,10 +238,28 @@ for (const file of LETTER_DEFAULT_SCAN_FILES) {
     }
   }
 }
+
+// English closing copy belongs only in the English cover messages. A template
+// or shared default config must consume the locale-derived field/helper instead
+// of embedding an English sign-off. Keep this narrow to letter rendering and
+// default configuration so illustrative SEO/sample letters remain valid copy.
+const ENGLISH_CLOSING_LITERAL = /["'](?:Sincerely|Yours sincerely|Best regards|Kind regards|Regards),?["']/gi;
+const LETTER_CLOSING_GUARD_FILES = [
+  LETTER_DEFAULTS_SOURCE,
+  join(SRC, "documents", "DocumentPapers.jsx"),
+  join(SRC, "documents", "templateRegistry.js"),
+];
+for (const file of LETTER_CLOSING_GUARD_FILES) {
+  const code = readFileSync(file, "utf8");
+  for (const match of code.matchAll(ENGLISH_CLOSING_LITERAL)) {
+    const line = code.slice(0, match.index).split(/\r?\n/).length;
+    findings.push({ file, line, kind: "letter-closing-literal", text: `${match[0]} (English closing must live in src/i18n/namespaces/en/cover.js)` });
+  }
+}
 // The cover-form default initializer must build its date/sign-off from the
-// helpers — catch a bare English "Sincerely" or any inline date formatting that
-// would bypass the document locale (the global patterns above miss a `signoff:
-// "Sincerely"` with no ||/?? and a locale-less toLocaleDateString()).
+// helpers — catch a bare English closing or any inline date formatting that
+// would bypass the document locale (the global patterns miss a direct signoff
+// literal with no ||/?? and a locale-less toLocaleDateString()).
 if (files.includes(atsRendererFile)) {
   const code = readFileSync(atsRendererFile, "utf8");
   const start = code.indexOf("const [coverForm, setCoverForm] = useState(() => {");
@@ -249,8 +267,8 @@ if (files.includes(atsRendererFile)) {
   if (start >= 0 && end >= 0) {
     const block = code.slice(start, end);
     const startLine = code.slice(0, start).split(/\r?\n/).length;
-    if (/["']Sincerely["']/.test(block)) {
-      findings.push({ file: atsRendererFile, line: startLine, kind: "locale-default", text: 'coverForm default sign-off must use defaultCoverSignoff(docLang), not "Sincerely"' });
+    if (/["']Sincerely,?["']/.test(block)) {
+      findings.push({ file: atsRendererFile, line: startLine, kind: "locale-default", text: "coverForm default sign-off must use defaultCoverSignoff(docLang), not an English literal" });
     }
     if (/toLocaleDateString\(|Intl\.DateTimeFormat\(/.test(block)) {
       findings.push({ file: atsRendererFile, line: startLine, kind: "locale-default", text: "coverForm default date must use formatLetterDate(new Date(), docLang)" });

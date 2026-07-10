@@ -1386,7 +1386,7 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
           {d.opening && <div style={{ marginBottom: 16 }}>Dear <LinkifiedText text={d.opening} />,</div>}
           <Paras text={d.body} />
           <Paras text={d.closing} />
-          <div style={{ marginTop: 32 }}><LinkifiedText text={d.signoff || defaultCoverSignoff(lang)} />,</div>
+          <div style={{ marginTop: 32 }}><LinkifiedText text={d.signoff || defaultCoverSignoff(lang)} /></div>
           {!preview && <div style={{ marginTop: 40 }}><LinkifiedText text={d.name} /></div>}
         </div>
       </div>
@@ -1419,7 +1419,7 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
           <Paras text={d.body} />
           <Paras text={d.closing} />
           <div style={{ marginTop: 28 }}>
-            <div style={{ fontSize: 13 }}><LinkifiedText text={d.signoff || defaultCoverSignoff(lang)} />,</div>
+            <div style={{ fontSize: 13 }}><LinkifiedText text={d.signoff || defaultCoverSignoff(lang)} /></div>
             {!preview && <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginTop: 36 }}><LinkifiedText text={d.name} /></div>}
           </div>
         </div>
@@ -1453,7 +1453,7 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
             <Paras text={d.body} style={{ fontSize: 12.5 }} />
             <Paras text={d.closing} style={{ fontSize: 12.5 }} />
             <div style={{ marginTop: 24 }}>
-              <div style={{ fontSize: 13 }}><LinkifiedText text={d.signoff || defaultCoverSignoff(lang)} />,</div>
+              <div style={{ fontSize: 13 }}><LinkifiedText text={d.signoff || defaultCoverSignoff(lang)} /></div>
               {!preview && <div style={{ fontSize: 13, fontWeight: 600, marginTop: 28, color: "#111" }}><LinkifiedText text={d.name} /></div>}
             </div>
           </div>
@@ -1489,7 +1489,7 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
           <Paras text={d.body} style={{ color: "#444" }} />
           <Paras text={d.closing} style={{ color: "#444" }} />
           <div style={{ marginTop: 28 }}>
-            <div style={{ fontSize: 13, color: "#555" }}><LinkifiedText text={d.signoff || defaultCoverSignoff(lang)} />,</div>
+            <div style={{ fontSize: 13, color: "#555" }}><LinkifiedText text={d.signoff || defaultCoverSignoff(lang)} /></div>
             {!preview && <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginTop: 36 }}><LinkifiedText text={d.name} /></div>}
           </div>
         </div>
@@ -1527,7 +1527,7 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
           <Paras text={d.body} />
           <Paras text={d.closing} />
           <div style={{ marginTop: 28 }}>
-            <div style={{ fontSize: 13 }}><LinkifiedText text={d.signoff || defaultCoverSignoff(lang)} />,</div>
+            <div style={{ fontSize: 13 }}><LinkifiedText text={d.signoff || defaultCoverSignoff(lang)} /></div>
             {!preview && <div style={{ fontSize: 14, fontWeight: 600, marginTop: 28 }}><LinkifiedText text={d.name} /></div>}
           </div>
         </div>
@@ -1569,7 +1569,7 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
             <Paras text={d.body} />
             <Paras text={d.closing} />
             <div style={{ marginTop: 28 }}>
-              <div style={{ fontSize: 13 }}><LinkifiedText text={d.signoff || defaultCoverSignoff(lang)} />,</div>
+              <div style={{ fontSize: 13 }}><LinkifiedText text={d.signoff || defaultCoverSignoff(lang)} /></div>
               {!preview && <div style={{ fontSize: 14, fontWeight: 600, color: "#111", marginTop: 36 }}><LinkifiedText text={d.name} /></div>}
             </div>
           </div>

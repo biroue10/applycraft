@@ -834,7 +834,7 @@ const SAMPLE_COVER = {
   opening: "Mr. Chen",
   body: "I am writing to express my strong interest in the Senior Product Designer position at Stripe. With eight years of experience crafting intuitive digital experiences for high-growth SaaS companies, I am confident in my ability to contribute meaningfully to your team.\n\nAt Figma, I led the redesign of the core editor interface, shipping 12 major features that improved user satisfaction by 40%. I also established a company-wide design system adopted by 200+ engineers across 40 product squads. Prior to that, at Airbnb, I redesigned the host dashboard and reduced support tickets by 41% through research-driven iteration.\n\nStripe's commitment to making financial infrastructure simple and trustworthy resonates deeply with my design philosophy. I am excited by the challenge of bringing clarity to complex financial flows for millions of merchants worldwide.",
   closing: "Thank you sincerely for your time and consideration. I would welcome the opportunity to discuss how my background in design systems and cross-functional leadership can contribute to Stripe's mission.",
-  signoff: "Sincerely",
+  signoff: "Sincerely,",
 };
 
 const COVER_THUMB_SAMPLES = {
@@ -848,7 +848,7 @@ const COVER_THUMB_SAMPLES = {
     opening: "Madame Dubois",
     body: "Je me permets de vous adresser ma candidature pour le poste de Responsable Marketing Digital chez Payfit. Fort de sept années d'expérience en acquisition client et gestion de campagnes multicanal pour des startups SaaS B2B, je suis convaincu de pouvoir contribuer significativement à vos objectifs de croissance.\n\nAu cours de mon expérience chez Doctolib, j'ai lancé quatre nouveaux marchés européens en deux ans et constitué une équipe marketing de deux à quatorze personnes. J'ai également géré un budget publicitaire annuel de deux millions d'euros sur Google, LinkedIn et Meta, avec un ROAS moyen de 4,2.\n\nLa vision de Payfit, simplifier la gestion RH et paie pour les PME européennes, rejoint pleinement ma conviction que la technologie doit libérer les équipes des tâches administratives à faible valeur ajoutée.",
     closing: "Je serais ravi d'échanger avec vous sur la manière dont mon profil peut répondre aux enjeux de Payfit. Je reste disponible pour un entretien à votre convenance.",
-    signoff: "Cordialement",
+    signoff: "Cordialement,",
   },
   modern: {
     name: "Sarah Okonkwo", jobTitle: "Software Engineer",
@@ -860,7 +860,7 @@ const COVER_THUMB_SAMPLES = {
     opening: "Ms Adeyemi",
     body: "I am writing to apply for the Backend Software Engineer role in the Payments team at Monzo. With five years of full-stack experience in fintech and e-commerce, and a proven track record of building resilient systems at scale, I am excited by the opportunity to work on infrastructure that millions of people rely on every day.\n\nIn my current role at Jumia, I built and maintained the seller portal used by 120,000 merchants across six African markets. I reduced average page load time by 58% and introduced an event-driven architecture that improved reliability during peak sale periods.\n\nMonzo's commitment to radical transparency and genuine financial wellbeing for its customers is exactly the culture I want to contribute to.",
     closing: "I would welcome the chance to discuss how my background in distributed systems and payments aligns with the team's current priorities.",
-    signoff: "Best regards",
+    signoff: "Best regards,",
   },
   minimal: {
     name: "Karim Benali", jobTitle: "Ingénieur Génie Civil",
@@ -872,7 +872,7 @@ const COVER_THUMB_SAMPLES = {
     opening: "Monsieur Amrani",
     body: "Je vous soumets ma candidature pour le poste de Chef de Projet sur le chantier du complexe résidentiel Ouest. Ingénieur génie civil depuis neuf ans, j'ai coordonné des projets d'infrastructure à grande échelle impliquant des dizaines de corps de métier et des budgets dépassant les cent millions d'euros.\n\nMon expérience la plus récente chez Colas Algérie m'a permis de maîtriser les fondations sur sols complexes et les bétons à haute performance, compétences directement applicables aux contraintes géotechniques de ce projet.\n\nJe suis convaincu que mon profil et ma connaissance du contexte réglementaire algérien constituent un atout solide pour tenir les délais et garantir la qualité.",
     closing: "Je me tiens disponible pour toute discussion technique à votre convenance.",
-    signoff: "Respectueusement",
+    signoff: "Respectueusement,",
   },
   bold: {
     name: "María García López", jobTitle: "Diseñadora UX Senior",
@@ -884,7 +884,7 @@ const COVER_THUMB_SAMPLES = {
     opening: "Estimado Sr. Martínez",
     body: "Me dirijo a usted para expresar mi interés en el puesto de UX Lead en el equipo de marketplace de Glovo. A lo largo de seis años diseñando productos digitales para empresas de retail, banca y salud, he desarrollado una metodología de diseño centrada en el usuario que equilibra la velocidad de entrega con la profundidad de la investigación.\n\nEn CaixaBank, lideré el rediseño de la aplicación móvil utilizada por tres millones de usuarios activos, logrando un aumento del 18 % en la puntuación NPS en seis meses. Anteriormente, rediseñé el flujo de pago de un e-commerce de moda, incrementando la conversión en un 22 %.\n\nGlovo representa para mí el reto ideal: escalar la experiencia de usuario en múltiples mercados con contextos culturales y de conectividad muy distintos.",
     closing: "Quedo a su disposición para ampliar cualquier aspecto de mi candidatura en la entrevista que considere oportuno.",
-    signoff: "Atentamente",
+    signoff: "Atentamente,",
   },
   elegant: {
     name: "David Chen", jobTitle: "Chief Financial Officer",
@@ -896,7 +896,7 @@ const COVER_THUMB_SAMPLES = {
     opening: "Dear Mr. Tan",
     body: "I write to express my interest in the Chief Financial Officer position at Grab. Over eighteen years in technology-led finance across APAC, I have led functions through hypergrowth, dual listings, and complex multi-jurisdiction regulatory environments — precisely the terrain Grab navigates every quarter.\n\nAs CFO at Sea Limited, I oversaw $4.2 billion in annual revenue across three distinct verticals and led our Singapore Exchange dual listing in 2021, raising $2.1 billion. Prior to that, at Grab, I built the financial infrastructure that supported our expansion to eight countries in four years.\n\nI believe the next chapter for Grab requires a CFO who can navigate both capital markets and operational rigour simultaneously. That is the work I have spent two decades preparing to do.",
     closing: "I would welcome the opportunity to discuss how my experience aligns with Grab's priorities for the year ahead.",
-    signoff: "Yours sincerely",
+    signoff: "Yours sincerely,",
   },
 };
 
@@ -7252,7 +7252,7 @@ Awards: ${form.awards}`;
       }
       y += 4;
       doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(50,50,50);
-      doc.text(`${safe(d.signoff || defaultCoverSignoff(docLang))},`, margin, y); y += 14;
+      doc.text(safe(d.signoff || defaultCoverSignoff(docLang)), margin, y); y += 14;
       doc.setFont("helvetica","bold"); doc.setFontSize(11); doc.setTextColor(17,17,17);
       doc.text(safe(d.name), margin, y);
       // Footer on every page: name (left) | page X / Y (right)
@@ -7366,7 +7366,7 @@ Awards: ${form.awards}`;
           });
         }
       }
-      addTextParagraph(children, `${d.signoff || defaultCoverSignoff(docLang)},`, {
+      addTextParagraph(children, d.signoff || defaultCoverSignoff(docLang), {
         run: { size: 21, color: "333333" },
         spacing: { before: 120, after: 220 },
       });
@@ -7746,6 +7746,7 @@ Awards: ${form.awards}`;
                 <div style={{ flex: 1 }}>
                   <IconInput icon="✍️">
                     <input id="cover-field-signoff" list="cover-signoff-options" value={coverForm.signoff} onChange={e => setCoverForm(f => ({ ...f, signoff: e.target.value }))}
+                      dir={documentRtl ? "rtl" : "ltr"}
                       placeholder={cu.phSignoff} style={inputStyle} />
                   </IconInput>
                   <datalist id="cover-signoff-options">

@@ -133,7 +133,7 @@ test.describe("Cover letter builder sections", () => {
 
     // Closing section specifically renders the sign-off field with a locale default.
     await expect(page.locator("#cover-field-signoff")).toBeVisible();
-    await expect(page.locator("#cover-field-signoff")).toHaveValue("Sincerely");
+    await expect(page.locator("#cover-field-signoff")).toHaveValue("Sincerely,");
     await expect(page.locator("#cover-field-date")).not.toHaveValue("");
     expect(errors, errors.join("\n")).toHaveLength(0);
   });
@@ -144,8 +144,30 @@ test.describe("Cover letter builder sections", () => {
     await page.getByRole("heading", { name: "Destinataire et entreprise", exact: true }).click();
     await expect(page.locator("#cover-field-date")).toHaveValue(/^\d+ \p{L}+ \d{4}$/u); // e.g. "9 juillet 2026"
     await page.getByRole("heading", { name: "Conclusion et signature", exact: true }).click();
-    await expect(page.locator("#cover-field-signoff")).toHaveValue("Cordialement");
+    await expect(page.locator("#cover-field-signoff")).toHaveValue("Cordialement,");
     await expect(page.getByText(/Unexpected Application Error/i)).toHaveCount(0);
+  });
+
+  test("French closing renders from the field across three template branches", async ({ page }) => {
+    for (const template of ["Classic", "Modern", "Minimal"]) {
+      await page.goto("/cover-letter/templates/?ui=fr&docLang=fr");
+      const card = page.locator("article").filter({ has: page.getByRole("heading", { name: template, exact: true }) });
+      await card.hover();
+      await card.locator("button").filter({ hasText: "Utiliser le modèle" }).last().click({ force: true });
+      await page.getByRole("heading", { name: "Conclusion et signature", exact: true }).click();
+      await expect(page.locator("#cover-field-signoff")).toHaveValue("Cordialement,");
+      await expect(page.locator(".resume-paper")).toContainText("Cordialement,");
+      await expect(page.locator(".resume-paper")).not.toContainText("Sincerely");
+    }
+  });
+
+  test("Arabic letter uses an Arabic RTL closing", async ({ page }) => {
+    await page.goto("/cover-letter/builder?ui=ar&docLang=ar");
+    await page.getByRole("heading", { name: "الخاتمة والتوقيع", exact: true }).click();
+    await expect(page.locator("#cover-field-signoff")).toHaveValue("مع خالص التقدير،");
+    await expect(page.locator("#cover-field-signoff")).toHaveAttribute("dir", "rtl");
+    await expect(page.locator(".resume-paper")).toHaveAttribute("dir", "rtl");
+    await expect(page.locator(".resume-paper")).toContainText("مع خالص التقدير،");
   });
 });
 
