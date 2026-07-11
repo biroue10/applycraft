@@ -4,6 +4,7 @@ export const LOCALIZED_ROUTES = {
   "/resume/templates/": { en: "/resume/templates/", fr: "/resume/templates/?ui=fr&docLang=fr", ar: "/resume/templates/?ui=ar&docLang=ar" },
   "/cover-letter/templates/": { en: "/cover-letter/templates/", fr: "/cover-letter/templates/?ui=fr&docLang=fr", ar: "/cover-letter/templates/?ui=ar&docLang=ar" },
   "/job-tracker/": { en: "/job-tracker/", fr: "/job-tracker/?ui=fr&docLang=fr", ar: "/job-tracker/?ui=ar&docLang=ar" },
+  "/interview-prep/": { en: "/interview-prep/", fr: "/fr/interview-prep/", ar: "/ar/interview-prep/" },
   "/cover-letter-builder/": { en: "/cover-letter-builder/", fr: "/cover-letter/templates/?ui=fr&docLang=fr", ar: "/cover-letter/templates/?ui=ar&docLang=ar" },
   "/free-resume-builder/": { en: "/free-resume-builder/", fr: "/fr/creer-cv-gratuit/", ar: "/ar/free-resume-builder/" },
   "/student-resume-builder/": { en: "/student-resume-builder/", fr: "/fr/creer-cv-etudiant/" },

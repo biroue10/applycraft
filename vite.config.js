@@ -12,6 +12,9 @@ const ROUTE_LANG = {
   "/ar/":               { lang: "ar", dir: "rtl" },
   "/resume-in-arabic/": { lang: "ar", dir: "rtl" },
   "/resume-in-french/": { lang: "fr" },
+  "/interview-prep/":    { lang: "en" },
+  "/fr/interview-prep/": { lang: "fr" },
+  "/ar/interview-prep/": { lang: "ar", dir: "rtl" },
 };
 
 const ROUTE_META = {
@@ -66,6 +69,30 @@ const ROUTE_META = {
     image: "https://applycraft.io/og/home.png",
     imageAlt: "ApplyCraft job application tracker board preview",
     locale: "en_US",
+  },
+  "/interview-prep/": {
+    title: "Interview Prep — Practise with an AI Recruiter | ApplyCraft",
+    description: "Practise a realistic job interview with an AI recruiter, one question at a time, then get structured feedback and a score — free, in your browser.",
+    image: "https://applycraft.io/og/home.png",
+    imageAlt: "ApplyCraft interview practice with an AI recruiter",
+    locale: "en_US",
+    alternateLocales: ["fr_FR", "ar_MA"],
+  },
+  "/fr/interview-prep/": {
+    title: "Préparation entretien — Simulez un entretien avec une IA | ApplyCraft",
+    description: "Entraînez-vous à un entretien d'embauche réaliste avec un recruteur IA, une question à la fois, puis recevez un bilan structuré et une note — gratuit.",
+    image: "https://applycraft.io/og/home-fr.png",
+    imageAlt: "Simulation d'entretien avec un recruteur IA sur ApplyCraft",
+    locale: "fr_FR",
+    alternateLocales: ["en_US", "ar_MA"],
+  },
+  "/ar/interview-prep/": {
+    title: "تحضير المقابلة — تدرّب مع مسؤول توظيف بالذكاء الاصطناعي | ApplyCraft",
+    description: "تدرّب على مقابلة عمل واقعية مع مسؤول توظيف بالذكاء الاصطناعي، سؤالاً تلو الآخر، ثم احصل على ملاحظات منظمة ودرجة — مجاناً في متصفحك.",
+    image: "https://applycraft.io/og/home-ar.png",
+    imageAlt: "محاكاة مقابلة مع مسؤول توظيف بالذكاء الاصطناعي على ApplyCraft",
+    locale: "ar_MA",
+    alternateLocales: ["en_US", "fr_FR"],
   },
 };
 

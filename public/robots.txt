@@ -1,6 +1,7 @@
 User-agent: *
 Content-Signal: search=yes,ai-train=no,use=reference
 Allow: /
+Disallow: /api/
 
 User-agent: Amazonbot
 Disallow: /

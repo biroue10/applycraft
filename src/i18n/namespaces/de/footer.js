@@ -8,6 +8,7 @@ const footer = {
   "coverLetter": "Anschreiben",
   "atsChecker": "ATS-Prüfer",
   "jobTracker": "Bewerbungs-Tracker",
+  "interviewPrep": "Interview-Vorbereitung",
   "pricing": "Preise",
   "changelog": "Änderungsprotokoll",
   "roadmap": "Roadmap",

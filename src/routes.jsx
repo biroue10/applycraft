@@ -2,11 +2,22 @@ import React, { Suspense, lazy } from "react";
 import ResumeGenerator from "./ResumeGenerator.jsx";
 
 const SharedResume = lazy(() => import("./SharedResume.jsx"));
+// Interview Prep ships as its own route chunk — kept OUT of the initial/homepage
+// bundle (ResumeGenerator) so the streaming chat UI is downloaded only on visit.
+const InterviewPrep = lazy(() => import("./interview/InterviewPrep.jsx"));
 
 function SharedResumeRoute() {
   return (
     <Suspense fallback={<div style={{ minHeight: "100vh", background: "#06080F" }} />}>
       <SharedResume />
+    </Suspense>
+  );
+}
+
+function InterviewPrepRoute() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100vh", background: "#06080F" }} />}>
+      <InterviewPrep />
     </Suspense>
   );
 }
@@ -30,4 +41,10 @@ export const routes = [
   { path: "/master-profile", element: <ResumeGenerator /> },
   { path: "/email-signature", element: <ResumeGenerator /> },
   { path: "/personal-website", element: <ResumeGenerator /> },
+  // Public, locale-aware Interview Prep. Trailing-slash paths so vite-react-ssg
+  // emits dist/interview-prep/index.html (etc.), served 0-hop at the canonical
+  // slash URL by Cloudflare (html_handling: force-trailing-slash).
+  { path: "/interview-prep/", element: <InterviewPrepRoute /> },
+  { path: "/fr/interview-prep/", element: <InterviewPrepRoute /> },
+  { path: "/ar/interview-prep/", element: <InterviewPrepRoute /> },
 ];

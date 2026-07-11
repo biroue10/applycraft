@@ -31,6 +31,24 @@ export const ALTERNATES = {
     { hreflang: "ar", href: `${ORIGIN}/ar/` },
     { hreflang: "x-default", href: `${ORIGIN}/` },
   ],
+  "/interview-prep/": [
+    { hreflang: "en", href: `${ORIGIN}/interview-prep/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/interview-prep/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/interview-prep/` },
+    { hreflang: "x-default", href: `${ORIGIN}/interview-prep/` },
+  ],
+  "/fr/interview-prep/": [
+    { hreflang: "en", href: `${ORIGIN}/interview-prep/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/interview-prep/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/interview-prep/` },
+    { hreflang: "x-default", href: `${ORIGIN}/interview-prep/` },
+  ],
+  "/ar/interview-prep/": [
+    { hreflang: "en", href: `${ORIGIN}/interview-prep/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/interview-prep/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/interview-prep/` },
+    { hreflang: "x-default", href: `${ORIGIN}/interview-prep/` },
+  ],
 };
 
 // Self-canonical for any SPA route. Root stays "/"; the public resume builder

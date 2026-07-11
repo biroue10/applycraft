@@ -9,6 +9,7 @@ const footer = {
   "coverLetter": "خطاب التقديم",
   "atsChecker": "فاحص ATS",
   "jobTracker": "متابعة الوظائف",
+  "interviewPrep": "تحضير المقابلة",
   "pricing": "الأسعار",
   "changelog": "سجل التغييرات",
   "roadmap": "خارطة الطريق",

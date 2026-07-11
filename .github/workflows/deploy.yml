@@ -31,6 +31,7 @@ jobs:
       - run: npm run seo:sitemap
       - run: npm run build
       - run: npm run test:security
+      - run: npm run test:interview
       - run: npm run validate:seo
       - run: npm run validate:performance
       - run: npm run test:a11y

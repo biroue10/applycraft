@@ -9,6 +9,7 @@ const footer = {
   "coverLetter": "Cover Letter",
   "atsChecker": "ATS Checker",
   "jobTracker": "Job Tracker",
+  "interviewPrep": "Interview Prep",
   "pricing": "Pricing",
   "changelog": "Changelog",
   "roadmap": "Roadmap",

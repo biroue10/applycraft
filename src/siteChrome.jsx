@@ -83,7 +83,9 @@ function Logo({ compact = false, lang = "en", linked = true }) {
 // where navigation is client-side state (onNavigate) rather than a page load.
 function actionProps(item, onNavigate) {
   if (item.onClick) return { as: "button", props: { type: "button", onClick: item.onClick } };
-  if (onNavigate) return { as: "button", props: { type: "button", onClick: () => onNavigate(item) } };
+  // `alwaysLink` items live on their own route (a real page load), so they stay
+  // anchors even inside the SPA where other items become client-side buttons.
+  if (onNavigate && !item.alwaysLink) return { as: "button", props: { type: "button", onClick: () => onNavigate(item) } };
   return { as: "a", props: { href: item.href } };
 }
 
@@ -323,6 +325,7 @@ export function SiteHeader({
                 aria-current={activeId && item.id === activeId ? "page" : undefined}
                 onClick={() => {
                   if (item.onClick) item.onClick();
+                  else if (item.alwaysLink && item.href) window.location.href = item.href;
                   else if (onNavigate) onNavigate(item);
                   else if (item.href) window.location.href = item.href;
                   closeMobileMenu();
@@ -425,7 +428,7 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
   );
 }
 
-export function AppShell({ children, lang = "en" }) {
+export function AppShell({ children, lang = "en", activeId }) {
   return (
     <div style={{
       minHeight: "100vh",
@@ -434,7 +437,7 @@ export function AppShell({ children, lang = "en" }) {
       flexDirection: "column",
       fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
     }}>
-      <SiteHeader lang={lang} />
+      <SiteHeader lang={lang} activeId={activeId} />
       {children}
       <SiteFooter lang={lang} className="ac-site-footer" />
     </div>

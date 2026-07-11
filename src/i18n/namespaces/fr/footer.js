@@ -9,6 +9,7 @@ const footer = {
   "coverLetter": "Lettre de motivation",
   "atsChecker": "Vérificateur ATS",
   "jobTracker": "Suivi des candidatures",
+  "interviewPrep": "Préparation entretien",
   "pricing": "Tarifs",
   "changelog": "Journal des modifications",
   "roadmap": "Feuille de route",

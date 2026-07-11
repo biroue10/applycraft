@@ -9,6 +9,9 @@ export const INDEXABLE_APP_PATHS = [
   "/resume/templates/",
   "/cover-letter/templates/",
   "/job-tracker/",
+  "/interview-prep/",
+  "/fr/interview-prep/",
+  "/ar/interview-prep/",
 ];
 
 export const REDIRECTED_CANONICAL_PATHS = new Map([
