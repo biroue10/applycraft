@@ -19,7 +19,7 @@ const ROUTE_LANG = {
 
 const ROUTE_META = {
   "/": {
-    title: "Resume Builder & Cover Letter Maker — Fast, ATS-Friendly | ApplyCraft",
+    title: "Free Resume & Cover Letter Builder | ApplyCraft",
     description: "Build an ATS-friendly resume and matching cover letter with live preview, multilingual labels, and PDF or DOCX downloads in ApplyCraft.",
     image: "https://applycraft.io/og/home.png",
     imageAlt: "ApplyCraft resume builder and cover letter maker preview",
@@ -35,7 +35,7 @@ const ROUTE_META = {
     alternateLocales: ["en_US", "ar_MA"],
   },
   "/ar/": {
-    title: "منشئ سيرة ذاتية وخطاب تقديم — سريع ومتوافق مع ATS | ApplyCraft",
+    title: "منشئ سيرة ذاتية وخطاب تقديم متوافق مع ATS | ApplyCraft",
     description: "أنشئ سيرة ذاتية متوافقة مع ATS وخطاب تقديم مطابقاً مع معاينة مباشرة وتسميات متعددة اللغات وتنزيل PDF أو DOCX.",
     image: "https://applycraft.io/og/home-ar.png",
     imageAlt: "معاينة منشئ السيرة الذاتية وخطاب التقديم من ApplyCraft",
@@ -79,7 +79,7 @@ const ROUTE_META = {
     alternateLocales: ["fr_FR", "ar_MA"],
   },
   "/fr/interview-prep/": {
-    title: "Préparation entretien — Simulez un entretien avec une IA | ApplyCraft",
+    title: "Préparation entretien IA | ApplyCraft",
     description: "Entraînez-vous à un entretien d'embauche réaliste avec un recruteur IA, une question à la fois, puis recevez un bilan structuré et une note — gratuit.",
     image: "https://applycraft.io/og/home-fr.png",
     imageAlt: "Simulation d'entretien avec un recruteur IA sur ApplyCraft",
@@ -87,7 +87,7 @@ const ROUTE_META = {
     alternateLocales: ["en_US", "ar_MA"],
   },
   "/ar/interview-prep/": {
-    title: "تحضير المقابلة — تدرّب مع مسؤول توظيف بالذكاء الاصطناعي | ApplyCraft",
+    title: "تحضير مقابلة بالذكاء الاصطناعي | ApplyCraft",
     description: "تدرّب على مقابلة عمل واقعية مع مسؤول توظيف بالذكاء الاصطناعي، سؤالاً تلو الآخر، ثم احصل على ملاحظات منظمة ودرجة — مجاناً في متصفحك.",
     image: "https://applycraft.io/og/home-ar.png",
     imageAlt: "محاكاة مقابلة مع مسؤول توظيف بالذكاء الاصطناعي على ApplyCraft",

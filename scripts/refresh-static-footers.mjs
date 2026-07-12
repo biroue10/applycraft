@@ -20,10 +20,10 @@ function localizeInternalAnchors(html, lang) {
   return html.replace(/<a\b([^>]*?)href="([^"]+)"([^>]*)>([\s\S]*?)<\/a>/gi, (full, before, href, after, label) => {
     if (!href.startsWith("/") && !href.startsWith("https://applycraft.io/")) return full;
     if (/English|Anglais|Français|French|العربية|Arabic|Arabe|الفرنسية|الإنجليزية/i.test(`${href} ${label}`)) return full;
-    const local = href.replace(/^https:\/\/applycraft\.io/i, "");
+    const local = href.replace(/^https:\/\/applycraft\.io/i, "").replaceAll("&amp;", "&");
     const localized = localizeRoute(local, lang);
     if (localized === local) return full;
-    return `<a${before}href="${localized}"${after}>${label}</a>`;
+    return `<a${before}href="${localized.replaceAll("&", "&amp;")}"${after}>${label}</a>`;
   });
 }
 

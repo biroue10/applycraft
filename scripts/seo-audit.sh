@@ -210,6 +210,28 @@ const LOCALE_LINK_WHITELIST = {
   fr: new Set(["/about/", "/contact/", "/help/", "/changelog/", "/roadmap/", "/status/", "/accessibility/"]),
   ar: new Set(["/blog/", "/about/", "/contact/", "/help/", "/changelog/", "/roadmap/", "/status/", "/accessibility/", "/pricing/", "/examples/", "/ats-resume-builder/", "/cover-letter-builder/", "/student-resume-builder/", "/canadian-resume-builder/", "/terms/", "/privacy/", "/cookies/", "/gdpr/", "/refund-policy/", "/ai-disclosure/"]),
 };
+const EXPECTED_IMPORTANT_TITLES = new Map([
+  ["/", "Free Resume & Cover Letter Builder | ApplyCraft"],
+  ["/ar/", "منشئ سيرة ذاتية وخطاب تقديم متوافق مع ATS | ApplyCraft"],
+  ["/ar/free-resume-builder/", "منشئ سيرة ذاتية مجاني بدون تسجيل | ApplyCraft"],
+  ["/ar/interview-prep/", "تحضير مقابلة بالذكاء الاصطناعي | ApplyCraft"],
+  ["/ats-checker/", "Free ATS Resume Checker | ApplyCraft"],
+  ["/ats-resume-builder/", "ATS Resume Builder | ApplyCraft"],
+  ["/cover-letter-builder/", "Free Cover Letter Builder | ApplyCraft"],
+  ["/examples/administrative-assistant-resume/", "Administrative Assistant Resume | ApplyCraft"],
+  ["/examples/help-desk-analyst-resume/", "Help Desk Analyst Resume | ApplyCraft"],
+  ["/examples/it-support-technician-resume/", "IT Support Resume | ApplyCraft"],
+  ["/examples/linux-administrator-resume/", "Linux Administrator Resume | ApplyCraft"],
+  ["/examples/sales-representative-resume/", "Sales Representative Resume | ApplyCraft"],
+  ["/examples/software-engineer-resume/", "Software Engineer Resume | ApplyCraft"],
+  ["/fr/blog/exemple-cv-maroc/", "Exemple de CV Maroc 2026 | ApplyCraft"],
+  ["/fr/creer-cv-canadien/", "Créateur de CV canadien | ApplyCraft"],
+  ["/fr/creer-cv-gratuit/", "Créer un CV gratuit | ApplyCraft"],
+  ["/fr/interview-prep/", "Préparation entretien IA | ApplyCraft"],
+  ["/free-resume-builder/", "Free Resume Builder | ApplyCraft"],
+  ["/resume-in-french/", "CV en français gratuit | ApplyCraft"],
+  ["/student-resume-builder/", "Student Resume Builder | ApplyCraft"],
+]);
 
 for (const filePath of htmlFiles) {
   const html = fs.readFileSync(filePath, "utf8");
@@ -247,6 +269,11 @@ for (const filePath of htmlFiles) {
 
 for (const page of pages) {
   const label = `${page.route} (${path.relative(ROOT, page.filePath)})`;
+  const expectedTitle = EXPECTED_IMPORTANT_TITLES.get(page.route);
+  const decodedPageTitle = page.title.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'");
+  if (expectedTitle && decodedPageTitle !== expectedTitle) {
+    errors.push(`${label}: important title regression; expected ${JSON.stringify(expectedTitle)}, found ${JSON.stringify(decodedPageTitle)}`);
+  }
   auditIconHead(page);
   if (!page.title) errors.push(`${label}: missing <title>`);
   if (page.title && !page.appShell) {

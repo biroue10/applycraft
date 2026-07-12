@@ -364,7 +364,7 @@ const PAGES = [
   {
     slug: "free-resume-builder",
     canonicalPath: "/free-resume-builder/",
-    title: "Free Resume Builder — No Sign-Up, No Hidden Fees | ApplyCraft",
+    title: "Free Resume Builder | ApplyCraft",
     description: "Create a professional resume for free with no sign-up, no hidden fees, no watermarks, and no download paywall. Export PDF or DOCX instantly.",
     eyebrow: "Free Builder",
     h1: "Free Resume Builder — No Sign-Up, No Hidden Fees",
@@ -410,7 +410,7 @@ const PAGES = [
   {
     slug: "ats-resume-builder",
     canonicalPath: "/ats-resume-builder/",
-    title: "ATS Resume Builder — ATS-Conscious Resume Templates | ApplyCraft",
+    title: "ATS Resume Builder | ApplyCraft",
     description: `Build an ATS-conscious resume with clear formatting, keyword guidance, ${RESUME_TEMPLATE_COUNT} templates, and free PDF/DOCX export. No signup or watermark.`,
     eyebrow: "ATS Optimised",
     h1: "ATS Resume Builder for Cleaner Parsing",
@@ -454,7 +454,7 @@ const PAGES = [
   {
     slug: "cover-letter-builder",
     canonicalPath: "/cover-letter-builder/",
-    title: "Free Cover Letter Builder — Professional Templates | ApplyCraft",
+    title: "Free Cover Letter Builder | ApplyCraft",
     description: "Write a compelling cover letter with 18 professional styles. Personalise for any role, download as PDF or DOCX. Free, no sign-up.",
     eyebrow: "Cover Letter Builder",
     h1: "Free Cover Letter Builder",
@@ -547,7 +547,7 @@ const PAGES = [
     canonicalPath: "/resume-in-french/",
     lang: "fr",
     ogLocale: "fr_FR",
-    title: "CV en Français — Créez votre CV en ligne gratuitement | ApplyCraft",
+    title: "CV en français gratuit | ApplyCraft",
     description: `Créez un CV professionnel en français avec ${RESUME_TEMPLATE_COUNT} modèles. Prévisualisation en direct, export PDF et DOCX. Gratuit, sans inscription.`,
     eyebrow: "CV en Français",
     socialImageAlt: "Aperçu du créateur de CV ApplyCraft en français",
@@ -750,7 +750,7 @@ const PAGES = [
     _cssPath: "../../_seo.css",
     ogLocale: "fr_FR",
     ogAlternateLocales: ["en_US"],
-    title: "Créateur de CV canadien — Format Canada & modèles | ApplyCraft",
+    title: "Créateur de CV canadien | ApplyCraft",
     description: "Créez un CV au format canadien en français ou en anglais: sans photo, orienté réalisations, adapté au Québec et au Canada anglophone. Gratuit, sans inscription.",
     eyebrow: "CV canadien",
     h1: "Créateur de CV canadien pour candidater depuis le Maroc",
@@ -808,7 +808,7 @@ const PAGES = [
       { hreflang: "fr", href: `${SITE}/fr/creer-cv-etudiant/` },
       { hreflang: "x-default", href: `${SITE}/student-resume-builder/` },
     ],
-    title: "Student Resume Builder — First Job & Internship Templates | ApplyCraft",
+    title: "Student Resume Builder | ApplyCraft",
     description: "Build a student resume with no experience. Highlight education, projects, and transferable skills. Free templates designed for students and graduates.",
     eyebrow: "Student & Graduate",
     h1: "Student Resume Builder — No Experience Needed",
@@ -984,7 +984,7 @@ const EXAMPLES = [
   {
     slug: "it-support-technician-resume",
     canonicalPath: "/examples/it-support-technician-resume/",
-    title: "IT Support Technician Resume Example — Free Template | ApplyCraft",
+    title: "IT Support Resume | ApplyCraft",
     description: "Download a free IT Support Technician resume example. ATS-friendly template with pre-filled skills, certifications, and experience sections. Edit in one click.",
     eyebrow: "Resume Example",
     h1: "IT Support Technician Resume Example",
@@ -1026,7 +1026,7 @@ const EXAMPLES = [
   {
     slug: "help-desk-analyst-resume",
     canonicalPath: "/examples/help-desk-analyst-resume/",
-    title: "Help Desk Analyst Resume Example — Free Template | ApplyCraft",
+    title: "Help Desk Analyst Resume | ApplyCraft",
     description: "Free Help Desk Analyst resume example with ATS-friendly formatting. Highlights ticketing systems, SLA metrics, and technical skills. Edit and download free.",
     eyebrow: "Resume Example",
     h1: "Help Desk Analyst Resume Example",
@@ -1110,7 +1110,7 @@ const EXAMPLES = [
   {
     slug: "linux-administrator-resume",
     canonicalPath: "/examples/linux-administrator-resume/",
-    title: "Linux Administrator Resume Example — Free Template | ApplyCraft",
+    title: "Linux Administrator Resume | ApplyCraft",
     description: "Free Linux Administrator resume example with shell scripting, Ansible, Docker, and AWS skills. ATS-friendly template. Edit and download as PDF or DOCX.",
     eyebrow: "Resume Example",
     h1: "Linux Administrator Resume Example",
@@ -1353,7 +1353,7 @@ const EXAMPLES = [
   {
     slug: "software-engineer-resume",
     canonicalPath: "/examples/software-engineer-resume/",
-    title: "Software Engineer Resume Example — Free Template | ApplyCraft",
+    title: "Software Engineer Resume | ApplyCraft",
     description: "Free software engineer resume example with an ATS-friendly layout, quantified impact, and a modern tech stack. Edit every line and download as PDF or DOCX.",
     eyebrow: "Resume Example",
     h1: "Software Engineer Resume Example",
@@ -1563,7 +1563,7 @@ const EXAMPLES = [
   {
     slug: "sales-representative-resume",
     canonicalPath: "/examples/sales-representative-resume/",
-    title: "Sales Representative Resume Example — Free Template | ApplyCraft",
+    title: "Sales Representative Resume | ApplyCraft",
     description: "Free sales representative resume example with quota attainment, CRM skills, and quantified revenue in an ATS-friendly layout. Edit and download as PDF or DOCX.",
     eyebrow: "Resume Example",
     h1: "Sales Representative Resume Example",
@@ -1605,7 +1605,7 @@ const EXAMPLES = [
   {
     slug: "administrative-assistant-resume",
     canonicalPath: "/examples/administrative-assistant-resume/",
-    title: "Administrative Assistant Resume Example — Free Template | ApplyCraft",
+    title: "Administrative Assistant Resume | ApplyCraft",
     description: "Free administrative assistant resume example with office software, organisation skills, and ATS-friendly formatting. Edit and download as PDF or DOCX.",
     eyebrow: "Resume Example",
     h1: "Administrative Assistant Resume Example",
