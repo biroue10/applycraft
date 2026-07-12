@@ -30,7 +30,7 @@ import {
 import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID, TEMPLATE_COUNTRIES, templateCountries } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
-import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter, HEADER_HEIGHT } from "./siteChrome.jsx";
+import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter, HEADER_HEIGHT, shouldUseNativeNavigation } from "./siteChrome.jsx";
 import { primaryNavLabelKey } from "./nav/navItems.js";
 import { COLORS, chipInk, accentOnPaper } from "./theme/colors.js";
 import { UI, ENTRY_UI, ACCT_UI, LANDING_UI, BUILDER_UI, COVER_UI, ATS_UI, TRACKER_UI, MASTER_UI, STATUS_UI, MODAL_UI, LANDING2_UI, FOOTER_UI } from "./i18n/index.js";
@@ -3197,6 +3197,17 @@ const defaultMaster = {
 
 const DEFAULT_APP_ROUTE = { appView: "landing", navPage: "resume", step: "templates", coverStep: "templates" };
 
+function handleRouteLink(event, action) {
+  if (shouldUseNativeNavigation(event)) return;
+  event.preventDefault();
+  action();
+}
+
+function routeWithParam(path, lang, key, value) {
+  const href = localizeRoute(path, lang);
+  return `${href}${href.includes("?") ? "&" : "?"}${key}=${encodeURIComponent(value)}`;
+}
+
 function routeFromAppPath(pathname = "/", hash = "") {
   const hashRoute = hash ? hash.replace(/^#\/?/, "").replace(/\/+$/, "") : "";
   const clean = (hashRoute || pathname).replace(/^\/+/, "").replace(/\/+$/, "");
@@ -3205,9 +3216,9 @@ function routeFromAppPath(pathname = "/", hash = "") {
   if (clean === "resume" || clean === "resume/templates") return { ...route, navPage: "resume", step: "templates" };
   if (clean === "resume-builder" || clean === "resume/builder") return { ...route, navPage: "resume", step: "form" };
   if (clean === "cover-letter" || clean === "cover-letter/templates") return { ...route, navPage: "cover", coverStep: "templates" };
-  if (clean === "cover-letter/builder") return { ...route, navPage: "cover", coverStep: "form" };
+  if (clean === "cover-letter-builder" || clean === "cover-letter/builder") return { ...route, navPage: "cover", coverStep: "form" };
   if (clean === "job-tracker") return { ...route, navPage: "tracker" };
-  if (clean === "app/ats-checker" || hashRoute === "ats-checker") return { ...route, navPage: "ats" };
+  if (clean === "ats-checker" || clean === "app/ats-checker" || hashRoute === "ats-checker") return { ...route, navPage: "ats" };
   if (clean === "master-profile") return { ...route, navPage: "master" };
   if (clean === "about") return { ...route, navPage: "about" };
   if (clean === "email-signature") return { ...route, navPage: "signature" };
@@ -3218,10 +3229,10 @@ function routeFromAppPath(pathname = "/", hash = "") {
 function pathFromRoute({ appView, navPage, step, coverStep }) {
   if (appView !== "app") return "/";
   if (navPage === "resume") return step === "form" ? "/resume-builder/" : "/resume/templates/";
-  if (navPage === "cover") return coverStep === "form" ? "/cover-letter/builder" : "/cover-letter/templates/";
-  if (navPage === "tracker") return "/job-tracker";
-  if (navPage === "ats") return "/app/ats-checker";
-  if (navPage === "master") return "/master-profile";
+  if (navPage === "cover") return coverStep === "form" ? "/cover-letter-builder/" : "/cover-letter/templates/";
+  if (navPage === "tracker") return "/job-tracker/";
+  if (navPage === "ats") return "/ats-checker/";
+  if (navPage === "master") return "/master-profile/";
   if (navPage === "about") return "/about";
   if (navPage === "signature") return "/email-signature";
   if (navPage === "website") return "/personal-website";
@@ -5388,13 +5399,14 @@ Awards: ${form.awards}`;
                             fontSize: 13, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
                           {bu.preview}
                         </button>
-                        <button type="button" aria-label={recommended ? builderText("useRecommendedTemplate") : builderText("useTemplateNamed", { template: tp.name })}
-                          onClick={() => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery")}
+                        <a href={routeWithParam("/resume-builder/", lang, "template", tp.id)}
+                          aria-label={recommended ? builderText("useRecommendedTemplate") : builderText("useTemplateNamed", { template: tp.name })}
+                          onClick={(event) => handleRouteLink(event, () => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery"))}
                           style={{ minHeight: 40, padding: "0 15px", background: C.grad, color: "#fff",
                             border: "none", borderRadius: 9, fontSize: 13, fontWeight: 900,
-                            cursor: "pointer", fontFamily: "inherit" }}>
+                            cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
                           {bu.useTemplate}
-                        </button>
+                        </a>
                       </div>
                     </div>
                   <div style={{ padding: isMobile ? "12px 2px 0" : "14px 2px 0" }}>
@@ -5422,13 +5434,14 @@ Awards: ${form.awards}`;
                           fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
                         {bu.preview}
                       </button>
-                      <button type="button" aria-label={recommended ? builderText("useRecommendedTemplate") : builderText("useTemplateNamed", { template: tp.name })}
-                        onClick={() => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery")}
+                      <a href={routeWithParam("/resume-builder/", lang, "template", tp.id)}
+                        aria-label={recommended ? builderText("useRecommendedTemplate") : builderText("useTemplateNamed", { template: tp.name })}
+                        onClick={(event) => handleRouteLink(event, () => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery"))}
                         style={{ flex: 1, minHeight: 44, background: C.grad,
                           color: "#fff", border: "none",
-                          borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
+                          borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
                         {bu.useTemplate}
-                      </button>
+                      </a>
                     </div>
                     )}
                   </div>
@@ -7437,13 +7450,14 @@ Awards: ${form.awards}`;
                             fontSize: 13, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
                           {bu.preview}
                         </button>
-                        <button type="button" aria-label={recommended ? builderText("useRecommendedCoverTemplate") : builderText("useCoverTemplateNamed", { template: tp.name })}
-                          onClick={() => { track(EVENTS.COVER_STARTED, { template: tp.id }); setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); }}
+                        <a href={localizeRoute("/cover-letter-builder/", lang)}
+                          aria-label={recommended ? builderText("useRecommendedCoverTemplate") : builderText("useCoverTemplateNamed", { template: tp.name })}
+                          onClick={(event) => handleRouteLink(event, () => { track(EVENTS.COVER_STARTED, { template: tp.id }); setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); })}
                           style={{ minHeight: 40, padding: "0 15px", background: C.grad, color: "#fff",
                             border: "none", borderRadius: 9, fontSize: 13, fontWeight: 900,
-                            cursor: "pointer", fontFamily: "inherit" }}>
+                            cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
                           {bu.useTemplate}
-                        </button>
+                        </a>
                       </div>
                     </div>
                   <div style={{ padding: isMobile ? "12px 2px 0" : "14px 2px 0" }}>
@@ -7467,12 +7481,13 @@ Awards: ${form.awards}`;
                             fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
                           {bu.preview}
                         </button>
-                        <button type="button" aria-label={recommended ? builderText("useRecommendedCoverTemplate") : builderText("useCoverTemplateNamed", { template: tp.name })}
-                          onClick={() => { track(EVENTS.COVER_STARTED, { template: tp.id }); setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); }}
+                        <a href={localizeRoute("/cover-letter-builder/", lang)}
+                          aria-label={recommended ? builderText("useRecommendedCoverTemplate") : builderText("useCoverTemplateNamed", { template: tp.name })}
+                          onClick={(event) => handleRouteLink(event, () => { track(EVENTS.COVER_STARTED, { template: tp.id }); setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); })}
                           style={{ flex: 1, minHeight: 44, background: C.grad, color: "#fff", border: "none",
-                            borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
+                            borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
                           {bu.useTemplate}
-                        </button>
+                        </a>
                       </div>
                     )}
                   </div>
@@ -9164,21 +9179,23 @@ Awards: ${form.awards}`;
               </p>
               <div style={{ animation: isMobile ? "none" : "acFadeUp 0.65s ease 0.5s both",
                 display: "flex", gap: 12, justifyContent: isMobile ? "center" : "flex-start", flexWrap: "wrap" }}>
-              <button onClick={() => { track(EVENTS.HERO_CTA_CLICKED, { location: "hero" }); startResume("hero_primary"); }}
+              <a href={localizeRoute("/resume-builder/", lang)}
+                onClick={(event) => handleRouteLink(event, () => { track(EVENTS.HERO_CTA_CLICKED, { location: "hero" }); startResume("hero_primary"); })}
                 style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
                   padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer",
                   animation: isMobile ? "none" : "acPulse 2.8s ease-in-out 1.4s infinite",
-                  transition: "opacity 0.2s", fontFamily: "inherit" }}>
+                  transition: "opacity 0.2s", fontFamily: "inherit", textDecoration: "none" }}>
                 {lx.createResume}
-              </button>
-              <button onClick={() => enter("ats")}
+              </a>
+              <a href={localizeRoute("/ats-checker/", lang)}
+                onClick={(event) => handleRouteLink(event, () => enter("ats"))}
                 style={{ background: "transparent", color: C.text2, border: `1.5px solid ${C.border}`,
                   borderRadius: 3, padding: "14px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer",
-                  transition: "border-color 0.2s, color 0.2s", fontFamily: "inherit" }}
+                  transition: "border-color 0.2s, color 0.2s", fontFamily: "inherit", textDecoration: "none" }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent2; e.currentTarget.style.color = C.accent2; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.text2; }}>
                 {lx.checkResume}
-              </button>
+              </a>
               </div>
               {/* Trust row */}
               <div style={{ animation: isMobile ? "none" : "acFadeUp 0.5s ease 0.65s both",
@@ -9320,12 +9337,13 @@ Awards: ${form.awards}`;
                 <p style={{ fontSize: 16, color: C.text2, lineHeight: 1.75, margin: "0 0 28px" }}>
                   {l2.mp.desc}
                 </p>
-                <button onClick={() => enter("master")}
+                <a href="/master-profile/"
+                  onClick={(event) => handleRouteLink(event, () => enter("master"))}
                   style={{ padding: "12px 28px", background: C.grad, border: "none", borderRadius: 10,
                     color: "#fff", fontSize: 14.5, fontWeight: 700, cursor: "pointer",
-                    fontFamily: "inherit", boxShadow: `0 4px 20px ${C.accent}44` }}>
+                    fontFamily: "inherit", boxShadow: `0 4px 20px ${C.accent}44`, display: "inline-block", textDecoration: "none" }}>
                   {l2.mp.btn}
-                </button>
+                </a>
               </div>
               <div style={{ flex: "0 0 auto", display: "flex", flexDirection: "column", gap: 12,
                 width: isMobile ? "100%" : 280 }}>
@@ -9378,15 +9396,16 @@ Awards: ${form.awards}`;
               ))}
             </div>
             <FadeIn delay={400} style={{ textAlign: "center", marginTop: 44 }}>
-              <button onClick={() => { setStep("templates"); setNavPage("resume"); setAppView("app"); }}
+              <a href={localizeRoute("/resume/templates/", lang)}
+                onClick={(event) => handleRouteLink(event, () => { setStep("templates"); setNavPage("resume"); setAppView("app"); })}
                 style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
                   padding: "13px 30px", fontSize: 14.5, fontWeight: 700, cursor: "pointer",
                   boxShadow: "0 4px 20px rgba(99,102,241,0.35)",
-                  transition: "opacity 0.2s, transform 0.2s" }}
+                  transition: "opacity 0.2s, transform 0.2s", display: "inline-block", textDecoration: "none" }}
                 onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; e.currentTarget.style.transform = "translateY(-1px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "none"; }}>
                 {l2.hiw.browse}
-              </button>
+              </a>
             </FadeIn>
           </div>
         </div>
@@ -9434,12 +9453,13 @@ Awards: ${form.awards}`;
                     <div style={{ padding: "10px 4px 0" }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>{tp.name}</div>
                       <div style={{ fontSize: 11.5, color: C.text2, marginTop: 2 }}>{templateTagText(tp)}</div>
-                      <button type="button" onClick={() => startWithTemplate(tp, "landing_template")}
+                      <a href={routeWithParam("/resume-builder/", lang, "template", tp.id)}
+                        onClick={(event) => handleRouteLink(event, () => startWithTemplate(tp, "landing_template"))}
                         style={{ marginTop: 8, minHeight: 36, borderRadius: 6, border: `1px solid ${C.borderHi}`,
                           background: `${C.accent}12`, color: C.accent2, fontSize: 12.5, fontWeight: 700,
-                          cursor: "pointer", fontFamily: "inherit", padding: "7px 11px" }}>
+                          cursor: "pointer", fontFamily: "inherit", padding: "7px 11px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
                         {bu.useTemplate}
-                      </button>
+                      </a>
                     </div>
                   </div>
                 </FadeIn>
@@ -9686,20 +9706,27 @@ Awards: ${form.awards}`;
               </p>
             </FadeIn>
             <FadeIn delay={120}>
-              <button onClick={() => startResume("final_cta")}
+              <a href={localizeRoute("/resume-builder/", lang)}
+                onClick={(event) => handleRouteLink(event, () => startResume("final_cta"))}
                 style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
                   padding: "16px 40px", fontSize: 16, fontWeight: 700, cursor: "pointer",
                   boxShadow: "0 4px 24px rgba(99,102,241,0.35)",
-                  transition: "opacity 0.2s, transform 0.2s" }}
+                  transition: "opacity 0.2s, transform 0.2s", display: "inline-block", textDecoration: "none" }}
                 onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; e.currentTarget.style.transform = "translateY(-2px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "none"; }}>
                 {lx.createResume}
-              </button>
+              </a>
             </FadeIn>
           </div>
         </div>
 
         </main>
+
+        <nav aria-label={(INTERFACE_LANGUAGE_DROPDOWN_COPY[lang] || INTERFACE_LANGUAGE_DROPDOWN_COPY.en).ariaLabel} style={{ display: "flex", justifyContent: "center", gap: 18, padding: "0 24px 20px", fontSize: 13 }}>
+          <a href="/" hrefLang="en" lang="en" style={{ color: C.text3, textDecoration: "none" }}>{languageByCode("en").native}</a>
+          <a href="/fr/" hrefLang="fr" lang="fr" style={{ color: C.text3, textDecoration: "none" }}>{languageByCode("fr").native}</a>
+          <a href="/ar/" hrefLang="ar" lang="ar" dir="rtl" style={{ color: C.text3, textDecoration: "none" }}>{languageByCode("ar").native}</a>
+        </nav>
 
         {/* Footer */}
         <SharedSiteFooter lang={lang} />

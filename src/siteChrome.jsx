@@ -48,7 +48,7 @@ function homeHrefForLang(lang = "en") {
 
 function defaultCtaHrefForLang(lang = "en") {
   if (lang === "fr" || lang === "ar") return localizeRoute("/free-resume-builder/", lang);
-  return "/resume/templates/";
+  return "/resume-builder/";
 }
 
 function localizeNavHref(href, lang = "en") {
@@ -79,14 +79,24 @@ function Logo({ compact = false, lang = "en", linked = true }) {
   );
 }
 
-// A nav item becomes a link on the marketing site and a button inside the SPA,
-// where navigation is client-side state (onNavigate) rather than a page load.
+export function shouldUseNativeNavigation(event) {
+  return event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+}
+
+// Page destinations always render as anchors. When the SPA can handle a normal
+// left-click in place, retain that behavior without taking away the real href
+// needed by crawlers, no-JS visitors, and open/copy-link browser actions.
 function actionProps(item, onNavigate) {
   if (item.onClick) return { as: "button", props: { type: "button", onClick: item.onClick } };
-  // `alwaysLink` items live on their own route (a real page load), so they stay
-  // anchors even inside the SPA where other items become client-side buttons.
-  if (onNavigate && !item.alwaysLink) return { as: "button", props: { type: "button", onClick: () => onNavigate(item) } };
-  return { as: "a", props: { href: item.href } };
+  const props = { href: item.href };
+  if (onNavigate && !item.alwaysLink) {
+    props.onClick = (event) => {
+      if (shouldUseNativeNavigation(event)) return;
+      event.preventDefault();
+      onNavigate(item);
+    };
+  }
+  return { as: "a", props };
 }
 
 // The ONE navbar. `variant="app"` swaps the marketing chrome (fixed position, CTA)
@@ -119,7 +129,6 @@ export function SiteHeader({
     href: item.href ? localizeNavHref(item.href, lang) : item.href,
     label: item.label || (item.labelKey ? f[item.labelKey] || l[item.labelKey] : "") || item.id || "",
   }));
-  const LogoTag = onLogoClick ? "button" : "a";
   const cta = ctaLabel || l.createResume || "Create my resume";
   const resolvedCtaHref = ctaHref || defaultCtaHrefForLang(lang);
   const controlledMobileMenu = typeof onMobileMenuToggle === "function";
@@ -220,8 +229,13 @@ export function SiteHeader({
         justifyContent: "space-between",
         boxSizing: "border-box",
       }}>
-        <LogoTag
-          {...(onLogoClick ? { type: "button", onClick: onLogoClick } : { href: homeHrefForLang(lang) })}
+        <a
+          href={homeHrefForLang(lang)}
+          onClick={onLogoClick ? (event) => {
+            if (shouldUseNativeNavigation(event)) return;
+            event.preventDefault();
+            onLogoClick();
+          } : undefined}
           className="ac-nav-logo"
           aria-label={f.brandHome}
           style={{
@@ -239,7 +253,7 @@ export function SiteHeader({
             overflow: "visible",
           }}>
           <BrandLogoImage style={{ height: 30, maxWidth: 170 }} />
-        </LogoTag>
+        </a>
         <nav aria-label={f.primaryTools} className="ac-site-nav-links" style={{ display: "flex", gap: 4, marginInlineStart: 18 }}>
           {items.map((item) => {
             const action = actionProps(item, onNavigate);
@@ -277,11 +291,16 @@ export function SiteHeader({
             {renderLanguageSelector()}
           </div>
         )}
-        {!showCta ? null : onCtaClick ? (
-          <button className="ac-nav-cta" type="button" onClick={onCtaClick} style={{
+        {!showCta ? null : (
+        <a className="ac-nav-cta" href={resolvedCtaHref} onClick={onCtaClick ? (event) => {
+          if (shouldUseNativeNavigation(event)) return;
+          event.preventDefault();
+          onCtaClick();
+        } : undefined} style={{
             background: SITE_COLORS.grad,
             color: "#fff",
             border: "none",
+            textDecoration: "none",
             borderRadius: 3,
             padding: "10px 24px",
             fontSize: 14,
@@ -290,19 +309,6 @@ export function SiteHeader({
             flexShrink: 0,
             fontFamily: "inherit",
           }}>
-            {cta}
-          </button>
-        ) : (
-        <a className="ac-nav-cta" href={resolvedCtaHref} style={{
-          background: SITE_COLORS.grad,
-          color: "#fff",
-          textDecoration: "none",
-          borderRadius: 3,
-          padding: "10px 24px",
-          fontSize: 14,
-          fontWeight: 700,
-          flexShrink: 0,
-        }}>
           {cta}
         </a>
         )}
@@ -320,21 +326,20 @@ export function SiteHeader({
           backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
           padding: "8px 12px 14px", display: "none", flexDirection: "column", gap: 2 }}>
           {items.map((item) => {
+            const action = actionProps(item, onNavigate);
+            const Tag = action.as;
             return (
-              <button key={item.href || item.id || item.label} type="button"
+              <Tag key={item.href || item.id || item.label} {...action.props}
                 aria-current={activeId && item.id === activeId ? "page" : undefined}
-                onClick={() => {
-                  if (item.onClick) item.onClick();
-                  else if (item.alwaysLink && item.href) window.location.href = item.href;
-                  else if (onNavigate) onNavigate(item);
-                  else if (item.href) window.location.href = item.href;
-                  closeMobileMenu();
-                }}
+                onClick={item.onClick ? () => { item.onClick(); closeMobileMenu(); } : action.props.onClick ? (event) => {
+                  action.props.onClick(event);
+                  if (!shouldUseNativeNavigation(event)) closeMobileMenu();
+                } : undefined}
                 style={{ textAlign: "start", border: "none", background: "transparent",
                   color: SITE_COLORS.text1, padding: "12px 10px", fontSize: 15, fontWeight: 700, cursor: "pointer",
-                  fontFamily: "inherit", borderRadius: 8 }}>
+                  fontFamily: "inherit", borderRadius: 8, textDecoration: "none" }}>
                 {item.label}
-              </button>
+              </Tag>
             );
           })}
           {renderLanguageSelector && (

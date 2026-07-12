@@ -11,8 +11,8 @@
 // so it stays an anchor even inside the SPA where the other tools switch view
 // via client-side state. Interview Prep is a separate lazy-loaded route.
 export const PRIMARY_NAV_ITEMS = [
-  { id: "resume", href: "/resume/templates/", labelKey: "resumeBuilder" },
-  { id: "cover", href: "/cover-letter/templates/", labelKey: "coverLetter" },
+  { id: "resume", href: "/resume-builder/", labelKey: "resumeBuilder" },
+  { id: "cover", href: "/cover-letter-builder/", labelKey: "coverLetter" },
   { id: "ats", href: "/ats-checker/", labelKey: "atsChecker" },
   { id: "tracker", href: "/job-tracker/", labelKey: "jobTracker" },
   { id: "interview", href: "/interview-prep/", labelKey: "interviewPrep", alwaysLink: true },

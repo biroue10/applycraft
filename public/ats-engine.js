@@ -345,10 +345,6 @@ function setupAutoAnalysis(locale) {
   }
 }
 
-function openInBuilder() {
-  window.location.href = '/';
-}
-
 if (typeof LOCALE !== 'undefined') {
   setupImport(LOCALE);
   setupAutoAnalysis(LOCALE);
