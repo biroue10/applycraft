@@ -107,6 +107,7 @@ const builder = {
   ,"saveResumeTooltip": "احتفظ بهذه النسخة فقط حتى يتم إغلاق هذه الصفحة."
   ,"noAutosaveReminder": "قم بتنزيل سيرتك الذاتية قبل إغلاق هذه الصفحة. لا يتم حفظ المحتوى تلقائياً."
   ,"renameSection": "إعادة تسمية القسم"
+  ,"removeSection": "إزالة القسم"
   ,"restoreDefaultLabel": "استعادة التسمية الافتراضية"
   ,"sectionOptions": "خيارات {section}"
   ,"sectionEntryActionsHint": "إعادة الترتيب والإخفاء والحذف متاحة لكل إدخال على حدة."
@@ -189,8 +190,7 @@ const builder = {
   // Completion checklist
   ,"checklistContact": "أضف بيانات الاتصال"
   ,"checklistSummary": "اكتب ملخصًا قصيرًا"
-  ,"checklistExperience": "أضف الخبرة العملية"
-  ,"checklistEducation": "أضف التعليم"
+  ,"checklistCoreSections": "أضف الخبرة العملية أو التعليم"
   ,"checklistSkills": "أضف 5 مهارات أو أكثر ذات صلة"
   ,"checklistDownload": "المراجعة والتنزيل"
   // Achievement coach

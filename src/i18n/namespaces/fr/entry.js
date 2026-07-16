@@ -44,7 +44,8 @@ const entry = {
   "addContent": "Ajouter du contenu",
   "addContentSub": "Choisissez une section à ajouter à votre CV",
   "alreadyAdded": "Déjà ajouté",
-  "close": "Fermer"
+  "close": "Fermer",
+  "optional": "Facultatif"
 };
 
 export default entry;

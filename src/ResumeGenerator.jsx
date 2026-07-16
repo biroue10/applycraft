@@ -1260,9 +1260,16 @@ const ENTRY_SCHEMAS = {
   extracurricular:{ type: "generic", icon: "🎯", fields: ["title", "subtitle", "description"],                       primary: "title",  secondary: "subtitle", labelKeys: { title: "activity", subtitle: "organization" } },
 };
 const SECTION_KEYS = Object.keys(ENTRY_SCHEMAS);
-// Always-visible core sections vs. ones the user adds via the "Add content" picker.
+// Always-visible core sections vs. ones the user can remove (and re-add via the
+// "Add content" picker). Every section in both groups is rendered from the start:
+// discovery must not depend on opening the picker.
 const CORE_SECTIONS = ["experience", "education", "skills", "languages"];
 const OPTIONAL_SECTIONS = ["certifications", "projects", "volunteer", "awards", "publications", "references", "extracurricular"];
+// The only mandatory content is Personal Info (name + contact, enforced by the
+// field validators) plus AT LEAST ONE of Experience / Education. Everything else
+// is opt-in, so it carries an "Optional" badge and never blocks completion.
+const REQUIRED_SECTIONS = ["experience", "education"];
+const isOptionalSection = (key) => !REQUIRED_SECTIONS.includes(key);
 // Catalog order shown in the picker (summary is the always-present FieldCard).
 const PICKER_CATALOG = ["summary", "experience", "education", "skills", "languages", "certifications", "projects", "volunteer", "awards", "publications", "references", "extracurricular"];
 const PICKER_ICONS = { summary: "📝", ...Object.fromEntries(SECTION_KEYS.map((k) => [k, ENTRY_SCHEMAS[k].icon])) };
@@ -1461,11 +1468,13 @@ function migrateForm(form) {
     out[arrKey] = entries;
     out[key] = entriesToText(key, entries);
   });
-  // Which optional sections are active in the editor. Auto-add any that already
-  // hold content so existing resumes keep showing their sections.
+  // Which optional sections are active in the editor. Every one of them is shown
+  // by default, so a resume saved before that change gains the sections it never
+  // had — empty and collapsed, never an error. The user's own order is kept and
+  // anything missing is appended in catalog order.
   const added = Array.isArray(out.addedSections) ? out.addedSections.filter((k) => OPTIONAL_SECTIONS.includes(k)) : [];
   OPTIONAL_SECTIONS.forEach((key) => {
-    if (!added.includes(key) && (out[key + "Entries"] || []).length > 0) added.push(key);
+    if (!added.includes(key)) added.push(key);
   });
   out.addedSections = added;
   return out;
@@ -1517,7 +1526,16 @@ function buildLiveData(form, t, lang = "en") {
   const label = (key) => t[key].replace(/\s*\(.*\)/, "");
   const headingOf = (key, def) => (form.sectionTitles && form.sectionTitles[key]) || def;
   const sections = [];
+  // An optional section the user removed from the editor must not reach the
+  // output even if its entries survive on the form (removal is non-destructive,
+  // so re-adding restores them). Absent addedSections => nothing was removed.
+  const inEditor = (key) => !OPTIONAL_SECTIONS.includes(key)
+    || !Array.isArray(form.addedSections)
+    || form.addedSections.includes(key);
+  // A section only exists in the output once it has content: an untouched
+  // "References" or "Publications" must never print as a bare heading.
   const add = (key, heading) => {
+    if (!inEditor(key)) return;
     const items = entriesToItems(key, form[key + "Entries"], lang);
     if (items.length) sections.push({ key, heading, isCustom: Boolean(form.sectionTitles?.[key]), items });
   };
@@ -1740,7 +1758,7 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
 }
 
 // Reusable section card. Drives every section from ENTRY_SCHEMAS — no per-section markup.
-function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, builderText = (key) => key, collapsed, onToggleCollapse, onEditHeading, onRestoreDefault, onAdd, onChangeEntry, onDeleteEntry, onToggleVisible, onReorder }) {
+function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, builderText = (key) => key, optional = false, collapsed, onToggleCollapse, onEditHeading, onRestoreDefault, onRemove, onAdd, onChangeEntry, onDeleteEntry, onToggleVisible, onReorder }) {
   const schema = ENTRY_SCHEMAS[sectionKey];
   const [expandedId, setExpandedId] = useState(null);
   const [editingHeading, setEditingHeading] = useState(false);
@@ -1814,6 +1832,14 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, b
             {visibleCount > 0 && (
               <span aria-hidden style={{ color: C.text3, fontSize: 11.5, fontWeight: 700 }}>{visibleCount}</span>
             )}
+            {/* Optional sections are shown from the start, so say plainly that
+                leaving one empty is fine. Dropped once it holds content — at
+                that point the badge is noise. */}
+            {optional && visibleCount === 0 && (
+              <span style={{ color: C.text3, fontSize: 10, fontWeight: 700, textTransform: "uppercase",
+                letterSpacing: 0.6, background: C.elevated, borderRadius: 999, padding: "2px 7px",
+                flexShrink: 0, whiteSpace: "nowrap" }}>{eui.optional}</span>
+            )}
           </div>
         )}
         <div ref={menuRef} style={{ position: "relative" }}>
@@ -1839,6 +1865,16 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, b
                     background: "none", border: "none", color: C.text1, fontSize: 13, fontWeight: 700,
                     cursor: "pointer", fontFamily: "inherit", boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}` }}>
                   {builderText("restoreDefaultLabel")}
+                </button>
+              )}
+              {/* Only removable sections get this. Entries are kept on the form,
+                  so re-adding from the picker brings the content back. */}
+              {onRemove && (
+                <button type="button" onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onRemove(); }}
+                  style={{ display: "block", width: "100%", padding: "10px 12px", textAlign: "left",
+                    background: "none", border: "none", color: C.text1, fontSize: 13, fontWeight: 700,
+                    cursor: "pointer", fontFamily: "inherit", boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}` }}>
+                  {builderText("removeSection")}
                 </button>
               )}
               <div style={{ padding: "9px 12px", boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}`, color: C.text3,
@@ -3901,6 +3937,13 @@ export default function ResumeGenerator() {
     setCollapsedSections((c) => ({ ...c, [key]: false })); // open it
     setAddContentOpen(false);
   }, []);
+  // Takes an optional section out of the editor. The entries stay on the form,
+  // so re-adding it from the picker restores whatever was typed — buildLiveData
+  // keeps it out of the preview and the export in the meantime.
+  const removeSection = useCallback((key) => {
+    if (!OPTIONAL_SECTIONS.includes(key)) return; // core sections cannot be removed
+    setForm((f) => ({ ...f, addedSections: (f.addedSections || []).filter((k) => k !== key) }));
+  }, []);
   const defaultPhoneCode = LANG_CODE[interfaceLanguage] || "+1";
   const rawPhone = form.phone.trim();
   const fullPhone = formatPhoneForResume(rawPhone, phoneCode, defaultPhoneCode);
@@ -5563,8 +5606,10 @@ Awards: ${form.awards}`;
       entries={form[key + "Entries"] || []}
       eui={eui} rtl={documentRtl}
       builderText={builderText}
+      optional={isOptionalSection(key)}
       collapsed={!!collapsedSections[key]}
       onToggleCollapse={() => toggleSectionCollapse(key)}
+      onRemove={OPTIONAL_SECTIONS.includes(key) ? () => removeSection(key) : undefined}
       onEditHeading={(h) => setSectionTitle(key, h)}
       onRestoreDefault={() => setForm((f) => {
         const nextTitles = { ...(f.sectionTitles || {}) };
@@ -5977,17 +6022,23 @@ Awards: ${form.awards}`;
   const filledCount = trackFields.filter(k => form[k]?.trim()).length + (photoUrl ? 1 : 0);
   const totalCount  = trackFields.length + 1;
   const completion  = Math.round(filledCount / totalCount * 100);
+  // `required` marks the only mandatory content: Personal Info, plus at least one
+  // of Experience / Education (hence the single combined item). The rest stay in
+  // the list as suggestions — they still drive "suggested next step" — but they
+  // are deliberately not counted, so leaving them empty never reads as unfinished.
   const resumeChecklist = [
-    { id: "contact", label: builderText("checklistContact"), done: !!(form.name && form.email && form.location), target: "field-name" },
+    { id: "contact", label: builderText("checklistContact"), done: !!(form.name && form.email && form.location), target: "field-name", required: true },
+    { id: "core", label: builderText("checklistCoreSections"), done: !!(form.experience.trim() || form.education.trim()), target: "field-experience", required: true },
     { id: "summary", label: builderText("checklistSummary"), done: !!form.summary.trim(), target: "field-summary" },
-    { id: "experience", label: builderText("checklistExperience"), done: !!form.experience.trim(), target: "field-experience" },
-    { id: "education", label: builderText("checklistEducation"), done: !!form.education.trim(), target: "field-education" },
     { id: "skills", label: builderText("checklistSkills"), done: form.skills.split(",").filter(s => s.trim()).length >= 5, target: "field-skills" },
     { id: "download", label: builderText("checklistDownload"), done: !!exportSuccess, target: null },
   ];
-  const completedChecklist = resumeChecklist.filter(item => item.done).length;
-  const nextChecklistItem = resumeChecklist.find(item => !item.done);
-  const readyForReview = completedChecklist >= 5;
+  const requiredChecklist = resumeChecklist.filter(item => item.required);
+  const completedChecklist = requiredChecklist.filter(item => item.done).length;
+  // Mandatory items first, so guidance never sends the user to an optional
+  // section while a required one is still missing.
+  const nextChecklistItem = requiredChecklist.find(item => !item.done) || resumeChecklist.find(item => !item.done);
+  const readyForReview = completedChecklist === requiredChecklist.length;
   const atsIssues = computeATSIssues();
   const atsScore = scoreFromIssues(atsIssues);
   const resumeTitle = form.name.trim()
@@ -6053,7 +6104,7 @@ Awards: ${form.awards}`;
               <span style={{ width: 8, height: 8, borderRadius: "50%", background: tpl.accent, flexShrink: 0 }} />
               <span>{tpl.name}</span>
               <span>·</span>
-              <span>{completedChecklist}/{resumeChecklist.length} {bu.complete}</span>
+              <span>{completedChecklist}/{requiredChecklist.length} {bu.complete}</span>
             </div>
           )}
         </div>
@@ -6178,7 +6229,7 @@ Awards: ${form.awards}`;
                 <div style={{ padding: "12px 14px", boxShadow: `inset 0 -1px 0 ${SECTION_TOKENS.rowDivider}` }}>
                   <div style={{ color: C.text1, fontSize: 13.5, fontWeight: 900 }}>{bu.exportTitle}</div>
                   <div style={{ color: C.text3, fontSize: 11.5, marginTop: 3 }}>
-                    {readyForReview ? bu.readyToExport : `${resumeChecklist.length - completedChecklist} ${bu.improvementsRemain}`}
+                    {readyForReview ? bu.readyToExport : `${requiredChecklist.length - completedChecklist} ${bu.improvementsRemain}`}
                   </div>
                 </div>
                 <button role="menuitem" onClick={() => { setActiveToolbarPanel(null); downloadPDF(); }}

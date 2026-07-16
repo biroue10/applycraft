@@ -41,7 +41,8 @@ const entry = {
   "addContent": "Inhalt hinzufügen",
   "addContentSub": "Wählen Sie einen Abschnitt für Ihren Lebenslauf",
   "alreadyAdded": "Bereits hinzugefügt",
-  "close": "Schließen"
+  "close": "Schließen",
+  "optional": "Optional"
 };
 
 export default entry;

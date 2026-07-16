@@ -91,8 +91,13 @@ test("runs a mocked simulation: stream a question, answer, then feedback", async
 test("an Interview-stage application offers a contextual launch into Interview Prep", async ({ page }) => {
   await page.goto("/job-tracker/", { waitUntil: "networkidle" });
 
-  // Add an application straight into the "Interview" column.
-  await page.locator('div:has(> div > span:text-is("INTERVIEW")) button:text-is("+")').first().click();
+  // Add an application straight into the "Interview" column. The column label is
+  // uppercased by CSS, so the DOM text is still "Interview".
+  const interviewColumn = page
+    .locator('div:has(> div > div > span:text-is("Interview"))')
+    .filter({ has: page.locator('button:text-is("+")') })
+    .last();
+  await interviewColumn.getByRole("button", { name: "+", exact: true }).click();
   await page.getByPlaceholder("e.g. Stripe").fill("Stripe");
   await page.getByPlaceholder("e.g. Senior Engineer").fill("Senior Backend Engineer");
   await page.getByRole("button", { name: "Add application" }).click();

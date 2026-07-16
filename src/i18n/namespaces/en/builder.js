@@ -107,6 +107,7 @@ const builder = {
   ,"saveResumeTooltip": "Keep this version only until this page is closed."
   ,"noAutosaveReminder": "Download your résumé before closing this page. Your content is not saved automatically."
   ,"renameSection": "Rename section"
+  ,"removeSection": "Remove section"
   ,"restoreDefaultLabel": "Restore default label"
   ,"sectionOptions": "{section} options"
   ,"sectionEntryActionsHint": "Reorder, hide, and delete are available on individual entries."
@@ -189,8 +190,7 @@ const builder = {
   // Completion checklist
   ,"checklistContact": "Add contact details"
   ,"checklistSummary": "Write a short summary"
-  ,"checklistExperience": "Add work experience"
-  ,"checklistEducation": "Add education"
+  ,"checklistCoreSections": "Add work experience or education"
   ,"checklistSkills": "Add 5+ relevant skills"
   ,"checklistDownload": "Review and download"
   // Achievement coach

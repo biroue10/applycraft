@@ -107,6 +107,7 @@ const builder = {
   ,"saveResumeTooltip": "Conserver cette version uniquement jusqu’à la fermeture de cette page."
   ,"noAutosaveReminder": "Téléchargez votre CV avant de fermer cette page. Votre contenu n’est pas enregistré automatiquement."
   ,"renameSection": "Renommer la section"
+  ,"removeSection": "Supprimer la section"
   ,"restoreDefaultLabel": "Restaurer le libellé par défaut"
   ,"sectionOptions": "Options de {section}"
   ,"sectionEntryActionsHint": "Réorganiser, masquer et supprimer sont disponibles sur les entrées individuelles."
@@ -189,8 +190,7 @@ const builder = {
   // Completion checklist
   ,"checklistContact": "Ajouter les coordonnées"
   ,"checklistSummary": "Rédiger un court résumé"
-  ,"checklistExperience": "Ajouter une expérience professionnelle"
-  ,"checklistEducation": "Ajouter une formation"
+  ,"checklistCoreSections": "Ajouter une expérience professionnelle ou une formation"
   ,"checklistSkills": "Ajouter au moins 5 compétences pertinentes"
   ,"checklistDownload": "Vérifier et télécharger"
   // Achievement coach

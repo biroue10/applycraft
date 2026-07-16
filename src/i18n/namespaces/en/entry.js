@@ -44,7 +44,8 @@ const entry = {
   "addContent": "Add content",
   "addContentSub": "Choose a section to add to your resume",
   "alreadyAdded": "Already added",
-  "close": "Close"
+  "close": "Close",
+  "optional": "Optional"
 };
 
 export default entry;

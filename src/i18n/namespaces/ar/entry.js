@@ -44,7 +44,8 @@ const entry = {
   "addContent": "إضافة محتوى",
   "addContentSub": "اختر قسمًا لإضافته إلى سيرتك الذاتية",
   "alreadyAdded": "مضاف بالفعل",
-  "close": "إغلاق"
+  "close": "إغلاق",
+  "optional": "اختياري"
 };
 
 export default entry;
