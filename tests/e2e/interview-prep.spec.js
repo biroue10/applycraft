@@ -85,3 +85,40 @@ test("runs a mocked simulation: stream a question, answer, then feedback", async
   await expect(page.getByText("Clear structure")).toBeVisible();
   await expect(page.getByText("Add measurable results")).toBeVisible();
 });
+
+// ── Contextual launch from the Job Tracker ──────────────────────────────────
+
+test("an Interview-stage application offers a contextual launch into Interview Prep", async ({ page }) => {
+  await page.goto("/job-tracker/", { waitUntil: "networkidle" });
+
+  // Add an application straight into the "Interview" column.
+  await page.locator('div:has(> div > span:text-is("INTERVIEW")) button:text-is("+")').first().click();
+  await page.getByPlaceholder("e.g. Stripe").fill("Stripe");
+  await page.getByPlaceholder("e.g. Senior Engineer").fill("Senior Backend Engineer");
+  await page.getByRole("button", { name: "Add application" }).click();
+
+  // The card now carries the contextual CTA, pointing at the current locale's
+  // Interview Prep route with the role + company as query params.
+  const cta = page.getByRole("link", { name: /Interview secured/ });
+  await expect(cta).toBeVisible();
+  const href = await cta.getAttribute("href");
+  expect(href).toContain("/interview-prep/");
+  expect(href).toContain("jobTitle=Senior+Backend+Engineer");
+  expect(href).toContain("company=Stripe");
+
+  // Following it opens the existing simulator, pre-filled in its session header.
+  await cta.click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Interview Prep");
+  await expect(page.getByText("Preparing for: Senior Backend Engineer at Stripe")).toBeVisible();
+});
+
+test("interview prep renders context from query params, and stays generic without them", async ({ page }) => {
+  await page.goto("/fr/interview-prep/?jobTitle=D%C3%A9veloppeur&company=Acme", { waitUntil: "networkidle" });
+  await expect(page.getByText("Préparation : Développeur chez Acme")).toBeVisible();
+
+  // No context → the generic simulator, with no session header (no regression).
+  await page.goto("/interview-prep/", { waitUntil: "networkidle" });
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Interview Prep");
+  await expect(page.getByText(/Preparing for:/)).toHaveCount(0);
+  await expect(page.locator("#ac-iv-offer")).toBeVisible();
+});

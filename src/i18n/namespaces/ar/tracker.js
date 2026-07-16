@@ -13,6 +13,7 @@ const tracker = {
   "colInterview": "مقابلة",
   "colOffer": "عرض",
   "colRejected": "مرفوضة",
+  "prepCta": "حصلت على مقابلة — استعدّ لها",
   "dropHere": "أفلِت البطاقات هنا",
   "companyPh": "الشركة",
   "positionPh": "المنصب",

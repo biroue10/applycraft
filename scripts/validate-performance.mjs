@@ -39,9 +39,19 @@ const MAX_INITIAL_CHUNK_GZ = 192_000;   // current app shell baseline
 // readableInk) that derive a readable text colour for preview skill chips. The
 // accent is chosen at runtime from a swatch picker, so the ink cannot be a
 // precomputed constant.
-// TODO(perf): code-split the non-English dictionaries (load fr/es/ar/de on
-// language switch) and lower this back toward 200 KB.
-const MAX_INITIAL_TOTAL_GZ = 263_000;   // current multilingual app shell baseline
+// Bumped +1 KB for the Job Tracker → Interview Prep contextual launch: the
+// localized "Interview secured" CTA (tracker namespace, en/fr/ar) plus the
+// write side of src/interview/context.js, which the tracker pulls into the
+// initial chunk. The read side lives in the lazy interview route instead.
+// TODO(perf): code-split the non-English dictionaries (load fr/ar on language
+// switch) and lower this back toward 200 KB. Note this is NOT a small change:
+// dictionaries are read synchronously (src/ResumeGenerator.jsx:3668-3683) and
+// /fr/ + /ar/ are prerendered with the locale taken from the pathname, so the
+// dictionary must exist at first render on both the server and at hydration —
+// a dynamic import alone cannot supply it without a blocking round-trip or a
+// hydration mismatch. The lazyLanding2 pattern in that file is not a precedent:
+// it only covers es/de, which are never prerendered as interface locales.
+const MAX_INITIAL_TOTAL_GZ = 264_000;   // current multilingual app shell baseline
 
 // Max raw (uncompressed) size of any image served from /public, in bytes.
 const MAX_IMAGE_SIZE = 250_000;         // 250 KB

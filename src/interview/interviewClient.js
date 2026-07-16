@@ -13,15 +13,25 @@ function errorFromResponse(response) {
     .catch(() => "generic");
 }
 
+// Optional job context (Job Tracker launch). Omitted entirely when absent so a
+// generic simulation sends exactly the payload it always did. The Worker
+// re-sanitizes both fields — it never trusts what we send here.
+function interviewPayload({ jobOffer, locale, level, history, jobTitle, company }) {
+  const payload = { jobOffer, locale, level, history };
+  if (jobTitle) payload.jobTitle = jobTitle;
+  if (company) payload.company = company;
+  return payload;
+}
+
 // Streams the recruiter's next question. Calls onDelta(text) per chunk, onMeta
 // with { turn, maxTurns }. Resolves with { text, done } or throws { code }.
-export async function streamRecruiterQuestion({ jobOffer, locale, level, history, onDelta, onMeta, signal }) {
+export async function streamRecruiterQuestion({ jobOffer, locale, level, history, jobTitle, company, onDelta, onMeta, signal }) {
   let response;
   try {
     response = await fetch("/api/interview", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jobOffer, locale, level, history }),
+      body: JSON.stringify(interviewPayload({ jobOffer, locale, level, history, jobTitle, company })),
       signal,
     });
   } catch (err) {
@@ -75,13 +85,13 @@ export async function streamRecruiterQuestion({ jobOffer, locale, level, history
 }
 
 // Requests structured feedback. Resolves with the feedback object or throws { code }.
-export async function requestFeedback({ jobOffer, locale, level, history, signal }) {
+export async function requestFeedback({ jobOffer, locale, level, history, jobTitle, company, signal }) {
   let response;
   try {
     response = await fetch("/api/interview/feedback", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jobOffer, locale, level, history }),
+      body: JSON.stringify(interviewPayload({ jobOffer, locale, level, history, jobTitle, company })),
       signal,
     });
   } catch (err) {

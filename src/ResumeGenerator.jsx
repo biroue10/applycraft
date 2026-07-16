@@ -48,6 +48,7 @@ import { LANGUAGE_SCHEMA_VERSION, LANGUAGE_SCHEMA_VERSION_KEY } from "./i18n/con
 import { documentLabelsFor } from "./i18n/documentLabels.js";
 import { formatLetterDate, defaultCoverSignoff, COVER_SIGNOFFS, LETTER_LOCALE } from "./i18n/letterDefaults.js";
 import { localizeRoute } from "./seo/localizedRoutes.js";
+import { jobContextQuery } from "./interview/context.js";
 
 const LANDING2_LOADERS = {
   es: () => import("./i18n/namespaces/es/landing2.js"),
@@ -8411,6 +8412,23 @@ Awards: ${form.awards}`;
                             padding: "1px 6px", borderRadius: 4, fontWeight: 600 }}>⏰</span>
                         )}
                       </div>
+
+                      {/* Reached the interview stage → launch the existing Interview Prep
+                          simulator, pre-filled with this application's role + company.
+                          A real link (the module is its own lazy route), localized so it
+                          never jumps locale, and stopPropagation so it doesn't open the
+                          card modal or get dragged instead of the card. */}
+                      {tcol.id === "interview" && (
+                        <a
+                          href={localizeRoute(`/interview-prep/${jobContextQuery({ jobTitle: card.position, company: card.company })}`, lang)}
+                          draggable={false}
+                          onClick={e => e.stopPropagation()}
+                          style={{ display: "block", marginTop: 8, padding: "6px 8px", borderRadius: 6,
+                            textDecoration: "none", textAlign: "center", fontSize: 10.5, fontWeight: 700,
+                            color: tcol.color, background: `${tcol.color}14`, border: `1px solid ${tcol.color}33` }}>
+                          {tk.prepCta}
+                        </a>
+                      )}
                     </div>
                   ))}
                 </div>

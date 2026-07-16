@@ -20,6 +20,12 @@ const INTERVIEW_I18N = {
     },
     levels: { junior: "Junior", confirme: "Mid-level", senior: "Senior" },
     languages: { en: "English", fr: "French", ar: "Arabic" },
+    context: {
+      both: "Preparing for: {jobTitle} at {company}",
+      titleOnly: "Preparing for: {jobTitle}",
+      companyOnly: "Preparing for an interview at {company}",
+      badge: "From your job tracker",
+    },
     validation: {
       jobOfferRequired: "Please paste the job offer first.",
       jobOfferTooLong: "The job offer is too long (max {max} characters).",
@@ -75,6 +81,12 @@ const INTERVIEW_I18N = {
     },
     levels: { junior: "Junior", confirme: "Confirmé", senior: "Senior" },
     languages: { en: "Anglais", fr: "Français", ar: "Arabe" },
+    context: {
+      both: "Préparation : {jobTitle} chez {company}",
+      titleOnly: "Préparation : {jobTitle}",
+      companyOnly: "Préparation d'un entretien chez {company}",
+      badge: "Depuis votre suivi de candidatures",
+    },
     validation: {
       jobOfferRequired: "Veuillez d'abord coller l'offre d'emploi.",
       jobOfferTooLong: "L'offre d'emploi est trop longue (max {max} caractères).",
@@ -130,6 +142,12 @@ const INTERVIEW_I18N = {
     },
     levels: { junior: "مبتدئ", confirme: "متوسط", senior: "خبير" },
     languages: { en: "الإنجليزية", fr: "الفرنسية", ar: "العربية" },
+    context: {
+      both: "التحضير لوظيفة: {jobTitle} في {company}",
+      titleOnly: "التحضير لوظيفة: {jobTitle}",
+      companyOnly: "التحضير لمقابلة في {company}",
+      badge: "من متتبّع طلباتك",
+    },
     validation: {
       jobOfferRequired: "يرجى لصق عرض العمل أولاً.",
       jobOfferTooLong: "عرض العمل طويل جداً (الحد الأقصى {max} حرف).",

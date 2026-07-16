@@ -13,6 +13,7 @@ const tracker = {
   "colInterview": "Interview",
   "colOffer": "Angebot",
   "colRejected": "Abgelehnt",
+  "prepCta": "Interview erhalten — bereite dich vor",
   "dropHere": "Karten hier ablegen",
   "companyPh": "Unternehmen",
   "positionPh": "Position",

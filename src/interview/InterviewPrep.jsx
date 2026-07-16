@@ -4,6 +4,7 @@ import { AppShell, SITE_COLORS, HEADER_HEIGHT } from "../siteChrome.jsx";
 import { interviewCopy, fmt, INTERVIEW_LOCALES, INTERVIEW_LEVELS } from "./i18n.js";
 import { streamRecruiterQuestion, requestFeedback, INTERVIEW_LIMITS } from "./interviewClient.js";
 import { useInterviewGate, recordSimulationStart } from "./quota.js";
+import { sanitizeJobContextValue } from "./context.js";
 
 const C = SITE_COLORS;
 
@@ -60,11 +61,42 @@ const inputBase = {
   padding: "12px 14px",
 };
 
+// Read side of the Job Tracker hand-off (?jobTitle=&company=). It lives in this
+// lazy route rather than in context.js so it never lands in the initial bundle —
+// the tracker only needs the write side. Values are re-sanitized on the way in
+// (they came from a URL) and again in the Worker, which is the real boundary.
+function readJobContext(search = "") {
+  let params;
+  try {
+    params = new URLSearchParams(String(search || "").replace(/^\?/, ""));
+  } catch {
+    return { jobTitle: "", company: "" };
+  }
+  return {
+    jobTitle: sanitizeJobContextValue(params.get("jobTitle")),
+    company: sanitizeJobContextValue(params.get("company")),
+  };
+}
+
+// "Preparing for: {jobTitle} at {company}", degrading gracefully when the Job
+// Tracker card only had one of the two filled in.
+function contextHeadline(c, { jobTitle, company }) {
+  if (jobTitle && company) return fmt(c.context.both, { jobTitle, company });
+  if (jobTitle) return fmt(c.context.titleOnly, { jobTitle });
+  return fmt(c.context.companyOnly, { company });
+}
+
 export default function InterviewPrep() {
   const location = useLocation();
   const uiLang = localeFromPath(location.pathname);
   const c = interviewCopy(uiLang);
   const gate = useInterviewGate();
+
+  // Optional job context handed over by the Job Tracker (?jobTitle=&company=).
+  // Already sanitized + length-capped; rendered as text, never as HTML. Absent →
+  // every branch below falls back to the generic simulator.
+  const jobContext = useMemo(() => readJobContext(location.search), [location.search]);
+  const hasContext = !!(jobContext.jobTitle || jobContext.company);
 
   const [phase, setPhase] = useState("setup"); // setup | chat | feedback
   const [jobOffer, setJobOffer] = useState("");
@@ -102,6 +134,8 @@ export default function InterviewPrep() {
         locale: ivLang,
         level,
         history,
+        jobTitle: jobContext.jobTitle,
+        company: jobContext.company,
         signal: controller.signal,
         onMeta: (m) => setMeta(m),
         onDelta: (t) => setStreamingText((prev) => prev + t),
@@ -120,7 +154,7 @@ export default function InterviewPrep() {
       setStreaming(false);
       setStreamingText("");
     }
-  }, [jobOffer, ivLang, level]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [jobOffer, ivLang, level, jobContext]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const generateFeedback = useCallback(async (history) => {
     if (!history.length) return;
@@ -130,14 +164,22 @@ export default function InterviewPrep() {
     const controller = new AbortController();
     abortRef.current = controller;
     try {
-      const fb = await requestFeedback({ jobOffer, locale: ivLang, level, history, signal: controller.signal });
+      const fb = await requestFeedback({
+        jobOffer,
+        locale: ivLang,
+        level,
+        history,
+        jobTitle: jobContext.jobTitle,
+        company: jobContext.company,
+        signal: controller.signal,
+      });
       setFeedback(fb);
     } catch (err) {
       if (err?.code !== "aborted") setError(err?.code === "rate_limited" ? "rate_limited" : err?.code || "generic");
     } finally {
       setLoadingFeedback(false);
     }
-  }, [jobOffer, ivLang, level]);
+  }, [jobOffer, ivLang, level, jobContext]);
 
   const startSimulation = useCallback(() => {
     if (jobOfferError) return;
@@ -199,6 +241,20 @@ export default function InterviewPrep() {
           <header style={{ marginBottom: 24 }}>
             <h1 style={{ fontSize: 30, fontWeight: 800, color: C.text1, margin: "0 0 10px" }}>{c.heading}</h1>
             <p style={{ fontSize: 15, color: C.text2, lineHeight: 1.6, margin: 0 }}>{c.subheading}</p>
+
+            {/* Launched from a Job Tracker card at the "Interview" stage. The values
+                are plain text (sanitized on read, re-sanitized in the Worker) and are
+                rendered as text by React — never as markup. */}
+            {hasContext ? (
+              <div dir={ivDir} style={{ marginTop: 16, padding: "12px 16px", borderRadius: 12,
+                background: `${C.accent}12`, border: `1px solid ${C.borderHi}` }}>
+                <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1,
+                  color: C.text3, marginBottom: 4 }}>{c.context.badge}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: C.text1 }}>
+                  {contextHeadline(c, jobContext)}
+                </div>
+              </div>
+            ) : null}
           </header>
 
           {errorText ? (
