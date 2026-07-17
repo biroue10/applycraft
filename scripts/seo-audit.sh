@@ -211,8 +211,11 @@ const LOCALE_LINK_WHITELIST = {
   ar: new Set(["/blog/", "/about/", "/contact/", "/help/", "/changelog/", "/roadmap/", "/status/", "/accessibility/", "/pricing/", "/examples/", "/ats-resume-builder/", "/cover-letter-builder/", "/student-resume-builder/", "/canadian-resume-builder/", "/terms/", "/privacy/", "/cookies/", "/gdpr/", "/refund-policy/", "/ai-disclosure/"]),
 };
 const EXPECTED_IMPORTANT_TITLES = new Map([
-  ["/", "Free Resume & Cover Letter Builder | ApplyCraft"],
-  ["/ar/", "منشئ سيرة ذاتية وخطاب تقديم متوافق مع ATS | ApplyCraft"],
+  // Repositioned to lead with the multilingual differentiator (FR/EN/AR + RTL)
+  // while keeping the primary keyword ("Resume Builder" / "منشئ سيرة ذاتية").
+  // These are pinned so an accidental edit cannot quietly undo the positioning.
+  ["/", "Free Resume Builder in English, French, Arabic | ApplyCraft"],
+  ["/ar/", "منشئ سيرة ذاتية مجاني بالعربية والفرنسية | ApplyCraft"],
   ["/ar/free-resume-builder/", "منشئ سيرة ذاتية مجاني بدون تسجيل | ApplyCraft"],
   ["/ar/interview-prep/", "تحضير مقابلة بالذكاء الاصطناعي | ApplyCraft"],
   ["/ats-checker/", "Free ATS Resume Checker | ApplyCraft"],

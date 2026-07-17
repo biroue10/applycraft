@@ -128,6 +128,7 @@ const landing2 = {
     "eyebrow": "Super-pouvoirs multilingues",
     "title": "Conçu pour le marché de l'emploi mondial",
     "desc": "Un créateur de CV conçu pour les candidats multilingues — rédigez dans n'importe quelle langue, avec une interface et des libellés de document entièrement localisés en anglais, français et arabe.",
+    "guides": "Nos guides par marché : Maroc, Canada depuis l'étranger, candidatures internationales.",
     "cards": [
       {
         "t": "Libellés localisés en anglais, français et arabe",

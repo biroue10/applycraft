@@ -91,6 +91,7 @@ const landing2 = {
     "eyebrow": "Mehrsprachige Superkräfte",
     "title": "Für den globalen Arbeitsmarkt gemacht",
     "desc": "Ein Lebenslauf-Generator für mehrsprachige Bewerber — schreibe Inhalte in jeder Sprache, mit vollständig lokalisierten Oberflächen- und Dokumentbeschriftungen derzeit auf Englisch, Französisch und Arabisch.",
+    "guides": "Marktspezifische Leitfäden: Marokko, Kanada aus dem Ausland und internationale Bewerbungen.",
     "cards": [
       {
         "t": "Lokalisierte Beschriftungen auf Englisch, Französisch und Arabisch",

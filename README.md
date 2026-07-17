@@ -4,9 +4,11 @@
 
 <br/>
 
-**The CV builder that actually works in English, French, and Arabic, while letting candidates write in any language.**
+**The resume builder that speaks your language — English, French, and Arabic — while letting candidates write in any language.**
 
-60+ ATS-friendly templates with country-specific formats (Canada, Morocco, Gulf, International) · localized EN/FR/AR interface with RTL · live preview · unlimited free PDF and DOCX · no watermark · no sign-up.
+Built for the French- and Arabic-speaking job seekers the big generic builders overlook: real right-to-left Arabic, not an afterthought, and country-specific formats for Canada, Morocco, the Gulf and international applications.
+
+60+ ATS-friendly templates · localized EN/FR/AR interface with RTL · live preview · unlimited free PDF and DOCX · no watermark · no sign-up · no paying to download.
 
 [![Live site](https://img.shields.io/badge/Live%20site-applycraft.io-6366F1?style=flat-square)](https://applycraft.io)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)

@@ -1,5 +1,5 @@
 const footer = {
-  "brand": "ApplyCraft.io — Créateur gratuit de CV et lettres. {tpl} modèles, PDF/DOCX, sans filigrane, sans inscription, EN/FR/AR",
+  "brand": "ApplyCraft.io — Créateur gratuit de CV et lettres en français, anglais et arabe. {tpl} modèles, PDF/DOCX, sans filigrane, sans inscription",
   "product": "Produit",
   "company": "Entreprise",
   "resources": "Ressources",

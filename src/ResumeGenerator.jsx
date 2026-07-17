@@ -9646,6 +9646,16 @@ Awards: ${form.awards}`;
               <p style={{ fontSize: 15.5, color: C.text2, maxWidth: 560, margin: "0 auto", lineHeight: 1.7 }}>
                 {l2.ml.desc.replace("{docs}", LOCALIZED_DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT)}
               </p>
+              {/* Knowing these markets is the other half of the multilingual
+                  claim, so point at the guides. localizeRoute keeps the link in
+                  the current locale (ar falls back to /blog/ until it exists). */}
+              {l2.ml.guides ? (
+                <p style={{ fontSize: 14, margin: "14px auto 0", maxWidth: 560 }}>
+                  <a href={localizeRoute("/blog/", lang)} style={{ color: C.accent2, fontWeight: 700 }}>
+                    {l2.ml.guides}
+                  </a>
+                </p>
+              ) : null}
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
               {l2.ml.cards.map((c) => ({ icon: c.icon, title: c.t.replace("{docs}", LOCALIZED_DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT), desc: c.d.replace("{docs}", LOCALIZED_DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT) })).map((f, i) => {

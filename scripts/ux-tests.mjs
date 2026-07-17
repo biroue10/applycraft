@@ -15,7 +15,10 @@ const pkg = JSON.parse(await readFile(new URL("../package.json", import.meta.url
 
 assert.match(landing, /Create my resume/, "homepage needs a specific primary CTA");
 assert.match(landing, /Check my existing resume/, "homepage needs a specific secondary CTA");
-assert.match(landing, /Build an ATS-friendly resume and matching cover letter fast\./, "homepage value proposition should be direct");
+// The hero must lead with what sets ApplyCraft apart from generic builders —
+// the FR/EN/AR multilingual support — while still naming the product category.
+assert.match(landing, /The resume builder that speaks your language/, "homepage hero should lead with the multilingual differentiator");
+assert.match(landing, /English, French and Arabic/, "homepage hero should name the three supported languages");
 assert.match(app, /startResume\("hero_primary"\)/, "hero CTA should use the fast-start resume path");
 assert.match(templateRegistry, /RECOMMENDED_TEMPLATE_ID = "modern"/, "resume flow should preselect a recommended template");
 assert.match(builder, /Use template/, "template selector should expose a clear use action");

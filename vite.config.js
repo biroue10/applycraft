@@ -19,24 +19,24 @@ const ROUTE_LANG = {
 
 const ROUTE_META = {
   "/": {
-    title: "Free Resume & Cover Letter Builder | ApplyCraft",
-    description: "Build an ATS-friendly resume and matching cover letter with live preview, multilingual labels, and PDF or DOCX downloads in ApplyCraft.",
+    title: "Free Resume Builder in English, French, Arabic | ApplyCraft",
+    description: "Build an ATS-friendly resume and matching cover letter in English, French or Arabic, with real right-to-left support. Free forever: no signup, no watermark, PDF and DOCX.",
     image: "https://applycraft.io/og/home.png",
     imageAlt: "ApplyCraft resume builder and cover letter maker preview",
     locale: "en_US",
     alternateLocales: ["fr_FR", "ar_MA"],
   },
   "/fr/": {
-    title: "Créateur de CV gratuit en ligne | ApplyCraft",
-    description: "Créez un CV compatible ATS et une lettre de motivation assortie avec aperçu en direct, libellés multilingues et export PDF ou DOCX.",
+    title: "Créateur de CV gratuit en français et arabe | ApplyCraft",
+    description: "Créez un CV compatible ATS et une lettre de motivation en français, anglais ou arabe, avec un vrai support de l'arabe de droite à gauche. Gratuit, sans inscription ni filigrane.",
     image: "https://applycraft.io/og/home-fr.png",
     imageAlt: "Aperçu du créateur de CV et de lettres de motivation ApplyCraft",
     locale: "fr_FR",
     alternateLocales: ["en_US", "ar_MA"],
   },
   "/ar/": {
-    title: "منشئ سيرة ذاتية وخطاب تقديم متوافق مع ATS | ApplyCraft",
-    description: "أنشئ سيرة ذاتية متوافقة مع ATS وخطاب تقديم مطابقاً مع معاينة مباشرة وتسميات متعددة اللغات وتنزيل PDF أو DOCX.",
+    title: "منشئ سيرة ذاتية مجاني بالعربية والفرنسية | ApplyCraft",
+    description: "أنشئ سيرة ذاتية متوافقة مع ATS وخطاب تقديم بالعربية أو الفرنسية أو الإنجليزية، بدعم كامل للكتابة من اليمين إلى اليسار. مجاناً، بدون تسجيل أو علامة مائية.",
     image: "https://applycraft.io/og/home-ar.png",
     imageAlt: "معاينة منشئ السيرة الذاتية وخطاب التقديم من ApplyCraft",
     locale: "ar_MA",

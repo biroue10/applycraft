@@ -91,6 +91,7 @@ const landing2 = {
     "eyebrow": "Superpoderes multilingües",
     "title": "Diseñado para el mercado laboral global",
     "desc": "Un creador de CV para candidatos multilingües — escribe contenido en cualquier idioma, con interfaz y etiquetas de documento completamente localizadas actualmente en inglés, francés y árabe.",
+    "guides": "Guías por mercado: Marruecos, Canadá desde el extranjero y candidaturas internacionales.",
     "cards": [
       {
         "t": "Etiquetas localizadas en inglés, francés y árabe",

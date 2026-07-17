@@ -92,6 +92,7 @@ const landing2 = {
     "eyebrow": "Multilingual superpowers",
     "title": "Built for the global job market",
     "desc": "A resume builder designed for multilingual job seekers — write content in any language, with fully localized interface and document labels currently available in English, French, and Arabic.",
+    "guides": "Market-specific guides: Morocco, Canada from abroad, and international applications.",
     "cards": [
       {
         "t": "Localized labels in English, French, and Arabic",
