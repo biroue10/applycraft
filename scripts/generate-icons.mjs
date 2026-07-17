@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import sharp from "sharp";
 
 const PUBLIC = new URL("../public/", import.meta.url);
-const MASTER = join(PUBLIC.pathname, "assets/brand/logo-master.png");
+const MASTER = join(PUBLIC.pathname, "assets/brand/applycraft-logo-navbar.png");
 const BACKGROUND = { r: 6, g: 8, b: 15, alpha: 1 };
 const FAVICON_SIZES = [16, 32, 48];
 

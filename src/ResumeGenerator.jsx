@@ -30,7 +30,7 @@ import {
 import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID, TEMPLATE_COUNTRIES, templateCountries } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
-import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter, HEADER_HEIGHT, shouldUseNativeNavigation } from "./siteChrome.jsx";
+import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter, HEADER_HEIGHT, shouldUseNativeNavigation, BRAND_LOGO_SRC } from "./siteChrome.jsx";
 import { primaryNavLabelKey } from "./nav/navItems.js";
 import { COLORS, chipInk, accentOnPaper } from "./theme/colors.js";
 import { UI, ENTRY_UI, ACCT_UI, LANDING_UI, BUILDER_UI, COVER_UI, ATS_UI, TRACKER_UI, MASTER_UI, STATUS_UI, MODAL_UI, LANDING2_UI, FOOTER_UI } from "./i18n/index.js";
@@ -126,7 +126,7 @@ const STARTER_STATUS_COPY = {
 // by scripts/product-tests.mjs.
 const LOCALIZED_DOCUMENT_LANGUAGE_COUNT = PRODUCT.localizedDocumentLanguageCount;
 const UI_LANGUAGE_COUNT = PRODUCT.interfaceLanguageCount;
-const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
+// BRAND_LOGO_SRC imported from ./siteChrome.jsx — single source for the mark.
 const TRANSLATION_USAGE_KEY = "ac_translation_usage";
 const TRANSLATION_DEV_BYPASS_HASH = import.meta.env.VITE_DEV_BYPASS || "";
 

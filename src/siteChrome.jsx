@@ -17,7 +17,9 @@ export const HEADER_HEIGHT = 64;         // desktop, px
 export const HEADER_HEIGHT_MOBILE = 60;  // <=720px, px
 
 const AUTHOR_EMAIL = "hello@applycraft.io";
-const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
+// Single canonical brand logo, imported anywhere the mark is shown (navbar,
+// footer, and — as the source image — the OG/favicon generators).
+export const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
 
 function BrandLogoImage({ compact = false, style = {} }) {
   return (

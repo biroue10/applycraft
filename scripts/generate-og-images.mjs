@@ -3,7 +3,7 @@ import { join } from "node:path";
 import sharp from "sharp";
 
 const ROOT = new URL("../public/og/", import.meta.url);
-const LOGO_PATH = new URL("../public/assets/brand/logo-master.png", import.meta.url);
+const LOGO_PATH = new URL("../public/assets/brand/applycraft-logo-navbar.png", import.meta.url);
 mkdirSync(ROOT, { recursive: true });
 const logoDataUrl = `data:image/png;base64,${readFileSync(LOGO_PATH).toString("base64")}`;
 

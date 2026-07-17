@@ -173,7 +173,6 @@ const PAGES = {
 <h2>8. Third-party services</h2>
 <ul>
   <li><strong>Cloudflare</strong> — CDN and hosting. Subject to Cloudflare's <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">privacy policy</a>.</li>
-  <li><strong>Google Fonts</strong> — typography. Font files are served from Google's CDN. Subject to <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>. No personal data is shared.</li>
   <li><strong>Plausible Analytics</strong> — cookieless, privacy-friendly product analytics. No personal data, no cross-site tracking. Subject to <a href="https://plausible.io/privacy" rel="noopener">Plausible's privacy policy</a>.</li>
   <li><strong>Lemon Squeezy</strong> — payment processing and merchant of record for the optional paid pass. Subject to <a href="https://www.lemonsqueezy.com/privacy" rel="noopener">Lemon Squeezy's privacy policy</a>.</li>
 </ul>
@@ -529,8 +528,8 @@ const PAGES = {
   <div style="display:flex;align-items:center;gap:12px">
     <div class="status-dot"></div>
     <div>
-      <div style="font-size:14px;font-weight:600;color:#E4EBF5">Google Fonts</div>
-      <div style="font-size:12px;color:#8B9EB8">Typography CDN</div>
+      <div style="font-size:14px;font-weight:600;color:#E4EBF5">Typography</div>
+      <div style="font-size:12px;color:#8B9EB8">Self-hosted (IBM Plex Sans)</div>
     </div>
   </div>
   <span class="badge badge-green">Operational</span>
