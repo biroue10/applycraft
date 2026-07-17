@@ -10,9 +10,11 @@ import {
   LANGUAGE_SCHEMA_VERSION,
   LANGUAGE_SCHEMA_VERSION_KEY,
   LEGACY_SITE_LANG_KEY,
+  INTERFACE_LANGUAGE_METADATA,
   isRtlLang,
   migratePreferences,
 } from "../src/i18n/languages.js";
+import { localizedLanguageHref } from "../src/seo/localizedRoutes.js";
 import { sectionLabel } from "../src/i18n/documentLabels.js";
 import { formatDateRange, normalizeDateRange } from "../src/resumeQuality.js";
 import { EVENTS } from "../src/analytics.js";
@@ -75,6 +77,20 @@ test("production namespaces resolve for English, French, and Arabic", () => {
     assert.equal(typeof resources[language]?.builder?.documentLanguage, "string", `${language}.builder.documentLanguage missing`);
     assert.equal(typeof resources[language]?.status?.pdfFail, "string", `${language}.status.pdfFail missing`);
   }
+});
+
+test("interface language switcher metadata has stable local flags and safe routes", () => {
+  assert.deepEqual(Object.keys(INTERFACE_LANGUAGE_METADATA), ["en", "fr", "ar"]);
+  for (const [code, language] of Object.entries(INTERFACE_LANGUAGE_METADATA)) {
+    assert.equal(language.code, code);
+    assert.match(language.flagSrc, /^\/assets\/flags\/[a-z]{2}\.svg$/);
+    assert.ok(language.native);
+    assert.ok(language.displayCode);
+  }
+  assert.equal(localizedLanguageHref("/", "fr"), "/fr/");
+  assert.equal(localizedLanguageHref("/fr/", "en"), "/");
+  assert.equal(localizedLanguageHref("/fr/", "ar"), "/ar/");
+  assert.equal(localizedLanguageHref("/fr/blog/exemple-cv-maroc/", "ar"), "/ar/");
 });
 
 test("language migration keeps interface and document languages independent", () => {

@@ -24,6 +24,17 @@ export const LANGUAGE_SCHEMA_VERSION_KEY = "ac_language_schema_version";
 export const LANGUAGE_SCHEMA_VERSION = "2";
 
 export const DEFAULT_LANG = "en";
+
+// Shared presentation and routing metadata for the interface language switcher.
+// Flags are local, decorative SVGs so they render consistently without adding
+// an icon dependency or relying on platform-specific emoji glyphs.
+export const INTERFACE_LANGUAGE_METADATA = Object.freeze({
+  en: Object.freeze({ code: "en", displayCode: "EN", name: "English", native: "English", flag: "gb", flagSrc: "/assets/flags/gb.svg", path: "/", dir: "ltr" }),
+  fr: Object.freeze({ code: "fr", displayCode: "FR", name: "French", native: "Français", flag: "fr", flagSrc: "/assets/flags/fr.svg", path: "/fr/", dir: "ltr" }),
+  ar: Object.freeze({ code: "ar", displayCode: "AR", name: "Arabic", native: "العربية", flag: "ae", flagSrc: "/assets/flags/ae.svg", path: "/ar/", dir: "rtl", rtl: true }),
+});
+
+export const interfaceLanguageByCode = (code) => INTERFACE_LANGUAGE_METADATA[baseCode(code)] || INTERFACE_LANGUAGE_METADATA[DEFAULT_LANG];
 export const isRtlLang = (code) => RTL_LANGUAGES.includes(String(code || "").toLowerCase());
 export const isInterfaceLang = (code) => INTERFACE_LANGUAGES.includes(String(code || "").toLowerCase());
 export const isDocumentLang = (code) => /^[a-z]{2,3}$/.test(String(code || "").toLowerCase());

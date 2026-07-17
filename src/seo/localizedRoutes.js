@@ -49,3 +49,18 @@ export function localizeRoute(path = "", lang = "en") {
   const query = merged.toString();
   return `${localizedPath}${query ? `?${query}` : ""}`;
 }
+
+// Resolve the current canonical route back to its language-neutral route, then
+// localize it. Unknown/untranslated pages intentionally fall back to the target
+// language homepage instead of creating a plausible-looking 404 URL.
+export function localizedLanguageHref(currentPath = "/", lang = "en") {
+  const pathname = normalizeRoutePath(currentPath).split(/[?#]/)[0];
+  for (const [source, variants] of Object.entries(LOCALIZED_ROUTES)) {
+    const match = Object.values(variants).some((candidate) => (
+      normalizeRoutePath(candidate).split(/[?#]/)[0] === pathname
+    ));
+    if (match) return variants[lang] || localizeRoute("/", lang);
+    if (source === pathname) return variants[lang] || localizeRoute("/", lang);
+  }
+  return localizeRoute("/", lang);
+}

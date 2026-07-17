@@ -40,6 +40,7 @@ import {
   initialDocumentLanguage,
   persistInterfaceLanguage,
   persistDocumentLanguage,
+  INTERFACE_LANGUAGE_METADATA,
   isInterfaceLang,
   isDocumentLang,
   isRtlLang,
@@ -47,7 +48,7 @@ import {
 import { LANGUAGE_SCHEMA_VERSION, LANGUAGE_SCHEMA_VERSION_KEY } from "./i18n/config.js";
 import { documentLabelsFor } from "./i18n/documentLabels.js";
 import { formatLetterDate, defaultCoverSignoff, COVER_SIGNOFFS, LETTER_LOCALE } from "./i18n/letterDefaults.js";
-import { localizeRoute } from "./seo/localizedRoutes.js";
+import { localizeRoute, localizedLanguageHref } from "./seo/localizedRoutes.js";
 import { jobContextQuery } from "./interview/context.js";
 
 const LANDING2_LOADERS = {
@@ -177,7 +178,7 @@ const WORLD_LANGUAGES = [
   { code: "af", name: "Afrikaans",         flag: "🇿🇦", native: "Afrikaans" },
   { code: "sq", name: "Albanian",          flag: "🇦🇱", native: "Shqip" },
   { code: "am", name: "Amharic",           flag: "🇪🇹", native: "አማርኛ" },
-  { code: "ar", name: "Arabic",            flag: "🇸🇦", native: "العربية", rtl: true },
+  INTERFACE_LANGUAGE_METADATA.ar,
   { code: "hy", name: "Armenian",          flag: "🇦🇲", native: "Հայերեն" },
   { code: "az", name: "Azerbaijani",       flag: "🇦🇿", native: "Azərbaycanca" },
   { code: "eu", name: "Basque",            flag: "🇪🇸", native: "Euskara" },
@@ -191,11 +192,11 @@ const WORLD_LANGUAGES = [
   { code: "cs", name: "Czech",             flag: "🇨🇿", native: "Čeština" },
   { code: "da", name: "Danish",            flag: "🇩🇰", native: "Dansk" },
   { code: "nl", name: "Dutch",             flag: "🇳🇱", native: "Nederlands" },
-  { code: "en", name: "English",           flag: "🇬🇧", native: "English" },
+  INTERFACE_LANGUAGE_METADATA.en,
   { code: "et", name: "Estonian",          flag: "🇪🇪", native: "Eesti" },
   { code: "tl", name: "Filipino",          flag: "🇵🇭", native: "Filipino" },
   { code: "fi", name: "Finnish",           flag: "🇫🇮", native: "Suomi" },
-  { code: "fr", name: "French",            flag: "🇫🇷", native: "Français" },
+  INTERFACE_LANGUAGE_METADATA.fr,
   { code: "gl", name: "Galician",          flag: "🇪🇸", native: "Galego" },
   { code: "ka", name: "Georgian",          flag: "🇬🇪", native: "ქართული" },
   { code: "de", name: "German",            flag: "🇩🇪", native: "Deutsch" },
@@ -5180,6 +5181,7 @@ Awards: ${form.awards}`;
       selected={selectedLang}
       onSelect={setSiteLanguage}
       siteOnly
+      currentPath={location.pathname}
       {...(INTERFACE_LANGUAGE_DROPDOWN_COPY[lang] || INTERFACE_LANGUAGE_DROPDOWN_COPY.en)}
     />
   );
@@ -9149,6 +9151,7 @@ Awards: ${form.awards}`;
               selected={selectedLang}
               onSelect={setSiteLanguage}
               siteOnly
+              currentPath={location.pathname}
               {...(INTERFACE_LANGUAGE_DROPDOWN_COPY[lang] || INTERFACE_LANGUAGE_DROPDOWN_COPY.en)}
             />
           )}
@@ -10953,6 +10956,24 @@ function AuthModal({ open, initialTab = "login", onClose, onLogin, at = ACCT_UI.
   );
 }
 
+function LanguageFlag({ language, size = 20 }) {
+  if (!language?.flagSrc) {
+    return <span aria-hidden="true" style={{ fontSize: size - 2, lineHeight: 1, flexShrink: 0 }}>{language?.flag}</span>;
+  }
+  return (
+    <img
+      src={language.flagSrc}
+      alt=""
+      aria-hidden="true"
+      width={size}
+      height={Math.round(size * 0.7)}
+      loading="eager"
+      decoding="async"
+      style={{ width: size, height: Math.round(size * 0.7), display: "block", objectFit: "cover", borderRadius: 3, flexShrink: 0, boxShadow: "0 0 0 1px rgba(255,255,255,.18)" }}
+    />
+  );
+}
+
 function LanguageDropdown({
   selected,
   onSelect,
@@ -10962,6 +10983,7 @@ function LanguageDropdown({
   emptyLabel,
   siteBadge = "SITE",
   uiBadge = "UI",
+  currentPath = "/",
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -10993,15 +11015,22 @@ function LanguageDropdown({
       }}
       style={{ position: "relative", zIndex: 500 }}
     >
-      <button type="button" onClick={() => setOpen(o => !o)} aria-label={ariaLabel} aria-haspopup="listbox" aria-expanded={open} style={{
+      <style>{`
+        @media (max-width: 480px) {
+          .ac-language-trigger-label { display: none !important; }
+          .ac-language-trigger { padding-inline: 9px !important; gap: 6px !important; }
+        }
+      `}</style>
+      <button className="ac-language-trigger" type="button" onClick={() => setOpen(o => !o)} aria-label={ariaLabel} aria-haspopup="listbox" aria-expanded={open} style={{
         display: "flex", alignItems: "center", gap: 7, padding: "7px 12px",
         background: C.surface, border: `1px solid ${C.border}`, borderRadius: 9,
         color: C.text1, fontSize: 13.5, fontWeight: 600, cursor: "pointer",
         fontFamily: "inherit", transition: "border-color .15s",
       }}>
-        <span style={{ fontSize: 17 }}>{selected.flag}</span>
-        <span>{selected.native || selected.name}</span>
-        <span style={{ fontSize: 10, color: C.text3, marginLeft: 2 }}>{open ? "▲" : "▼"}</span>
+        <LanguageFlag language={selected} />
+        <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: ".04em" }}>{selected.displayCode || selected.code.toUpperCase()}</span>
+        <span className="ac-language-trigger-label">{selected.native || selected.name}</span>
+        <span aria-hidden="true" style={{ fontSize: 10, color: C.text3, marginInlineStart: 2 }}>{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
@@ -11036,19 +11065,29 @@ function LanguageDropdown({
                 {resolvedEmptyLabel}
               </div>
             )}
-            {filtered.map(l => (
-              <button key={l.code} type="button" role="option" aria-selected={l.code === selected.code} onClick={() => { onSelect(l); setOpen(false); setSearch(""); }}
+            {filtered.map(l => {
+              const OptionTag = siteOnly ? "a" : "button";
+              const optionProps = siteOnly
+                ? { href: localizedLanguageHref(currentPath, l.code) }
+                : { type: "button" };
+              return (
+              <OptionTag key={l.code} {...optionProps} role="option" aria-selected={l.code === selected.code} aria-current={l.code === selected.code ? "page" : undefined} onClick={(event) => {
+                if (siteOnly && shouldUseNativeNavigation(event)) return;
+                onSelect(l);
+                setOpen(false);
+                setSearch("");
+              }}
                 style={{
                   display: "flex", alignItems: "center", gap: 10, width: "100%",
                   padding: "9px 14px", border: "none", background: l.code === selected.code ? `${C.accent}14` : "transparent",
-                  cursor: "pointer", textAlign: "left", fontFamily: "inherit",
-                  borderLeft: l.code === selected.code ? `2px solid ${C.accent}` : "2px solid transparent",
+                  cursor: "pointer", textAlign: "start", fontFamily: "inherit", textDecoration: "none",
+                  borderInlineStart: l.code === selected.code ? `2px solid ${C.accent}` : "2px solid transparent",
                   transition: "background .1s",
                 }}>
-                <span style={{ fontSize: 18, flexShrink: 0 }}>{l.flag}</span>
+                <LanguageFlag language={l} />
                 <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ fontSize: 13.5, fontWeight: 600, color: C.text1, display: "block" }}>{l.name}</span>
-                  <span style={{ fontSize: 11.5, color: C.text3 }}>{l.native}</span>
+                  <span style={{ fontSize: 13.5, fontWeight: 650, color: C.text1, display: "block" }}>{siteOnly ? l.native : l.name}</span>
+                  {!siteOnly && <span style={{ fontSize: 11.5, color: C.text3 }}>{l.native}</span>}
                 </span>
                 {siteOnly ? (
                   <span style={{ fontSize: 10, fontWeight: 700, color: C.accent2,
@@ -11061,8 +11100,9 @@ function LanguageDropdown({
                     {uiBadge}
                   </span>
                 )}
-              </button>
-            ))}
+              </OptionTag>
+              );
+            })}
           </div>
         </div>
       )}
