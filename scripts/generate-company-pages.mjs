@@ -8,6 +8,12 @@ const ROOT = join(__dirname, "..", "public");
 
 const SITE = "https://applycraft.io";
 const EMAIL = "hello@applycraft.io";
+const FONT_PRIVACY_NOTICE = {
+  en: "Fonts are self-hosted on our own domain — no requests are sent to third-party services (such as Google Fonts) to display them.",
+  fr: "Nos polices sont hébergées sur notre propre domaine — aucune requête n'est envoyée à des services tiers (comme Google Fonts) pour leur affichage.",
+  // Native review requested before an Arabic legal-policy route is published.
+  ar: "نستضيف خطوطنا على نطاقنا الخاص — ولا تُرسل أي طلبات إلى خدمات خارجية (مثل Google Fonts) لعرضها.",
+};
 const TODAY = "2026-06-27";
 const SOCIAL_IMAGE = `${SITE}/og/home.png`;
 const SOCIAL_IMAGE_ALT = "ApplyCraft resume builder and cover letter maker preview";
@@ -171,6 +177,7 @@ const PAGES = {
 <p>ApplyCraft is not directed at children under 13 (or 16 in the EU). We do not knowingly collect data from children. If you believe a child has submitted data, contact us and we will take appropriate action.</p>
 
 <h2>8. Third-party services</h2>
+<p>${FONT_PRIVACY_NOTICE.en}</p>
 <ul>
   <li><strong>Cloudflare</strong> — CDN and hosting. Subject to Cloudflare's <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">privacy policy</a>.</li>
   <li><strong>Plausible Analytics</strong> — cookieless, privacy-friendly product analytics. No personal data, no cross-site tracking. Subject to <a href="https://plausible.io/privacy" rel="noopener">Plausible's privacy policy</a>.</li>
