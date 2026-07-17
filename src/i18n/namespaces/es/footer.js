@@ -1,5 +1,6 @@
 const footer = {
   "brand": "Creador gratuito de currículums y cartas de presentación para el mercado global. Escribe en cualquier idioma, con soporte completo en inglés, francés y árabe, {tpl} plantillas, sin registro.",
+  "tagline": "Francés, inglés, árabe. Sin concesiones.",
   "product": "Producto",
   "company": "Empresa",
   "resources": "Recursos",

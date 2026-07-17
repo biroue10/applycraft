@@ -1,7 +1,7 @@
 const landing = {
   "createResume": "Créer mon CV",
   "checkResume": "Vérifier mon CV existant",
-  "heroEyebrow": "Créateur de CV + lettre de motivation",
+  "heroEyebrow": "Français, anglais, arabe. Sans compromis.",
   "heroH1": "Le créateur de CV pensé pour les candidats francophones et arabophones.",
   "heroSub": "CV, lettre de motivation et préparation d'entretien en français, anglais ou arabe — compatibles ATS, avec un vrai support de l'arabe de droite à gauche. Gratuits : sans inscription, sans filigrane, sans paiement pour télécharger. Export PDF et DOCX.",
   "trustBrowser": "Édition dans le navigateur",

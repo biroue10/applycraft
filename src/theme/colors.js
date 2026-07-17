@@ -28,6 +28,15 @@ export const COLORS = {
   accent2: "#818CF8",
   blue: "#3B82F6",
 
+  // Semantic status tier. Promoted here (from the local `C` palette) so every
+  // surface — app chrome, InterviewPrep, Job Tracker — resolves one value per
+  // meaning instead of hardcoding near-duplicates. Each clears 4.5:1 on every
+  // dark background token (bg/surface/elevated); danger #F87171 replaces the
+  // Job Tracker's #EF4444, which measured 4.33:1 on `elevated` (failed AA).
+  danger: "#F87171",
+  success: "#4ADE80",
+  warning: "#FBBF24",
+
   grad: "linear-gradient(135deg,#6366F1 0%,#3B82F6 100%)",
 
   // Muted ink for the light (paper) surfaces of the resume previews. #9CA3AF,

@@ -210,10 +210,7 @@ ${ogAlternateLocales.map((locale) => `<meta property="og:locale:alternate" conte
 <link rel="icon" href="/favicon-16x16.png?v=2" type="image/png" sizes="16x16"/>
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2"/>
 <link rel="manifest" href="/site.webmanifest?v=2"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'"/>
-<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/></noscript>
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="stylesheet" href="${cssRel}"/>
 <script type="application/ld+json">${faqSchema(faqs)}</script>
 <script type="application/ld+json">${breadcrumbSchema(canonicalPath)}</script>

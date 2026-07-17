@@ -384,7 +384,12 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
             }}>
               <BrandLogoImage />
             </a>
-            <p style={{ fontSize: 13, color: SITE_COLORS.text3, lineHeight: 1.75, margin: "12px 0 16px" }}>
+            {f.tagline ? (
+              <p style={{ fontSize: 13.5, fontWeight: 700, color: SITE_COLORS.text2, lineHeight: 1.6, margin: "12px 0 8px" }}>
+                {footerText(f.tagline)}
+              </p>
+            ) : null}
+            <p style={{ fontSize: 13, color: SITE_COLORS.text3, lineHeight: 1.75, margin: "0 0 16px" }}>
               {footerText(f.brand)}
             </p>
             <a href={`mailto:${AUTHOR_EMAIL}`} style={{ fontSize: 13, color: SITE_COLORS.text2, textDecoration: "none" }}>{AUTHOR_EMAIL}</a>
@@ -440,7 +445,7 @@ export function AppShell({ children, lang = "en", activeId }) {
       background: SITE_COLORS.bg,
       display: "flex",
       flexDirection: "column",
-      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+      fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif",
     }}>
       <SiteHeader lang={lang} activeId={activeId} />
       {children}

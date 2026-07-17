@@ -1,5 +1,6 @@
 const footer = {
   "brand": "ApplyCraft.io — Free resume & cover letter builder in English, French & Arabic. {tpl} templates, PDF/DOCX, no watermark, no signup",
+  "tagline": "French, English, Arabic. No compromises.",
   "product": "Product",
   "company": "Company",
   "resources": "Resources",

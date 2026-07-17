@@ -264,7 +264,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
     height: preview ? "100%" : undefined,
     maxHeight: undefined,
     padding: preview ? 12 : 0,
-    fontFamily: rtl ? "'Noto Sans Arabic', 'Tahoma', 'Arial', sans-serif" : tpl.font,
+    fontFamily: rtl ? "'IBM Plex Sans Arabic', 'IBM Plex Sans', 'Tahoma', sans-serif" : tpl.font,
     lineHeight: rtl ? 1.55 : undefined,
     direction: rtl ? "rtl" : "ltr",
     textAlign: "start",
@@ -277,7 +277,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
 
   if (empty) {
     return <div className="resume-paper" lang={lang} dir={rtl ? "rtl" : "ltr"} style={{ ...paper, display: "flex", alignItems: "center", justifyContent: "center",
-      color: COLORS.paperMuted, fontFamily: "'Inter', sans-serif", fontSize: 14, padding: 30, textAlign: "center" }}>
+      color: COLORS.paperMuted, fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif", fontSize: 14, padding: 30, textAlign: "center" }}>
       {emptyResumePreviewMessage(uiLang)}
     </div>;
   }
@@ -290,7 +290,7 @@ export function ResumePaper({ tpl: rawTpl, result, rtl, lang = "en", uiLang = la
 
   if (tpl.id === "blank") {
     return withLinkPolicy(
-      <div className="resume-paper" lang={lang} dir={rtl ? "rtl" : "ltr"} style={{ ...paper, fontFamily: rtl ? "'Noto Sans Arabic', 'Tahoma', 'Arial', sans-serif" : "'Inter', system-ui, sans-serif" }}>
+      <div className="resume-paper" lang={lang} dir={rtl ? "rtl" : "ltr"} style={{ ...paper, fontFamily: rtl ? "'IBM Plex Sans Arabic', 'IBM Plex Sans', 'Tahoma', sans-serif" : "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif" }}>
         <div style={{ padding: "28px 32px" }}>
           <div style={{ marginBottom: 14 }}>
             <div style={{ fontWeight: 700, fontSize: 22, color: "#111", letterSpacing: "-0.3px" }}>{data.name}</div>
@@ -1366,7 +1366,7 @@ export function CoverLetterPaper({ tpl: rawTpl, data: d, rtl = false, lang = "en
     height: preview ? "100%" : undefined,
     maxHeight: undefined,
     padding: preview ? 12 : 0,
-    fontFamily: rtl ? "'Noto Sans Arabic', 'Tahoma', 'Arial', sans-serif" : tpl.font,
+    fontFamily: rtl ? "'IBM Plex Sans Arabic', 'IBM Plex Sans', 'Tahoma', sans-serif" : tpl.font,
     direction: rtl ? "rtl" : "ltr",
     textAlign: rtl ? "right" : "left",
     unicodeBidi: "plaintext",

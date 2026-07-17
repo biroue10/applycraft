@@ -44,8 +44,7 @@ function shell(title, description, canonicalPath, content, extraHead = "") {
 <link rel="icon" href="/favicon-16x16.png?v=2" type="image/png" sizes="16x16"/>
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2"/>
 <link rel="manifest" href="/site.webmanifest?v=2"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="stylesheet" href="../_seo.css"/>
 <script type="application/ld+json">${JSON.stringify({
     "@context": "https://schema.org",
@@ -64,11 +63,11 @@ ${extraHead}
   .prose .lead{font-size:17px;color:#94A3B8;margin:0 0 48px;line-height:1.7}
   .prose h2{font-size:20px;font-weight:700;color:#E4EBF5;margin:40px 0 12px}
   .prose h3{font-size:16px;font-weight:700;color:#C0CADB;margin:28px 0 8px}
-  .prose p{font-size:14.5px;color:#64748B;line-height:1.8;margin:0 0 16px}
+  .prose p{font-size:14.5px;color:#8B9EB8;line-height:1.8;margin:0 0 16px}
   .prose ul{padding-left:20px;margin:0 0 16px}
-  .prose li{font-size:14.5px;color:#64748B;line-height:1.8;margin-bottom:6px}
+  .prose li{font-size:14.5px;color:#8B9EB8;line-height:1.8;margin-bottom:6px}
   .prose a{color:#818CF8}
-  .prose .meta{font-size:12px;color:#334155;margin-bottom:40px}
+  .prose .meta{font-size:12px;color:#8B9EB8;margin-bottom:40px}
   .prose hr{border:none;border-top:1px solid #1A2740;margin:40px 0}
   .prose .callout{background:#0D1117;border:1px solid #1A2740;border-left:3px solid #6366F1;
     border-radius:8px;padding:18px 20px;margin:24px 0}
@@ -88,7 +87,7 @@ ${extraHead}
   .roadmap-item{background:#0D1117;border:1px solid #1A2740;border-radius:10px;
     padding:20px;margin-bottom:12px}
   .roadmap-item h3{margin:0 0 6px;font-size:15px;color:#E4EBF5;font-weight:700}
-  .roadmap-item p{margin:0;font-size:13px;color:#64748B}
+  .roadmap-item p{margin:0;font-size:13px;color:#8B9EB8}
 </style>
 </head>
 <body>
@@ -235,7 +234,7 @@ const PAGES = {
 <h2>Roadmap and feedback</h2>
 <p>See what's coming on the <a href="/roadmap/">product roadmap</a>. Have a feature request, found a bug, or want to explain what would make ApplyCraft more useful for your job search? Email us directly at <a href="mailto:${EMAIL}">${EMAIL}</a> — we read every message.</p>
 
-<p style="margin-top:40px;font-size:13px;color:#475569">Biroue Digital Ltd · <a href="mailto:${EMAIL}">${EMAIL}</a> · <a href="https://github.com/biroue10" rel="noopener">GitHub</a></p>
+<p style="margin-top:40px;font-size:13px;color:#8B9EB8">Biroue Digital Ltd · <a href="mailto:${EMAIL}">${EMAIL}</a> · <a href="https://github.com/biroue10" rel="noopener">GitHub</a></p>
 `,
   },
 
@@ -460,7 +459,7 @@ const PAGES = {
 <p>See the <a href="/changelog/">full changelog</a> for everything that's already live.</p>
 
 <hr/>
-<p style="font-size:13px;color:#475569">Last updated: ${TODAY} · Questions? <a href="mailto:${EMAIL}">${EMAIL}</a></p>
+<p style="font-size:13px;color:#8B9EB8">Last updated: ${TODAY} · Questions? <a href="mailto:${EMAIL}">${EMAIL}</a></p>
 `,
   },
 
@@ -487,7 +486,7 @@ const PAGES = {
     <div class="status-dot"></div>
     <div>
       <div style="font-size:14px;font-weight:600;color:#E4EBF5">applycraft.io — Resume Builder</div>
-      <div style="font-size:12px;color:#475569">Main application</div>
+      <div style="font-size:12px;color:#8B9EB8">Main application</div>
     </div>
   </div>
   <span class="badge badge-green">Operational</span>
@@ -498,7 +497,7 @@ const PAGES = {
     <div class="status-dot"></div>
     <div>
       <div style="font-size:14px;font-weight:600;color:#E4EBF5">PDF Export</div>
-      <div style="font-size:12px;color:#475569">Browser-side PDF generation</div>
+      <div style="font-size:12px;color:#8B9EB8">Browser-side PDF generation</div>
     </div>
   </div>
   <span class="badge badge-green">Operational</span>
@@ -509,7 +508,7 @@ const PAGES = {
     <div class="status-dot"></div>
     <div>
       <div style="font-size:14px;font-weight:600;color:#E4EBF5">DOCX Export</div>
-      <div style="font-size:12px;color:#475569">Browser-side DOCX generation</div>
+      <div style="font-size:12px;color:#8B9EB8">Browser-side DOCX generation</div>
     </div>
   </div>
   <span class="badge badge-green">Operational</span>
@@ -520,7 +519,7 @@ const PAGES = {
     <div class="status-dot"></div>
     <div>
       <div style="font-size:14px;font-weight:600;color:#E4EBF5">CDN &amp; Static Assets</div>
-      <div style="font-size:12px;color:#475569">Cloudflare Pages</div>
+      <div style="font-size:12px;color:#8B9EB8">Cloudflare Pages</div>
     </div>
   </div>
   <span class="badge badge-green">Operational</span>
@@ -531,7 +530,7 @@ const PAGES = {
     <div class="status-dot"></div>
     <div>
       <div style="font-size:14px;font-weight:600;color:#E4EBF5">Google Fonts</div>
-      <div style="font-size:12px;color:#475569">Typography CDN</div>
+      <div style="font-size:12px;color:#8B9EB8">Typography CDN</div>
     </div>
   </div>
   <span class="badge badge-green">Operational</span>
@@ -542,10 +541,10 @@ const PAGES = {
 <p>The free builder is browser-first, so core editing and export continue locally after the app has loaded. Network access is still required to load the site and optional online features.</p>
 
 <h2>Incident history</h2>
-<p style="color:#475569;font-size:14px">No incidents in the last 90 days.</p>
+<p style="color:#8B9EB8;font-size:14px">No incidents in the last 90 days.</p>
 
 <hr/>
-<p style="font-size:13px;color:#475569">Issues? Email <a href="mailto:${EMAIL}">${EMAIL}</a></p>
+<p style="font-size:13px;color:#8B9EB8">Issues? Email <a href="mailto:${EMAIL}">${EMAIL}</a></p>
 `,
   },
 
@@ -585,7 +584,7 @@ const PAGES = {
 <p>For technical issues or to see the source code, visit <a href="https://github.com/biroue10" rel="noopener">github.com/biroue10</a>.</p>
 
 <hr/>
-<p style="font-size:13px;color:#475569">Biroue Digital Ltd · <a href="mailto:${EMAIL}">${EMAIL}</a></p>
+<p style="font-size:13px;color:#8B9EB8">Biroue Digital Ltd · <a href="mailto:${EMAIL}">${EMAIL}</a></p>
 `,
   },
 };

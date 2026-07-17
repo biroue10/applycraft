@@ -116,6 +116,71 @@ for (const file of ["index.html", "public/_seo.css", "src/siteChrome.jsx", "src/
   }
 }
 
+// ── Blog + static inline styles ─────────────────────────────────────────────
+// The checks above only see src/theme tokens. Blog articles and static pages
+// carry their own inline <style>, which previously let .post-meta ship at
+// 3.98:1 completely unseen. These two scans close that hole permanently.
+import { readdirSync } from "node:fs";
+
+function walkHtml(dir) {
+  const out = [];
+  let entries;
+  try { entries = readdirSync(join(ROOT, dir), { withFileTypes: true }); }
+  catch { return out; }
+  for (const e of entries) {
+    const rel = `${dir}/${e.name}`;
+    if (e.isDirectory()) out.push(...walkHtml(rel));
+    else if (e.name.endsWith(".html")) out.push(rel);
+  }
+  return out;
+}
+
+const expandHex = (h) => {
+  const x = h.replace("#", "");
+  return "#" + (x.length === 3 ? [...x].map((c) => c + c).join("") : x);
+};
+const styleBlocks = (html) => [...html.matchAll(/<style>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join("\n");
+// `color:` only — the negative lookbehind skips border-color / background-color.
+const textColors = (css) => [...css.matchAll(/(?<![-\w])color:\s*(#[0-9A-Fa-f]{3,6})\b/g)].map((m) => expandHex(m[1]));
+// Solid background hexes only (gradients start with "linear-gradient", so they
+// never match `background:#…` and are correctly ignored).
+const solidBackgrounds = (css) => [...css.matchAll(/background(?:-color)?:\s*(#[0-9A-Fa-f]{3,6})\b/g)].map((m) => expandHex(m[1]));
+
+// 1. Every dark page (blog + static) is scanned per-surface: each inline text
+//    colour must clear AA on the LIGHTEST *content* surface it can sit on. Only
+//    the real content-container tones count as backgrounds — decorative fills
+//    (status dots, accent badges, gradient stops) are not text surfaces and
+//    would otherwise false-fail every label near them. A page that declares a
+//    light surface (the white résumé-card mocks) is skipped here and left to the
+//    denylist, since its dark text is meant for that white card, not a dark one.
+const CONTENT_SURFACES = ["#06080F", "#080D18", "#0D1117", "#0D1424", "#132036"];
+const isLight = (hex) => luminance(hex) > 0.5;
+for (const file of walkHtml("public")) {
+  const css = styleBlocks(readFileSync(join(ROOT, file), "utf8"));
+  if (!css) continue;
+  const bgs = solidBackgrounds(css);
+  if (bgs.some(isLight)) continue; // mixed light/dark page → denylist only
+  const surfaces = bgs.map((b) => b.toUpperCase()).filter((b) => CONTENT_SURFACES.includes(b));
+  const lightestBg = surfaces.length ? surfaces.reduce((a, b) => (luminance(b) > luminance(a) ? b : a)) : "#0D1117";
+  for (const fg of new Set(textColors(css))) {
+    const r = ratio(fg, lightestBg);
+    checked.push({ pair: `${file} color ${fg}`, r });
+    if (r < AA_NORMAL) failures.push(`${file}: text ${fg} on ${lightestBg}: ${r.toFixed(2)}:1 — needs ${AA_NORMAL}:1`);
+  }
+}
+
+// 2. Site-wide denylist backstop: the muted greys that measured below AA as text
+//    must never reappear as a `color:` value on ANY page — including the mixed
+//    light/dark pages that step 1 skips.
+const DENY_TEXT = ["#64748B", "#475569", "#334155", "#7186A6", "#2D4060"];
+for (const file of walkHtml("public")) {
+  const css = styleBlocks(readFileSync(join(ROOT, file), "utf8"));
+  const used = new Set(textColors(css).map((h) => h.toUpperCase()));
+  for (const bad of DENY_TEXT) {
+    if (used.has(bad)) failures.push(`${file}: reintroduces sub-AA text colour ${bad} (use --color-text-muted #8B9EB8)`);
+  }
+}
+
 if (failures.length) {
   console.error("✗ contrast guard: WCAG AA failures\n");
   for (const f of failures) console.error(`  - ${f}`);

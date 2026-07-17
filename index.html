@@ -163,18 +163,10 @@
     }
     </script>
 
-    <!-- Fonts (loaded without blocking render to improve LCP) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
-    </noscript>
+    <!-- Self-hosted brand fonts (@font-face in /_seo.css). No CDN, no render
+         blocking. Preload the Latin file used on every page; the Arabic file is
+         preloaded only on RTL routes (see onBeforePageRender in vite.config.js). -->
+    <link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
 
     <style>
       /* Design tokens — mirror of src/theme/colors.js (see public/_seo.css for

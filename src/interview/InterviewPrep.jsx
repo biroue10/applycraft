@@ -362,11 +362,11 @@ function SetupScreen({ c, card, jobOffer, setJobOffer, jobOfferError, level, set
           rows={8}
           style={{ ...inputBase, resize: "vertical", minHeight: 160 }}
         />
-        <div style={{ fontSize: 12, color: jobOfferError === "long" ? "#F87171" : C.text3, marginTop: 6 }}>
+        <div style={{ fontSize: 12, color: jobOfferError === "long" ? C.danger : C.text3, marginTop: 6 }}>
           {fmt(c.setup.jobOfferHint, { count: jobOffer.length, max: INTERVIEW_LIMITS.maxJobOfferChars })}
         </div>
         {jobOfferError === "long" ? (
-          <div role="alert" style={{ fontSize: 12.5, color: "#F87171", marginTop: 6 }}>
+          <div role="alert" style={{ fontSize: 12.5, color: C.danger, marginTop: 6 }}>
             {fmt(c.validation.jobOfferTooLong, { max: INTERVIEW_LIMITS.maxJobOfferChars })}
           </div>
         ) : null}

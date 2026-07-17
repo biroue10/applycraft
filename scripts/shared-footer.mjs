@@ -31,6 +31,7 @@ export function footerHtml(lang = "en") {
     <div class="footer-top">
       <div class="footer-brand">
         <a href="${homeHref}" class="footer-logo" aria-label="${f.brandHome || "ApplyCraft home"}"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="lazy" decoding="async"></a>
+        ${f.tagline ? `<p class="footer-tagline">${footerText(f.tagline)}</p>` : ""}
         <p>${footerText(f.brand)}</p>
         <a href="mailto:hello@applycraft.io">hello@applycraft.io</a>
       </div>

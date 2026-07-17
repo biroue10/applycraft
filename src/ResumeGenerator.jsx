@@ -2318,11 +2318,11 @@ function ResumeMiniRole({ title, company, bullets }) {
 }
 
 const DEMO_TEMPLATES = [
-  { id: "modern", name: "Atlas", accent: "#6366F1", side: "#f8f8fd", layout: "split", font: "'Inter', system-ui, sans-serif" },
-  { id: "pulse", name: "Pulse", accent: "#2563EB", side: "#eff6ff", layout: "bar", font: "'Inter', system-ui, sans-serif" },
-  { id: "minimal", name: "Nova", accent: "#7C3AED", side: "#f5f3ff", layout: "minimal", font: "'Inter', system-ui, sans-serif" },
-  { id: "sharp", name: "Slate", accent: "#334155", side: "#f8fafc", layout: "rule", font: "'Inter', system-ui, sans-serif" },
-  { id: "bold", name: "Ember", accent: "#DC2626", side: "#fef2f2", layout: "band", font: "'Plus Jakarta Sans', 'Inter', sans-serif" },
+  { id: "modern", name: "Atlas", accent: "#6366F1", side: "#f8f8fd", layout: "split", font: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif" },
+  { id: "pulse", name: "Pulse", accent: "#2563EB", side: "#eff6ff", layout: "bar", font: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif" },
+  { id: "minimal", name: "Nova", accent: "#7C3AED", side: "#f5f3ff", layout: "minimal", font: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif" },
+  { id: "sharp", name: "Slate", accent: "#334155", side: "#f8fafc", layout: "rule", font: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif" },
+  { id: "bold", name: "Ember", accent: "#DC2626", side: "#fef2f2", layout: "band", font: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif" },
 ];
 
 const DEMO_COLORS = [
@@ -8041,7 +8041,7 @@ Awards: ${form.awards}`;
               placeholder={ats.pasteResumePh}
               style={{ width: "100%", height: 240, resize: "vertical", background: C.elevated,
                 border: `1.5px solid ${C.border}`, borderRadius: 10, color: C.text1,
-                fontFamily: "'Inter', system-ui, sans-serif", fontSize: 13, lineHeight: 1.6,
+                fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", fontSize: 13, lineHeight: 1.6,
                 padding: "12px 14px", outline: "none", fontWeight: 400 }} />
           </div>
           <div>
@@ -8051,7 +8051,7 @@ Awards: ${form.awards}`;
               placeholder={ats.pasteJdPh}
               style={{ width: "100%", height: 240, resize: "vertical", background: C.elevated,
                 border: `1.5px solid ${C.border}`, borderRadius: 10, color: C.text1,
-                fontFamily: "'Inter', system-ui, sans-serif", fontSize: 13, lineHeight: 1.6,
+                fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", fontSize: 13, lineHeight: 1.6,
                 padding: "12px 14px", outline: "none", fontWeight: 400 }} />
           </div>
         </div>
@@ -8314,7 +8314,7 @@ Awards: ${form.awards}`;
     { id: "applied",    label: tk.colApplied,   icon: "📤", color: "#3B82F6" },
     { id: "interview",  label: tk.colInterview, icon: "🎤", color: "#F59E0B" },
     { id: "offer",      label: tk.colOffer,     icon: "🎉", color: "#10B981" },
-    { id: "rejected",   label: tk.colRejected,  icon: "✕",  color: "#EF4444" },
+    { id: "rejected",   label: tk.colRejected,  icon: "✕",  color: C.danger },
   ];
 
   const newCard = (col) => ({
@@ -8630,7 +8630,7 @@ Awards: ${form.awards}`;
                     </div>
                     {!isNew && (
                       <button onClick={() => deleteCard(editCard.id)}
-                        style={{ background: "transparent", color: "#EF4444", border: "1px solid #EF444430",
+                        style={{ background: "transparent", color: C.danger, border: `1px solid ${C.danger}30`,
                           borderRadius: 8, padding: "10px 16px", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
                         {tk.delete}
                       </button>
@@ -8903,7 +8903,7 @@ Awards: ${form.awards}`;
                     <div style={{fontSize:13.5, fontWeight:700, color:C.text1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis"}}>{job.title||masterText("untitledRole")}{job.company ? ` · ${job.company}` : ""}</div>
                     {(job.startDate||job.endDate||job.current||job.isCurrent) && <div style={{fontSize:11.5, color:C.text3, marginTop:1}}>{masterJobDateRange(job)}</div>}
                   </div>
-                  <button onClick={e => { e.stopPropagation(); delJob(job.id); }} style={{background:"none", border:"none", color:"#EF4444", cursor:"pointer", fontSize:13, padding:"4px 6px", borderRadius:6, fontFamily:"inherit", opacity:0.7}}>✕</button>
+                  <button onClick={e => { e.stopPropagation(); delJob(job.id); }} style={{background:"none", border:"none", color:C.danger, cursor:"pointer", fontSize:13, padding:"4px 6px", borderRadius:6, fontFamily:"inherit", opacity:0.7}}>✕</button>
                 </div>
                 {masterOpen[job.id] && (
                   <div style={{padding:"0 14px 16px", borderTop:`1px solid ${C.border}`}}>
@@ -8951,7 +8951,7 @@ Awards: ${form.awards}`;
                     <div style={{fontSize:13.5, fontWeight:700, color:C.text1, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis"}}>{edu.degree||masterText("degree")}{edu.field ? ` in ${edu.field}` : ""}{edu.school ? ` · ${edu.school}` : ""}</div>
                     {edu.endDate && <div style={{fontSize:11.5, color:C.text3, marginTop:1}}>{edu.endDate}</div>}
                   </div>
-                  <button onClick={e => { e.stopPropagation(); delEdu(edu.id); }} style={{background:"none", border:"none", color:"#EF4444", cursor:"pointer", fontSize:13, padding:"4px 6px", borderRadius:6, fontFamily:"inherit", opacity:0.7}}>✕</button>
+                  <button onClick={e => { e.stopPropagation(); delEdu(edu.id); }} style={{background:"none", border:"none", color:C.danger, cursor:"pointer", fontSize:13, padding:"4px 6px", borderRadius:6, fontFamily:"inherit", opacity:0.7}}>✕</button>
                 </div>
                 {masterOpen[edu.id] && (
                   <div style={{padding:"0 14px 16px", borderTop:`1px solid ${C.border}`}}>
@@ -9013,7 +9013,7 @@ Awards: ${form.awards}`;
                     <div><label style={lb}>{masterText("dateLabel")}</label><input value={c.date||""} onChange={e => upCert(c.id, {date:e.target.value})} placeholder="March 2024" style={mi} /></div>
                     <div><label style={lb}>{masterText("urlOptional")}</label><input value={c.url||""} onChange={e => upCert(c.id, {url:e.target.value})} placeholder={masterText("credentialLinkPh")} style={mi} /></div>
                   </div>
-                  <button onClick={() => delCert(c.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
+                  <button onClick={() => delCert(c.id)} style={{fontSize:12, color:C.danger, background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
                 </div>
               ))}
             </div>
@@ -9033,7 +9033,7 @@ Awards: ${form.awards}`;
                   </div>
                   <div style={{marginBottom:10}}><label style={lb}>{masterText("descriptionLabel")}</label><textarea value={p.description||""} onChange={e => upProject(p.id, {description:e.target.value})} placeholder={masterText("descImpactPh")} rows={2} style={{...mi, resize:"none", lineHeight:1.6}} /></div>
                   <div style={{marginBottom:8}}><label style={lb}>{masterText("urlOptional")}</label><input value={p.url||""} onChange={e => upProject(p.id, {url:e.target.value})} placeholder="github.com/..." style={mi} /></div>
-                  <button onClick={() => delProject(p.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
+                  <button onClick={() => delProject(p.id)} style={{fontSize:12, color:C.danger, background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
                 </div>
               ))}
             </div>
@@ -9056,7 +9056,7 @@ Awards: ${form.awards}`;
                       </select>
                     </div>
                   </div>
-                  <button onClick={() => delLang(l.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
+                  <button onClick={() => delLang(l.id)} style={{fontSize:12, color:C.danger, background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
                 </div>
               ))}
             </div>
@@ -9075,7 +9075,7 @@ Awards: ${form.awards}`;
                     <div><label style={lb}>{masterText("dateOptional")}</label><input value={a.date||""} onChange={e => upAch(a.id, {date:e.target.value})} placeholder="2023" style={mi} /></div>
                   </div>
                   <div style={{marginBottom:8}}><label style={lb}>{masterText("descriptionOptional")}</label><textarea value={a.description||""} onChange={e => upAch(a.id, {description:e.target.value})} placeholder={masterText("briefDescPh")} rows={2} style={{...mi, resize:"none", lineHeight:1.6}} /></div>
-                  <button onClick={() => delAch(a.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
+                  <button onClick={() => delAch(a.id)} style={{fontSize:12, color:C.danger, background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
                 </div>
               ))}
             </div>
@@ -9096,7 +9096,7 @@ Awards: ${form.awards}`;
                     <div><label style={lb}>{masterText("endDate")}</label><input value={v.endDate||""} onChange={e => upVol(v.id, {endDate:e.target.value})} placeholder={presentLabel(docLang)} style={mi} /></div>
                   </div>
                   <div style={{marginBottom:8}}><label style={lb}>{masterText("descriptionLabel")}</label><textarea value={v.description||""} onChange={e => upVol(v.id, {description:e.target.value})} placeholder={masterText("volDescImpactPh")} rows={2} style={{...mi, resize:"none", lineHeight:1.6}} /></div>
-                  <button onClick={() => delVol(v.id)} style={{fontSize:12, color:"#EF4444", background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
+                  <button onClick={() => delVol(v.id)} style={{fontSize:12, color:C.danger, background:"none", border:"none", cursor:"pointer", fontFamily:"inherit"}}>{masterText("remove")}</button>
                 </div>
               ))}
             </div>
@@ -9136,7 +9136,7 @@ Awards: ${form.awards}`;
       else { setNavPage(page); setAppView("app"); }
     };
     return (
-      <div style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif", overflowX: "hidden" }}>
+      <div style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", overflowX: "hidden" }}>
         <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
         {/* Nav */}
         <SharedSiteHeader
@@ -11233,9 +11233,7 @@ const C = {
   gradHov:  "linear-gradient(135deg,#5254CC 0%,#2563EB 100%)",
   glow:     "rgba(99,102,241,0.14)",  // indigo glow
   glowBlue: "rgba(59,130,246,0.10)", // blue glow
-  success:  "#4ADE80",
-  warning:  "#FBBF24",
-  danger:   "#F87171",
+  // success / warning / danger now come from ...COLORS (single source of truth).
   radiusSm: 6,
   radiusMd: 10,
   radiusLg: 14,
@@ -11288,7 +11286,7 @@ const page = {
                radial-gradient(ellipse 55% 45% at 85% 100%, ${C.glowBlue} 0%, transparent 60%),
                ${C.bg}`,
   padding: "16px 8px",
-  fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+  fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif",
   color: C.text1,
 };
 // Pre-baked mobile/desktop variants so the component doesn't spread+override on every render.
@@ -11307,13 +11305,13 @@ const rShellMobile  = { ...shell, padding: "16px 12px" };
 const h1 = {
   fontSize: "clamp(24px, 3vw, 30px)", fontWeight: 800, margin: "0 0 6px",
   color: C.text1, letterSpacing: "-0.6px",
-  fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
+  fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif",
   background: `linear-gradient(135deg, ${C.text1} 40%, ${C.accent2} 100%)`,
   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
 };
 const subtitle = {
   color: C.text2, fontSize: 15, margin: "0 0 24px", lineHeight: 1.65,
-  fontFamily: "'Inter', sans-serif", fontWeight: 400,
+  fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', sans-serif", fontWeight: 400,
 };
 const tplGrid = { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 28 };
 const tplCard = {

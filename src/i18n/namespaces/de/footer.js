@@ -1,5 +1,6 @@
 const footer = {
   "brand": "Kostenloser Lebenslauf- und Anschreiben-Generator für den globalen Arbeitsmarkt. Schreibe in jeder Sprache, mit vollständiger Unterstützung für Englisch, Französisch und Arabisch, {tpl} Vorlagen, ohne Anmeldung.",
+  "tagline": "Französisch, Englisch, Arabisch. Ohne Kompromisse.",
   "product": "Produkt",
   "company": "Unternehmen",
   "resources": "Ressourcen",

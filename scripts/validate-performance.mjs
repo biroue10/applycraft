@@ -43,6 +43,13 @@ const MAX_INITIAL_CHUNK_GZ = 192_000;   // current app shell baseline
 // localized "Interview secured" CTA (tracker namespace, en/fr/ar) plus the
 // write side of src/interview/context.js, which the tracker pulls into the
 // initial chunk. The read side lives in the lazy interview route instead.
+// Bumped +1 KB for the IBM Plex Sans + IBM Plex Sans Arabic rebrand: the
+// self-hosted family names ("'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui,
+// sans-serif") are ~30 chars longer than the old "'Inter', …" and appear on all
+// ~58 template registry entries plus the app-shell font-family, which lands in
+// the initial chunk. Measured delta of the whole brand pass was +214 B gz over
+// the previous 263,850 B. The woff2 files themselves are NOT counted here (this
+// guard measures JS only) and are self-hosted + preloaded, no CDN.
 // TODO(perf): code-split the non-English dictionaries (load fr/ar on language
 // switch) and lower this back toward 200 KB. Note this is NOT a small change:
 // dictionaries are read synchronously (src/ResumeGenerator.jsx:3668-3683) and
@@ -51,7 +58,7 @@ const MAX_INITIAL_CHUNK_GZ = 192_000;   // current app shell baseline
 // a dynamic import alone cannot supply it without a blocking round-trip or a
 // hydration mismatch. The lazyLanding2 pattern in that file is not a precedent:
 // it only covers es/de, which are never prerendered as interface locales.
-const MAX_INITIAL_TOTAL_GZ = 264_000;   // current multilingual app shell baseline
+const MAX_INITIAL_TOTAL_GZ = 265_000;   // current multilingual app shell baseline
 
 // Max raw (uncompressed) size of any image served from /public, in bytes.
 const MAX_IMAGE_SIZE = 250_000;         // 250 KB

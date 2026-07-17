@@ -32,9 +32,7 @@
 <link rel="icon" href="/favicon-16x16.png?v=2" type="image/png" sizes="16x16"/>
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2"/>
 <link rel="manifest" href="/site.webmanifest?v=2"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin/>
 <link rel="stylesheet" href="../_seo.css"/>
 
 <script type="application/ld+json">
@@ -110,26 +108,26 @@
     -webkit-background-clip:text;-webkit-text-fill-color:transparent}
   .ats-hero p{font-size:17px;color:#94A3B8;max-width:560px;margin:0 auto;line-height:1.8}
   .trust-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:20px}
-  .trust-row span{font-size:12px;color:#475569}
+  .trust-row span{font-size:12px;color:#8B9EB8}
   .input-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
   @media(max-width:680px){.input-grid{grid-template-columns:1fr}}
   .input-box{display:flex;flex-direction:column;gap:8px}
   .input-label{font-size:12px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px}
-  .input-label span{font-weight:400;color:#475569;margin-right:6px;text-transform:none;letter-spacing:0}
+  .input-label span{font-weight:400;color:#8B9EB8;margin-right:6px;text-transform:none;letter-spacing:0}
   .input-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
   .import-btn{display:inline-flex;align-items:center;gap:6px;background:#6366F114;border:1px solid #6366F140;border-radius:7px;
-    padding:6px 10px;color:#A5B4FC;font-family:'Inter',system-ui,sans-serif;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+    padding:6px 10px;color:#A5B4FC;font-family:'IBM Plex Sans','IBM Plex Sans Arabic',system-ui,sans-serif;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
   .import-btn:disabled{opacity:.65;cursor:wait}
   #import-status{display:none;margin:0;font-size:12.5px;line-height:1.5;color:#94A3B8}
   #import-status[data-kind="success"]{color:#4ade80}
   #import-status[data-kind="error"]{color:#f87171}
   textarea{width:100%;background:#0D1117;border:1.5px solid #1A2740;border-radius:10px;
-    color:#E4EBF5;font-family:'Inter',system-ui,sans-serif;font-size:13.5px;
+    color:#E4EBF5;font-family:'IBM Plex Sans','IBM Plex Sans Arabic',system-ui,sans-serif;font-size:13.5px;
     line-height:1.7;padding:14px 16px;resize:vertical;outline:none;transition:border-color .2s}
   textarea:focus{border-color:#6366F1;box-shadow:0 0 0 3px #6366F120}
   textarea::placeholder{color:var(--color-text-muted);opacity:1}
   .check-btn{width:100%;padding:16px;background:linear-gradient(135deg,#6366F1,#3B82F6);
-    border:none;border-radius:10px;color:#fff;font-family:'Inter',system-ui,sans-serif;
+    border:none;border-radius:10px;color:#fff;font-family:'IBM Plex Sans','IBM Plex Sans Arabic',system-ui,sans-serif;
     font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s}
   .check-btn:hover{opacity:.88}
   .check-btn:disabled{opacity:.5;cursor:not-allowed}
@@ -140,21 +138,21 @@
   .gauge-svg{display:block;margin:0 auto 12px}
   .score-number{font-size:56px;font-weight:800;line-height:1}
   .score-label{font-size:14px;font-weight:600;margin-top:6px}
-  .score-sub{font-size:12.5px;color:#475569;margin-top:8px;max-width:440px;margin-left:auto;margin-right:auto;line-height:1.7}
+  .score-sub{font-size:12.5px;color:#8B9EB8;margin-top:8px;max-width:440px;margin-left:auto;margin-right:auto;line-height:1.7}
   .summary-pills{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px}
   .pill{padding:6px 16px;border-radius:999px;font-size:12px;font-weight:700;border:1.5px solid;white-space:nowrap}
   .pill-red{background:#450a0a44;color:#f87171;border-color:#7f1d1d44}
   .pill-amber{background:#431407aa;color:#fbbf24;border-color:#92400e44}
   .pill-blue{background:#1e3a5f44;color:#60a5fa;border-color:#1d4ed844}
   .section-head{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;
-    color:#6366F1;margin:36px 0 14px}
+    color:#818CF8;margin:36px 0 14px}
   .issue-card{background:#0D1117;border:1px solid #1A2740;border-radius:10px;
     padding:14px 16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start}
   .issue-icon{font-size:18px;flex-shrink:0;margin-top:1px}
   .issue-body{flex:1;min-width:0}
   .issue-title{font-size:13.5px;font-weight:700;color:#E4EBF5;margin-bottom:4px;
     display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .issue-detail{font-size:12.5px;color:#64748B;line-height:1.7}
+  .issue-detail{font-size:12.5px;color:#8B9EB8;line-height:1.7}
   .badge{display:inline-flex;align-items:center;font-size:10px;font-weight:800;padding:2px 8px;
     border-radius:999px;white-space:nowrap}
   .badge-critical{background:#450a0a55;color:#f87171;border:1px solid #7f1d1d44}
@@ -175,17 +173,17 @@
   .fix-cta h3{font-size:20px;font-weight:800;color:#EEF2FF;margin:0 0 10px}
   .fix-cta p{font-size:14px;color:#94A3B8;margin:0 0 20px;line-height:1.7}
   .fix-btn{display:inline-block;padding:13px 32px;background:linear-gradient(135deg,#6366F1,#3B82F6);
-    border:none;border-radius:8px;color:#fff;font-family:'Inter',system-ui,sans-serif;
+    border:none;border-radius:8px;color:#fff;font-family:'IBM Plex Sans','IBM Plex Sans Arabic',system-ui,sans-serif;
     font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity .2s}
   .fix-btn:hover{opacity:.88;text-decoration:none}
   .how-section{margin-top:80px;padding-top:60px;border-top:1px solid #1A2740}
   .how-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;margin-top:32px}
   .how-card{background:#0D1117;border:1px solid #1A2740;border-radius:12px;padding:20px}
-  .how-num{font-size:12px;font-weight:800;color:#6366F1;margin-bottom:10px;
+  .how-num{font-size:12px;font-weight:800;color:#818CF8;margin-bottom:10px;
     background:#6366F114;border:1px solid #6366F128;border-radius:999px;
     display:inline-block;padding:2px 10px}
   .how-card h3{font-size:15px;font-weight:700;color:#E4EBF5;margin:0 0 8px}
-  .how-card p{font-size:13px;color:#64748B;margin:0;line-height:1.7}
+  .how-card p{font-size:13px;color:#8B9EB8;margin:0;line-height:1.7}
   .faq-section{margin-top:60px;padding-top:48px;border-top:1px solid #1A2740}
   .faq-section h2{font-size:24px;font-weight:800;color:#EEF2FF;margin:0 0 24px}
   .all-clear{background:#14532d22;border:1px solid #16a34a44;border-radius:12px;
@@ -194,7 +192,7 @@
     font-size:14.5px;font-weight:600;color:#CBD5E1;list-style:none}
   details summary::-webkit-details-marker{display:none}
   details[open] summary{color:#E4EBF5}
-  details p{font-size:14px;color:#64748B;line-height:1.8;padding:14px 0;border-bottom:1px solid #1A274044}
+  details p{font-size:14px;color:#8B9EB8;line-height:1.8;padding:14px 0;border-bottom:1px solid #1A274044}
 </style>
 </head>
 <body>
@@ -207,7 +205,7 @@
 <div class="tool-wrap">
 
   <div class="ats-hero">
-    <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#6366F1;margin:0 0 16px">فاحص ATS مجاني للسيرة الذاتية</p>
+    <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#818CF8;margin:0 0 16px">فاحص ATS مجاني للسيرة الذاتية</p>
     <h1>اعرف بالضبط كيف تُصنَّف سيرتك الذاتية<br>— وكيف تُحسِّنها</h1>
     <p>الصق سيرتك الذاتية أدناه. احصل على درجة ATS فورية، وتحليل للكلمات المفتاحية مقارنةً بأي وصف وظيفي، وقائمة إصلاحات مرتبة حسب الأولوية. يعمل بالكامل في متصفحك — لا يُرسَل أي شيء أبداً.</p>
     <div class="trust-row">
@@ -264,7 +262,7 @@ Python, React, AWS, Terraform, PostgreSQL
         <path id="gauge-arc" d="M20 90 A70 70 0 0 1 160 90" fill="none" stroke="#6366F1" stroke-width="12"
           stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220" style="transition:stroke-dashoffset 1s cubic-bezier(0.22,1,0.36,1),stroke .4s"/>
       </svg>
-      <div class="score-number" id="score-num" style="color:#6366F1">—</div>
+      <div class="score-number" id="score-num" style="color:#818CF8">—</div>
       <div class="score-label" id="score-label" style="color:#94A3B8">جارٍ التحليل…</div>
       <div class="score-sub">درجة توافق ATS — تعكس البنية والاكتمال وجودة المحتوى. ليست ضماناً لاجتياز أي نظام ATS بعينه، إذ تختلف المعايير من نظام إلى آخر.</div>
       <div class="summary-pills" id="summary-pills"></div>
@@ -276,17 +274,17 @@ Python, React, AWS, Terraform, PostgreSQL
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
           <div>
             <div style="font-size:22px;font-weight:800;color:#E4EBF5" id="kw-pct">—%</div>
-            <div style="font-size:12px;color:#64748B;margin-top:2px">تطابق مع وصف الوظيفة</div>
+            <div style="font-size:12px;color:#8B9EB8;margin-top:2px">تطابق مع وصف الوظيفة</div>
           </div>
-          <div style="font-size:12px;color:#64748B;text-align:left">
+          <div style="font-size:12px;color:#8B9EB8;text-align:left">
             <span id="kw-present-count">0</span> كلمة مفتاحية مطابقة · <span id="kw-missing-count">0</span> غائبة
           </div>
         </div>
         <div class="kw-meter"><div class="kw-fill" id="kw-fill" style="width:0%"></div></div>
         <div id="kw-present-tags" class="kw-tags"></div>
-        <div style="margin-top:16px;font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:1px">الكلمات المفتاحية الغائبة</div>
+        <div style="margin-top:16px;font-size:12px;font-weight:700;color:#8B9EB8;text-transform:uppercase;letter-spacing:1px">الكلمات المفتاحية الغائبة</div>
         <div id="kw-missing-tags" class="kw-tags" style="margin-top:8px"></div>
-        <p style="font-size:12px;color:#475569;margin:14px 0 0;line-height:1.7">
+        <p style="font-size:12px;color:#8B9EB8;margin:14px 0 0;line-height:1.7">
           أضف الكلمات المفتاحية الغائبة بشكل طبيعي في أقسام الخبرة والمهارات. لا تختلق خبرات للوصول إلى كلمات مفتاحية — كيّف سيرتك الذاتية بصدق.
         </p>
       </div>
@@ -306,9 +304,9 @@ Python, React, AWS, Terraform, PostgreSQL
   </div>
 
   <div class="how-section">
-    <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#6366F1;margin:0 0 12px">كيف يعمل</p>
+    <p style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:#818CF8;margin:0 0 12px">كيف يعمل</p>
     <h2 style="font-size:28px;font-weight:800;color:#EEF2FF;margin:0 0 6px">ما الذي يقيسه هذا الفاحص فعلاً</h2>
-    <p style="font-size:15px;color:#64748B;margin:0">خمس فئات تحدد أداء سيرتك الذاتية أمام برامج التوظيف الآلية.</p>
+    <p style="font-size:15px;color:#8B9EB8;margin:0">خمس فئات تحدد أداء سيرتك الذاتية أمام برامج التوظيف الآلية.</p>
     <div class="how-grid">
       <div class="how-card">
         <div class="how-num">التواصل</div>
@@ -373,6 +371,7 @@ Python, React, AWS, Terraform, PostgreSQL
     <div class="footer-top">
       <div class="footer-brand">
         <a href="/ar/" class="footer-logo" aria-label="الصفحة الرئيسية لـ ApplyCraft"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="lazy" decoding="async"></a>
+        <p class="footer-tagline">العربية، الفرنسية، الإنجليزية. دون تنازلات.</p>
         <p>ApplyCraft.io — منشئ مجاني للسير وخطابات التقديم بالعربية والفرنسية والإنجليزية. 60 قالباً، PDF/DOCX، دون علامة مائية أو تسجيل</p>
         <a href="mailto:hello@applycraft.io">hello@applycraft.io</a>
       </div>

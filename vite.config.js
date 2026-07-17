@@ -265,6 +265,9 @@ export default defineConfig({
       // user-shared viewer. Build-time only — no client JS.
       const meta = ROUTE_META[path] || {};
       const tags = [`<link rel="canonical" href="${canonicalFor(path)}" />`];
+      // Preload the Arabic woff2 only on RTL routes — English/French pages never
+      // render Arabic body text, so preloading it there would waste a request.
+      if (dir === "rtl") tags.push(`<link rel="preload" href="/fonts/ibm-plex-sans-arabic-400.woff2" as="font" type="font/woff2" crossorigin />`);
       if (path === "/r" || path.startsWith("/r/")) tags.push(`<meta name="robots" content="noindex,follow" />`);
       for (const a of hreflangFor(path)) {
         tags.push(`<link rel="alternate" hreflang="${a.hreflang}" href="${a.href}" />`);

@@ -1,7 +1,7 @@
 const landing = {
   "createResume": "Create my resume",
   "checkResume": "Check my existing resume",
-  "heroEyebrow": "Resume builder + cover letter maker",
+  "heroEyebrow": "French, English, Arabic. No compromises.",
   "heroH1": "The resume builder that speaks your language — English, French and Arabic.",
   "heroSub": "Build an ATS-friendly resume and matching cover letter in English, French or Arabic — with real right-to-left Arabic, not an afterthought. Free forever: no signup, no watermark, no paying to download. PDF and DOCX included.",
   "trustBrowser": "Browser-first editing",
