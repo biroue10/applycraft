@@ -17,11 +17,10 @@ export const PAYMENTS_ENABLED = env.VITE_PAYMENTS_ENABLED === "true";
 
 export const ANALYTICS = {
   enabled: env.VITE_ANALYTICS_ENABLED === "true",
-  // Plausible site domain, e.g. "applycraft.io".
-  domain: env.VITE_PLAUSIBLE_DOMAIN || "",
-  // Script + event endpoint. Override these to self-host or proxy Plausible
-  // (recommended for ad-block resilience). See _headers for the matching CSP.
-  src: env.VITE_PLAUSIBLE_SRC || "https://plausible.io/js/script.js",
+  // Google Analytics 4 measurement ID, e.g. "G-XXXXXXXXXX".
+  measurementId: env.VITE_GA_MEASUREMENT_ID || "",
+  // gtag.js loader origin. See public/_headers for the matching CSP entries.
+  src: env.VITE_GA_SRC || "https://www.googletagmanager.com/gtag/js",
 };
 
 // The single paid product: a one-time, NON-recurring pass that unlocks AI

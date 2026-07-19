@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Politique de confidentialité | ApplyCraft</title>
-<meta name="description" content="Comment ApplyCraft traite vos données : l'éditeur principal et l'export PDF/DOCX s'exécutent dans votre navigateur, avec synchronisation de compte, analyse sans cookie, assistants IA et paiements facultatifs, tout expliqué."/>
+<meta name="description" content="Comment ApplyCraft traite vos données : l'éditeur principal et l'export PDF/DOCX s'exécutent dans votre navigateur, avec synchronisation de compte, mesure d'audience Google Analytics, assistants IA et paiements facultatifs, tout expliqué."/>
 <link rel="canonical" href="https://applycraft.io/fr/privacy/"/>
 <meta property="og:title" content="Politique de confidentialité | ApplyCraft"/>
 <meta property="og:description" content="Comment ApplyCraft traite vos données, expliqué honnêtement."/>
@@ -43,6 +43,14 @@
   .prose .legal-nav a{font-size:12.5px;color:#94A3B8;text-decoration:none;border:1px solid #1A2740;border-radius:999px;padding:5px 12px}
   .prose .legal-nav a[aria-current="page"]{color:#818CF8;border-color:#6366F155;background:#6366F112}
 </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V4RE1M2Q52"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V4RE1M2Q52');
+</script>
 </head>
 <body>
 <nav class="nav">
@@ -65,7 +73,7 @@
 </nav>
 <p class="lead">ApplyCraft est conçu pour traiter le moins de données possible. L'éditeur principal et l'export s'exécutent dans votre navigateur, et plusieurs fonctions sont strictement facultatives. Cette page explique, avec exactitude, ce qui est traité dans chaque cas.</p>
 
-<div class="callout"><p>⚡ <strong style="color:#E4EBF5">En bref :</strong> votre CV est édité dans votre navigateur et n'est pas stocké sur nos serveurs par défaut. Nous utilisons une analyse sans cookie et des cookies de sécurité nécessaires (pas de suivi publicitaire). Les fonctions facultatives — compte avec synchronisation cloud, assistants IA et pass payant — n'impliquent un tiers que si vous choisissez de les utiliser.</p></div>
+<div class="callout"><p>⚡ <strong style="color:#E4EBF5">En bref :</strong> votre CV est édité dans votre navigateur et n'est pas stocké sur nos serveurs par défaut. Nous utilisons Google Analytics (qui dépose des cookies) et des cookies de sécurité nécessaires, mais aucun suivi publicitaire. Les fonctions facultatives — compte avec synchronisation cloud, assistants IA et pass payant — n'impliquent un tiers que si vous choisissez de les utiliser.</p></div>
 
 <h2>1. Qui nous sommes</h2>
 <p>ApplyCraft est un produit indépendant conçu et exploité par Biroue Digital Ltd, responsable du traitement, joignable à <a href="mailto:hello@applycraft.io">hello@applycraft.io</a>. Le site est à <strong>applycraft.io</strong>.</p>
@@ -86,7 +94,7 @@
 <p>Notre hébergeur et CDN (Cloudflare) enregistre des journaux d'accès standard — adresse IP, type de navigateur, URL demandée et horodatage — pour la sécurité et la prévention des abus. Nous ne les utilisons pas à des fins publicitaires ni pour établir un profil de vous.</p>
 
 <h2>3. Cookies et analyse</h2>
-<p>ApplyCraft ne pose <strong>aucun cookie publicitaire</strong> et n'utilise <strong>aucun suivi inter-sites</strong> (pas de Google Analytics, de Facebook Pixel, de Hotjar, ni de régies publicitaires). L'analyse produit est fournie par <strong>Plausible</strong>, qui est <strong>sans cookie</strong> et n'enregistre que des événements anonymes et agrégés (comme « un CV a été exporté »), sans noms, e-mails ni contenu de document.</p>
+<p>ApplyCraft ne pose <strong>aucun cookie publicitaire</strong> et n'utilise <strong>aucune régie publicitaire</strong> (pas de Facebook Pixel, pas de Hotjar). La mesure d'audience est assurée par <strong>Google Analytics 4</strong>, qui enregistre des événements d'usage agrégés (comme « un CV a été exporté ») sans noms, e-mails ni contenu de document. Google Analytics dépose des cookies propriétaires (<code>_ga</code>, <code>_ga_&lt;id&gt;</code>) et les données sont traitées par Google. Voir la <a href="https://policies.google.com/privacy" rel="noopener">politique de confidentialité de Google</a>.</p>
 <p>Cloudflare peut poser des cookies de sécurité strictement nécessaires (par exemple <code>__cf_bm</code>) pour la protection contre les bots et les abus. ApplyCraft peut conserver des préférences non sensibles comme les choix de langue dans le stockage du navigateur, mais le contenu des documents n’y est pas enregistré automatiquement. Détails complets dans la <a href="/fr/cookies/">Politique relative aux cookies</a>.</p>
 
 <h2>4. Fonctions IA et vos données</h2>
@@ -118,7 +126,7 @@
   <li><strong>Cloudflare</strong> — hébergement, CDN et sécurité. <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">Politique de confidentialité</a>.</li>
   <li><strong>Anthropic</strong> — modèle d'IA des assistants optionnels. <a href="https://www.anthropic.com/legal/privacy" rel="noopener">Politique de confidentialité</a>.</li>
   <li><strong>Lemon Squeezy</strong> — paiements / vendeur officiel du pass optionnel. <a href="https://www.lemonsqueezy.com/privacy" rel="noopener">Politique de confidentialité</a>.</li>
-  <li><strong>Plausible Analytics</strong> — analyse produit sans cookie. <a href="https://plausible.io/privacy" rel="noopener">Politique de confidentialité</a>.</li>
+  <li><strong>Google Analytics 4</strong> — mesure d'audience produit. Dépose des cookies propriétaires et traite les données d'usage sur l'infrastructure de Google. <a href="https://policies.google.com/privacy" rel="noopener">Politique de confidentialité</a>.</li>
 </ul>
 
 <h2>11. Sécurité</h2>

@@ -4,13 +4,13 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Privacy Policy | ApplyCraft</title>
-<meta name="description" content="How ApplyCraft handles data: browser-first resume editing, optional account sync, cookieless analytics, optional AI helpers, private offline sharing, and payments explained."/>
+<meta name="description" content="How ApplyCraft handles data: browser-first resume editing, optional account sync, Google Analytics, optional AI helpers, private offline sharing, and payments explained."/>
 <link rel="canonical" href="https://applycraft.io/privacy/"/>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="ApplyCraft.io"/>
 <meta property="og:locale" content="en_US"/>
 <meta property="og:title" content="Privacy Policy | ApplyCraft.io"/>
-<meta property="og:description" content="How ApplyCraft handles data: browser-first resume editing, optional account sync, cookieless analytics, optional AI helpers, private offline sharing, and payments explained."/>
+<meta property="og:description" content="How ApplyCraft handles data: browser-first resume editing, optional account sync, Google Analytics, optional AI helpers, private offline sharing, and payments explained."/>
 <meta property="og:url" content="https://applycraft.io/privacy/"/>
 <meta property="og:image" content="https://applycraft.io/og/home.png"/>
 <meta property="og:image:secure_url" content="https://applycraft.io/og/home.png"/>
@@ -20,7 +20,7 @@
 <meta property="og:image:alt" content="ApplyCraft resume builder and cover letter maker preview"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Privacy Policy | ApplyCraft.io"/>
-<meta name="twitter:description" content="How ApplyCraft handles data: browser-first resume editing, optional account sync, cookieless analytics, optional AI helpers, private offline sharing, and payments explained."/>
+<meta name="twitter:description" content="How ApplyCraft handles data: browser-first resume editing, optional account sync, Google Analytics, optional AI helpers, private offline sharing, and payments explained."/>
 <meta name="twitter:image" content="https://applycraft.io/og/home.png"/>
 <meta name="twitter:image:alt" content="ApplyCraft resume builder and cover letter maker preview"/>
 <link rel="icon" href="/favicon.ico?v=2" sizes="any"/>
@@ -67,6 +67,14 @@
   .roadmap-item h3{margin:0 0 6px;font-size:15px;color:#E4EBF5;font-weight:700}
   .roadmap-item p{margin:0;font-size:13px;color:#8B9EB8}
 </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V4RE1M2Q52"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V4RE1M2Q52');
+</script>
 </head>
 <body>
 <nav class="nav">
@@ -107,7 +115,7 @@
 <p>Private offline share links store the document data inside the URL fragment. Anyone with the full link can view the document, so only share it with people you trust. These links do not require server-side document storage, but they can be long.</p>
 
 <h2 id="cookies">3. Cookies and tracking</h2>
-<p>ApplyCraft sets <strong>no advertising cookies</strong> and uses <strong>no cross-site tracking</strong> (no Google Analytics, no Facebook Pixel, no Hotjar, no ad networks). We use privacy-friendly, <strong>cookieless</strong> product analytics (Plausible) that counts anonymous, aggregated usage events (such as "a resume was started or exported"). These events contain no personal data — no names, emails, or resume content.</p>
+<p>ApplyCraft sets <strong>no advertising cookies</strong> and runs <strong>no ad networks</strong> (no Facebook Pixel, no Hotjar). We use <strong>Google Analytics 4</strong> for product analytics, which counts aggregated usage events (such as "a resume was started or exported"). These events contain no resume content, names, or email addresses. Google Analytics does set first-party cookies (<code>_ga</code>, <code>_ga_&lt;id&gt;</code>) to recognise returning visits, and data is processed by Google. See <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</p>
 <p>Cloudflare, our CDN provider, may set a technical cookie (<code>__cf_bm</code>) for bot protection. This is a strictly necessary security cookie that does not track you for advertising purposes.</p>
 
 <h2>4. AI features and your data</h2>
@@ -137,7 +145,7 @@
 <p>Fonts are self-hosted on our own domain — no requests are sent to third-party services (such as Google Fonts) to display them.</p>
 <ul>
   <li><strong>Cloudflare</strong> — CDN and hosting. Subject to Cloudflare's <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">privacy policy</a>.</li>
-  <li><strong>Plausible Analytics</strong> — cookieless, privacy-friendly product analytics. No personal data, no cross-site tracking. Subject to <a href="https://plausible.io/privacy" rel="noopener">Plausible's privacy policy</a>.</li>
+  <li><strong>Google Analytics 4</strong> — product analytics. Sets first-party cookies and processes usage data on Google's infrastructure. Subject to <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</li>
   <li><strong>Lemon Squeezy</strong> — payment processing and merchant of record for the optional paid pass. Subject to <a href="https://www.lemonsqueezy.com/privacy" rel="noopener">Lemon Squeezy's privacy policy</a>.</li>
 </ul>
 

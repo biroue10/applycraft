@@ -1,8 +1,13 @@
 // ──────────────────────────────────────────────────────────────────────────
-// Privacy-respecting analytics (Plausible — cookieless, no consent banner).
+// Product analytics (Google Analytics 4 / gtag.js).
 //
-// Only the six whitelisted events below are ever sent, and payloads are
-// filtered to non-PII scalars. No emails, names, resume text, or IDs.
+// Only the whitelisted events below are ever sent, and payloads are filtered
+// to non-PII scalars. No emails, names, resume text, or IDs.
+//
+// NOTE: unlike the Plausible setup this replaced, GA4 sets first-party
+// cookies (_ga, _ga_<id>) and is not cookieless. The privacy and cookie
+// policies disclose this; consent gating is still outstanding — see
+// docs/SECURITY.md and the policy pages under public/.
 // ──────────────────────────────────────────────────────────────────────────
 
 import { ANALYTICS } from "./config.js";
@@ -49,42 +54,36 @@ const ALLOWED = new Set(Object.values(EVENTS));
 
 let loaded = false;
 
-// Inject the Plausible script once, in the browser only, and only when
-// analytics is enabled and a script src is configured.
+// Inject gtag.js once, in the browser only, and only when analytics is
+// enabled and a measurement ID is configured.
 //
-// Supports the modern Plausible "tagged" snippet (src ".../pa-<id>.js", which
-// encodes the site and needs plausible.init()) as well as the classic
-// script.js (which uses a data-domain attribute). Set VITE_PLAUSIBLE_SRC to
-// the exact src Plausible gives you in the dashboard.
+// The static marketing pages under public/ carry the equivalent inline
+// snippet in their <head>; this guards against double-tagging by bailing out
+// if gtag has already been installed on the page.
 export function initAnalytics() {
   if (loaded || typeof window === "undefined") return;
-  if (!ANALYTICS.enabled || !ANALYTICS.src) return;
+  if (!ANALYTICS.enabled || !ANALYTICS.measurementId) return;
   loaded = true;
 
-  // Stub queue + init shim so events fired before the script finishes loading
-  // are preserved, matching Plausible's official inline snippet.
-  window.plausible =
-    window.plausible ||
-    function () {
-      (window.plausible.q = window.plausible.q || []).push(arguments);
+  // dataLayer + gtag shim, so events fired before the script finishes loading
+  // are queued rather than dropped. Matches Google's official snippet.
+  window.dataLayer = window.dataLayer || [];
+  if (typeof window.gtag !== "function") {
+    window.gtag = function () {
+      window.dataLayer.push(arguments);
     };
-  window.plausible.init =
-    window.plausible.init ||
-    function (i) {
-      window.plausible.o = i || {};
-    };
+  }
 
-  const s = document.createElement("script");
-  s.async = true;
-  s.src = ANALYTICS.src;
-  // Only the classic script.js needs the domain attribute; the tagged script
-  // ignores it. Harmless to set when present.
-  if (ANALYTICS.domain) s.setAttribute("data-domain", ANALYTICS.domain);
-  document.head.appendChild(s);
+  // Only load the remote script if a page-level snippet hasn't already.
+  if (!document.querySelector(`script[src*="googletagmanager.com/gtag/js"]`)) {
+    const s = document.createElement("script");
+    s.async = true;
+    s.src = `${ANALYTICS.src}?id=${encodeURIComponent(ANALYTICS.measurementId)}`;
+    document.head.appendChild(s);
+  }
 
-  // No-op for classic script.js; starts auto pageview tracking for the
-  // tagged script.
-  window.plausible.init();
+  window.gtag("js", new Date());
+  window.gtag("config", ANALYTICS.measurementId);
 }
 
 // Track one whitelisted event. `props` must be non-PII scalars only.
@@ -99,7 +98,7 @@ export function track(name, props = {}) {
   );
 
   try {
-    window.plausible?.(name, Object.keys(safe).length ? { props: safe } : undefined);
+    window.gtag?.("event", name, safe);
   } catch {
     /* analytics must never break the app */
   }

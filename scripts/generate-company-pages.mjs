@@ -95,6 +95,14 @@ ${extraHead}
   .roadmap-item h3{margin:0 0 6px;font-size:15px;color:#E4EBF5;font-weight:700}
   .roadmap-item p{margin:0;font-size:13px;color:#8B9EB8}
 </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-V4RE1M2Q52"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-V4RE1M2Q52');
+</script>
 </head>
 <body>
 <nav class="nav">
@@ -117,7 +125,7 @@ const PAGES = {
   "privacy": {
     path: "/privacy/",
     title: "Privacy Policy",
-    description: "How ApplyCraft handles data: browser-first resume editing, optional account sync, cookieless analytics, optional AI helpers, private offline sharing, and payments explained.",
+    description: "How ApplyCraft handles data: browser-first resume editing, optional account sync, Google Analytics, optional AI helpers, private offline sharing, and payments explained.",
     content: `
 <h1>Privacy Policy</h1>
 <p class="meta">Last updated: ${TODAY} · Effective immediately</p>
@@ -150,7 +158,7 @@ const PAGES = {
 <p>Private offline share links store the document data inside the URL fragment. Anyone with the full link can view the document, so only share it with people you trust. These links do not require server-side document storage, but they can be long.</p>
 
 <h2 id="cookies">3. Cookies and tracking</h2>
-<p>ApplyCraft sets <strong>no advertising cookies</strong> and uses <strong>no cross-site tracking</strong> (no Google Analytics, no Facebook Pixel, no Hotjar, no ad networks). We use privacy-friendly, <strong>cookieless</strong> product analytics (Plausible) that counts anonymous, aggregated usage events (such as "a resume was started or exported"). These events contain no personal data — no names, emails, or resume content.</p>
+<p>ApplyCraft sets <strong>no advertising cookies</strong> and runs <strong>no ad networks</strong> (no Facebook Pixel, no Hotjar). We use <strong>Google Analytics 4</strong> for product analytics, which counts aggregated usage events (such as "a resume was started or exported"). These events contain no resume content, names, or email addresses. Google Analytics does set first-party cookies (<code>_ga</code>, <code>_ga_&lt;id&gt;</code>) to recognise returning visits, and data is processed by Google. See <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</p>
 <p>Cloudflare, our CDN provider, may set a technical cookie (<code>__cf_bm</code>) for bot protection. This is a strictly necessary security cookie that does not track you for advertising purposes.</p>
 
 <h2>4. AI features and your data</h2>
@@ -180,7 +188,7 @@ const PAGES = {
 <p>${FONT_PRIVACY_NOTICE.en}</p>
 <ul>
   <li><strong>Cloudflare</strong> — CDN and hosting. Subject to Cloudflare's <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">privacy policy</a>.</li>
-  <li><strong>Plausible Analytics</strong> — cookieless, privacy-friendly product analytics. No personal data, no cross-site tracking. Subject to <a href="https://plausible.io/privacy" rel="noopener">Plausible's privacy policy</a>.</li>
+  <li><strong>Google Analytics 4</strong> — product analytics. Sets first-party cookies and processes usage data on Google's infrastructure. Subject to <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</li>
   <li><strong>Lemon Squeezy</strong> — payment processing and merchant of record for the optional paid pass. Subject to <a href="https://www.lemonsqueezy.com/privacy" rel="noopener">Lemon Squeezy's privacy policy</a>.</li>
 </ul>
 
