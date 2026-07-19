@@ -222,6 +222,8 @@ ${ogAlternateLocales.map((locale) => `<meta property="og:locale:alternate" conte
     url: canonical,
     publisher: { "@type": "Organization", name: "ApplyCraft.io", alternateName: "ApplyCraft", url: SITE },
   })}</script>
+<!-- Cookie consent + consent-gated Google Analytics (see scripts/generate-consent-asset.mjs) -->
+<script src="/consent.js" defer></script>
 </head>
 <body>
 ${nav(lang, isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl)}

@@ -41,7 +41,7 @@ export function footerHtml(lang = "en") {
     </div>
     <div class="footer-bottom">
       <span>${footerText(f.copyrightPrefix || "© {year} ApplyCraft by Biroue Digital Ltd")
-        .replace("{year}", new Date().getFullYear())} · <a class="footer-legal-link" href="${homeHref}">applycraft.io</a></span>
+        .replace("{year}", new Date().getFullYear())} · <a class="footer-legal-link" href="${homeHref}">applycraft.io</a> · <button type="button" class="footer-legal-link" data-ac-cookie-prefs>${f.cookiePrefs || "Cookie preferences"}</button></span>
       <span>${f.badge1} · ${f.badge2} · ${f.badge3}</span>
     </div>
   </div>

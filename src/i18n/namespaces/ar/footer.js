@@ -40,6 +40,7 @@ const footer = {
   "openMenu": "فتح القائمة",
   "closeMenu": "إغلاق القائمة",
   "footerRegion": "تذييل الصفحة",
+  "cookiePrefs": "تفضيلات ملفات تعريف الارتباط",
   "copyrightPrefix": "© {year} ApplyCraft من Biroue Digital Ltd"
 };
 

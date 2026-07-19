@@ -1,13 +1,13 @@
 // ──────────────────────────────────────────────────────────────────────────
-// Product analytics (Google Analytics 4 / gtag.js).
+// Product analytics (Google Analytics 4).
+//
+// This module only ENQUEUES events. It never loads gtag.js — that is owned
+// by public/consent.js, which loads Google's script only after the visitor
+// accepts in the cookie banner. If consent was refused (or not yet given),
+// gtag.js is absent, no cookies exist, and events are dropped here.
 //
 // Only the whitelisted events below are ever sent, and payloads are filtered
 // to non-PII scalars. No emails, names, resume text, or IDs.
-//
-// NOTE: unlike the Plausible setup this replaced, GA4 sets first-party
-// cookies (_ga, _ga_<id>) and is not cookieless. The privacy and cookie
-// policies disclose this; consent gating is still outstanding — see
-// docs/SECURITY.md and the policy pages under public/.
 // ──────────────────────────────────────────────────────────────────────────
 
 import { ANALYTICS } from "./config.js";
@@ -52,43 +52,33 @@ export const EVENTS = {
 
 const ALLOWED = new Set(Object.values(EVENTS));
 
-let loaded = false;
+// True only once the visitor has actively accepted analytics cookies.
+function hasConsent() {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem(ANALYTICS.consentKey) === "granted";
+  } catch {
+    return false; // storage blocked → treat as no consent
+  }
+}
 
-// Inject gtag.js once, in the browser only, and only when analytics is
-// enabled and a measurement ID is configured.
-//
-// The static marketing pages under public/ carry the equivalent inline
-// snippet in their <head>; this guards against double-tagging by bailing out
-// if gtag has already been installed on the page.
+// Kept for call-site compatibility. Loading is handled by public/consent.js;
+// this only makes sure the dataLayer shim exists if that script has not run
+// yet, so an early event is queued rather than thrown away.
 export function initAnalytics() {
-  if (loaded || typeof window === "undefined") return;
-  if (!ANALYTICS.enabled || !ANALYTICS.measurementId) return;
-  loaded = true;
-
-  // dataLayer + gtag shim, so events fired before the script finishes loading
-  // are queued rather than dropped. Matches Google's official snippet.
+  if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
   if (typeof window.gtag !== "function") {
     window.gtag = function () {
       window.dataLayer.push(arguments);
     };
   }
-
-  // Only load the remote script if a page-level snippet hasn't already.
-  if (!document.querySelector(`script[src*="googletagmanager.com/gtag/js"]`)) {
-    const s = document.createElement("script");
-    s.async = true;
-    s.src = `${ANALYTICS.src}?id=${encodeURIComponent(ANALYTICS.measurementId)}`;
-    document.head.appendChild(s);
-  }
-
-  window.gtag("js", new Date());
-  window.gtag("config", ANALYTICS.measurementId);
 }
 
 // Track one whitelisted event. `props` must be non-PII scalars only.
 export function track(name, props = {}) {
   if (!ANALYTICS.enabled || typeof window === "undefined") return;
+  if (!hasConsent()) return; // no consent → nothing leaves the browser
   if (!ALLOWED.has(name)) return; // hard whitelist — never send arbitrary names
 
   const safe = Object.fromEntries(

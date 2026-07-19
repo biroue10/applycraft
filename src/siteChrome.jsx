@@ -428,6 +428,16 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
             {footerText((f.copyrightPrefix || "© {year} ApplyCraft by Biroue Digital Ltd").replace("{year}", new Date().getFullYear()))}
             {" · "}
             <a className="ac-footer-legal-link" href={homeHref} style={legalLink}>applycraft.io</a>
+            {" · "}
+            {/* Handled by the delegated listener in public/consent.js */}
+            <button
+              type="button"
+              data-ac-cookie-prefs
+              className="ac-footer-legal-link"
+              style={{ ...legalLink, background: "none", border: 0, padding: 0, font: "inherit", cursor: "pointer" }}
+            >
+              {f.cookiePrefs}
+            </button>
           </div>
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
             <span style={badge}>{f.badge1}</span>

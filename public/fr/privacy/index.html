@@ -43,14 +43,8 @@
   .prose .legal-nav a{font-size:12.5px;color:#94A3B8;text-decoration:none;border:1px solid #1A2740;border-radius:999px;padding:5px 12px}
   .prose .legal-nav a[aria-current="page"]{color:#818CF8;border-color:#6366F155;background:#6366F112}
 </style>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-V4RE1M2Q52"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-V4RE1M2Q52');
-</script>
+<!-- Cookie consent + consent-gated Google Analytics (see scripts/generate-consent-asset.mjs) -->
+<script src="/consent.js" defer></script>
 </head>
 <body>
 <nav class="nav">
@@ -94,7 +88,9 @@
 <p>Notre hébergeur et CDN (Cloudflare) enregistre des journaux d'accès standard — adresse IP, type de navigateur, URL demandée et horodatage — pour la sécurité et la prévention des abus. Nous ne les utilisons pas à des fins publicitaires ni pour établir un profil de vous.</p>
 
 <h2>3. Cookies et analyse</h2>
-<p>ApplyCraft ne pose <strong>aucun cookie publicitaire</strong> et n'utilise <strong>aucune régie publicitaire</strong> (pas de Facebook Pixel, pas de Hotjar). La mesure d'audience est assurée par <strong>Google Analytics 4</strong>, qui enregistre des événements d'usage agrégés (comme « un CV a été exporté ») sans noms, e-mails ni contenu de document. Google Analytics dépose des cookies propriétaires (<code>_ga</code>, <code>_ga_&lt;id&gt;</code>) et les données sont traitées par Google. Voir la <a href="https://policies.google.com/privacy" rel="noopener">politique de confidentialité de Google</a>.</p>
+<p>ApplyCraft ne pose <strong>aucun cookie publicitaire</strong> et n'utilise <strong>aucune régie publicitaire</strong> (pas de Facebook Pixel, pas de Hotjar). Nous utilisons <strong>Google Analytics 4</strong> (identifiant de mesure <code>G-V4RE1M2Q52</code>) pour comprendre l'usage du site. Google LLC agit comme sous-traitant pour ces données.</p>
+<p><strong>La mesure d'audience est désactivée tant que vous n'avez pas consenti.</strong> Lors de votre première visite, une bannière vous demande si vous acceptez les cookies de mesure d'audience. Google Analytics n'est pas chargé et ne dépose aucun cookie tant que vous n'avez pas cliqué sur « Accepter » ; refuser se fait en un seul clic et ne laisse aucune mesure active. Vous pouvez modifier votre choix à tout moment via <strong>Préférences cookies</strong> dans le pied de page.</p>
+<p>Si vous acceptez, Google Analytics collecte : les pages consultées et les événements produit (comme « un CV a été exporté »), votre type d'appareil et de navigateur, la source de référence, ainsi qu'une <strong>localisation approximative déduite de votre adresse IP</strong>. Des cookies propriétaires (<code>_ga</code>, <code>_ga_&lt;id&gt;</code>) sont conservés jusqu'à deux ans afin de reconnaître les visites répétées. L'anonymisation de l'IP est activée. Nous ne transmettons jamais à Google Analytics le contenu de vos CV ou lettres, vos noms ni vos adresses e-mail. Voir la <a href="https://policies.google.com/privacy" rel="noopener">politique de confidentialité de Google</a>.</p>
 <p>Cloudflare peut poser des cookies de sécurité strictement nécessaires (par exemple <code>__cf_bm</code>) pour la protection contre les bots et les abus. ApplyCraft peut conserver des préférences non sensibles comme les choix de langue dans le stockage du navigateur, mais le contenu des documents n’y est pas enregistré automatiquement. Détails complets dans la <a href="/fr/cookies/">Politique relative aux cookies</a>.</p>
 
 <h2>4. Fonctions IA et vos données</h2>
@@ -121,7 +117,7 @@
 <p>ApplyCraft ne s'adresse pas aux enfants de moins de 13 ans (ou 16 ans dans l'UE). Nous ne collectons pas sciemment de données d'enfants. Si vous pensez qu'un enfant a soumis des données, contactez-nous et nous prendrons les mesures appropriées.</p>
 
 <h2>10. Services tiers</h2>
-<p>Nos polices sont hébergées sur notre propre domaine — aucune requête n'est envoyée à des services tiers (comme Google Fonts) pour leur affichage.</p>
+<p>Nos polices sont hébergées sur notre propre domaine : leur affichage n'envoie aucune requête à Google Fonts ni à un autre service de polices. Cela concerne uniquement les polices — avec votre consentement, le site charge également Google Analytics, décrit ci-dessous.</p>
 <ul>
   <li><strong>Cloudflare</strong> — hébergement, CDN et sécurité. <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">Politique de confidentialité</a>.</li>
   <li><strong>Anthropic</strong> — modèle d'IA des assistants optionnels. <a href="https://www.anthropic.com/legal/privacy" rel="noopener">Politique de confidentialité</a>.</li>
@@ -169,7 +165,7 @@
       </nav>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 ApplyCraft par Biroue Digital Ltd · <a class="footer-legal-link" href="/fr/">applycraft.io</a></span>
+      <span>© 2026 ApplyCraft par Biroue Digital Ltd · <a class="footer-legal-link" href="/fr/">applycraft.io</a> · <button type="button" class="footer-legal-link" data-ac-cookie-prefs>Préférences cookies</button></span>
       <span>Aucun compte requis · Assistants IA facultatifs · Édition dans le navigateur</span>
     </div>
   </div>

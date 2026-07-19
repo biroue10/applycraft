@@ -15,12 +15,17 @@ const env = (typeof import.meta !== "undefined" && import.meta.env) || {};
 export const ACCOUNTS_ENABLED = env.VITE_ACCOUNTS_ENABLED === "true";
 export const PAYMENTS_ENABLED = env.VITE_PAYMENTS_ENABLED === "true";
 
+// Google Analytics 4 measurement ID. Not env-driven: it is baked into the
+// generated public/consent.js, which is what actually loads gtag.js, so a
+// build-time override would silently disagree with the static asset.
+export const GA_MEASUREMENT_ID = "G-V4RE1M2Q52";
+
 export const ANALYTICS = {
+  // Gates whether the app emits events at all. Loading of gtag.js is decided
+  // separately by visitor consent — see public/consent.js.
   enabled: env.VITE_ANALYTICS_ENABLED === "true",
-  // Google Analytics 4 measurement ID, e.g. "G-XXXXXXXXXX".
-  measurementId: env.VITE_GA_MEASUREMENT_ID || "",
-  // gtag.js loader origin. See public/_headers for the matching CSP entries.
-  src: env.VITE_GA_SRC || "https://www.googletagmanager.com/gtag/js",
+  // Key that public/consent.js writes the visitor's choice to.
+  consentKey: "ac_cookie_consent",
 };
 
 // The single paid product: a one-time, NON-recurring pass that unlocks AI

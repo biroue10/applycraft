@@ -56,14 +56,8 @@
   .prose code{background:#0D1117;border:1px solid #1A2740;border-radius:5px;padding:1px 6px;font-size:12.5px;color:#B6C2D6}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Cookie Policy | ApplyCraft","description":"How ApplyCraft uses browser storage and cookies: non-sensitive preferences, Google Analytics cookies, and strictly necessary security cookies set by Cloudflare.","url":"https://applycraft.io/cookies/","publisher":{"@type":"Organization","name":"Biroue Digital Ltd","url":"https://applycraft.io/"}}</script>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-V4RE1M2Q52"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-V4RE1M2Q52');
-</script>
+<!-- Cookie consent + consent-gated Google Analytics (see scripts/generate-consent-asset.mjs) -->
+<script src="/consent.js" defer></script>
 </head>
 <body>
 <nav class="nav">
@@ -88,6 +82,7 @@
 
 <h2>2. Analytics cookies</h2>
 <p>We use Google Analytics 4 to understand aggregated product usage (for example, "a resume was exported"). It sets first-party cookies — <code>_ga</code> and <code>_ga_&lt;id&gt;</code> — which persist for up to two years and are used to recognise returning visits. We do not send resume content, names, or email addresses to Google Analytics. See the <a href="/privacy/">Privacy Policy</a> and <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</p>
+<p>Google Analytics only runs if you accept it in the cookie banner shown on your first visit. Rejecting takes one click and keeps analytics fully off. You can change your choice at any time using <strong>Cookie preferences</strong> in the footer.</p>
 
 <h2>3. Cookies that may be set</h2>
 <table>
@@ -136,7 +131,7 @@
       </nav>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 ApplyCraft by Biroue Digital Ltd · <a class="footer-legal-link" href="/">applycraft.io</a></span>
+      <span>© 2026 ApplyCraft by Biroue Digital Ltd · <a class="footer-legal-link" href="/">applycraft.io</a> · <button type="button" class="footer-legal-link" data-ac-cookie-prefs>Cookie preferences</button></span>
       <span>No account required · Optional AI helpers · Browser-first editing</span>
     </div>
   </div>

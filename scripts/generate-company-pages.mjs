@@ -9,10 +9,10 @@ const ROOT = join(__dirname, "..", "public");
 const SITE = "https://applycraft.io";
 const EMAIL = "hello@applycraft.io";
 const FONT_PRIVACY_NOTICE = {
-  en: "Fonts are self-hosted on our own domain — no requests are sent to third-party services (such as Google Fonts) to display them.",
-  fr: "Nos polices sont hébergées sur notre propre domaine — aucune requête n'est envoyée à des services tiers (comme Google Fonts) pour leur affichage.",
+  en: "Fonts are self-hosted on our own domain, so displaying them sends no requests to Google Fonts or any other font service. This covers fonts only — with your consent, the site also loads Google Analytics, described below.",
+  fr: "Nos polices sont hébergées sur notre propre domaine : leur affichage n'envoie aucune requête à Google Fonts ni à un autre service de polices. Cela concerne uniquement les polices — avec votre consentement, le site charge également Google Analytics, décrit ci-dessous.",
   // Native review requested before an Arabic legal-policy route is published.
-  ar: "نستضيف خطوطنا على نطاقنا الخاص — ولا تُرسل أي طلبات إلى خدمات خارجية (مثل Google Fonts) لعرضها.",
+  ar: "نستضيف خطوطنا على نطاقنا الخاص، لذا لا يُرسل عرضها أي طلبات إلى Google Fonts أو أي خدمة خطوط أخرى. ينطبق هذا على الخطوط فقط — فبموافقتك يحمّل الموقع أيضًا Google Analytics الموضّح أدناه.",
 };
 const TODAY = "2026-06-27";
 const SOCIAL_IMAGE = `${SITE}/og/home.png`;
@@ -95,14 +95,8 @@ ${extraHead}
   .roadmap-item h3{margin:0 0 6px;font-size:15px;color:#E4EBF5;font-weight:700}
   .roadmap-item p{margin:0;font-size:13px;color:#8B9EB8}
 </style>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-V4RE1M2Q52"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-V4RE1M2Q52');
-</script>
+<!-- Cookie consent + consent-gated Google Analytics (see scripts/generate-consent-asset.mjs) -->
+<script src="/consent.js" defer></script>
 </head>
 <body>
 <nav class="nav">
@@ -158,7 +152,9 @@ const PAGES = {
 <p>Private offline share links store the document data inside the URL fragment. Anyone with the full link can view the document, so only share it with people you trust. These links do not require server-side document storage, but they can be long.</p>
 
 <h2 id="cookies">3. Cookies and tracking</h2>
-<p>ApplyCraft sets <strong>no advertising cookies</strong> and runs <strong>no ad networks</strong> (no Facebook Pixel, no Hotjar). We use <strong>Google Analytics 4</strong> for product analytics, which counts aggregated usage events (such as "a resume was started or exported"). These events contain no resume content, names, or email addresses. Google Analytics does set first-party cookies (<code>_ga</code>, <code>_ga_&lt;id&gt;</code>) to recognise returning visits, and data is processed by Google. See <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</p>
+<p>ApplyCraft sets <strong>no advertising cookies</strong> and runs <strong>no ad networks</strong> (no Facebook Pixel, no Hotjar). We use <strong>Google Analytics 4</strong> (measurement ID <code>G-V4RE1M2Q52</code>) to understand how the site is used. Google LLC acts as our processor for this data.</p>
+<p><strong>Analytics is off until you consent.</strong> On your first visit a banner asks whether you accept analytics cookies. Google Analytics is not loaded and sets no cookies unless you choose "Accept" — declining is a single click and leaves no analytics running. You can change your choice at any time via <strong>Cookie preferences</strong> in the site footer.</p>
+<p>If you accept, Google Analytics collects: pages viewed and in-product events (such as "a resume was started or exported"), your device and browser type, referring source, and an <strong>approximate location derived from your IP address</strong>. It stores first-party cookies (<code>_ga</code>, <code>_ga_&lt;id&gt;</code>) for up to two years to recognise returning visits. IP anonymisation is enabled. We never send resume or cover-letter content, names, or email addresses to Google Analytics. See <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</p>
 <p>Cloudflare, our CDN provider, may set a technical cookie (<code>__cf_bm</code>) for bot protection. This is a strictly necessary security cookie that does not track you for advertising purposes.</p>
 
 <h2>4. AI features and your data</h2>

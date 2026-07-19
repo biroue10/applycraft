@@ -188,6 +188,9 @@ details p{padding:0 20px 16px;font-size:13.5px;color:var(--color-text-secondary)
 .footer-legal-link{color:inherit;text-decoration:none}
 .footer-legal-link:hover,.footer-legal-link:focus-visible{color:var(--color-text-secondary);text-decoration:underline}
 .footer-legal-link:focus-visible{outline:2px solid #818CF8;outline-offset:3px;border-radius:3px}
+/* Cookie-preferences trigger — a button so it is keyboard-operable, styled to
+   match the adjacent legal links. */
+button.footer-legal-link{background:none;border:0;padding:0;font:inherit;cursor:pointer}
 
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}

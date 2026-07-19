@@ -47,14 +47,8 @@
   .prose code{background:#0D1117;border:1px solid #1A2740;border-radius:5px;padding:1px 6px;font-size:12.5px;color:#B6C2D6}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Politique relative aux cookies | ApplyCraft","description":"Comment ApplyCraft utilise le stockage du navigateur et les cookies : stockage local pour votre brouillon, cookies Google Analytics et cookies de sécurité strictement nécessaires posés par Cloudflare.","url":"https://applycraft.io/fr/cookies/","inLanguage":"fr","publisher":{"@type":"Organization","name":"Biroue Digital Ltd","url":"https://applycraft.io/"}}</script>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-V4RE1M2Q52"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-V4RE1M2Q52');
-</script>
+<!-- Cookie consent + consent-gated Google Analytics (see scripts/generate-consent-asset.mjs) -->
+<script src="/consent.js" defer></script>
 </head>
 <body>
 <nav class="nav">
@@ -77,6 +71,7 @@
 </ul>
 <h2>2. Cookies de mesure d'audience</h2>
 <p>Nous utilisons Google Analytics 4 pour mesurer l'usage agrégé du produit (par exemple « un CV a été exporté »). Cet outil dépose des cookies propriétaires — <code>_ga</code> et <code>_ga_&lt;id&gt;</code> — conservés jusqu'à deux ans afin de reconnaître les visites répétées. Nous ne transmettons à Google Analytics ni contenu de CV, ni nom, ni adresse e-mail. Voir la <a href="/fr/privacy/">Politique de confidentialité</a> et la <a href="https://policies.google.com/privacy" rel="noopener">politique de confidentialité de Google</a>.</p>
+<p>Google Analytics ne s'exécute que si vous l'acceptez dans la bannière affichée lors de votre première visite. Le refus se fait en un clic et laisse la mesure d'audience entièrement désactivée. Vous pouvez modifier votre choix à tout moment via <strong>Préférences cookies</strong> dans le pied de page.</p>
 <h2>3. Cookies susceptibles d'être posés</h2>
 <table>
   <thead><tr><th>Nom</th><th>Posé par</th><th>Objet</th><th>Type</th></tr></thead>
@@ -122,7 +117,7 @@
       </nav>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 ApplyCraft par Biroue Digital Ltd · <a class="footer-legal-link" href="/fr/">applycraft.io</a></span>
+      <span>© 2026 ApplyCraft par Biroue Digital Ltd · <a class="footer-legal-link" href="/fr/">applycraft.io</a> · <button type="button" class="footer-legal-link" data-ac-cookie-prefs>Préférences cookies</button></span>
       <span>Aucun compte requis · Assistants IA facultatifs · Édition dans le navigateur</span>
     </div>
   </div>

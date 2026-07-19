@@ -117,6 +117,8 @@ ${localeAlternates(config.ogAlternateLocales)}
 <script type="application/ld+json">${schemaFaq(config.faqs)}</script>
 <script type="application/ld+json">${breadcrumb(config.path, config.h1)}</script>
 ${config.software ? `<script type="application/ld+json">${appSchema(config.lang)}</script>` : ""}
+<!-- Cookie consent + consent-gated Google Analytics (see scripts/generate-consent-asset.mjs) -->
+<script src="/consent.js" defer></script>
 </head>
 <body>
 <nav class="nav"><a href="${homeHref}" class="nav-logo" aria-label="ApplyCraft home"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" class="brand-logo-img" loading="eager" decoding="async"></a><a href="${builderUrl}" class="nav-cta">${config.cta}</a></nav>
