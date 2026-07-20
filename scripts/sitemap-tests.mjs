@@ -87,6 +87,45 @@ if (missingLastmod.length) {
 }
 
 const sitemapSet = new Set(urls);
+const matchingGuides = [
+  {
+    route: "/blog/resume-and-cover-letter-match/",
+    file: join(PUBLIC, "blog/resume-and-cover-letter-match/index.html"),
+    canonical: "https://applycraft.io/blog/resume-and-cover-letter-match/",
+    alternate: "https://applycraft.io/fr/blog/cv-lettre-motivation-correspondance-candidature/",
+    indexFile: join(PUBLIC, "blog/index.html"),
+  },
+  {
+    route: "/fr/blog/cv-lettre-motivation-correspondance-candidature/",
+    file: join(PUBLIC, "fr/blog/cv-lettre-motivation-correspondance-candidature/index.html"),
+    canonical: "https://applycraft.io/fr/blog/cv-lettre-motivation-correspondance-candidature/",
+    alternate: "https://applycraft.io/blog/resume-and-cover-letter-match/",
+    indexFile: join(PUBLIC, "fr/blog/index.html"),
+  },
+];
+
+for (const guide of matchingGuides) {
+  if (!sitemapSet.has(guide.canonical)) fail(`matching guide missing from sitemap: ${guide.canonical}`);
+  const html = readFileSync(guide.file, "utf8");
+  if (canonical(html) !== guide.canonical) fail(`${guide.route} canonical mismatch`);
+  if (!html.includes(`hreflang="en"`) || !html.includes(`hreflang="fr"`) || !html.includes(`href="${guide.alternate}"`)) {
+    fail(`${guide.route} reciprocal English/French hreflang missing`);
+  }
+  const schemas = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((match) => JSON.parse(match[1]));
+  for (const type of ["BlogPosting", "BreadcrumbList", "FAQPage"]) {
+    if (!schemas.some((schema) => schema["@type"] === type)) fail(`${guide.route} missing ${type} schema`);
+  }
+  const faq = schemas.find((schema) => schema["@type"] === "FAQPage");
+  const visibleFaq = html.match(/<section class="faq">([\s\S]*?)<\/section>/)?.[1] || "";
+  for (const item of faq?.mainEntity || []) {
+    if (!visibleFaq.includes(`<h3>${item.name}</h3><p>${item.acceptedAnswer.text}</p>`)) {
+      fail(`${guide.route} FAQ schema differs from visible answer: ${item.name}`);
+    }
+  }
+  const indexHtml = readFileSync(guide.indexFile, "utf8");
+  if (!indexHtml.includes(`href="${guide.route}"`)) fail(`${guide.route} missing from localized blog index`);
+}
+
 for (const appPath of INDEXABLE_APP_PATHS) {
   const loc = `${SITE}${appPath}`;
   if (!sitemapSet.has(loc)) fail(`indexable app route missing from sitemap: ${loc}`);
