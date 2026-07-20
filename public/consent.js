@@ -13,11 +13,17 @@
   var RTL_LANGS = ["ar"];
   var T = {
   "en": {
-    "title": "Cookies on ApplyCraft",
-    "body": "We use Google Analytics to understand how the site is used. It sets cookies and sends usage data, your device type, and an approximate location derived from your IP address to Google. Nothing you write in the builder is ever sent. Analytics stays off unless you accept.",
-    "accept": "Accept analytics",
-    "reject": "Reject",
-    "privacyLink": "Read our Privacy Policy",
+    "title": "Cookie preferences",
+    "body": "We use essential cookies to keep ApplyCraft working and optional analytics cookies to improve the product. You can accept, reject, or manage your preferences.",
+    "accept": "Accept all",
+    "reject": "Reject optional",
+    "manage": "Manage preferences",
+    "save": "Save preferences",
+    "essential": "Essential cookies",
+    "analytics": "Analytics cookies",
+    "alwaysOn": "Always on",
+    "privacyLink": "Privacy Policy",
+    "cookiePolicyLink": "Cookie Policy",
     "regionLabel": "Cookie consent",
     "preferences": "Cookie preferences",
     "acceptedNotice": "Analytics cookies are on.",
@@ -25,23 +31,35 @@
     "change": "Change"
   },
   "fr": {
-    "title": "Cookies sur ApplyCraft",
-    "body": "Nous utilisons Google Analytics pour comprendre comment le site est utilisé. Cet outil dépose des cookies et transmet à Google des données d'usage, votre type d'appareil et une localisation approximative déduite de votre adresse IP. Rien de ce que vous écrivez dans l'éditeur n'est transmis. La mesure d'audience reste désactivée tant que vous ne l'acceptez pas.",
-    "accept": "Accepter la mesure d'audience",
-    "reject": "Refuser",
-    "privacyLink": "Lire notre politique de confidentialité",
+    "title": "Préférences de cookies",
+    "body": "Nous utilisons des cookies essentiels pour faire fonctionner ApplyCraft et des cookies d’analyse facultatifs pour améliorer le produit. Vous pouvez accepter, refuser ou gérer vos préférences.",
+    "accept": "Tout accepter",
+    "reject": "Refuser les cookies facultatifs",
+    "manage": "Gérer les préférences",
+    "save": "Enregistrer les préférences",
+    "essential": "Cookies essentiels",
+    "analytics": "Cookies d’analyse",
+    "alwaysOn": "Toujours actifs",
+    "privacyLink": "Politique de confidentialité",
+    "cookiePolicyLink": "Politique relative aux cookies",
     "regionLabel": "Consentement aux cookies",
-    "preferences": "Préférences cookies",
+    "preferences": "Préférences de cookies",
     "acceptedNotice": "Les cookies de mesure d'audience sont activés.",
     "rejectedNotice": "Les cookies de mesure d'audience sont désactivés.",
     "change": "Modifier"
   },
   "ar": {
-    "title": "ملفات تعريف الارتباط في ApplyCraft",
-    "body": "نستخدم Google Analytics لفهم كيفية استخدام الموقع. يقوم بتخزين ملفات تعريف الارتباط وإرسال بيانات الاستخدام ونوع جهازك وموقع تقريبي مستنتج من عنوان IP إلى Google. لا يتم إرسال أي شيء تكتبه في المحرّر. تبقى أدوات القياس معطّلة ما لم توافق عليها.",
-    "accept": "قبول أدوات القياس",
-    "reject": "رفض",
-    "privacyLink": "اقرأ سياسة الخصوصية",
+    "title": "تفضيلات ملفات تعريف الارتباط",
+    "body": "نستخدم ملفات تعريف ارتباط أساسية لتشغيل ApplyCraft وملفات تحليل اختيارية لتحسين المنتج. يمكنك القبول أو الرفض أو إدارة تفضيلاتك.",
+    "accept": "قبول الكل",
+    "reject": "رفض الاختياري",
+    "manage": "إدارة التفضيلات",
+    "save": "حفظ التفضيلات",
+    "essential": "ملفات تعريف الارتباط الأساسية",
+    "analytics": "ملفات التحليل",
+    "alwaysOn": "مفعّلة دائمًا",
+    "privacyLink": "سياسة الخصوصية",
+    "cookiePolicyLink": "سياسة ملفات تعريف الارتباط",
     "regionLabel": "الموافقة على ملفات تعريف الارتباط",
     "preferences": "تفضيلات ملفات تعريف الارتباط",
     "acceptedNotice": "ملفات تعريف ارتباط القياس مفعّلة.",
@@ -50,14 +68,17 @@
   }
 };
 
-  function lang() {
-    var raw = (document.documentElement.getAttribute("lang") || "en").toLowerCase();
+  // The app writes its interface language here. This is deliberately separate
+  // from the resume/document language, which must never control consent UI.
+  function interfaceLang() {
+    var raw = (document.documentElement.getAttribute("data-ac-interface-language") ||
+      document.documentElement.getAttribute("lang") || "en").toLowerCase();
     var code = raw.split("-")[0];
     return T[code] ? code : "en";
   }
 
   function t(key) {
-    var code = lang();
+    var code = interfaceLang();
     return (T[code] && T[code][key]) || T.en[key] || key;
   }
 
@@ -116,20 +137,40 @@
 
   // ── Banner ───────────────────────────────────────────────────────────────
   var node = null;
+  var lastFocus = null;
 
   function close() {
     if (node && node.parentNode) node.parentNode.removeChild(node);
     node = null;
   }
 
-  function show() {
+  function legalHref(type) {
+    var code = interfaceLang();
+    if (code === "fr") return "/fr/" + type + "/";
+    // Arabic legal pages do not currently exist, so retain localized labels
+    // and use the canonical English policy as the safe fallback.
+    return "/" + type + "/";
+  }
+
+  function button(label, css) {
+    var element = document.createElement("button");
+    element.type = "button";
+    element.textContent = label;
+    element.style.cssText = css;
+    return element;
+  }
+
+  function show(managing) {
+    var hadNode = Boolean(node);
+    if (!hadNode) lastFocus = document.activeElement;
     close();
-    var rtl = RTL_LANGS.indexOf(lang()) !== -1;
+    var rtl = RTL_LANGS.indexOf(interfaceLang()) !== -1;
 
     node = document.createElement("div");
     node.id = "ac-consent";
     node.setAttribute("role", "dialog");
     node.setAttribute("aria-label", t("regionLabel"));
+    node.setAttribute("aria-modal", "true");
     node.setAttribute("dir", rtl ? "rtl" : "ltr");
     node.style.cssText = [
       "position:fixed", "z-index:2147483000", "inset-inline:16px", "bottom:16px",
@@ -149,10 +190,15 @@
     body.textContent = t("body");
     body.style.cssText = "margin:0 0 14px";
 
-    var link = document.createElement("a");
-    link.href = lang() === "en" ? "/privacy/" : "/" + lang() + "/privacy/";
-    link.textContent = t("privacyLink");
-    link.style.cssText = "color:#818CF8;font-size:13px;text-decoration:underline";
+    var links = document.createElement("div");
+    links.style.cssText = "display:flex;gap:14px;flex-wrap:wrap";
+    [["privacy", "privacyLink"], ["cookies", "cookiePolicyLink"]].forEach(function (item) {
+      var link = document.createElement("a");
+      link.href = legalHref(item[0]);
+      link.textContent = t(item[1]);
+      link.style.cssText = "color:#A5B4FC;font-size:13px;text-decoration:underline;text-underline-offset:3px";
+      links.appendChild(link);
+    });
 
     var row = document.createElement("div");
     row.style.cssText = "display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px";
@@ -162,40 +208,75 @@
     var base = "flex:1 1 160px;padding:11px 18px;border-radius:8px;font-size:13.5px;" +
       "font-weight:700;cursor:pointer;font-family:inherit;border:1px solid";
 
-    var reject = document.createElement("button");
-    reject.type = "button";
-    reject.textContent = t("reject");
-    reject.style.cssText = base + " #2A3A55;background:#161C26;color:#E4EBF5";
+    var reject = button(t("reject"), base + " #2A3A55;background:#161C26;color:#E4EBF5");
     reject.addEventListener("click", function () {
       write("denied");
       deny();
       close();
     });
 
-    var accept = document.createElement("button");
-    accept.type = "button";
-    accept.textContent = t("accept");
-    accept.style.cssText = base + " #6366F1;background:#6366F1;color:#fff";
+    var accept = button(t("accept"), base + " #6366F1;background:#6366F1;color:#fff");
     accept.addEventListener("click", function () {
       write("granted");
       grant();
       close();
     });
 
-    row.appendChild(reject);
-    row.appendChild(accept);
     node.appendChild(title);
     node.appendChild(body);
-    node.appendChild(link);
+    node.appendChild(links);
+
+    if (managing) {
+      var controls = document.createElement("div");
+      controls.style.cssText = "display:grid;gap:10px;margin-top:14px";
+      var essential = document.createElement("div");
+      essential.style.cssText = "display:flex;justify-content:space-between;gap:12px;padding:10px;border:1px solid #2A3A55;border-radius:8px;color:#E4EBF5";
+      var essentialText = document.createElement("span");
+      essentialText.textContent = t("essential");
+      var alwaysOnText = document.createElement("span");
+      alwaysOnText.textContent = t("alwaysOn");
+      essential.appendChild(essentialText);
+      essential.appendChild(alwaysOnText);
+      var analyticsLabel = document.createElement("label");
+      analyticsLabel.style.cssText = "display:flex;justify-content:space-between;gap:12px;padding:10px;border:1px solid #2A3A55;border-radius:8px;color:#E4EBF5;cursor:pointer";
+      var analyticsToggle = document.createElement("input");
+      analyticsToggle.type = "checkbox";
+      analyticsToggle.checked = read() === "granted";
+      analyticsToggle.setAttribute("aria-label", t("analytics"));
+      var analyticsText = document.createElement("span");
+      analyticsText.textContent = t("analytics");
+      analyticsLabel.appendChild(analyticsText);
+      analyticsLabel.appendChild(analyticsToggle);
+      controls.appendChild(essential);
+      controls.appendChild(analyticsLabel);
+      node.appendChild(controls);
+      var save = button(t("save"), base + " #6366F1;background:#6366F1;color:#fff");
+      save.addEventListener("click", function () {
+        var value = analyticsToggle.checked ? "granted" : "denied";
+        write(value);
+        if (value === "granted") grant(); else deny();
+        close();
+      });
+      row.appendChild(save);
+    } else {
+      var manage = button(t("manage"), base + " #2A3A55;background:transparent;color:#E4EBF5");
+      manage.addEventListener("click", function () { show(true); });
+      row.appendChild(reject);
+      row.appendChild(manage);
+      row.appendChild(accept);
+    }
     node.appendChild(row);
     document.body.appendChild(node);
-    reject.focus();
+    (managing ? node.querySelector("input") : reject).focus();
   }
 
   // Footer "Cookie preferences" entry point.
-  window.acCookiePreferences = show;
+  window.acCookiePreferences = function () { show(true); };
 
   function start() {
+    var style = document.createElement("style");
+    style.textContent = "#ac-consent :focus-visible{outline:3px solid #A5B4FC;outline-offset:3px}";
+    document.head.appendChild(style);
     var stored = read();
     if (stored === "granted") grant();
     else if (stored !== "denied") show();
@@ -205,8 +286,33 @@
       var trigger = event.target.closest && event.target.closest("[data-ac-cookie-prefs]");
       if (!trigger) return;
       event.preventDefault();
-      show();
+      show(true);
     });
+
+    document.addEventListener("keydown", function (event) {
+      if (!node) return;
+      if (event.key === "Escape") {
+        close();
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+        return;
+      }
+      if (event.key === "Tab") {
+        var focusable = node.querySelectorAll("a[href],button,input:not([disabled])");
+        if (!focusable.length) return;
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    });
+
+    // React updates this attribute when the interface language changes. Repaint
+    // an open banner immediately without touching the persisted consent choice.
+    new MutationObserver(function (records) {
+      if (node && records.some(function (record) { return record.attributeName === "data-ac-interface-language" || record.attributeName === "lang"; })) {
+        show(Boolean(node.querySelector("input[type=checkbox]")));
+      }
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-ac-interface-language", "lang"] });
   }
 
   if (document.readyState === "loading") {

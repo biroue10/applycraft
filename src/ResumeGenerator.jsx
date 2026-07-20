@@ -3519,6 +3519,7 @@ export default function ResumeGenerator() {
     if (typeof document === "undefined") return;
     const direction = isRtlLang(interfaceLanguage) ? "rtl" : "ltr";
     document.documentElement.lang = interfaceLanguage || "en";
+    document.documentElement.dataset.acInterfaceLanguage = interfaceLanguage || "en";
     document.documentElement.dir = direction;
     document.body?.setAttribute("dir", direction);
   }, [interfaceLanguage]);

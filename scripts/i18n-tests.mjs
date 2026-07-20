@@ -18,9 +18,13 @@ import { localizedLanguageHref } from "../src/seo/localizedRoutes.js";
 import { sectionLabel } from "../src/i18n/documentLabels.js";
 import { formatDateRange, normalizeDateRange } from "../src/resumeQuality.js";
 import { EVENTS } from "../src/analytics.js";
+import consentEn from "../src/i18n/namespaces/en/consent.js";
+import consentFr from "../src/i18n/namespaces/fr/consent.js";
+import consentAr from "../src/i18n/namespaces/ar/consent.js";
 
 const app = await readFile(new URL("../src/ResumeGenerator.jsx", import.meta.url), "utf8");
 const analytics = await readFile(new URL("../src/analytics.js", import.meta.url), "utf8");
+const consentAssetSource = await readFile(new URL("./generate-consent-asset.mjs", import.meta.url), "utf8");
 
 function test(name, fn) {
   try {
@@ -77,6 +81,25 @@ test("production namespaces resolve for English, French, and Arabic", () => {
     assert.equal(typeof resources[language]?.builder?.documentLanguage, "string", `${language}.builder.documentLanguage missing`);
     assert.equal(typeof resources[language]?.status?.pdfFail, "string", `${language}.status.pdfFail missing`);
   }
+});
+
+test("cookie consent follows interface language with localized legal links and RTL", () => {
+  assert.equal(consentEn.title, "Cookie preferences");
+  assert.equal(consentFr.title, "Préférences de cookies");
+  assert.equal(consentAr.title, "تفضيلات ملفات تعريف الارتباط");
+  for (const dictionary of [consentEn, consentFr, consentAr]) {
+    for (const key of ["body", "accept", "reject", "manage", "save", "essential", "analytics", "privacyLink", "cookiePolicyLink"]) {
+      assert.equal(typeof dictionary[key], "string", `consent.${key} missing`);
+    }
+  }
+  assert.match(consentAssetSource, /data-ac-interface-language/);
+  assert.doesNotMatch(consentAssetSource, /documentLanguage/);
+  assert.match(consentAssetSource, /new MutationObserver/);
+  assert.match(consentAssetSource, /code === "fr"/);
+  assert.match(consentAssetSource, /RTL_LANGS\.indexOf\(interfaceLang\(\)\)/);
+  assert.match(consentAssetSource, /event\.key === "Escape"/);
+  assert.match(consentAssetSource, /show\(true\)/);
+  assert.match(consentAssetSource, /event\.key === "Tab"/);
 });
 
 test("interface language switcher metadata has stable local flags and safe routes", () => {

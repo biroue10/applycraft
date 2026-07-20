@@ -40,7 +40,7 @@ const footer = {
   "openMenu": "Ouvrir le menu",
   "closeMenu": "Fermer le menu",
   "footerRegion": "Pied de page",
-  "cookiePrefs": "Préférences cookies",
+  "cookiePrefs": "Préférences de cookies",
   "copyrightPrefix": "© {year} ApplyCraft par Biroue Digital Ltd"
 };
 
