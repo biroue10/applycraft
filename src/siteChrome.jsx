@@ -1,19 +1,12 @@
 import React, { useState } from "react";
 import { FOOTER_LINK_SECTIONS, localizedFooterHref } from "./footerLinks.js";
-import enFooter from "./i18n/namespaces/en/footer.js";
-import frFooter from "./i18n/namespaces/fr/footer.js";
-import arFooter from "./i18n/namespaces/ar/footer.js";
-import enLanding from "./i18n/namespaces/en/landing.js";
-import frLanding from "./i18n/namespaces/fr/landing.js";
-import arLanding from "./i18n/namespaces/ar/landing.js";
+import { FOOTER_UI, LANDING_UI } from "./i18n/index.js";
 import { PRIMARY_NAV_ITEMS } from "./nav/navItems.js";
 import { PRODUCT } from "./product.js";
 import { localizeRoute } from "./seo/localizedRoutes.js";
 import { COLORS } from "./theme/colors.js";
 
 export const SITE_COLORS = { ...COLORS };
-const FOOTER_UI = { en: enFooter, fr: frFooter, ar: arFooter };
-const LANDING_UI = { en: enLanding, fr: frLanding, ar: arLanding };
 
 // Single source of truth for header height across every context (site navbar,
 // resume/cover-letter builder, ATS checker). Headers set this FIXED height — never
@@ -26,7 +19,7 @@ export const HEADER_HEIGHT_MOBILE = 60;  // <=720px, px
 const AUTHOR_EMAIL = "hello@applycraft.io";
 // Single canonical brand logo, imported anywhere the mark is shown (navbar,
 // footer, and — as the source image — the OG/favicon generators).
-export const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.webp";
+export const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
 
 function BrandLogoImage({ compact = false, style = {} }) {
   return (
@@ -34,8 +27,8 @@ function BrandLogoImage({ compact = false, style = {} }) {
       className="ac-brand-logo-img"
       src={BRAND_LOGO_SRC}
       alt="ApplyCraft"
-      width="236"
-      height="61"
+      width="1180"
+      height="304"
       style={{
         display: "block",
         height: compact ? 28 : 30,
