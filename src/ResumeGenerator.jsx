@@ -156,8 +156,8 @@ function AppBrandLogo({ compact = false, style = {} }) {
     <img
       src={BRAND_LOGO_SRC}
       alt="ApplyCraft"
-      width="1180"
-      height="304"
+      width="236"
+      height="61"
       style={{
         display: "block",
         height: compact ? 28 : 30,

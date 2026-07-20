@@ -228,7 +228,9 @@ export default defineConfig({
           ) {
             return;
           }
-          if (id.includes("/src/i18n/")) return "i18n";
+          // Let Rollup keep route-specific dictionaries with their owning route.
+          // A single forced i18n chunk made the lightweight homepage download
+          // builder, ATS, tracker and master-profile copy before hydration.
           if (!id.includes("node_modules")) return;
           // React and router: always needed, extract once so SSG + app share it.
           if (
