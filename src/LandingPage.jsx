@@ -2,6 +2,11 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import { SiteFooter, SiteHeader } from "./siteChrome.jsx";
 import { localizeRoute } from "./seo/localizedRoutes.js";
+import enLanding from "./i18n/namespaces/en/landing.js";
+import frLanding from "./i18n/namespaces/fr/landing.js";
+import arLanding from "./i18n/namespaces/ar/landing.js";
+
+const LANDING_UI = { en: enLanding, fr: frLanding, ar: arLanding };
 
 const COPY = {
   en: {
@@ -57,12 +62,12 @@ function languageFor(pathname) {
   return "en";
 }
 
-function ResumePreview({ copy }) {
+function ResumePreview({ copy, t }) {
   return (
     <div className="ac-lite-preview" aria-label={copy.preview}>
       <div className="ac-lite-preview-head"><span aria-hidden="true" /><div><strong>Sarah Amrani</strong><small>{copy.profile}</small></div></div>
       <div className="ac-lite-preview-body">
-        <aside><b>Profile</b><i /><i /><b>Skills</b><em>Strategy</em><em>Research</em></aside>
+        <aside><b>{t("previewProfile")}</b><i /><i /><b>{t("previewSkills")}</b><em>{t("previewStrategy")}</em><em>{t("previewResearch")}</em></aside>
         <section><b>{copy.experience}</b><strong>Northstar AI</strong><i /><i /><i /><strong>BrightHire</strong><i /><i /></section>
       </div>
     </div>
@@ -73,6 +78,7 @@ export default function LandingPage() {
   const { pathname } = useLocation();
   const lang = languageFor(pathname);
   const copy = COPY[lang];
+  const t = (key) => LANDING_UI[lang]?.[key] || LANDING_UI.en[key] || key;
   const rtl = lang === "ar";
   const builder = localizeRoute("/resume-builder/", lang);
   const ats = localizeRoute("/ats-checker/", lang);
@@ -92,7 +98,7 @@ export default function LandingPage() {
             <div className="ac-lite-actions"><a className="ac-lite-primary" href={builder}>{copy.primary}</a><a className="ac-lite-secondary" href={ats}>{copy.secondary}</a></div>
             <div className="ac-lite-trust">{copy.trust.map((item) => <span key={item}>✓ {item}</span>)}</div>
           </div>
-          <ResumePreview copy={copy} />
+          <ResumePreview copy={copy} t={t} />
         </section>
         <section className="ac-lite-features"><h2>{copy.sectionTitle}</h2><div className="ac-lite-grid">{copy.cards.map(([title, body]) => <article className="ac-lite-card" key={title}><h3>{title}</h3><p>{body}</p></article>)}</div></section>
         <section className="ac-lite-closing"><h2>{copy.closing}</h2><p>{copy.closingBody}</p><div className="ac-lite-actions" style={{justifyContent:"center"}}><a className="ac-lite-primary" href={builder}>{copy.primary}</a></div></section>

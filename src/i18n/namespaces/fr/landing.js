@@ -18,6 +18,10 @@ const landing = {
   "statDownloads": "Téléchargements gratuits",
   "comingSoonBody": "Cette fonctionnalité n'est pas encore disponible. Nous y travaillons et elle sera bientôt prête.",
   "gotIt": "Compris",
+  "previewProfile": "Profil",
+  "previewSkills": "Compétences",
+  "previewStrategy": "Stratégie",
+  "previewResearch": "Recherche",
   // ── About page ──
   "aboutEyebrow": "À propos",
   "aboutTitle": "À propos d’ApplyCraft",

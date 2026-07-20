@@ -32,6 +32,7 @@ const EXCLUDE_FILES = new Set([
 // FULL trimmed literal (after stripping surrounding punctuation/whitespace).
 const ALLOW_EXACT = new Set([
   "ApplyCraft", "Biroue Digital Ltd", "applycraft.io",
+  "Sarah Amrani", "Northstar AI", "BrightHire",
   "PDF", "DOCX", "ATS", "AI", "URL", "JSON", "PDF/DOCX", "HTML", "CSS", "RTL", "LTR",
   "EN", "FR", "AR", "ES", "DE", "en", "fr", "ar",
   "LinkedIn", "GitHub", "Google", "Cloudflare", "Anthropic", "Claude", "Lemon Squeezy",
