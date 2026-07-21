@@ -1,36 +1,23 @@
-import React, { Suspense, lazy } from "react";
+// vite-react-ssg resolves matched `route.lazy` modules before hydrating. Use it
+// for standalone route chunks while the shared editor stays directly mounted
+// so its server and client trees hydrate identically.
+import React from "react";
 import ResumeGenerator from "./ResumeGenerator.jsx";
-
-const SharedResume = lazy(() => import("./SharedResume.jsx"));
-// Interview Prep ships as its own route chunk — kept OUT of the initial/homepage
-// bundle (ResumeGenerator) so the streaming chat UI is downloaded only on visit.
-const InterviewPrep = lazy(() => import("./interview/InterviewPrep.jsx"));
-
-function SharedResumeRoute() {
-  return (
-    <Suspense fallback={<div style={{ minHeight: "100vh", background: "#06080F" }} />}>
-      <SharedResume />
-    </Suspense>
-  );
-}
-
-function InterviewPrepRoute() {
-  return (
-    <Suspense fallback={<div style={{ minHeight: "100vh", background: "#06080F" }} />}>
-      <InterviewPrep />
-    </Suspense>
-  );
-}
+const sharedResumeRoute = async () => ({ Component: (await import("./SharedResume.jsx")).default });
+const interviewPrepRoute = async () => ({ Component: (await import("./interview/InterviewPrep.jsx")).default });
+const englishLandingRoute = async () => ({ Component: (await import("./landing/en.jsx")).default });
+const frenchLandingRoute = async () => ({ Component: (await import("./landing/fr.jsx")).default });
+const arabicLandingRoute = async () => ({ Component: (await import("./landing/ar.jsx")).default });
 
 // Canonical + hreflang are injected per route at BUILD TIME by the
 // onBeforePageRender hook in vite.config.js (zero client JS), using the
 // genuine-cluster map in src/seo/alternates.js.
 export const routes = [
-  { path: "/", element: <ResumeGenerator /> },
-  { path: "/fr/", element: <ResumeGenerator /> },
-  { path: "/ar/", element: <ResumeGenerator /> },
-  { path: "/r", element: <SharedResumeRoute /> },
-  { path: "/r/:shareId", element: <SharedResumeRoute /> },
+  { path: "/", lazy: englishLandingRoute },
+  { path: "/fr/", lazy: frenchLandingRoute },
+  { path: "/ar/", lazy: arabicLandingRoute },
+  { path: "/r", lazy: sharedResumeRoute },
+  { path: "/r/:shareId", lazy: sharedResumeRoute },
   { path: "/resume-builder", element: <ResumeGenerator /> },
   { path: "/resume/templates", element: <ResumeGenerator /> },
   { path: "/resume/builder", element: <ResumeGenerator /> },
@@ -44,7 +31,7 @@ export const routes = [
   // Public, locale-aware Interview Prep. Trailing-slash paths so vite-react-ssg
   // emits dist/interview-prep/index.html (etc.), served 0-hop at the canonical
   // slash URL by Cloudflare (html_handling: force-trailing-slash).
-  { path: "/interview-prep/", element: <InterviewPrepRoute /> },
-  { path: "/fr/interview-prep/", element: <InterviewPrepRoute /> },
-  { path: "/ar/interview-prep/", element: <InterviewPrepRoute /> },
+  { path: "/interview-prep/", lazy: interviewPrepRoute },
+  { path: "/fr/interview-prep/", lazy: interviewPrepRoute },
+  { path: "/ar/interview-prep/", lazy: interviewPrepRoute },
 ];

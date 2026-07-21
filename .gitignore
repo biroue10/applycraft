@@ -13,5 +13,8 @@ dist
 test-results
 playwright-report
 
+# Local Lighthouse JSON, Chromium logs, and preview logs
+.audit/
+
 # Local Cloudflare Functions secrets
 .dev.vars

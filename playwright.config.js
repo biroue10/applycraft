@@ -11,6 +11,16 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: {
     baseURL: process.env.E2E_BASE_URL || "http://localhost:4173",
+    // Feature-flow tests are not consent-dialog tests. Start from an explicit
+    // privacy-safe choice so the modal cannot cover controls under test; cookie
+    // localization and behavior remain covered by the dedicated i18n suite.
+    storageState: {
+      cookies: [],
+      origins: [{
+        origin: "http://localhost:4173",
+        localStorage: [{ name: "ac_cookie_consent", value: "denied" }],
+      }],
+    },
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },

@@ -1,13 +1,11 @@
 import React, { Fragment, useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { ACCOUNTS_ENABLED, PAYMENTS_ENABLED, ACTIVE_SEARCH_PASS } from "./config.js";
-import { initAnalytics, track, EVENTS } from "./analytics.js";
-import * as account from "./account.js";
+import * as accountSession from "./accountSession.js";
 import { scoreFromIssues, scoreBand, issueCost, READINESS_EXPLAINER } from "./ats/scoring.js";
 import { pdfSafe, containsNonLatin1 } from "./pdf/text.js";
 import { useFocusTrap } from "./a11y/useFocusTrap.js";
 import * as resumes from "./resumes.js";
-import { buildPrivateShareUrl } from "./share.js";
 import { asArray, isResumeDataEmpty, normalizeResumeData } from "./resumeData.js";
 import { linkifyText, normalizeLinkHref } from "./utils/linkify.js";
 import { getContactHref, normalizeContactItems } from "./utils/contactLinks.js";
@@ -15,18 +13,7 @@ import { formatPhoneForResume } from "./utils/phone.js";
 import { detectImportedResumeLanguage } from "./importLanguage.js";
 import { ResumePaper, CoverLetterPaper, structureSectionItems } from "./documents/DocumentPapers.jsx";
 import { analyzeResumeQuality, formatDateRange, isPlaceholderOnly, normalizeDateRange, presentLabel } from "./resumeQuality.js";
-import {
-  assertProtectedTermsPreserved,
-  buildResumeTranslationRequest,
-  createTranslatedResumeCopy,
-  extractProtectedTerms,
-  parseTranslationJson,
-  postProcessTranslatedResume,
-  serializeResumeTranslationContent,
-  translateDocumentContent,
-  TRANSLATABLE_RESUME_FIELDS,
-  TRANSLATION_STATUSES,
-} from "./translation.js";
+import { serializeResumeTranslationContent, TRANSLATABLE_RESUME_FIELDS, TRANSLATION_STATUSES } from "./translationCore.js";
 import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID, TEMPLATE_COUNTRIES, templateCountries } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
@@ -50,6 +37,29 @@ import { documentLabelsFor } from "./i18n/documentLabels.js";
 import { formatLetterDate, defaultCoverSignoff, COVER_SIGNOFFS, LETTER_LOCALE } from "./i18n/letterDefaults.js";
 import { localizeRoute, localizedLanguageHref } from "./seo/localizedRoutes.js";
 import { jobContextQuery } from "./interview/context.js";
+
+// Event ids normally match their lowercase constant name. Keeping this tiny
+// call-site map avoids pulling the full analytics whitelist into first paint.
+const EVENTS = new Proxy({ COVER_STARTED: "cover_letter_started" }, {
+  get: (overrides, key) => overrides[key] || String(key).toLowerCase(),
+});
+
+function hasAnalyticsConsent() {
+  try { return typeof window !== "undefined" && localStorage.getItem("ac_cookie_consent") === "granted"; }
+  catch { return false; }
+}
+
+function initAnalytics() {
+  if (!hasAnalyticsConsent()) return;
+  const load = () => import("./analytics.js").then((module) => module.initAnalytics());
+  if ("requestIdleCallback" in window) window.requestIdleCallback(load, { timeout: 2000 });
+  else setTimeout(load, 0);
+}
+
+function track(eventId, props) {
+  if (!hasAnalyticsConsent()) return;
+  void import("./analytics.js").then((module) => module.track(eventId, props));
+}
 
 const LANDING2_LOADERS = {
   es: () => import("./i18n/namespaces/es/landing2.js"),
@@ -2655,6 +2665,48 @@ function InteractiveResumeDemo({ isMobile, onContinue, copy }) {
   );
 }
 
+// The demo is one of the heaviest landing-page subtrees (editor controls,
+// preview, ATS card, and modal). It is below the fold, so hydrating all of it
+// during first paint creates avoidable DOM and main-thread work. Keep its
+// crawlable introduction in the prerendered HTML and mount the interactive
+// controls shortly before they enter the viewport.
+function DeferredInteractiveResumeDemo({ isMobile, onContinue, copy }) {
+  const markerRef = useRef(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (ready) return undefined;
+    const marker = markerRef.current;
+    if (!marker || !("IntersectionObserver" in window)) {
+      const id = window.setTimeout(() => setReady(true), 1);
+      return () => window.clearTimeout(id);
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) return;
+      setReady(true);
+      observer.disconnect();
+    }, { rootMargin: "500px 0px" });
+    observer.observe(marker);
+    return () => observer.disconnect();
+  }, [ready]);
+
+  if (ready) return <InteractiveResumeDemo isMobile={isMobile} onContinue={onContinue} copy={copy} />;
+
+  return (
+    <section ref={markerRef} aria-labelledby="interactive-demo-title"
+      style={{ minHeight: 300, padding: "78px 24px", contentVisibility: "auto",
+        containIntrinsicSize: "auto 520px", background: `linear-gradient(180deg, ${C.accent}08, transparent 78%)` }}>
+      <div style={{ maxWidth: 660, margin: "0 auto", textAlign: "center" }}>
+        <p style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase",
+          letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>{copy.eyebrow}</p>
+        <h2 id="interactive-demo-title" style={{ fontSize: "clamp(24px, 3.4vw, 40px)", fontWeight: 800,
+          letterSpacing: "-0.8px", color: C.text1, margin: "0 0 12px" }}>{copy.title}</h2>
+        <p style={{ fontSize: 15.5, color: C.text2, margin: 0, lineHeight: 1.65 }}>{copy.desc}</p>
+      </div>
+    </section>
+  );
+}
+
 function DemoEditor({ demo, setDemo, activeField, setActiveField, inputStyle, tpl, accent, progress,
   completed, aiState, aiDraft, onAi, onAcceptAi, onUndoAi, onSample, onReset, copy }) {
   const steps = [
@@ -3381,13 +3433,13 @@ export default function ResumeGenerator() {
   const [photoUrl, setPhotoUrl] = useState(null);
   const [authModal, setAuthModal] = useState(false);
   const [authModalTab, setAuthModalTab] = useState("login");
-  const [currentUser, setCurrentUser] = useState(() => account.getAccount());
+  const [currentUser, setCurrentUser] = useState(() => accountSession.getAccount());
   // Optional account / sync / paid-pass UI state.
   const [saveProfileOpen, setSaveProfileOpen] = useState(false);
   const [upsell, setUpsell] = useState(null); // null | "sync" | "tailor"
   const [syncStatus, setSyncStatus] = useState("");
   const [aiTailoring, setAiTailoring] = useState(false);
-  const hasPass = account.hasActivePass();
+  const hasPass = accountSession.hasActivePass();
   const translationLimit = hasPass ? 30 : currentUser ? 3 : 1;
   const [translationUsage, setTranslationUsage] = useState(() => readTranslationUsage(translationLimit));
   const [translationDevBypass, setTranslationDevBypass] = useState({ active: false, token: "", header: "" });
@@ -3549,17 +3601,18 @@ export default function ResumeGenerator() {
     let cancelled = false;
     (async () => {
       // 1) Complete a magic-link sign-in if the URL carries a token.
+      const account = await import("./account.js");
       const acct = await account.consumeLoginFromUrl();
       if (acct && !cancelled) {
         setCurrentUser(acct);
         // Pull the cloud Master Profile if the pass is active.
-        if (account.hasActivePass()) {
+        if (accountSession.hasActivePass()) {
           try {
             const { master: cloud } = await account.pullMasterProfile();
             if (cloud && !cancelled) setMaster(m => ({ ...m, ...cloud }));
           } catch { /* no pass / nothing saved */ }
         }
-      } else if (account.getSession() && !cancelled) {
+      } else if (accountSession.getSession() && !cancelled) {
         // 2) Refresh pass status for an existing session.
         const refreshed = await account.refreshAccount();
         if (refreshed && !cancelled) setCurrentUser(refreshed);
@@ -4098,7 +4151,7 @@ export default function ResumeGenerator() {
     privateReady: statusText("shareReady"),
     emailBody: (url) => statusText("shareEmailBody", { url }),
   }), [statusText]);
-  const shareLink = useCallback((getPayload) => {
+  const shareLink = useCallback(async (getPayload) => {
     try {
       const payload = getPayload();
       if (payload?.k === "resume" && isResumeDataEmpty(payload.d)) {
@@ -4107,6 +4160,7 @@ export default function ResumeGenerator() {
         setTimeout(() => setStatusMsg(""), 3000);
         return "";
       }
+      const { buildPrivateShareUrl } = await import("./share.js");
       const url = buildPrivateShareUrl(payload);
       setShareUrl(url);
       try { navigator.clipboard && navigator.clipboard.writeText(url); } catch { /* noop */ }
@@ -4119,8 +4173,8 @@ export default function ResumeGenerator() {
       return "";
     }
   }, [shareCopy.empty, shareCopy.failed, shareCopy.privateReady]);
-  const emailLink = useCallback((getPayload, subject) => {
-    const url = shareLink(getPayload);
+  const emailLink = useCallback(async (getPayload, subject) => {
+    const url = await shareLink(getPayload);
     if (!url) return;
     const body = encodeURIComponent(shareCopy.emailBody(url));
     if (typeof window !== "undefined") window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${body}`;
@@ -4201,7 +4255,7 @@ export default function ResumeGenerator() {
   const handleSubscribe = useCallback(async () => {
     track(EVENTS.CHECKOUT_STARTED, { plan: "monthly" });
     try {
-      const { url, configured } = await account.startCheckout({ lang, plan: "monthly" });
+      const { url, configured } = await (await import("./account.js")).startCheckout({ lang, plan: "monthly" });
       if (configured && url) { window.location.href = url; return; }
     } catch { /* fall through to coming-soon */ }
     setSubModalOpen(false);
@@ -4235,6 +4289,7 @@ export default function ResumeGenerator() {
     const templateId = params.get("template") || "";
     const queryUi = params.get("ui") || "";
     const queryDocLang = params.get("docLang") || "";
+    const importRequested = params.get("importResume") === "1";
     const key = `${location.pathname}?${params.toString()}`;
     if (starterQueryAppliedRef.current === key) return undefined;
     starterQueryAppliedRef.current = key;
@@ -4245,6 +4300,7 @@ export default function ResumeGenerator() {
     if (isDocumentLang(queryDocLang) && queryDocLang !== documentLanguage) {
       setDocumentLanguagePreference(languageByCode(queryDocLang));
     }
+    if (importRequested) setUploadModalOpen(true);
 
     if (!starterId && templateId) {
       const template = TEMPLATES.find((item) => item.id === templateId) || recommendedTemplate;
@@ -4314,7 +4370,7 @@ export default function ResumeGenerator() {
   const handleSyncNow = useCallback(async () => {
     try {
       setSyncStatus(at.syncing);
-      await account.pushMasterProfile(master);
+      await (await import("./account.js")).pushMasterProfile(master);
       setSyncStatus(at.synced);
       setTimeout(() => setSyncStatus(""), 3000);
     } catch (e) {
@@ -4328,7 +4384,7 @@ export default function ResumeGenerator() {
   const handleStartCheckout = useCallback(async () => {
     track(EVENTS.CHECKOUT_STARTED);
     try {
-      const { url, configured } = await account.startCheckout({ lang });
+      const { url, configured } = await (await import("./account.js")).startCheckout({ lang });
       if (configured && url) { window.location.href = url; return; }
     } catch { /* fall through to the "coming soon" message */ }
     setUpsell(null);
@@ -4354,13 +4410,13 @@ export default function ResumeGenerator() {
   }, [hasPass, master, jdText, docLang, at]);
 
   const handleDeleteSavedData = useCallback(async () => {
-    try { await account.deleteSavedData(); } catch { /* ignore */ }
+    try { await (await import("./account.js")).deleteSavedData(); } catch { /* ignore */ }
     setCurrentUser(null);
     setStatusMsg(at.deletedSaved);
     setTimeout(() => setStatusMsg(""), 3000);
   }, [at]);
 
-  const handleSignOut = useCallback(() => { account.logout(); setCurrentUser(null); }, []);
+  const handleSignOut = useCallback(() => { accountSession.logout(); setCurrentUser(null); }, []);
 
   function validateEmail(val) {
     if (!val.trim()) return "";
@@ -4553,6 +4609,14 @@ export default function ResumeGenerator() {
     setTranslating(true);
     setStatusMsg(statusText("translateStarted"));
     try {
+      const {
+        assertProtectedTermsPreserved,
+        buildResumeTranslationRequest,
+        createTranslatedResumeCopy,
+        parseTranslationJson,
+        postProcessTranslatedResume,
+        translateDocumentContent,
+      } = await import("./translation.js");
       const request = buildResumeTranslationRequest(sourceForm, {
         sourceLanguage: detectImportedResumeLanguage(resumeTranslationLanguageSample(sourceForm)) || sourceForm.translationMeta?.targetLanguage || sourceForm.documentLanguage || "auto",
         targetLanguage: langCode,
@@ -4675,8 +4739,8 @@ export default function ResumeGenerator() {
       // apply shake to the nearest wrapper (the input itself or its parent)
       const target = el.closest("[data-field-wrap]") || el;
       target.classList.remove("ac-shake");
-      void target.offsetWidth; // reflow to restart animation
-      target.classList.add("ac-shake");
+      // Restart on the next frame instead of forcing layout via offsetWidth.
+      requestAnimationFrame(() => target.classList.add("ac-shake"));
       setTimeout(() => target.classList.remove("ac-shake"), 450);
     }, 280);
   }
@@ -5446,7 +5510,7 @@ Awards: ${form.awards}`;
                             fontSize: 13, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
                           {bu.preview}
                         </button>
-                        <a href={routeWithParam("/resume-builder/", lang, "template", tp.id)}
+                        <a role="button" href={routeWithParam("/resume-builder/", lang, "template", tp.id)}
                           aria-label={recommended ? builderText("useRecommendedTemplate") : builderText("useTemplateNamed", { template: tp.name })}
                           onClick={(event) => handleRouteLink(event, () => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery"))}
                           style={{ minHeight: 40, padding: "0 15px", background: C.grad, color: "#fff",
@@ -5481,7 +5545,7 @@ Awards: ${form.awards}`;
                           fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
                         {bu.preview}
                       </button>
-                      <a href={routeWithParam("/resume-builder/", lang, "template", tp.id)}
+                      <a role="button" href={routeWithParam("/resume-builder/", lang, "template", tp.id)}
                         aria-label={recommended ? builderText("useRecommendedTemplate") : builderText("useTemplateNamed", { template: tp.name })}
                         onClick={(event) => handleRouteLink(event, () => startWithTemplate(tp, recommended ? "recommended_template" : "template_gallery"))}
                         style={{ flex: 1, minHeight: 44, background: C.grad,
@@ -7134,6 +7198,7 @@ Awards: ${form.awards}`;
     setTranslating(true);
     setStatusMsg(statusText("translateStarted"));
     try {
+      const { extractProtectedTerms, parseTranslationJson, translateDocumentContent } = await import("./translation.js");
       const protectedTerms = Array.from(new Set(Object.values(content).flatMap((value) => extractProtectedTerms(value))));
       const request = {
         type: "cover_letter",
@@ -7505,14 +7570,14 @@ Awards: ${form.awards}`;
                             fontSize: 13, fontWeight: 850, cursor: "pointer", fontFamily: "inherit" }}>
                           {bu.preview}
                         </button>
-                        <a href={localizeRoute("/cover-letter-builder/", lang)}
+                        <button type="button"
                           aria-label={recommended ? builderText("useRecommendedCoverTemplate") : builderText("useCoverTemplateNamed", { template: tp.name })}
                           onClick={(event) => handleRouteLink(event, () => { track(EVENTS.COVER_STARTED, { template: tp.id }); setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); })}
                           style={{ minHeight: 40, padding: "0 15px", background: C.grad, color: "#fff",
                             border: "none", borderRadius: 9, fontSize: 13, fontWeight: 900,
                             cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
                           {bu.useTemplate}
-                        </a>
+                        </button>
                       </div>
                     </div>
                   <div style={{ padding: isMobile ? "12px 2px 0" : "14px 2px 0" }}>
@@ -7536,13 +7601,13 @@ Awards: ${form.awards}`;
                             fontSize: 13, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
                           {bu.preview}
                         </button>
-                        <a href={localizeRoute("/cover-letter-builder/", lang)}
+                        <button type="button"
                           aria-label={recommended ? builderText("useRecommendedCoverTemplate") : builderText("useCoverTemplateNamed", { template: tp.name })}
                           onClick={(event) => handleRouteLink(event, () => { track(EVENTS.COVER_STARTED, { template: tp.id }); setCoverTpl(tp); setMobileCoverMode("edit"); setCoverStep("form"); })}
                           style={{ flex: 1, minHeight: 44, background: C.grad, color: "#fff", border: "none",
                             borderRadius: 9, fontSize: 13.5, fontWeight: 900, cursor: "pointer", fontFamily: "inherit", display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
                           {bu.useTemplate}
-                        </a>
+                        </button>
                       </div>
                     )}
                   </div>
@@ -9313,7 +9378,7 @@ Awards: ${form.awards}`;
               </button>
               </div>
             </div>
-            <div className="ac-hero-visual" style={{ animation: "acFadeUp 0.65s ease 0.42s both" }}>
+            <div className="ac-hero-visual" style={{ animation: isMobile ? "none" : "acFadeUp 0.65s ease 0.42s both" }}>
               <HeroResumePreview isMobile={isMobile} lang={lang} />
             </div>
           </div>
@@ -9341,7 +9406,7 @@ Awards: ${form.awards}`;
           </div>
         </div>
 
-        <InteractiveResumeDemo
+        <DeferredInteractiveResumeDemo
           isMobile={isMobile}
           copy={l2.demo}
           onContinue={(demo) => {
@@ -9826,7 +9891,7 @@ Awards: ${form.awards}`;
         input:focus-visible,
         textarea:focus-visible,
         select:focus-visible,
-        [role="button"]:focus-visible {
+        [role=button]:focus-visible {
           outline: 2px solid ${C.accent2};
           outline-offset: 3px;
           box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
@@ -9981,7 +10046,7 @@ Awards: ${form.awards}`;
                     <div style={{ fontSize: 13, fontWeight: 700, color: C.text1 }}>{currentUser.name || currentUser.email}</div>
                     <div style={{ fontSize: 11.5, color: C.text3, marginTop: 2 }}>{currentUser.email}</div>
                   </div>
-                  <button onClick={() => { account.logout(); setCurrentUser(null); setUserMenuOpen(false); }}
+                  <button onClick={() => { accountSession.logout(); setCurrentUser(null); setUserMenuOpen(false); }}
                     style={{ display: "block", width: "100%", padding: "10px 14px", textAlign: "left",
                       background: "none", border: "none", color: "#f87171", fontSize: 13,
                       fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
@@ -10485,7 +10550,7 @@ function SaveProfileModal({ open, onClose, at, rtl, C, lang }) {
     if (!valid) { setErr("•"); return; }
     setStatus("sending");
     try {
-      const res = await account.requestMagicLink(email.trim(), { consent, lang });
+      const res = await (await import("./account.js")).requestMagicLink(email.trim(), { consent, lang });
       if (res?.configured === false) { setStatus("soon"); return; }
       track(EVENTS.EMAIL_CAPTURED);
       setStatus("sent");

@@ -163,11 +163,6 @@
     }
     </script>
 
-    <!-- Self-hosted brand fonts (@font-face in /_seo.css). No CDN, no render
-         blocking. Preload the Latin file used on every page; the Arabic file is
-         preloaded only on RTL routes (see onBeforePageRender in vite.config.js). -->
-    <link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
-
     <style>
       /* Design tokens — mirror of src/theme/colors.js (see public/_seo.css for
          the static-page copy). Contrast is enforced by scripts/contrast-tests.mjs. */
@@ -216,8 +211,8 @@
         }
       }
       @keyframes acPulse {
-        0%, 100% { box-shadow: 0 4px 24px rgba(99,102,241,0.4); }
-        50%       { box-shadow: 0 8px 48px rgba(99,102,241,0.7), 0 0 0 5px rgba(99,102,241,0.1); }
+        0%, 100% { transform: scale(1); }
+        50%       { transform: scale(1.025); }
       }
       @keyframes acGradientShift {
         0%, 100% { background-position: 0% 50%; }
@@ -273,6 +268,10 @@
         }
         .ac-hero-text { text-align: center !important; }
         .ac-hero-visual { display: block !important; max-width: 100% !important; overflow: visible !important; }
+        /* SSG renders before viewport hooks run, so desktop entrance animations
+           are present inline in the initial HTML. Do not let those `both`
+           animations hold mobile hero text at opacity:0 until hydration. */
+        .ac-hero-text > *, .ac-hero-visual { animation: none !important; }
 
         /* Navbar: match post-hydration mobile sizing so it doesn't paint
            large then snap smaller on refresh. */

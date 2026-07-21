@@ -1,10 +1,5 @@
-export const TRANSLATION_STATUSES = {
-  original: "original",
-  aiTranslated: "ai_translated",
-  editedAfterTranslation: "edited_after_translation",
-  needsReview: "needs_review",
-  humanReviewed: "human_reviewed",
-};
+import { TRANSLATABLE_RESUME_FIELDS, TRANSLATION_STATUSES, serializeResumeTranslationContent } from "./translationCore.js";
+export { TRANSLATABLE_RESUME_FIELDS, TRANSLATION_STATUSES, serializeResumeTranslationContent } from "./translationCore.js";
 
 export const PRESERVE_TERMS = [
   "Microsoft Intune",
@@ -25,20 +20,6 @@ export const PRESERVE_TERMS = [
   "Kandji",
   "Intelligent Hub",
   "LinkedIn",
-];
-
-export const TRANSLATABLE_RESUME_FIELDS = [
-  "title",
-  "summary",
-  "experience",
-  "education",
-  "skills",
-  "languages",
-  "certifications",
-  "projects",
-  "volunteer",
-  "awards",
-  "extracurricular",
 ];
 
 export class TranslationRequestError extends Error {
@@ -63,26 +44,6 @@ export function extractProtectedTerms(value, glossary = PRESERVE_TERMS) {
     for (const match of text.matchAll(re)) found.add(match[0]);
   }
   return Array.from(found);
-}
-
-function normalizeTranslationText(value) {
-  return String(value || "")
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/p>\s*<p[^>]*>/gi, "\n")
-    .replace(/<\/?[^>]+>/g, "")
-    .replace(/&nbsp;/gi, " ")
-    .replace(/\u00a0/g, " ")
-    .replace(/\r\n?/g, "\n")
-    .trim();
-}
-
-export function serializeResumeTranslationContent(form) {
-  const content = {};
-  for (const key of TRANSLATABLE_RESUME_FIELDS) {
-    const value = normalizeTranslationText(form?.[key]);
-    if (value) content[key] = value;
-  }
-  return content;
 }
 
 export function buildResumeTranslationRequest(form, { sourceLanguage = "auto", targetLanguage = "en", targetLanguageName = "English" } = {}) {

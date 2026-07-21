@@ -58,7 +58,8 @@ const MAX_INITIAL_CHUNK_GZ = 192_000;   // current app shell baseline
 // a dynamic import alone cannot supply it without a blocking round-trip or a
 // hydration mismatch. The lazyLanding2 pattern in that file is not a precedent:
 // it only covers es/de, which are never prerendered as interface locales.
-const MAX_INITIAL_TOTAL_GZ = 265_000;   // current multilingual app shell baseline
+// Product requirement: never raise this ceiling merely to make a build pass.
+const MAX_INITIAL_TOTAL_GZ = 260_000;
 
 // Max raw (uncompressed) size of any image served from /public, in bytes.
 const MAX_IMAGE_SIZE = 250_000;         // 250 KB
@@ -87,8 +88,8 @@ const indexHtml = readFileSync(join(DIST_ROOT, "index.html"), "utf8");
 
 const initialSrcs = [];
 
-// Entry script (type="module" src="...")
-for (const [, src] of indexHtml.matchAll(/<script[^>]+type="module"[^>]+src="([^"]+)"/g)) {
+// Every local external script, including classic deferred helpers.
+for (const [, src] of indexHtml.matchAll(/<script[^>]+src="([^"]+)"/g)) {
   initialSrcs.push(src);
 }
 // Modulepreload links
@@ -97,9 +98,29 @@ for (const [, href] of indexHtml.matchAll(/<link[^>]+rel="modulepreload"[^>]+hre
 }
 
 // Resolve paths: /assets/foo.js → dist/assets/foo.js
-const initialFiles = initialSrcs
-  .filter((s) => s.startsWith("/assets/"))
+const directInitialFiles = initialSrcs
+  .filter((s) => s.startsWith("/") && !s.startsWith("//"))
   .map((s) => join(DIST_ROOT, s.replace(/^\//, "")));
+
+// Modulepreload entries can themselves contain static imports that are fetched
+// before their module can execute. Include that complete graph; counting only
+// tags in HTML substantially under-reports route-lazy landing dependencies.
+const manifest = JSON.parse(readFileSync(join(DIST_ROOT, ".vite/manifest.json"), "utf8"));
+const manifestKeyByFile = new Map(Object.entries(manifest).map(([key, value]) => [value.file, key]));
+const initialFileSet = new Set();
+function addStaticImports(filePath) {
+  if (initialFileSet.has(filePath)) return;
+  initialFileSet.add(filePath);
+  const relativeFile = filePath.slice(DIST_ROOT.length + 1);
+  const key = manifestKeyByFile.get(relativeFile);
+  if (!key) return;
+  for (const importedKey of manifest[key].imports || []) {
+    const imported = manifest[importedKey];
+    if (imported?.file) addStaticImports(join(DIST_ROOT, imported.file));
+  }
+}
+for (const file of directInitialFiles) addStaticImports(file);
+const initialFiles = [...initialFileSet];
 
 // ── Run checks ────────────────────────────────────────────────────────────
 

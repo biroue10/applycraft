@@ -14,51 +14,13 @@
 // backend or its env vars are absent — see functions/api/* for the stubs.
 // ──────────────────────────────────────────────────────────────────────────
 
-const SESSION_KEY = "ac_session";
-const ACCOUNT_KEY = "ac_account";
-const CONSENT_KEY = "ac_consent_sync";
-
-function read(key, fallback = null) {
-  if (typeof localStorage === "undefined") return fallback;
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function write(key, value) {
-  if (typeof localStorage === "undefined") return;
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    /* ignore quota/availability errors */
-  }
-}
+import { CONSENT_KEY, getAccount, getSession, hasActivePass, logout, readAccountValue as read, setAccount, writeAccountValue as write } from "./accountSession.js";
+export { getAccount, getSession, hasActivePass, logout } from "./accountSession.js";
 
 // ── Session + account (persisted locally so login survives refresh) ─────────
 
-export function getSession() {
-  return read(SESSION_KEY); // opaque bearer token string, or null
-}
-
-export function getAccount() {
-  return read(ACCOUNT_KEY); // { email, activePass, passExpires } | null
-}
-
-export function hasActivePass() {
-  const a = getAccount();
-  if (!a?.activePass || !a.passExpires) return false;
-  return new Date(a.passExpires).getTime() > Date.now();
-}
-
 export function getConsent() {
   return read(CONSENT_KEY); // { granted: bool, at: iso } | null
-}
-
-function setAccount(account) {
-  if (account) write(ACCOUNT_KEY, account);
 }
 
 function authHeaders() {
@@ -110,11 +72,6 @@ export async function consumeLoginFromUrl() {
   } catch {
     return null;
   }
-}
-
-export function logout() {
-  if (typeof localStorage === "undefined") return;
-  [SESSION_KEY, ACCOUNT_KEY].forEach((k) => localStorage.removeItem(k));
 }
 
 // ── Master Profile cloud sync (PAID — server enforces the active pass) ──────

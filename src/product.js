@@ -23,7 +23,7 @@ export const PRODUCT = {
   // Counts — verified against TEMPLATES / COVER_TEMPLATES / WORLD_LANGUAGES.
   resumeTemplateCount: RESUME_TEMPLATE_COUNT,
   coverLetterTemplateCount: COVER_TEMPLATE_COUNT,
-  writableLanguageCount: 99,      // WORLD_LANGUAGES — users can write content in these languages
+  writableLanguageCount: 96,      // verified against WORLD_LANGUAGES by test:product
   localizedDocumentLanguageCount: 3, // Production document labels: en, fr, ar
   interfaceLanguageCount: INTERFACE_LANGUAGES.length,
 

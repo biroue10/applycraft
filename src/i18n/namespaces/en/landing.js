@@ -16,6 +16,7 @@ const landing = {
   "statDocLangs": "Localized languages",
   "statFormats": "Export formats",
   "statDownloads": "Free downloads",
+  "mockup": { "initials": "AM", "name": "Amina Mansouri", "title": "Product Designer", "experience": "Experience", "role": "Senior Product Designer", "date": "2022 — Present", "achievement": "Led accessible product experiences and improved customer outcomes across international markets.", "skills": "Skills", "skillItems": ["Research", "Design systems", "Strategy"], "ats": "ATS-ready" },
   "comingSoonBody": "This feature is not yet available. We're working on it and it will be ready soon.",
   "gotIt": "Got it",
   // ── About page ──

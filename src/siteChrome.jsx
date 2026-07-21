@@ -27,8 +27,9 @@ function BrandLogoImage({ compact = false, style = {} }) {
       className="ac-brand-logo-img"
       src={BRAND_LOGO_SRC}
       alt="ApplyCraft"
-      width="1180"
-      height="304"
+      width="320"
+      height="82"
+      decoding="async"
       style={{
         display: "block",
         height: compact ? 28 : 30,

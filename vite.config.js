@@ -205,6 +205,21 @@ const isAnalyze = process.env.ANALYZE === "true";
 export default defineConfig({
   plugins: [
     react(),
+    {
+      name: "canonical-preview-routes",
+      configurePreviewServer(server) {
+        const htmlRoutes = new Set([
+          "/resume-builder/", "/resume/templates/", "/resume/builder/",
+          "/cover-letter/templates/", "/cover-letter/builder/", "/job-tracker/",
+          "/app/ats-checker/", "/master-profile/", "/email-signature/", "/personal-website/",
+        ]);
+        server.middlewares.use((request, _response, next) => {
+          const [pathname, query = ""] = String(request.url || "").split("?");
+          if (htmlRoutes.has(pathname)) request.url = `${pathname.slice(0, -1)}.html${query ? `?${query}` : ""}`;
+          next();
+        });
+      },
+    },
     // Bundle visualizer — only emitted when ANALYZE=true to avoid cluttering CI.
     isAnalyze && visualizer({
       filename: "dist/bundle-report.html",
@@ -218,9 +233,21 @@ export default defineConfig({
   build: {
     // Report compressed sizes in the build output.
     reportCompressedSize: true,
+    // Production maps intentionally stay private/disabled. Public maps would
+    // expose the full first-party source tree; no error-reporting service is
+    // configured to receive hidden maps. Lighthouse's source-map diagnostic is
+    // therefore an acknowledged debugging trade-off, not a runtime defect.
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks(id) {
+          const landingLocale = id.match(/\/src\/i18n\/namespaces\/(en|fr|ar)\/(?:landing|landing2|footer)\.js$/)?.[1];
+          if (landingLocale) {
+            // The builder's aggregate i18n module also imports these files. A
+            // locale-specific named chunk keeps that sharing without forcing a
+            // homepage to fetch the other two interface languages.
+            return `landing-${landingLocale}`;
+          }
           if (
             id.includes("/src/i18n/namespaces/es/landing2.js") ||
             id.includes("/src/i18n/namespaces/de/landing2.js") ||
@@ -265,9 +292,6 @@ export default defineConfig({
       // user-shared viewer. Build-time only — no client JS.
       const meta = ROUTE_META[path] || {};
       const tags = [`<link rel="canonical" href="${canonicalFor(path)}" />`];
-      // Preload the Arabic woff2 only on RTL routes — English/French pages never
-      // render Arabic body text, so preloading it there would waste a request.
-      if (dir === "rtl") tags.push(`<link rel="preload" href="/fonts/ibm-plex-sans-arabic-400.woff2" as="font" type="font/woff2" crossorigin />`);
       if (path === "/r" || path.startsWith("/r/")) tags.push(`<meta name="robots" content="noindex,follow" />`);
       for (const a of hreflangFor(path)) {
         tags.push(`<link rel="alternate" hreflang="${a.hreflang}" href="${a.href}" />`);
@@ -331,6 +355,17 @@ export default defineConfig({
       return nextHtml
         .replace(/<html[^>]*>/, htmlTag)
         .replace("</head>", `    ${tags.join("\n    ")}\n  </head>`);
+    },
+    onPageRendered(path, html) {
+      if (!["/", "/fr/", "/ar/"].includes(path)) return html;
+      // Marketing pages are fully prerendered. Progressively enhance only the
+      // mobile menu instead of booting React and the router for static content.
+      return html
+        .replace(/\s*<script[^>]+type=["']module["'][^>]+src=["'][^"']+["'][^>]*><\/script>/gi, "")
+        .replace(/\s*<link[^>]+rel=["']modulepreload["'][^>]*>/gi, "")
+        .replace(/\s*<script>window\.__staticRouterHydrationData[\s\S]*?<\/script>/i, "")
+        .replace(/\s*<script>window\.__VITE_REACT_SSG_HASH__[\s\S]*?<\/script>/i, "")
+        .replace("</body>", "<script src=\"/landing.js\" defer></script>\n</body>");
     },
   },
 });
