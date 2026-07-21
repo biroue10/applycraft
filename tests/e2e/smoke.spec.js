@@ -19,7 +19,9 @@ test.describe("Homepage & navigation", () => {
     await page.goto("/");
     await expect(page).toHaveTitle(/ApplyCraft/i);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await expect(page.getByRole("button", { name: /create my resume/i }).first()).toBeVisible();
+    const primaryCta = page.getByRole("link", { name: /create my resume/i }).first();
+    await expect(primaryCta).toBeVisible();
+    await expect(primaryCta).toHaveAttribute("href", /\/resume-builder\//);
     expect(errors, errors.join("\n")).toHaveLength(0);
   });
 

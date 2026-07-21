@@ -241,13 +241,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          const landingLocale = id.match(/\/src\/i18n\/namespaces\/(en|fr|ar)\/(?:landing|landing2|footer)\.js$/)?.[1];
-          if (landingLocale) {
-            // The builder's aggregate i18n module also imports these files. A
-            // locale-specific named chunk keeps that sharing without forcing a
-            // homepage to fetch the other two interface languages.
-            return `landing-${landingLocale}`;
-          }
           if (
             id.includes("/src/i18n/namespaces/es/landing2.js") ||
             id.includes("/src/i18n/namespaces/de/landing2.js") ||
@@ -355,17 +348,6 @@ export default defineConfig({
       return nextHtml
         .replace(/<html[^>]*>/, htmlTag)
         .replace("</head>", `    ${tags.join("\n    ")}\n  </head>`);
-    },
-    onPageRendered(path, html) {
-      if (!["/", "/fr/", "/ar/"].includes(path)) return html;
-      // Marketing pages are fully prerendered. Progressively enhance only the
-      // mobile menu instead of booting React and the router for static content.
-      return html
-        .replace(/\s*<script[^>]+type=["']module["'][^>]+src=["'][^"']+["'][^>]*><\/script>/gi, "")
-        .replace(/\s*<link[^>]+rel=["']modulepreload["'][^>]*>/gi, "")
-        .replace(/\s*<script>window\.__staticRouterHydrationData[\s\S]*?<\/script>/i, "")
-        .replace(/\s*<script>window\.__VITE_REACT_SSG_HASH__[\s\S]*?<\/script>/i, "")
-        .replace("</body>", "<script src=\"/landing.js\" defer></script>\n</body>");
     },
   },
 });
