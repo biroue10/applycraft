@@ -11,6 +11,32 @@ const LOCALES = [
   { path: "/ar/interview-prep/", heading: "تحضير المقابلة", start: "ابدأ المحاكاة", rtl: true },
 ];
 
+const SELECT_COPY = {
+  en: { path: "/interview-prep/", languages: ["English", "French", "Arabic"], levels: ["Junior", "Mid-level", "Senior"] },
+  fr: { path: "/fr/interview-prep/", languages: ["Anglais", "Français", "Arabe"], levels: ["Junior", "Confirmé", "Senior"] },
+  ar: { path: "/ar/interview-prep/", languages: ["الإنجليزية", "الفرنسية", "العربية"], levels: ["مبتدئ", "متوسط", "خبير"] },
+};
+
+function relativeLuminance([r, g, b]) {
+  const channels = [r, g, b].map((value) => {
+    const channel = value / 255;
+    return channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+}
+
+function contrastRatio(foreground, background) {
+  const fg = relativeLuminance(foreground);
+  const bg = relativeLuminance(background);
+  return (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05);
+}
+
+function rgbChannels(value) {
+  const channels = value.match(/[\d.]+/g)?.slice(0, 3).map(Number);
+  if (!channels || channels.length !== 3) throw new Error(`Expected an opaque RGB color, received: ${value}`);
+  return channels;
+}
+
 for (const locale of LOCALES) {
   test(`renders localized setup screen at ${locale.path}`, async ({ page }) => {
     await page.goto(locale.path, { waitUntil: "networkidle" });
@@ -31,6 +57,76 @@ test("start button is disabled until a job offer is pasted", async ({ page }) =>
   await expect(start).toBeDisabled();
   await page.locator("#ac-iv-offer").fill("We are hiring a backend engineer to build APIs.");
   await expect(start).toBeEnabled();
+});
+
+test("native interview selects keep every localized option enabled and readable", async ({ page }) => {
+  for (const [locale, expected] of Object.entries(SELECT_COPY)) {
+    await page.goto(expected.path, { waitUntil: "networkidle" });
+    const language = page.locator("#ac-iv-lang");
+    const level = page.locator("#ac-iv-level");
+
+    await expect(language).toHaveClass(/ac-interview-select/);
+    await expect(level).toHaveClass(/ac-interview-select/);
+    await expect(language.locator("option")).toHaveText(expected.languages);
+    await expect(level.locator("option")).toHaveText(expected.levels);
+    expect(await language.locator("option:disabled").count()).toBe(0);
+    expect(await level.locator("option:disabled").count()).toBe(0);
+
+    for (const select of [language, level]) {
+      const colors = await select.evaluate((node) => {
+        const selectStyle = getComputedStyle(node);
+        const optionStyle = getComputedStyle(node.options[0]);
+        return {
+          colorScheme: selectStyle.colorScheme,
+          selectColor: selectStyle.color,
+          selectBackground: selectStyle.backgroundColor,
+          optionColor: optionStyle.color,
+          optionBackground: optionStyle.backgroundColor,
+        };
+      });
+      expect(colors.colorScheme).toContain("dark");
+      expect(contrastRatio(rgbChannels(colors.selectColor), rgbChannels(colors.selectBackground))).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(rgbChannels(colors.optionColor), rgbChannels(colors.optionBackground))).toBeGreaterThanOrEqual(4.5);
+    }
+
+    await language.selectOption("fr");
+    await expect(language).toHaveValue("fr");
+    await language.selectOption("ar");
+    await expect(language).toHaveValue("ar");
+    await language.selectOption("en");
+    await expect(language).toHaveValue("en");
+
+    await level.focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(level).toHaveValue("confirme");
+    await page.keyboard.press("ArrowDown");
+    await expect(level).toHaveValue("senior");
+  }
+});
+
+test("the chosen interview language stays independent from the English interface", async ({ browser }) => {
+  for (const locale of ["en", "fr", "ar"]) {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    let submitted;
+    await page.route("**/api/interview", async (route) => {
+      submitted = route.request().postDataJSON();
+      await route.fulfill({
+        status: 200,
+        contentType: "text/event-stream",
+        body: `data: ${JSON.stringify({ text: `Question in ${locale}` })}\n\ndata: ${JSON.stringify({ done: true })}\n\ndata: [DONE]\n\n`,
+      });
+    });
+
+    await page.goto("/interview-prep/", { waitUntil: "networkidle" });
+    await page.locator("#ac-iv-lang").selectOption(locale);
+    await page.locator("#ac-iv-level").selectOption("senior");
+    await page.locator("#ac-iv-offer").fill("Backend engineer role requiring API design and communication skills.");
+    await page.getByRole("button", { name: "Start simulation" }).click();
+    await expect(page.getByText(`Question in ${locale}`)).toBeVisible();
+    expect(submitted).toMatchObject({ locale, level: "senior" });
+    await context.close();
+  }
 });
 
 test("runs a mocked simulation: stream a question, answer, then feedback", async ({ page }) => {

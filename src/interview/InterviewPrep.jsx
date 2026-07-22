@@ -7,6 +7,10 @@ import { useInterviewGate, recordSimulationStart } from "./quota.js";
 import { sanitizeJobContextValue } from "./context.js";
 
 const C = SITE_COLORS;
+// The global accent (#6366F1) with white text is 4.47:1, narrowly below AA.
+// Use the existing dark-indigo palette value for a clearly selected native
+// option while keeping white text above the 4.5:1 requirement.
+const SELECTED_OPTION_BG = "#4338CA";
 
 // UI locale comes from the route path (/interview-prep/, /fr/…, /ar/…), resolved
 // at render time so the prerendered HTML is correct per locale (RTL for Arabic).
@@ -343,6 +347,10 @@ export default function InterviewPrep() {
 function SetupScreen({ c, card, jobOffer, setJobOffer, jobOfferError, level, setLevel, ivLang, setIvLang, onStart, gate, gateBlocked }) {
   const selectStyle = {
     ...inputBase,
+    backgroundColor: C.elevated,
+    color: C.text1,
+    borderColor: C.borderHi,
+    colorScheme: "dark",
     appearance: "auto",
     cursor: "pointer",
   };
@@ -351,6 +359,28 @@ function SetupScreen({ c, card, jobOffer, setJobOffer, jobOfferError, level, set
       style={card}
       onSubmit={(e) => { e.preventDefault(); onStart(); }}
     >
+      <style>{`
+        .ac-interview-select {
+          color-scheme: dark;
+        }
+        .ac-interview-select option {
+          background-color: ${C.elevated};
+          color: ${C.text1};
+        }
+        .ac-interview-select option:checked {
+          background-color: ${SELECTED_OPTION_BG};
+          color: #ffffff;
+        }
+        .ac-interview-select option:disabled {
+          background-color: ${C.elevated};
+          color: ${C.text3};
+        }
+        .ac-interview-select:focus-visible {
+          border-color: ${C.accent2};
+          outline: 3px solid rgba(129, 140, 248, 0.35);
+          outline-offset: 2px;
+        }
+      `}</style>
       <div style={{ marginBottom: 20 }}>
         <label htmlFor="ac-iv-offer" style={fieldLabel}>{c.setup.jobOfferLabel}</label>
         <textarea
@@ -375,7 +405,7 @@ function SetupScreen({ c, card, jobOffer, setJobOffer, jobOfferError, level, set
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 20 }}>
         <div style={{ flex: "1 1 200px" }}>
           <label htmlFor="ac-iv-lang" style={fieldLabel}>{c.setup.languageLabel}</label>
-          <select id="ac-iv-lang" value={ivLang} onChange={(e) => setIvLang(e.target.value)} style={selectStyle}>
+          <select className="ac-interview-select" id="ac-iv-lang" value={ivLang} onChange={(e) => setIvLang(e.target.value)} style={selectStyle}>
             {INTERVIEW_LOCALES.map((code) => (
               <option key={code} value={code}>{c.languages[code]}</option>
             ))}
@@ -383,7 +413,7 @@ function SetupScreen({ c, card, jobOffer, setJobOffer, jobOfferError, level, set
         </div>
         <div style={{ flex: "1 1 200px" }}>
           <label htmlFor="ac-iv-level" style={fieldLabel}>{c.setup.levelLabel}</label>
-          <select id="ac-iv-level" value={level} onChange={(e) => setLevel(e.target.value)} style={selectStyle}>
+          <select className="ac-interview-select" id="ac-iv-level" value={level} onChange={(e) => setLevel(e.target.value)} style={selectStyle}>
             {INTERVIEW_LEVELS.map((code) => (
               <option key={code} value={code}>{c.levels[code]}</option>
             ))}
