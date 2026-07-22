@@ -5,8 +5,15 @@ import { interviewCopy, fmt, INTERVIEW_LOCALES, INTERVIEW_LEVELS } from "./i18n.
 import { streamRecruiterQuestion, requestFeedback, INTERVIEW_LIMITS } from "./interviewClient.js";
 import { useInterviewGate, recordSimulationStart } from "./quota.js";
 import { sanitizeJobContextValue } from "./context.js";
+import { INTERFACE_LANGUAGES, interfaceLanguageByCode } from "../i18n/languages.js";
+import { localizedLanguageHref } from "../seo/localizedRoutes.js";
 
 const C = SITE_COLORS;
+
+function InterfaceLanguageLinks({ locale, pathname }) {
+  const current = interfaceLanguageByCode(locale);
+  return <details style={{ position: "relative" }}><summary aria-label={current.native} style={{ cursor: "pointer", listStyle: "none", padding: 7 }}><img src={current.flagSrc} alt="" width="20" height="14" /></summary><div style={{ position: "absolute", zIndex: 220, top: "100%", insetInlineEnd: 0, minWidth: 145, padding: 6, background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 10 }}>{INTERFACE_LANGUAGES.map((code) => { const meta = interfaceLanguageByCode(code); return <a key={code} href={localizedLanguageHref(pathname, code)} hrefLang={code} lang={code} aria-current={code === locale ? "page" : undefined} style={{ display: "flex", alignItems: "center", gap: 8, padding: 8, color: C.text1, textDecoration: "none" }}><img src={meta.flagSrc} alt="" width="20" height="14" />{meta.native}</a>; })}</div></details>;
+}
 
 // UI locale comes from the route path (/interview-prep/, /fr/…, /ar/…), resolved
 // at render time so the prerendered HTML is correct per locale (RTL for Arabic).
@@ -225,7 +232,7 @@ export default function InterviewPrep() {
   const displayTurn = Math.min(streaming ? askedCount + 1 : Math.max(askedCount, 1), INTERVIEW_LIMITS.maxTurns);
 
   return (
-    <AppShell lang={uiLang} activeId="interview">
+    <AppShell lang={uiLang} activeId="interview" renderLanguageSelector={() => <InterfaceLanguageLinks locale={uiLang} pathname={location.pathname} />}>
       <style suppressHydrationWarning>{`
         .ac-iv-main { flex: 1; padding: calc(${HEADER_HEIGHT}px + 2rem) 1rem 4rem; }
         .ac-iv-wrap { max-width: 760px; margin: 0 auto; width: 100%; }

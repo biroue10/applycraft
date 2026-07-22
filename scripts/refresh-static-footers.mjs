@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { footerHtml } from "./shared-footer.mjs";
+import { headerHtml } from "./shared-header.mjs";
 import { localizeRoute } from "../src/seo/localizedRoutes.js";
 import { PRODUCT } from "../src/product.js";
 
@@ -46,7 +47,18 @@ for (const file of walk(ROOT)) {
   const html = readFileSync(file, "utf8");
   const lang = html.match(/<html[^>]*\blang="([^"]+)"/i)?.[1]?.slice(0, 2) || "en";
   const homeHref = localizeRoute("/", lang);
+  const route = `/${file.slice(ROOT.length).replace(/index\.html$/, "").replaceAll("\\", "/")}`.replace(/\/+/g, "/");
   let next = html;
+  const header = headerHtml(lang, route);
+  if (next.includes('class="ac-static-site-header"')) {
+    next = next.replace(/<a class="ac-skip-link"[\s\S]*?<\/header><script src="\/site-header\.js" defer><\/script>/, header);
+  } else if (!next.includes('data-site-header="applycraft"')) {
+    if (/<nav class="nav">[\s\S]*?<\/nav>/.test(next)) next = next.replace(/<nav class="nav">[\s\S]*?<\/nav>/, header);
+    else if (/<body[^>]*>/.test(next)) next = next.replace(/(<body[^>]*>)/, `$1${header}`);
+  }
+  if (!/id=["']main-content["']/.test(next) && /<main\b/.test(next)) {
+    next = next.replace(/<main\b/, '<main id="main-content" tabindex="-1"');
+  }
   if (html.includes('<footer class="site-footer"')) {
     next = next
     // Match the footer open tag with any extra attributes (e.g. role="contentinfo"),

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/generate-blog-indexes.mjs && node scripts/generate-application-pack-pages.mjs && node scripts/generate-workspace-hubs.mjs && node scripts/generate-seo-intent-registry.mjs && node scripts/build-ats-import.mjs && vite-react-ssg build",
+    "build": "node scripts/generate-blog-indexes.mjs && node scripts/generate-application-pack-pages.mjs && node scripts/generate-workspace-hubs.mjs && node scripts/generate-seo-intent-registry.mjs && node scripts/refresh-static-footers.mjs && node scripts/build-ats-import.mjs && vite-react-ssg build",
     "preview": "vite preview",
     "seo:sitemap": "node scripts/generate-sitemap.mjs",
     "seo:pages": "node scripts/generate-consent-asset.mjs && node scripts/generate-seo-pages.mjs && node scripts/generate-localized-seo-pages.mjs && node scripts/generate-company-pages.mjs && node scripts/refresh-static-footers.mjs",
@@ -32,6 +32,7 @@
     "test:e2e:static": "node scripts/e2e-static-tests.mjs",
     "test:smoke:static-browser": "node scripts/headless-static-smoke.mjs",
     "test:homepage-integrity": "node scripts/homepage-integrity-tests.mjs",
+    "test:navbar-integrity": "node scripts/navbar-integrity-tests.mjs",
     "test:e2e": "playwright test",
     "test:a11y": "node scripts/a11y-check.mjs",
     "test:security": "node scripts/security-tests.mjs",

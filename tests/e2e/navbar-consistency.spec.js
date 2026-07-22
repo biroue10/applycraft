@@ -19,19 +19,19 @@ const DESKTOP_HEIGHT = 64;
 
 const LOCALES = {
   en: {
-    labels: ["Resume Builder", "Cover Letter", "ATS Checker", "Job Tracker", "Interview Prep"],
+    labels: ["Resume Builder", "Cover Letter", "ATS Checker", "Application Pack", "Job Tracker", "Interview Prep", "Resume Templates", "Pricing"],
     marketing: "/",
     app: "/app/ats-checker",
     rtl: false,
   },
   fr: {
-    labels: ["Créateur de CV", "Lettre de motivation", "Vérificateur ATS", "Suivi des candidatures", "Préparation entretien"],
+    labels: ["Créateur de CV", "Lettre de motivation", "Vérificateur ATS", "Pack de candidature", "Suivi des candidatures", "Préparation entretien", "Modèles de CV", "Tarifs"],
     marketing: "/fr/",
     app: "/app/ats-checker?ui=fr&docLang=fr",
     rtl: false,
   },
   ar: {
-    labels: ["منشئ السيرة الذاتية", "خطاب التقديم", "فاحص ATS", "متابعة الوظائف", "تحضير المقابلة"],
+    labels: ["منشئ السيرة الذاتية", "خطاب التقديم", "فاحص ATS", "حزمة التقديم", "متابعة الوظائف", "تحضير المقابلة", "قوالب السيرة الذاتية", "الأسعار"],
     marketing: "/ar/",
     app: "/app/ats-checker?ui=ar&docLang=ar",
     rtl: true,

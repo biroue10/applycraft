@@ -116,7 +116,7 @@ export function SiteHeader({
   onCtaClick,
   showCta = true,
   renderLanguageSelector,
-  keepLanguageOnMobile = false,
+  keepLanguageOnMobile = true,
   endSlot = null,
   variant = "site",
   headerStyle,
@@ -139,9 +139,6 @@ export function SiteHeader({
   const toggleMobileMenu = controlledMobileMenu
     ? onMobileMenuToggle
     : () => setInternalMenuOpen((open) => !open);
-  const closeMobileMenu = () => {
-    if (!controlledMobileMenu) setInternalMenuOpen(false);
-  };
   return (
     <>
     <style suppressHydrationWarning>{`
@@ -208,7 +205,7 @@ export function SiteHeader({
         }
       }
     `}</style>
-    <header className="ac-site-header" style={{
+    <header data-site-header="applycraft" className="ac-site-header" onKeyDown={(event) => { if (event.key === "Escape" && menuOpen) toggleMobileMenu(); }} style={{
       position: isApp ? "sticky" : "fixed",
       top: 0,
       ...(isApp ? {} : { left: 0, right: 0 }),
@@ -315,7 +312,7 @@ export function SiteHeader({
           {cta}
         </a>
         )}
-        <button type="button" aria-label={menuOpen ? f.closeMenu : f.openMenu} aria-expanded={menuOpen}
+        <button type="button" aria-label={menuOpen ? f.closeMenu : f.openMenu} aria-expanded={menuOpen} aria-controls="m"
             onClick={toggleMobileMenu}
             className="ac-site-mobile-menu-button"
             style={{ marginInlineStart: 8, width: 40, height: 40, borderRadius: 10, border: `1px solid ${SITE_COLORS.border}`,
@@ -325,7 +322,7 @@ export function SiteHeader({
           </button>
       </div>
       {menuOpen && (
-        <nav aria-label={f.menu} className="ac-site-mobile-menu" style={{ boxShadow: `inset 0 1px 0 ${SITE_COLORS.border}`, background: `${SITE_COLORS.bg}f5`,
+        <nav id="m" aria-label={f.menu} className="ac-site-mobile-menu" style={{ boxShadow: `inset 0 1px 0 ${SITE_COLORS.border}`, background: `${SITE_COLORS.bg}f5`,
           backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
           padding: "8px 12px 14px", display: "none", flexDirection: "column", gap: 2 }}>
           {items.map((item) => {
@@ -334,9 +331,9 @@ export function SiteHeader({
             return (
               <Tag key={item.href || item.id || item.label} {...action.props}
                 aria-current={activeId && item.id === activeId ? "page" : undefined}
-                onClick={item.onClick ? () => { item.onClick(); closeMobileMenu(); } : action.props.onClick ? (event) => {
+                onClick={item.onClick ? () => { item.onClick(); toggleMobileMenu(); } : action.props.onClick ? (event) => {
                   action.props.onClick(event);
-                  if (!shouldUseNativeNavigation(event)) closeMobileMenu();
+                  if (!shouldUseNativeNavigation(event)) toggleMobileMenu();
                 } : undefined}
                 style={{ textAlign: "start", border: "none", background: "transparent",
                   color: SITE_COLORS.text1, padding: "12px 10px", fontSize: 15, fontWeight: 700, cursor: "pointer",
@@ -451,7 +448,7 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
   );
 }
 
-export function AppShell({ children, lang = "en", activeId }) {
+export function AppShell({ children, lang = "en", activeId, renderLanguageSelector }) {
   return (
     <div style={{
       minHeight: "100vh",
@@ -460,7 +457,7 @@ export function AppShell({ children, lang = "en", activeId }) {
       flexDirection: "column",
       fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif",
     }}>
-      <SiteHeader lang={lang} activeId={activeId} />
+      <SiteHeader lang={lang} activeId={activeId} renderLanguageSelector={renderLanguageSelector} />
       {children}
       <SiteFooter lang={lang} className="ac-site-footer" />
     </div>

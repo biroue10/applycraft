@@ -4605,7 +4605,6 @@ Awards: ${form.awards}`;
       onNavigate={enterPrimaryTool}
       onLogoClick={() => setAppView("landing")}
       showCta={false}
-      keepLanguageOnMobile
       renderLanguageSelector={renderHeaderLanguageSelector}
       headerStyle={headerStyle}
       endSlot={(
@@ -5485,8 +5484,10 @@ Awards: ${form.awards}`;
     <div style={{ display: "flex", flexDirection: "column", height: "100%",
       boxSizing: "border-box", padding: isMobile ? "8px 4px" : "10px 16px" }}>
 
+      <AppToolHeader />
+
       {/* ── Builder top bar ── */}
-      <div className="ac-app-header" style={{ position: "sticky", top: 0, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
+      <div className="ac-app-header" style={{ position: "sticky", top: HEADER_HEIGHT, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
         height: isMobile ? "auto" : HEADER_HEIGHT, boxSizing: "border-box",
         padding: isMobile ? "10px 12px" : "0 18px", background: `${C.bg}f4`, backdropFilter: "blur(14px)",
         boxShadow: "0 10px 28px rgba(0,0,0,0.14)", display: "flex", alignItems: "center", gap: 10, flexWrap: isMobile ? "wrap" : "nowrap" }}>
@@ -6993,7 +6994,8 @@ Awards: ${form.awards}`;
     return (
       <div style={{ display: "flex", flexDirection: "column", height: "100%",
         boxSizing: "border-box", padding: isMobile ? "8px 4px" : "10px 16px" }}>
-        <div className="ac-app-header" style={{ position: "sticky", top: 0, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
+        <AppToolHeader />
+        <div className="ac-app-header" style={{ position: "sticky", top: HEADER_HEIGHT, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
           height: isMobile ? "auto" : HEADER_HEIGHT, boxSizing: "border-box",
           padding: isMobile ? "10px 12px" : "0 18px", background: `${C.bg}f4`, backdropFilter: "blur(14px)",
           boxShadow: "0 10px 28px rgba(0,0,0,0.14)", display: "flex", alignItems: "center", gap: 10, flexWrap: isMobile ? "wrap" : "nowrap" }}>
