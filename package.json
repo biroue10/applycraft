@@ -53,8 +53,9 @@
     "test:contrast": "node scripts/contrast-tests.mjs",
     "test:interview": "node scripts/interview-tests.mjs",
     "test:canadian-checklist": "node scripts/canadian-checklist-tests.mjs",
-    "test:blog-index": "node scripts/blog-index-tests.mjs"
-    ,"test:application-workspace": "node scripts/application-workspace-tests.mjs"
+    "test:blog-index": "node scripts/blog-index-tests.mjs",
+    "test:workflow-guides": "node scripts/workflow-guide-tests.mjs",
+    "test:application-workspace": "node scripts/application-workspace-tests.mjs"
   },
   "dependencies": {
     "docx": "^9.7.1",

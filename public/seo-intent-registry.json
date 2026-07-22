@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-22T17:45:27.895Z",
+  "generatedAt": "2026-07-22T18:29:42.250Z",
   "pages": [
     {
       "route": "/about/",
@@ -236,6 +236,20 @@
       "primaryCta": "",
       "overlappingPages": [],
       "differentiationNote": "Serve the specific informational or product intent expressed by Free ATS Resume Checker: What It Checks"
+    },
+    {
+      "route": "/blog/how-applycraft-works/",
+      "locale": "en",
+      "primaryKeyword": "how ApplyCraft works",
+      "secondaryKeywords": [],
+      "searchIntent": "Understand the complete ApplyCraft product workflow and its differentiators",
+      "canonical": "https://applycraft.io/blog/how-applycraft-works/",
+      "parentHub": "",
+      "primaryCta": "/application-pack/",
+      "overlappingPages": [
+        "/application-pack/"
+      ],
+      "differentiationNote": "Understand the complete ApplyCraft product workflow and its differentiators"
     },
     {
       "route": "/blog/how-to-write-an-ats-friendly-resume/",
@@ -600,6 +614,20 @@
       "primaryCta": "",
       "overlappingPages": [],
       "differentiationNote": "Serve the specific informational or product intent expressed by Checklist CV canadien 2026"
+    },
+    {
+      "route": "/fr/blog/comment-fonctionne-applycraft/",
+      "locale": "fr",
+      "primaryKeyword": "comment fonctionne ApplyCraft",
+      "secondaryKeywords": [],
+      "searchIntent": "Comprendre le fonctionnement complet d’ApplyCraft et ses différences",
+      "canonical": "https://applycraft.io/fr/blog/comment-fonctionne-applycraft/",
+      "parentHub": "",
+      "primaryCta": "/fr/application-pack/",
+      "overlappingPages": [
+        "/fr/application-pack/"
+      ],
+      "differentiationNote": "Comprendre le fonctionnement complet d’ApplyCraft et ses différences"
     },
     {
       "route": "/fr/blog/cv-canadien-maroc/",

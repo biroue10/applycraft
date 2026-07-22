@@ -236,6 +236,7 @@ const PAGES = {
 <h2>Built for real job searches</h2>
 <p>ApplyCraft is not trying to be a generic document editor. It is focused on the specific work of building applications: structuring experience, highlighting measurable achievements, matching a resume and cover letter visually, and keeping the final file clean enough for both software screening and human review.</p>
 <p>That focus is what makes the product different. Instead of giving you a blank page and dozens of decorative choices, ApplyCraft gives you guided sections, proven resume patterns, and export-ready templates that keep momentum on the job search itself.</p>
+<p><a href="/blog/how-applycraft-works/">See how the complete ApplyCraft workflow works</a>, or read the <a href="/fr/blog/comment-fonctionne-applycraft/" lang="fr">guide complet en français</a>.</p>
 
 <h2>Technical stack</h2>
 <p>ApplyCraft is a React application built with Vite. PDF generation runs in the browser using jsPDF and html2canvas. DOCX generation uses docx.js. The free builder is intentionally lightweight so the product stays fast, accessible, and easy to use from a modern browser.</p>

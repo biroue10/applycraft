@@ -54,6 +54,8 @@ for (const file of walk(ROOT)) {
     // are silently skipped and keep a stale/minimal hand-written footer.
     .replace(/<footer class="site-footer"[^>]*>[\s\S]*?<\/footer>/, footerHtml(lang))
     .replace(/<a href="\/" class="nav-logo"/, `<a href="${homeHref}" class="nav-logo"`);
+  } else if (file.includes("/blog/") && html.includes("</body>")) {
+    next = next.replace("</body>", `${footerHtml(lang)}</body>`);
   }
   next = refreshProductCounts(next);
   const localized = localizeInternalAnchors(next, lang);

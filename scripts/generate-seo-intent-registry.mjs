@@ -11,6 +11,8 @@ const overlays = {
   "/canadian-resume-builder/": ["Canadian resume builder", "Create a resume for Canadian applications", "/examples/canadian-resume-format/"],
   "/blog/canadian-resume-format-checklist/": ["canadian resume format checklist", "Verify every section before submission", "/examples/canadian-resume-format/"],
   "/blog/canadian-resume-for-immigrants/": ["Canadian resume for immigrants", "Adapt international experience for Canada", "/blog/canadian-resume-format-checklist/"],
+  "/blog/how-applycraft-works/": ["how ApplyCraft works", "Understand the complete ApplyCraft product workflow and its differentiators", "/application-pack/"],
+  "/fr/blog/comment-fonctionne-applycraft/": ["comment fonctionne ApplyCraft", "Comprendre le fonctionnement complet d’ApplyCraft et ses différences", "/fr/application-pack/"],
   "/examples/canadian-resume-format/": ["Canadian resume example", "See and edit a complete example", "/canadian-resume-builder/"],
 };
 const pages = walk(PUBLIC).map((file) => {
