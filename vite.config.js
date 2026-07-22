@@ -281,6 +281,16 @@ export default defineConfig({
         ? `<html lang="${lang}" dir="${dir}">`
         : `<html lang="${lang}">`;
 
+      // Preload the exact self-hosted font used by the route's hero text. The
+      // base document uses Latin; Arabic pages swap the hint at build time so
+      // neither locale downloads an unused 40+ KB face at highest priority.
+      if (lang === "ar") {
+        html = html.replace(
+          "/fonts/ibm-plex-sans-latin.woff2",
+          "/fonts/ibm-plex-sans-arabic-400.woff2",
+        );
+      }
+
       // Per-route canonical + hreflang (genuine clusters only) + noindex for the
       // user-shared viewer. Build-time only — no client JS.
       const meta = ROUTE_META[path] || {};

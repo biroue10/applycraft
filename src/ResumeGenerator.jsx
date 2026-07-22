@@ -993,10 +993,15 @@ const COUNTRIES = [
 function useIsMobile(bp = 768) {
   const [mobile, setMobile] = useState(false);
   useEffect(() => {
-    const h = () => setMobile(window.innerWidth < bp);
-    h();
-    window.addEventListener("resize", h);
-    return () => window.removeEventListener("resize", h);
+    // A resize handler that reads window.innerWidth runs for every resize event
+    // and can force style/layout work before updating React state. matchMedia
+    // only notifies us when the breakpoint actually changes, which preserves
+    // the responsive behaviour without continuous layout reads or rerenders.
+    const query = window.matchMedia(`(max-width: ${bp - 0.02}px)`);
+    const sync = (event) => setMobile(event.matches);
+    setMobile(query.matches);
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
   }, [bp]);
   return mobile;
 }
