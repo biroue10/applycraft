@@ -39,7 +39,12 @@ const tracker = {
   "addApp": "Bewerbung hinzufügen",
   "saveChanges": "Änderungen speichern",
   "cancel": "Abbrechen",
-  "delete": "Löschen"
+  "delete": "Löschen",
+  "storeDevice": "Tracker-Metadaten auf diesem Gerät speichern", "storeDeviceHelp": "Optional. Dokumentinhalte werden nicht gespeichert.",
+  "exportData": "Daten exportieren", "deleteData": "Lokale Daten löschen", "lblLocation": "Ort", "lblApplicationDate": "Bewerbungsdatum",
+  "lblMarket": "Land / Markt", "lblLanguage": "Bewerbungssprache",
+  "market_canada": "Kanada", "market_morocco": "Marokko", "market_france": "Frankreich", "market_united_kingdom": "Vereinigtes Königreich", "market_gulf": "Golfstaaten", "market_international": "International remote",
+  "langEn": "Englisch", "langFr": "Französisch", "langAr": "Arabisch", "applicationDetails": "Referenzen des Bewerbungspakets", "atsReview": "ATS-Prüfung"
 };
 
 export default tracker;

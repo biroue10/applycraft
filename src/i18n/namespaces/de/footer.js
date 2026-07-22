@@ -8,6 +8,7 @@ const footer = {
   "resumeBuilder": "Lebenslauf-Generator",
   "coverLetter": "Anschreiben",
   "atsChecker": "ATS-Prüfer",
+  "applicationPack": "Bewerbungspaket",
   "jobTracker": "Bewerbungs-Tracker",
   "interviewPrep": "Interview-Vorbereitung",
   "pricing": "Preise",

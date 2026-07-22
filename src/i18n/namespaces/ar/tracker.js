@@ -39,7 +39,11 @@ const tracker = {
   "addApp": "أضف التقديم",
   "saveChanges": "حفظ التغييرات",
   "cancel": "إلغاء",
-  "delete": "حذف"
+  "delete": "حذف",
+  "lblLocation": "الموقع", "lblApplicationDate": "تاريخ التقديم", "lblMarket": "البلد / السوق", "lblLanguage": "لغة التقديم",
+  "market_canada": "كندا", "market_morocco": "المغرب", "market_france": "فرنسا",
+  "market_united_kingdom": "المملكة المتحدة", "market_gulf": "دول الخليج", "market_international": "عمل دولي عن بُعد",
+  "langEn": "الإنجليزية", "langFr": "الفرنسية", "langAr": "العربية"
 };
 
 export default tracker;

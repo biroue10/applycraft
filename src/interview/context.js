@@ -30,12 +30,13 @@ export function sanitizeJobContextValue(raw) {
 
 // Returns "?jobTitle=…&company=…", or "" when there is nothing to pass — so a
 // context-less launch produces the plain generic route.
-export function jobContextQuery({ jobTitle = "", company = "" } = {}) {
+export function jobContextQuery({ jobTitle = "", company = "", applicationLanguage = "" } = {}) {
   const params = new URLSearchParams();
   const title = sanitizeJobContextValue(jobTitle);
   const org = sanitizeJobContextValue(company);
   if (title) params.set("jobTitle", title);
   if (org) params.set("company", org);
+  if (["en", "fr", "ar"].includes(applicationLanguage)) params.set("interviewLanguage", applicationLanguage);
   const query = params.toString();
   return query ? `?${query}` : "";
 }

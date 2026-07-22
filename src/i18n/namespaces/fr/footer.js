@@ -9,6 +9,7 @@ const footer = {
   "resumeTemplates": "Modèles de CV",
   "coverLetter": "Lettre de motivation",
   "atsChecker": "Vérificateur ATS",
+  "applicationPack": "Pack de candidature",
   "jobTracker": "Suivi des candidatures",
   "interviewPrep": "Préparation entretien",
   "pricing": "Tarifs",

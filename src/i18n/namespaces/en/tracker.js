@@ -39,7 +39,14 @@ const tracker = {
   "addApp": "Add application",
   "saveChanges": "Save changes",
   "cancel": "Cancel",
-  "delete": "Delete"
+  "delete": "Delete",
+  "lblLocation": "Location",
+  "lblApplicationDate": "Application date",
+  "lblMarket": "Country / market",
+  "lblLanguage": "Application language",
+  "market_canada": "Canada", "market_morocco": "Morocco", "market_france": "France",
+  "market_united_kingdom": "United Kingdom", "market_gulf": "Gulf countries", "market_international": "International remote",
+  "langEn": "English", "langFr": "French", "langAr": "Arabic"
 };
 
 export default tracker;

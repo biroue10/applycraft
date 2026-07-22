@@ -70,11 +70,12 @@ function readJobContext(search = "") {
   try {
     params = new URLSearchParams(String(search || "").replace(/^\?/, ""));
   } catch {
-    return { jobTitle: "", company: "" };
+    return { jobTitle: "", company: "", interviewLanguage: "" };
   }
   return {
     jobTitle: sanitizeJobContextValue(params.get("jobTitle")),
     company: sanitizeJobContextValue(params.get("company")),
+    interviewLanguage: ["en", "fr", "ar"].includes(params.get("interviewLanguage")) ? params.get("interviewLanguage") : "",
   };
 }
 
@@ -101,7 +102,7 @@ export default function InterviewPrep() {
   const [phase, setPhase] = useState("setup"); // setup | chat | feedback
   const [jobOffer, setJobOffer] = useState("");
   const [level, setLevel] = useState("junior");
-  const [ivLang, setIvLang] = useState(uiLang);
+  const [ivLang, setIvLang] = useState(jobContext.interviewLanguage || uiLang);
   const [messages, setMessages] = useState([]); // { role: "assistant" | "user", content }
   const [streamingText, setStreamingText] = useState("");
   const [streaming, setStreaming] = useState(false);

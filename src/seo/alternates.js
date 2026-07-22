@@ -31,6 +31,24 @@ export const ALTERNATES = {
     { hreflang: "ar", href: `${ORIGIN}/ar/` },
     { hreflang: "x-default", href: `${ORIGIN}/` },
   ],
+  "/application-pack/": [
+    { hreflang: "en", href: `${ORIGIN}/application-pack/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/application-pack/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/application-pack/` },
+    { hreflang: "x-default", href: `${ORIGIN}/application-pack/` },
+  ],
+  "/fr/application-pack/": [
+    { hreflang: "en", href: `${ORIGIN}/application-pack/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/application-pack/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/application-pack/` },
+    { hreflang: "x-default", href: `${ORIGIN}/application-pack/` },
+  ],
+  "/ar/application-pack/": [
+    { hreflang: "en", href: `${ORIGIN}/application-pack/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/application-pack/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/application-pack/` },
+    { hreflang: "x-default", href: `${ORIGIN}/application-pack/` },
+  ],
   "/interview-prep/": [
     { hreflang: "en", href: `${ORIGIN}/interview-prep/` },
     { hreflang: "fr", href: `${ORIGIN}/fr/interview-prep/` },

@@ -17,6 +17,7 @@ import { serializeResumeTranslationContent, TRANSLATABLE_RESUME_FIELDS, TRANSLAT
 import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID, TEMPLATE_COUNTRIES, templateCountries } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
+import { positioningFor } from "./productPositioning.js";
 import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter, HEADER_HEIGHT, shouldUseNativeNavigation, BRAND_LOGO_SRC } from "./siteChrome.jsx";
 import { primaryNavLabelKey } from "./nav/navItems.js";
 import { COLORS, chipInk, accentOnPaper } from "./theme/colors.js";
@@ -70,6 +71,11 @@ const LANDING2_LOADERS = {
 // description are prerendered below, while the full controls load shortly
 // before they enter the viewport.
 const InteractiveResumeDemo = React.lazy(() => import("./components/InteractiveResumeDemo.jsx"));
+const ApplicationPackSection = React.lazy(() => import("./components/ApplicationPackSection.jsx"));
+const TrackerPrivacyControls = React.lazy(() => import("./components/TrackerPrivacyControls.jsx"));
+const EvidenceLibrary = React.lazy(() => import("./components/EvidenceLibrary.jsx"));
+const TrackerFilters = React.lazy(() => import("./components/TrackerFilters.jsx"));
+const TrackApplicationAction = React.lazy(() => import("./components/TrackApplicationAction.jsx"));
 const ATS_RESULT_LOADERS = {
   en: () => import("./i18n/atsResults/en.js"),
   fr: () => import("./i18n/atsResults/fr.js"),
@@ -2387,6 +2393,13 @@ function DeferredInteractiveResumeDemo({ isMobile, onContinue, copy, closeLabel 
   );
 }
 
+function DeferredApplicationPack({ locale, mobile }) {
+  const [ready, setReady] = useState();
+  useEffect(() => { setReady(1); }, []);
+  if (ready) return <React.Suspense fallback={null}><ApplicationPackSection locale={locale} mobile={mobile} /></React.Suspense>;
+  return null;
+}
+
 // Section picker opened by the "Add content" button. Accessible (role=dialog,
 // focus trap, Esc/backdrop close, visible ×); bottom-sheet on mobile.
 function AddContentModal({ open, onClose, addedSet, onAdd, sectionName, eui, rtl, isMobile }) {
@@ -2577,7 +2590,7 @@ const defaultMaster = {
   name: "", email: "", phone: "", location: "", linkedin: "", website: "",
   headline: "", summary: "",
   jobs: [], education: [], skills: [], certifications: [],
-  projects: [], languages: [], achievements: [], volunteer: [],
+  projects: [], languages: [], achievements: [], volunteer: [], careerEvidence: [],
 };
 
 const DEFAULT_APP_ROUTE = { appView: "landing", navPage: "resume", step: "templates", coverStep: "templates" };
@@ -2960,7 +2973,18 @@ export default function ResumeGenerator() {
   const [jdKws, setJdKws] = useState(null);
   const [tailorSel, setTailorSel] = useState(null);
   const [skillDraft, setSkillDraft] = useState("");
-  const [trackerCards, setTrackerCards] = useState([]);
+  const [trackerStorageEnabled, setTrackerStorageEnabled] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try { return localStorage.getItem("ac_tracker_metadata_enabled") === "true"; } catch { return false; }
+  });
+  const [trackerCards, setTrackerCards] = useState(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      if (localStorage.getItem("ac_tracker_metadata_enabled") !== "true") return [];
+      const saved = safeParseStoredJson(localStorage.getItem("ac_tracker_metadata_v1"), []);
+      return Array.isArray(saved) ? saved : [];
+    } catch { return []; }
+  });
   const [trackerModal, setTrackerModal] = useState({ open: false, card: null });
   const trackerDialogRef = useRef(null);
   useFocusTrap(trackerDialogRef, trackerModal.open);
@@ -2974,6 +2998,19 @@ export default function ResumeGenerator() {
   }, [trackerModal.open]);
   const [trackerDragId, setTrackerDragId] = useState(null);
   const [trackerDragOver, setTrackerDragOver] = useState(null);
+  const [trackerFilters, setTrackerFilters] = useState({ query: "", market: "", language: "", resume: "", followUpDue: false });
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      if (trackerStorageEnabled) {
+        localStorage.setItem("ac_tracker_metadata_enabled", "true");
+        localStorage.setItem("ac_tracker_metadata_v1", JSON.stringify(trackerCards));
+      } else {
+        localStorage.removeItem("ac_tracker_metadata_enabled");
+        localStorage.removeItem("ac_tracker_metadata_v1");
+      }
+    } catch { /* storage can be unavailable in private browsing */ }
+  }, [trackerCards, trackerStorageEnabled]);
   const [atsText, setAtsText] = useState("");
   const [atsJd, setAtsJd] = useState("");
   const [atsResult, setAtsResult] = useState(null);
@@ -3078,6 +3115,7 @@ export default function ResumeGenerator() {
   const reviewUi = QUALITY_REVIEW_UI[lang] || QUALITY_REVIEW_UI.en;
   const l2 = lazyLanding2?.language === lang ? lazyLanding2.dictionary : (LANDING2_UI[lang] || LANDING2_UI.en); // landing marketing body
   const why = l2.why || LANDING2_UI.en.why;
+  const positioning = positioningFor(lang);
   const rtl = isRtlLang(interfaceLanguage);
   const translateLabel = useCallback((template, values = {}) => (
     String(template || "").replace(/\{(\w+)\}/g, (_, key) => values[key] ?? "")
@@ -6179,7 +6217,7 @@ Awards: ${form.awards}`;
               <div style={{ marginTop: 10, background: "#4ade8012", border: "none",
                 color: "#4ade80", borderRadius: 8, padding: "9px 11px", fontSize: 12.5,
                 lineHeight: 1.5 }}>
-                {exportSuccess}
+                {exportSuccess} <React.Suspense fallback={null}><TrackApplicationAction locale={lang} form={form} template={tpl} documentLanguage={docLang} resumeId={currentResumeId} untitled={bu.untitledResume} onOpen={(card) => { setTrackerModal({ open: true, card }); setNavPage("tracker"); }} /></React.Suspense>
               </div>
             )}
             {result && (
@@ -7579,7 +7617,7 @@ Awards: ${form.awards}`;
         eyebrow={landingText("aboutEyebrow")}
         icon="✦"
         title={landingText("aboutTitle")}
-        sub={landingText("aboutSub")}
+        sub={positioning.supportingText}
         isMobile={isMobile}
       />
 
@@ -7648,18 +7686,6 @@ Awards: ${form.awards}`;
         </div>
       </div>
 
-      {/* Stack */}
-      <div style={{ marginBottom: 36 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-          letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>{landingText("aboutTechStack")}</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {["React 18", "Vite 6", "jsPDF", "docx.js", "Cloudflare Pages"].map(t => (
-            <span key={t} style={{ fontSize: 12.5, padding: "4px 12px", borderRadius: 999,
-              background: C.elevated, border: `1px solid ${C.border}`, color: C.text2 }}>{t}</span>
-          ))}
-        </div>
-      </div>
-
       {/* Divider */}
       <div style={{ height: 1, background: C.border, marginBottom: 28 }} />
 
@@ -7695,16 +7721,25 @@ Awards: ${form.awards}`;
     column: col,
     company: "", position: "", jobDescription: "", salary: "", link: "",
     resume: "", coverLetter: "", interviewDate: "", notes: "",
+    location: "", marketMode: "international", applicationLanguage: docLang,
+    applicationDate: "", resumeVersion: null, coverLetterVersion: null,
+    atsReview: null, interviewPrep: null,
     recruiter: "", reminder: "",
-    createdAt: Date.now(),
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
   });
 
-  const saveCard = (card) => {
-    setTrackerCards(prev => {
-      const exists = prev.find(c => c.id === card.id);
-      return exists ? prev.map(c => c.id === card.id ? card : c) : [...prev, card];
-    });
+  const saveCard = async (card) => {
+    const { createApplicationRecord, toTrackerCard } = await import("./application/applicationRecord.js");
+    const normalized = toTrackerCard(createApplicationRecord(card));
+    setTrackerCards(prev => prev.some(c => c.id === normalized.id)
+      ? prev.map(c => c.id === normalized.id ? normalized : c)
+      : [...prev, normalized]);
     setTrackerModal({ open: false, card: null });
+  };
+
+  const deleteTrackerData = () => {
+    setTrackerCards([]);
+    setTrackerStorageEnabled(false);
   };
 
   const deleteCard = (id) => {
@@ -7742,8 +7777,6 @@ Awards: ${form.awards}`;
             <p style={{ margin: "6px 0 0", fontSize: 13, color: C.text3 }}>
               {trackerCards.length} {tk.tracked}
             </p>
-            <h2 style={{ display: "none", margin: 0, fontSize: isMobile ? 20 : 26, fontWeight: 800,
-              color: C.text1, letterSpacing: "-0.5px" }}>{tk.title}</h2>
           </div>
           {/* Stats chips */}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -7760,12 +7793,20 @@ Awards: ${form.awards}`;
           </div>
         </div>
 
+        <React.Suspense fallback={null}><TrackerPrivacyControls locale={lang} enabled={trackerStorageEnabled} setEnabled={setTrackerStorageEnabled} cards={trackerCards} replace={setTrackerCards} clear={deleteTrackerData} /></React.Suspense>
+        <React.Suspense fallback={null}><TrackerFilters locale={lang} value={trackerFilters} onChange={setTrackerFilters} cards={trackerCards} /></React.Suspense>
+
         {/* Kanban board */}
         <div style={{ overflowX: "auto", margin: isMobile ? "0 -8px" : "0 -20px" }}>
         <div style={{ display: "flex", gap: 14, padding: isMobile ? "0 8px 16px" : "0 20px 16px",
           alignItems: "flex-start", minHeight: 400, minWidth: "max-content" }}>
           {TRACKER_COLS.map(tcol => {
-            const cards = trackerCards.filter(c => c.column === tcol.id);
+            const cards = trackerCards.filter(c => c.column === tcol.id
+              && (!trackerFilters.query || `${c.company} ${c.position}`.toLowerCase().includes(trackerFilters.query.toLowerCase()))
+              && (!trackerFilters.market || c.marketMode === trackerFilters.market)
+              && (!trackerFilters.language || c.applicationLanguage === trackerFilters.language)
+              && (!trackerFilters.resume || (c.resumeVersion?.name || c.resume) === trackerFilters.resume)
+              && (!trackerFilters.followUpDue || (c.reminder && c.reminder <= new Date().toISOString().slice(0, 10))));
             const isDragTarget = trackerDragOver === tcol.id;
             return (
               <div key={tcol.id}
@@ -7844,7 +7885,7 @@ Awards: ${form.awards}`;
                           card modal or get dragged instead of the card. */}
                       {tcol.id === "interview" && (
                         <a
-                          href={localizeRoute(`/interview-prep/${jobContextQuery({ jobTitle: card.position, company: card.company })}`, lang)}
+                          href={localizeRoute(`/interview-prep/${jobContextQuery({ jobTitle: card.position, company: card.company, applicationLanguage: card.applicationLanguage })}`, lang)}
                           draggable={false}
                           onClick={e => e.stopPropagation()}
                           style={{ display: "block", marginTop: 8, padding: "6px 8px", borderRadius: 6,
@@ -7953,6 +7994,8 @@ Awards: ${form.awards}`;
                   {[
                     { k: "company",   label: tk.lblCompany,       ph: "e.g. Stripe" },
                     { k: "position",  label: tk.lblPosition,      ph: "e.g. Senior Engineer" },
+                    { k: "location",  label: tk.lblLocation,      ph: "e.g. Toronto, ON" },
+                    { k: "applicationDate", label: tk.lblApplicationDate, ph: "YYYY-MM-DD" },
                     { k: "salary",    label: tk.lblSalary,  ph: "e.g. $120k–$140k" },
                     { k: "link",      label: tk.lblLink, ph: "https://..." },
                     { k: "recruiter", label: tk.lblRecruiter, ph: "Name · email · LinkedIn" },
@@ -7970,6 +8013,17 @@ Awards: ${form.awards}`;
                         onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = "none"; }} />
                     </div>
                   ))}
+
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginBottom: 14 }}>
+                    <div><label htmlFor="tracker-market" style={{ fontSize: 11.5, fontWeight: 600, color: C.text2, display: "block", marginBottom: 5 }}>{tk.lblMarket}</label>
+                      <select id="tracker-market" value={editCard.marketMode || "international"} onChange={setField("marketMode")} style={{ ...mInput, colorScheme: "dark" }}>
+                        {["canada","morocco","france","united-kingdom","gulf","international"].map(id => <option key={id} value={id}>{tk[`market_${id.replace("-", "_")}`]}</option>)}
+                      </select></div>
+                    <div><label htmlFor="tracker-language" style={{ fontSize: 11.5, fontWeight: 600, color: C.text2, display: "block", marginBottom: 5 }}>{tk.lblLanguage}</label>
+                      <select id="tracker-language" value={editCard.applicationLanguage || "en"} onChange={setField("applicationLanguage")} style={{ ...mInput, colorScheme: "dark" }}>
+                        <option value="en">{tk.langEn}</option><option value="fr">{tk.langFr}</option><option value="ar">{tk.langAr}</option>
+                      </select></div>
+                  </div>
 
                   {/* Job description */}
                   <div style={{ marginBottom: 14 }}>
@@ -8463,6 +8517,8 @@ Awards: ${form.awards}`;
               ))}
             </div>
 
+            <React.Suspense fallback={null}><EvidenceLibrary locale={lang} items={master.careerEvidence || []} onChange={(careerEvidence) => setMaster((current) => ({ ...current, careerEvidence }))} /></React.Suspense>
+
             {/* Volunteer */}
             <div style={{marginBottom:28}}>
               <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12, paddingBottom:10, borderBottom:`1px solid ${C.border}`}}>
@@ -8623,12 +8679,12 @@ Awards: ${form.awards}`;
                 letterSpacing: "-0.8px", margin: "0 0 22px",
                 background: "linear-gradient(135deg, #EEF2FF 0%, #94A3B8 100%)",
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                {lx.heroH1}
+                {positioning.headline}
               </h1>
               <p style={{ animation: isMobile ? "none" : "acFadeUp 0.65s ease 0.34s both",
                 fontSize: "clamp(16px, 2vw, 19px)", color: C.text2, maxWidth: 590,
                 margin: isMobile ? "0 auto 34px" : "0 0 34px", lineHeight: 1.65 }}>
-                {lx.heroSub}
+                {positioning.supportingText}
               </p>
               <div style={{ animation: isMobile ? "none" : "acFadeUp 0.65s ease 0.5s both",
                 display: "flex", gap: 12, justifyContent: isMobile ? "center" : "flex-start", flexWrap: "wrap" }}>
@@ -8638,7 +8694,7 @@ Awards: ${form.awards}`;
                   padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer",
                   animation: isMobile ? "none" : "acPulse 2.8s ease-in-out 1.4s infinite",
                   transition: "opacity 0.2s", fontFamily: "inherit", textDecoration: "none" }}>
-                {lx.createResume}
+                {positioning.primaryCta}
               </a>
               <a href={localizeRoute("/ats-checker/", lang)}
                 onClick={(event) => handleRouteLink(event, () => enter("ats"))}
@@ -8647,14 +8703,14 @@ Awards: ${form.awards}`;
                   transition: "border-color 0.2s, color 0.2s", fontFamily: "inherit", textDecoration: "none" }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent2; e.currentTarget.style.color = C.accent2; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.text2; }}>
-                {lx.checkResume}
+                {positioning.secondaryCta}
               </a>
               </div>
               {/* Trust row */}
               <div style={{ animation: isMobile ? "none" : "acFadeUp 0.5s ease 0.65s both",
                 display: "flex", gap: 16, justifyContent: isMobile ? "center" : "flex-start",
                 flexWrap: "wrap", marginTop: 24 }}>
-                {[lx.trustBrowser, lx.trustNoSignup, lx.trustNoCard, lx.trustFormats].map(t => (
+                {positioning.trustItems.map(t => (
                   <span key={t} style={{ fontSize: 12.5, color: C.text3 }}>{t}</span>
                 ))}
               </div>
@@ -8720,6 +8776,10 @@ Awards: ${form.awards}`;
             ))}
           </div>
         </div>
+
+        {/* Full workflow UI is a small below-the-fold chunk; its public route is
+            crawlable even before hydration and links to every real tool. */}
+        <DeferredApplicationPack locale={lang} mobile={isMobile} />
 
         <DeferredInteractiveResumeDemo
           isMobile={isMobile}
@@ -9096,7 +9156,7 @@ Awards: ${form.awards}`;
                   clearApplyCraftLocalData();
                   setForm(emptyResumeForm);
                   setMaster({...defaultMaster});
-                  setTrackerCards([]);
+                  deleteTrackerData();
                   setAtsFromChecker("");
                   setDraftSavedAt("");
                   setStatusMsg(st.localDataDeleted);

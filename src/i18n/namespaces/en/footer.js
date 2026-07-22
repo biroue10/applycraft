@@ -9,6 +9,7 @@ const footer = {
   "resumeTemplates": "Resume Templates",
   "coverLetter": "Cover Letter",
   "atsChecker": "ATS Checker",
+  "applicationPack": "Application Pack",
   "jobTracker": "Job Tracker",
   "interviewPrep": "Interview Prep",
   "pricing": "Pricing",

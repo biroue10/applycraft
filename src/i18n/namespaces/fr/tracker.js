@@ -39,7 +39,11 @@ const tracker = {
   "addApp": "Ajouter la candidature",
   "saveChanges": "Enregistrer",
   "cancel": "Annuler",
-  "delete": "Supprimer"
+  "delete": "Supprimer",
+  "lblLocation": "Lieu", "lblApplicationDate": "Date de candidature", "lblMarket": "Pays / marché", "lblLanguage": "Langue de candidature",
+  "market_canada": "Canada", "market_morocco": "Maroc", "market_france": "France",
+  "market_united_kingdom": "Royaume-Uni", "market_gulf": "Pays du Golfe", "market_international": "International à distance",
+  "langEn": "Anglais", "langFr": "Français", "langAr": "Arabe"
 };
 
 export default tracker;

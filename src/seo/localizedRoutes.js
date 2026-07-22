@@ -1,5 +1,6 @@
 export const LOCALIZED_ROUTES = {
   "/": { en: "/", fr: "/fr/", ar: "/ar/" },
+  "/application-pack/": { en: "/application-pack/", fr: "/fr/application-pack/", ar: "/ar/application-pack/" },
   "/resume-builder/": { en: "/resume-builder/", fr: "/resume-builder/?ui=fr&docLang=fr", ar: "/resume-builder/?ui=ar&docLang=ar" },
   "/resume/templates/": { en: "/resume/templates/", fr: "/resume/templates/?ui=fr&docLang=fr", ar: "/resume/templates/?ui=ar&docLang=ar" },
   "/cover-letter/templates/": { en: "/cover-letter/templates/", fr: "/cover-letter/templates/?ui=fr&docLang=fr", ar: "/cover-letter/templates/?ui=ar&docLang=ar" },

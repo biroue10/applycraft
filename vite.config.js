@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
 import { canonicalFor, hreflangFor } from "./src/seo/alternates.js";
+import { positioningFor } from "./src/productPositioning.js";
 
 // Per-route language metadata. Drives both the <html> attributes and hreflang
 // injection for every React route vite-react-ssg prebuilds. Static pages in
@@ -20,7 +21,7 @@ const ROUTE_LANG = {
 const ROUTE_META = {
   "/": {
     title: "Free Resume Builder in English, French, Arabic | ApplyCraft",
-    description: "Build an ATS-friendly resume and matching cover letter in English, French or Arabic, with real right-to-left support. Free forever: no signup, no watermark, PDF and DOCX.",
+    description: positioningFor("en").supportingText,
     image: "https://applycraft.io/og/home.png",
     imageAlt: "ApplyCraft resume builder and cover letter maker preview",
     locale: "en_US",
@@ -28,7 +29,7 @@ const ROUTE_META = {
   },
   "/fr/": {
     title: "Créateur de CV gratuit en français et arabe | ApplyCraft",
-    description: "Créez un CV compatible ATS et une lettre de motivation en français, anglais ou arabe, avec un vrai support de l'arabe de droite à gauche. Gratuit, sans inscription ni filigrane.",
+    description: positioningFor("fr").supportingText,
     image: "https://applycraft.io/og/home-fr.png",
     imageAlt: "Aperçu du créateur de CV et de lettres de motivation ApplyCraft",
     locale: "fr_FR",
@@ -36,7 +37,7 @@ const ROUTE_META = {
   },
   "/ar/": {
     title: "منشئ سيرة ذاتية مجاني بالعربية والفرنسية | ApplyCraft",
-    description: "أنشئ سيرة ذاتية متوافقة مع ATS وخطاب تقديم بالعربية أو الفرنسية أو الإنجليزية، بدعم كامل للكتابة من اليمين إلى اليسار. مجاناً، بدون تسجيل أو علامة مائية.",
+    description: positioningFor("ar").supportingText,
     image: "https://applycraft.io/og/home-ar.png",
     imageAlt: "معاينة منشئ السيرة الذاتية وخطاب التقديم من ApplyCraft",
     locale: "ar_MA",

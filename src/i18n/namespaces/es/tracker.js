@@ -39,7 +39,12 @@ const tracker = {
   "addApp": "Añadir candidatura",
   "saveChanges": "Guardar cambios",
   "cancel": "Cancelar",
-  "delete": "Eliminar"
+  "delete": "Eliminar",
+  "storeDevice": "Guardar metadatos en este dispositivo", "storeDeviceHelp": "Opcional. No se guarda el contenido de los documentos.",
+  "exportData": "Exportar datos", "deleteData": "Borrar datos locales", "lblLocation": "Ubicación", "lblApplicationDate": "Fecha de solicitud",
+  "lblMarket": "País / mercado", "lblLanguage": "Idioma de la solicitud",
+  "market_canada": "Canadá", "market_morocco": "Marruecos", "market_france": "Francia", "market_united_kingdom": "Reino Unido", "market_gulf": "Países del Golfo", "market_international": "Internacional remoto",
+  "langEn": "Inglés", "langFr": "Francés", "langAr": "Árabe", "applicationDetails": "Referencias del paquete", "atsReview": "Revisión ATS"
 };
 
 export default tracker;

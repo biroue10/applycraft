@@ -14,8 +14,11 @@ export const PRIMARY_NAV_ITEMS = [
   { id: "resume", href: "/resume-builder/", labelKey: "resumeBuilder" },
   { id: "cover", href: "/cover-letter-builder/", labelKey: "coverLetter" },
   { id: "ats", href: "/ats-checker/", labelKey: "atsChecker" },
+  { id: "application-pack", href: "/application-pack/", labelKey: "applicationPack", alwaysLink: true },
   { id: "tracker", href: "/job-tracker/", labelKey: "jobTracker" },
   { id: "interview", href: "/interview-prep/", labelKey: "interviewPrep", alwaysLink: true },
+  { id: "templates", href: "/resume/templates/", labelKey: "resumeTemplates", alwaysLink: true },
+  { id: "pricing", href: "/pricing/", labelKey: "pricing", alwaysLink: true },
 ];
 
 export function primaryNavLabelKey(id) {
