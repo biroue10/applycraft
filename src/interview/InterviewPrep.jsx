@@ -7,10 +7,6 @@ import { useInterviewGate, recordSimulationStart } from "./quota.js";
 import { sanitizeJobContextValue } from "./context.js";
 
 const C = SITE_COLORS;
-// The global accent (#6366F1) with white text is 4.47:1, narrowly below AA.
-// Use the existing dark-indigo palette value for a clearly selected native
-// option while keeping white text above the 4.5:1 requirement.
-const SELECTED_OPTION_BG = "#4338CA";
 
 // UI locale comes from the route path (/interview-prep/, /fr/…, /ar/…), resolved
 // at render time so the prerendered HTML is correct per locale (RTL for Arabic).
@@ -367,9 +363,10 @@ function SetupScreen({ c, card, jobOffer, setJobOffer, jobOfferError, level, set
           background-color: ${C.elevated};
           color: ${C.text1};
         }
+        .ac-interview-select option:hover,
         .ac-interview-select option:checked {
-          background-color: ${SELECTED_OPTION_BG};
-          color: #ffffff;
+          background-color: ${C.borderHi};
+          color: ${C.text1};
         }
         .ac-interview-select option:disabled {
           background-color: ${C.elevated};
@@ -377,7 +374,7 @@ function SetupScreen({ c, card, jobOffer, setJobOffer, jobOfferError, level, set
         }
         .ac-interview-select:focus-visible {
           border-color: ${C.accent2};
-          outline: 3px solid rgba(129, 140, 248, 0.35);
+          outline: 3px solid ${C.accent2};
           outline-offset: 2px;
         }
       `}</style>
