@@ -51,7 +51,8 @@
     "test:visual": "node scripts/visual-regression.mjs",
     "audit:high": "npm audit --audit-level=high",
     "test:contrast": "node scripts/contrast-tests.mjs",
-    "test:interview": "node scripts/interview-tests.mjs"
+    "test:interview": "node scripts/interview-tests.mjs",
+    "test:canadian-checklist": "node scripts/canadian-checklist-tests.mjs"
   },
   "dependencies": {
     "docx": "^9.7.1",

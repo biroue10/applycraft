@@ -1,0 +1,17 @@
+[
+  {
+    "page": "Canadian resume example",
+    "route": "/examples/canadian-resume-format/",
+    "primaryIntent": "See and edit a complete example"
+  },
+  {
+    "page": "Canadian immigrant guide",
+    "route": "/blog/canadian-resume-for-immigrants/",
+    "primaryIntent": "Adapt international experience for Canada"
+  },
+  {
+    "page": "Canadian resume checklist",
+    "route": "/blog/canadian-resume-format-checklist/",
+    "primaryIntent": "Verify every section before submission"
+  }
+]
