@@ -2962,6 +2962,16 @@ export default function ResumeGenerator() {
   const [skillDraft, setSkillDraft] = useState("");
   const [trackerCards, setTrackerCards] = useState([]);
   const [trackerModal, setTrackerModal] = useState({ open: false, card: null });
+  const trackerDialogRef = useRef(null);
+  useFocusTrap(trackerDialogRef, trackerModal.open);
+  useEffect(() => {
+    if (!trackerModal.open) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setTrackerModal({ open: false, card: null });
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [trackerModal.open]);
   const [trackerDragId, setTrackerDragId] = useState(null);
   const [trackerDragOver, setTrackerDragOver] = useState(null);
   const [atsText, setAtsText] = useState("");
@@ -7890,30 +7900,36 @@ Awards: ${form.awards}`;
           return (
             <div style={{ position: "fixed", inset: 0, background: "#00000088", zIndex: 1000,
               display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
+              dir={rtl ? "rtl" : "ltr"}
               onClick={e => { if (e.target === e.currentTarget) setTrackerModal({ open: false, card: null }); }}>
-              <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 18,
-                width: "100%", maxWidth: 600, maxHeight: "90vh", overflowY: "auto", padding: 0 }}>
+              <div ref={trackerDialogRef} role="dialog" aria-modal="true" aria-labelledby="tracker-dialog-title"
+                dir={rtl ? "rtl" : "ltr"}
+                style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 18,
+                  width: "100%", maxWidth: 600, maxHeight: "90vh", overflow: "hidden", padding: 0,
+                  display: "flex", flexDirection: "column" }}>
 
                 {/* Modal header */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+                <div data-testid="tracker-dialog-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
                   padding: "18px 24px", borderBottom: `1px solid ${C.border}`,
-                  background: `${tcol.color}10`, borderRadius: "18px 18px 0 0", position: "sticky", top: 0 }}>
+                  background: `${tcol.color}10`, borderRadius: "18px 18px 0 0", flex: "none" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontSize: 18 }}>{tcol.icon}</span>
                     <div>
-                      <div style={{ fontSize: 15, fontWeight: 800, color: C.text1 }}>
+                      <div id="tracker-dialog-title" style={{ fontSize: 15, fontWeight: 800, color: C.text1 }}>
                         {isNew ? tk.newApplication : (editCard.company || tk.application)}
                       </div>
                       <div style={{ fontSize: 12, color: tcol.color, fontWeight: 600 }}>{tcol.label}</div>
                     </div>
                   </div>
-                  <button onClick={() => setTrackerModal({ open: false, card: null })}
+                  <button type="button" aria-label={eui.close} onClick={() => setTrackerModal({ open: false, card: null })}
                     style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 8,
                       width: 32, height: 32, cursor: "pointer", color: C.text2, fontSize: 16,
-                      display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>✕</button>
+                      display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit",
+                      flex: "none" }}>✕</button>
                 </div>
 
-                <div style={{ padding: "20px 24px" }}>
+                <div data-testid="tracker-dialog-body" style={{ padding: "20px 24px", flex: "1 1 auto",
+                  minHeight: 0, overflowY: "auto", overscrollBehavior: "contain" }}>
                   {/* Move to column */}
                   <div style={{ marginBottom: 20 }}>
                     <label style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase",
@@ -7946,9 +7962,9 @@ Awards: ${form.awards}`;
                     { k: "reminder",  label: tk.lblReminder, ph: "e.g. Follow up if no reply by July 10" },
                   ].map(({ k, label, ph }) => (
                     <div key={k} style={{ marginBottom: 14 }}>
-                      <label style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
+                      <label htmlFor={`tracker-${k}`} style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
                         display: "block", marginBottom: 5 }}>{label}</label>
-                      <input value={editCard[k] || ""} onChange={setField(k)}
+                      <input id={`tracker-${k}`} value={editCard[k] || ""} onChange={setField(k)}
                         placeholder={ph} style={mInput}
                         onFocus={e => { e.target.style.borderColor = tcol.color; e.target.style.boxShadow = `0 0 0 3px ${tcol.color}22`; }}
                         onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = "none"; }} />
@@ -7957,9 +7973,9 @@ Awards: ${form.awards}`;
 
                   {/* Job description */}
                   <div style={{ marginBottom: 14 }}>
-                    <label style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
+                    <label htmlFor="tracker-job-description" style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
                       display: "block", marginBottom: 5 }}>{tk.lblJobDesc}</label>
-                    <textarea value={editCard.jobDescription || ""} onChange={setField("jobDescription")}
+                    <textarea id="tracker-job-description" value={editCard.jobDescription || ""} onChange={setField("jobDescription")}
                       placeholder={tk.phJobDesc}
                       rows={4} style={{ ...mInput, resize: "vertical", lineHeight: 1.6 }}
                       onFocus={e => { e.target.style.borderColor = tcol.color; e.target.style.boxShadow = `0 0 0 3px ${tcol.color}22`; }}
@@ -7968,37 +7984,41 @@ Awards: ${form.awards}`;
 
                   {/* Notes */}
                   <div style={{ marginBottom: 20 }}>
-                    <label style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
+                    <label htmlFor="tracker-notes" style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
                       display: "block", marginBottom: 5 }}>{tk.lblNotes}</label>
-                    <textarea value={editCard.notes || ""} onChange={setField("notes")}
+                    <textarea id="tracker-notes" value={editCard.notes || ""} onChange={setField("notes")}
                       placeholder={tk.phNotes}
                       rows={3} style={{ ...mInput, resize: "vertical", lineHeight: 1.6 }}
                       onFocus={e => { e.target.style.borderColor = tcol.color; e.target.style.boxShadow = `0 0 0 3px ${tcol.color}22`; }}
                       onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = "none"; }} />
                   </div>
 
-                  {/* Action row */}
-                  <div style={{ display: "flex", gap: 10, justifyContent: "space-between", flexWrap: "wrap" }}>
-                    <div style={{ display: "flex", gap: 8 }}>
-                      <button onClick={() => saveCard(editCard)}
-                        style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
-                          padding: "10px 22px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
-                        {isNew ? tk.addApp : tk.saveChanges}
-                      </button>
-                      <button onClick={() => setTrackerModal({ open: false, card: null })}
-                        style={{ background: "transparent", color: C.text2, border: `1px solid ${C.border}`,
-                          borderRadius: 8, padding: "10px 16px", fontSize: 13.5, cursor: "pointer", fontFamily: "inherit" }}>
-                        {tk.cancel}
-                      </button>
-                    </div>
-                    {!isNew && (
-                      <button onClick={() => deleteCard(editCard.id)}
-                        style={{ background: "transparent", color: C.danger, border: `1px solid ${C.danger}30`,
-                          borderRadius: 8, padding: "10px 16px", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
-                        {tk.delete}
-                      </button>
-                    )}
+                </div>
+
+                {/* Modal footer */}
+                <div data-testid="tracker-dialog-footer" style={{ display: "flex", gap: 10,
+                  justifyContent: "space-between", alignItems: "center", flexWrap: "wrap",
+                  padding: "14px 24px", borderTop: `1px solid ${C.border}`,
+                  background: C.bg, flex: "none" }}>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    <button type="button" onClick={() => saveCard(editCard)}
+                      style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
+                        padding: "10px 22px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                      {isNew ? tk.addApp : tk.saveChanges}
+                    </button>
+                    <button type="button" onClick={() => setTrackerModal({ open: false, card: null })}
+                      style={{ background: "transparent", color: C.text2, border: `1px solid ${C.border}`,
+                        borderRadius: 8, padding: "10px 16px", fontSize: 13.5, cursor: "pointer", fontFamily: "inherit" }}>
+                      {tk.cancel}
+                    </button>
                   </div>
+                  {!isNew && (
+                    <button type="button" onClick={() => deleteCard(editCard.id)}
+                      style={{ background: "transparent", color: C.danger, border: `1px solid ${C.danger}30`,
+                        borderRadius: 8, padding: "10px 16px", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                      {tk.delete}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
