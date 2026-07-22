@@ -5821,7 +5821,7 @@ Awards: ${form.awards}`;
 
       <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "minmax(420px, 45%) minmax(520px, 55%)",
         gap: 18, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
-        <div className="ac-panel-noscroll" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileResumeMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
+        <div className="ac-panel-scrollbar" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileResumeMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
           padding: "12px 14px 28px" }) }}>
           {!guidanceDismissed && !readyForReview && nextChecklistItem && (
             <button type="button"
@@ -6240,7 +6240,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* ── Preview column ── */}
-        <div className="ac-panel-noscroll" style={{ minWidth: 0, ...(isMobile ? { padding: "10px 8px 84px", marginTop: 0, display: mobileResumeMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
+        <div className="ac-panel-scrollbar" style={{ minWidth: 0, ...(isMobile ? { padding: "10px 8px 84px", marginTop: 0, display: mobileResumeMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
           padding: "12px 14px 28px" }) }}>
           <PreviewPane
             ref={resumePrintRef}
@@ -7088,7 +7088,7 @@ Awards: ${form.awards}`;
 
         <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "minmax(420px, 45%) minmax(520px, 55%)",
           gap: 18, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
-          <div className="ac-panel-noscroll" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileCoverMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
+          <div className="ac-panel-scrollbar" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileCoverMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
             padding: "12px 14px 28px" }) }}>
             {!coverReady && (
               <div style={{ color: C.text3, fontSize: 12.5, lineHeight: 1.45, padding: "0 2px 8px", textAlign: rtl ? "right" : "left" }}>
@@ -7191,7 +7191,7 @@ Awards: ${form.awards}`;
             </div>
           </div>
 
-          <div className="ac-panel-noscroll" style={{ minWidth: 0, ...(isMobile ? { padding: "10px 8px 84px", marginTop: 0, display: mobileCoverMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
+          <div className="ac-panel-scrollbar" style={{ minWidth: 0, ...(isMobile ? { padding: "10px 8px 84px", marginTop: 0, display: mobileCoverMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
             padding: "12px 14px 28px" }) }}>
             <PreviewPane
               ref={coverPrintRef}
@@ -9484,7 +9484,7 @@ Awards: ${form.awards}`;
             borderBottom: `1px solid ${C.border}`, marginBottom: 12, paddingBottom: 8 }}>
             {/* Scrollable: hamburger + nav items */}
             <div style={{ display: "flex", alignItems: "center", gap: 6, overflowX: "auto",
-              flex: 1, padding: "4px 0 0", scrollbarWidth: "none" }}>
+              flex: 1, padding: "4px 0 0", scrollbarWidth: "thin" }}>
               {/* Hamburger */}
               <button onClick={() => setSidebarOpen(o => !o)} aria-label={builderText("openMenu")} aria-expanded={sidebarOpen}
                 style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 8, background: C.surface,

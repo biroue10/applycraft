@@ -36,6 +36,7 @@
     "test:e2e": "playwright test",
     "test:a11y": "node scripts/a11y-check.mjs",
     "test:security": "node scripts/security-tests.mjs",
+    "test:scrollbars": "node scripts/scrollbar-tests.mjs",
     "test:i18n": "node scripts/i18n-tests.mjs",
     "test:share": "node scripts/share-tests.mjs",
     "test:linkify": "node scripts/linkify-tests.mjs",
