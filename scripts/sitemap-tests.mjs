@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { INDEXABLE_APP_PATHS, SITE, isIndexablePublicUrl, normalizePublicPath } from "./seo-url-policy.mjs";
+import { blogArticles } from "./blog-articles.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const PUBLIC = join(ROOT, "public");
@@ -87,6 +88,10 @@ if (missingLastmod.length) {
 }
 
 const sitemapSet = new Set(urls);
+for (const article of blogArticles.filter((item) => item.status === "published")) {
+  const loc = `${SITE}${article.route}`;
+  if (!sitemapSet.has(loc)) fail(`published blog registry route missing from sitemap: ${loc}`);
+}
 const matchingGuides = [
   {
     route: "/blog/resume-and-cover-letter-match/",

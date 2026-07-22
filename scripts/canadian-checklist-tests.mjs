@@ -6,10 +6,14 @@ const ROOT = new URL("..", import.meta.url).pathname;
 const PUBLIC = join(ROOT, "public");
 const ROUTE = "/blog/canadian-resume-format-checklist/";
 const CANONICAL = `https://applycraft.io${ROUTE}`;
+const FR_ROUTE = "/fr/blog/checklist-cv-canadien/";
+const FR_CANONICAL = `https://applycraft.io${FR_ROUTE}`;
 const ARTICLE_FILE = join(PUBLIC, "blog/canadian-resume-format-checklist/index.html");
 const EXAMPLE_FILE = join(PUBLIC, "examples/canadian-resume-format/index.html");
 const IMMIGRANT_FILE = join(PUBLIC, "blog/canadian-resume-for-immigrants/index.html");
 const INDEX_FILE = join(PUBLIC, "blog/index.html");
+const FR_ARTICLE_FILE = join(PUBLIC, "fr/blog/checklist-cv-canadien/index.html");
+const FR_INDEX_FILE = join(PUBLIC, "fr/blog/index.html");
 const failures = [];
 const fail = (message) => failures.push(message);
 const html = existsSync(ARTICLE_FILE) ? readFileSync(ARTICLE_FILE, "utf8") : "";
@@ -23,7 +27,8 @@ if (description !== "Use this Canadian resume format checklist to organize every
 if ((html.match(/<h1\b/gi) || []).length !== 1) fail("article must have exactly one H1");
 if (!html.includes("<h1>Canadian Resume Format Checklist: What to Include and Remove in 2026</h1>")) fail("H1 mismatch");
 if (!html.includes(`<link rel="canonical" href="${CANONICAL}"`)) fail("self-referencing canonical missing");
-if (/hreflang="(?:fr|ar)"/i.test(html)) fail("English-only article must not fabricate French or Arabic alternates");
+if (!html.includes(`hreflang="fr" href="${FR_CANONICAL}"`)) fail("English article is missing its French alternate");
+if (/hreflang="ar"/i.test(html)) fail("English article must not fabricate an Arabic alternate");
 if (/noindex/i.test(html)) fail("article must not be noindex");
 
 const article = html.match(/<article\b[\s\S]*?<\/article>/i)?.[0] || "";
@@ -64,6 +69,7 @@ const expectedIntents = new Map([
   ["/examples/canadian-resume-format/", "See and edit a complete example"],
   ["/blog/canadian-resume-for-immigrants/", "Adapt international experience for Canada"],
   [ROUTE, "Verify every section before submission"],
+  [FR_ROUTE, "Final section-by-section verification before submission"],
 ]);
 for (const [route, intent] of expectedIntents) if (!intents.some((item) => item.route === route && item.primaryIntent === intent)) fail(`content intent missing for ${route}`);
 
@@ -89,9 +95,41 @@ function walk(dir) {
 walk(PUBLIC);
 if (allTitles.filter((item) => item.title === title).length !== 1) fail("SEO title is duplicated");
 
+const frHtml = existsSync(FR_ARTICLE_FILE) ? readFileSync(FR_ARTICLE_FILE, "utf8") : "";
+const frArticle = frHtml.match(/<article\b[\s\S]*?<\/article>/i)?.[0] || "";
+const frText = frArticle.replace(/<[^>]+>/g, " ").replace(/&(?:[a-z]+|#\d+);/gi, " ").replace(/\s+/g, " ").trim();
+const frWordCount = frText ? frText.split(" ").length : 0;
+if (!frHtml) fail("French Canadian checklist article is missing");
+if (frHtml.match(/<title>([^<]+)<\/title>/i)?.[1] !== "Checklist CV canadien 2026 | ApplyCraft") fail("French SEO title mismatch");
+if ((frHtml.match(/<h1\b/gi) || []).length !== 1) fail("French article must have exactly one H1");
+if (!frHtml.includes("<h1>Checklist du CV canadien : quoi inclure et retirer en 2026</h1>")) fail("French H1 mismatch");
+if (!frHtml.includes(`<link rel="canonical" href="${FR_CANONICAL}"`)) fail("French self-referencing canonical missing");
+if (!frHtml.includes(`hreflang="en" href="${CANONICAL}"`) || !frHtml.includes(`hreflang="fr" href="${FR_CANONICAL}"`) || !frHtml.includes(`hreflang="x-default" href="${CANONICAL}"`)) fail("French reciprocal hreflang set is incomplete");
+if (/hreflang="ar"/i.test(frHtml)) fail("French article must not fabricate an Arabic alternate");
+if (frWordCount < 3500 || frWordCount > 4500) fail(`French article word count ${frWordCount} is outside 3500-4500`);
+if ((frArticle.match(/<table\b/g) || []).length < 7) fail("French practical tables are missing");
+if ((frArticle.match(/<details\b/g) || []).length !== 12) fail("French article must contain 12 visible FAQs");
+const frSchemas = [...frHtml.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((match) => JSON.parse(match[1]));
+for (const type of ["BlogPosting", "BreadcrumbList", "FAQPage"]) if (!frSchemas.some((schema) => schema["@type"] === type)) fail(`French ${type} schema missing`);
+const frPosting = frSchemas.find((schema) => schema["@type"] === "BlogPosting");
+if (frPosting?.mainEntityOfPage !== FR_CANONICAL || frPosting?.inLanguage !== "fr") fail("French BlogPosting canonical or language mismatch");
+const frFaq = frSchemas.find((schema) => schema["@type"] === "FAQPage");
+if (frFaq?.mainEntity?.length !== 12) fail("French FAQ schema must contain 12 questions");
+for (const item of frFaq?.mainEntity || []) {
+  const visible = `<details><summary>${item.name}</summary><p>${item.acceptedAnswer.text}</p></details>`;
+  if (!frArticle.includes(visible)) fail(`French FAQ schema differs from visible FAQ: ${item.name}`);
+}
+if (!readFileSync(FR_INDEX_FILE, "utf8").includes(`href="${FR_ROUTE}"`)) fail("French blog index does not link to the checklist article");
+const frParagraphs = [...frArticle.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/g)].map((match) => match[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()).filter((paragraph) => paragraph.length > 160);
+for (const file of [IMMIGRANT_FILE, join(PUBLIC, "fr/blog/cv-canadien-maroc/index.html"), ARTICLE_FILE]) {
+  const other = readFileSync(file, "utf8").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  for (const paragraph of frParagraphs) if (other.includes(paragraph)) fail(`large French paragraph duplicated from ${file}`);
+}
+for (const claim of ["22 modèles", "50+ langues", "99 langues"]) if (frHtml.includes(claim)) fail(`outdated French claim found: ${claim}`);
+
 if (failures.length) {
   console.error("Canadian checklist tests failed:");
   failures.forEach((failure) => console.error(`- ${failure}`));
   process.exit(1);
 }
-console.log(`Canadian checklist tests passed (${wordCount} words, ${keywordCount} exact primary-keyword uses, ${faq.mainEntity.length} FAQs).`);
+console.log(`Canadian checklist tests passed (English: ${wordCount} words; French: ${frWordCount} words; 12 FAQs per locale).`);

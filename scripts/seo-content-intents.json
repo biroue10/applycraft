@@ -13,5 +13,12 @@
     "page": "Canadian resume checklist",
     "route": "/blog/canadian-resume-format-checklist/",
     "primaryIntent": "Verify every section before submission"
+  },
+  {
+    "page": "Checklist du CV canadien",
+    "route": "/fr/blog/checklist-cv-canadien/",
+    "locale": "fr",
+    "primaryKeyword": "checklist CV canadien",
+    "primaryIntent": "Final section-by-section verification before submission"
   }
 ]

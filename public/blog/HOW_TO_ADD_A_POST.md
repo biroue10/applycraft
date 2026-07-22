@@ -1,7 +1,8 @@
 # How to add a new blog post
 
-The blog is plain static HTML (same pattern as the rest of the site). Adding a post
-is three small steps — no build tooling or React needed.
+The articles are plain static HTML, while the English and French indexes are generated
+from one registry. This keeps published routes and visible cards aligned without adding
+client-side JavaScript.
 
 ## 1. Create the post file
 
@@ -27,34 +28,33 @@ Then open the new `index.html` and edit:
 
 Keep the `<nav>`, `<footer>`, and the `.cta-box` — just replace the article content.
 
-## 2. Add a card to the blog index
+## 2. Register the article
 
-Open `public/blog/index.html`. Inside the `<!-- POST CARDS -->` block, copy the
-existing `<a class="post-card">…</a>` and paste your new one **at the top** (newest first):
+Add one entry to `scripts/blog-articles.mjs`. Set `locale`, `route`, metadata and
+`status: "published"`. The build sorts published cards newest first and writes the
+appropriate `/blog/` or `/fr/blog/` index.
 
 ```html
-<a class="post-card" href="/blog/your-new-post-slug/">
-  <div class="post-meta">
-    <span class="tag">Cover Letters</span>
-    <span>July 10, 2026</span>
-    <span>· 5 min read</span>
-  </div>
-  <h2>Your post title</h2>
-  <p>One- or two-sentence summary that makes someone want to click.</p>
-  <span class="read-more">Read article →</span>
-</a>
+{
+  locale: "en",
+  slug: "your-new-post-slug",
+  route: "/blog/your-new-post-slug/",
+  title: "Your post title",
+  category: "Job Search",
+  publishedAt: "2026-07-10",
+  readMinutes: 8,
+  description: "A useful summary.",
+  status: "published",
+}
 ```
 
-## 3. Add both/new URLs to the sitemap
+Run `node scripts/generate-blog-indexes.mjs` if you need to refresh the checked-in
+indexes before the next build. Do not edit the generated card block manually.
 
-Open `public/sitemap.xml` and add (keep it alphabetical-ish, near the other `/blog/` lines):
+## 3. Generate the sitemap
 
-```xml
-<url>
-  <loc>https://applycraft.io/blog/your-new-post-slug/</loc>
-  <lastmod>2026-07-10</lastmod>
-</url>
-```
+Run `npm run seo:sitemap`. The generator discovers the article canonical and uses its
+publication or modification date. IndexNow consumes the same sitemap URL list.
 
 ## 4. Deploy
 
@@ -62,6 +62,6 @@ Commit + push (the auto-deploy hook handles the rest), or run the normal build/d
 That's it — the post is live and indexed.
 
 ### Tips
-- Good post length for SEO: 700–1500 words, with `<h2>` subheadings.
-- Always end with the `.cta-box` linking to `/resume/templates/` — it converts readers.
+- Choose length based on search intent and usefulness, with a logical heading hierarchy.
+- Use contextual CTAs that match the article rather than a mandatory destination.
 - Reuse the `tag` values so topics stay consistent (e.g. ATS, Cover Letters, Job Search, Interviews).
