@@ -9341,7 +9341,7 @@ Awards: ${form.awards}`;
       `}</style>
       <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
       <AppToolHeader />
-      <div className="ac-workspace-layout" style={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden" }}>
+      <div className="ac-workspace-layout" data-clarity-mask="true" style={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden" }}>
 
       {/* ── Sidebar (desktop) ── */}
       {!isMobile && !isImmersiveAppView && (

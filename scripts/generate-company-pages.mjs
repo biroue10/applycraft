@@ -9,10 +9,10 @@ const ROOT = join(__dirname, "..", "public");
 const SITE = "https://applycraft.io";
 const EMAIL = "hello@applycraft.io";
 const FONT_PRIVACY_NOTICE = {
-  en: "Fonts are self-hosted on our own domain, so displaying them sends no requests to Google Fonts or any other font service. This covers fonts only — with your consent, the site also loads Google Analytics, described below.",
-  fr: "Nos polices sont hébergées sur notre propre domaine : leur affichage n'envoie aucune requête à Google Fonts ni à un autre service de polices. Cela concerne uniquement les polices — avec votre consentement, le site charge également Google Analytics, décrit ci-dessous.",
+  en: "Fonts are self-hosted on our own domain, so displaying them sends no requests to Google Fonts or any other font service. This covers fonts only — with your consent, the site also loads Google Analytics and Microsoft Clarity, described below.",
+  fr: "Nos polices sont hébergées sur notre propre domaine : leur affichage n'envoie aucune requête à Google Fonts ni à un autre service de polices. Cela concerne uniquement les polices — avec votre consentement, le site charge également Google Analytics et Microsoft Clarity, décrits ci-dessous.",
   // Native review requested before an Arabic legal-policy route is published.
-  ar: "نستضيف خطوطنا على نطاقنا الخاص، لذا لا يُرسل عرضها أي طلبات إلى Google Fonts أو أي خدمة خطوط أخرى. ينطبق هذا على الخطوط فقط — فبموافقتك يحمّل الموقع أيضًا Google Analytics الموضّح أدناه.",
+  ar: "نستضيف خطوطنا على نطاقنا الخاص، لذا لا يُرسل عرضها أي طلبات إلى Google Fonts أو أي خدمة خطوط أخرى. ينطبق هذا على الخطوط فقط — فبموافقتك يحمّل الموقع أيضًا Google Analytics وMicrosoft Clarity الموضّحين أدناه.",
 };
 const TODAY = "2026-06-27";
 const SOCIAL_IMAGE = `${SITE}/og/home.png`;
@@ -119,7 +119,7 @@ const PAGES = {
   "privacy": {
     path: "/privacy/",
     title: "Privacy Policy",
-    description: "How ApplyCraft handles data: browser-first resume editing, optional account sync, Google Analytics, optional AI helpers, private offline sharing, and payments explained.",
+    description: "How ApplyCraft handles data: browser-first resume editing, optional account sync, consent-gated analytics, optional AI helpers, private offline sharing, and payments explained.",
     content: `
 <h1>Privacy Policy</h1>
 <p class="meta">Last updated: ${TODAY} · Effective immediately</p>
@@ -152,13 +152,24 @@ const PAGES = {
 <p>Private offline share links store the document data inside the URL fragment. Anyone with the full link can view the document, so only share it with people you trust. These links do not require server-side document storage, but they can be long.</p>
 
 <h2 id="cookies">3. Cookies and tracking</h2>
-<p>ApplyCraft sets <strong>no advertising cookies</strong> and runs <strong>no ad networks</strong> (no Facebook Pixel, no Hotjar). We use <strong>Google Analytics 4</strong> (measurement ID <code>G-V4RE1M2Q52</code>) to understand how the site is used. Google LLC acts as our processor for this data.</p>
-<p><strong>Analytics is off until you consent.</strong> On your first visit a banner asks whether you accept analytics cookies. Google Analytics is not loaded and sets no cookies unless you choose "Accept" — declining is a single click and leaves no analytics running. You can change your choice at any time via <strong>Cookie preferences</strong> in the site footer.</p>
+<p>ApplyCraft sets <strong>no advertising cookies</strong> and runs <strong>no ad networks</strong> (no Facebook Pixel or advertising pixels). We use <strong>Google Analytics 4</strong> (measurement ID <code>G-V4RE1M2Q52</code>) for aggregate product analytics and <strong>Microsoft Clarity</strong> for consented session recordings, heatmaps, and interaction insights. Google LLC and Microsoft Corporation act as processors for this data.</p>
+<p><strong>Analytics is off until you consent.</strong> On your first visit a banner asks whether you accept analytics cookies. Google Analytics and Microsoft Clarity are not loaded and set no analytics cookies unless you choose "Accept" — declining is a single click and leaves no optional analytics running. You can change your choice at any time via <strong>Cookie preferences</strong> in the site footer.</p>
 <p>If you accept, Google Analytics collects: pages viewed and in-product events (such as "a resume was started or exported"), your device and browser type, referring source, and an <strong>approximate location derived from your IP address</strong>. It stores first-party cookies (<code>_ga</code>, <code>_ga_&lt;id&gt;</code>) for up to two years to recognise returning visits. IP anonymisation is enabled. We never send resume or cover-letter content, names, or email addresses to Google Analytics. See <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</p>
+<p>If you accept, Microsoft Clarity records interactions such as clicks, scrolling, navigation, device/browser information, and rendered page views to produce session replays and heatmaps. ApplyCraft does not intentionally identify visitors through Clarity and does not send names, email addresses, or résumé and cover-letter field values through custom Clarity APIs. See <a href="https://privacy.microsoft.com/privacystatement" rel="noopener">Microsoft's privacy statement</a>.</p>
 <p>Cloudflare, our CDN provider, may set a technical cookie (<code>__cf_bm</code>) for bot protection. This is a strictly necessary security cookie that does not track you for advertising purposes.</p>
 
 <h2>4. AI features and your data</h2>
 <p>Some optional AI helpers — such as achievement coaching, AI tailoring to a job description, or the translation assistant — depend on external AI providers when you choose to use them. Changing the document language only updates labels, dates, direction, and layout. If you choose the translation assistant, the text you wrote is processed to create a translated copy. Your original résumé remains unchanged. Review AI translations before sending applications. Do not use optional AI helpers with sensitive content unless you are comfortable with the relevant provider processing the submitted text. The core builder and export do not use AI.</p>
+
+<h3>4.1 Data activity by action</h3>
+<table><thead><tr><th scope="col">Action</th><th scope="col">Where data goes</th><th scope="col">What triggers it</th></tr></thead><tbody>
+  <tr><th scope="row">Edit a resume or cover letter</th><td>Browser memory; not uploaded by standard editing</td><td>Typing in the editor</td></tr>
+  <tr><th scope="row">Export PDF or DOCX</th><td>Generated for download on your device</td><td>Your explicit export request</td></tr>
+  <tr><th scope="row">Store Job Tracker metadata</th><td>Local storage on this device; document content is excluded</td><td>Enabling the storage option</td></tr>
+  <tr><th scope="row">Use an AI helper</th><td>The selected text is proxied to Anthropic</td><td>Your explicit AI action after the notice</td></tr>
+  <tr><th scope="row">Create a private offline link</th><td>Encrypted document data remains in the URL fragment</td><td>Your explicit share action</td></tr>
+</tbody></table>
+<p>You can clear local Job Tracker metadata from the tracker and export a copy first. ApplyCraft does not log full resumes, cover letters, names, email addresses, job descriptions or interview answers as analytics events.</p>
 
 <h2 id="payments">4a. Payments (optional paid pass)</h2>
 <p>Power-ups (AI tailoring and Master Profile cloud sync) are available via an optional one-time "Active Search Pass." Payments are processed by <strong>Lemon Squeezy</strong>, which acts as the merchant of record and handles billing and applicable taxes. We do not receive or store your full card details; we record only whether your pass is active and when it expires. Lemon Squeezy's handling of payment data is governed by its own privacy policy.</p>
@@ -185,6 +196,7 @@ const PAGES = {
 <ul>
   <li><strong>Cloudflare</strong> — CDN and hosting. Subject to Cloudflare's <a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">privacy policy</a>.</li>
   <li><strong>Google Analytics 4</strong> — product analytics. Sets first-party cookies and processes usage data on Google's infrastructure. Subject to <a href="https://policies.google.com/privacy" rel="noopener">Google's privacy policy</a>.</li>
+  <li><strong>Microsoft Clarity</strong> — consented session recordings, heatmaps, and interaction insights. Subject to <a href="https://privacy.microsoft.com/privacystatement" rel="noopener">Microsoft's privacy statement</a>.</li>
   <li><strong>Lemon Squeezy</strong> — payment processing and merchant of record for the optional paid pass. Subject to <a href="https://www.lemonsqueezy.com/privacy" rel="noopener">Lemon Squeezy's privacy policy</a>.</li>
 </ul>
 
