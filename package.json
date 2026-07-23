@@ -33,6 +33,7 @@
     "test:smoke:static-browser": "node scripts/headless-static-smoke.mjs",
     "test:homepage-integrity": "node scripts/homepage-integrity-tests.mjs",
     "test:navbar-integrity": "node scripts/navbar-integrity-tests.mjs",
+    "test:navbar-state": "node scripts/navbar-state-tests.mjs",
     "test:e2e": "playwright test",
     "test:a11y": "node scripts/a11y-check.mjs",
     "test:security": "node scripts/security-tests.mjs",

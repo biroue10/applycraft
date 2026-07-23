@@ -58,7 +58,7 @@ async function navbarShape(page, expected) {
 
 for (const [code, locale] of Object.entries(LOCALES)) {
   test(`marketing and in-app navbars are identical (${code})`, async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.setViewportSize({ width: 1600, height: 900 });
 
     const expected = { labels: locale.labels, height: DESKTOP_HEIGHT };
 
@@ -77,7 +77,7 @@ for (const [code, locale] of Object.entries(LOCALES)) {
 }
 
 test("no layout shift or nav change across landing → builder → tracker → checker", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.setViewportSize({ width: 1600, height: 900 });
   const routes = ["/", "/resume/templates/", "/job-tracker/", "/app/ats-checker", "/cover-letter/templates/"];
   const expected = { labels: LOCALES.en.labels, height: DESKTOP_HEIGHT };
   const shapes = [];

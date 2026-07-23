@@ -2608,7 +2608,9 @@ function routeWithParam(path, lang, key, value) {
 
 function routeFromAppPath(pathname = "/", hash = "") {
   const hashRoute = hash ? hash.replace(/^#\/?/, "").replace(/\/+$/, "") : "";
-  const clean = (hashRoute || pathname).replace(/^\/+/, "").replace(/\/+$/, "");
+  const pathnameRoute = pathname.replace(/^\/+/, "").replace(/\/+$/, "");
+  const legacyHashRoutes = new Set(["resume", "resume/templates", "resume-builder", "resume/builder", "cover-letter", "cover-letter/templates", "cover-letter-builder", "cover-letter/builder", "job-tracker", "ats-checker", "app/ats-checker", "master-profile", "about", "email-signature", "personal-website"]);
+  const clean = legacyHashRoutes.has(hashRoute) ? hashRoute : pathnameRoute;
   if (!clean) return { ...DEFAULT_APP_ROUTE };
   const route = { ...DEFAULT_APP_ROUTE, appView: "app" };
   if (clean === "resume" || clean === "resume/templates") return { ...route, navPage: "resume", step: "templates" };
@@ -4599,27 +4601,29 @@ Awards: ${form.awards}`;
   // token, logo, item order and labels. The app-only chrome (active tool, save
   // state, tools drawer) is passed in as props, never forked into a second component.
   const AppToolHeader = ({ headerStyle } = {}) => (
-    <SharedSiteHeader
-      variant="app"
-      lang={lang}
-      activeId={navPage}
-      onNavigate={(item) => {
-        setAppHeaderMenuOpen(false);
-        enterPrimaryTool(item);
-      }}
-      onLogoClick={() => setAppView("landing")}
-      showCta={false}
-      renderLanguageSelector={renderHeaderLanguageSelector}
-      headerStyle={headerStyle}
-      endSlot={(
+    <>
+      <SharedSiteHeader
+        variant="app"
+        lang={lang}
+        activeId={navPage === "resume" && step === "templates" ? "templates" : navPage}
+        onNavigate={(item) => {
+          setAppHeaderMenuOpen(false);
+          enterPrimaryTool(item);
+        }}
+        onLogoClick={() => setAppView("landing")}
+        renderLanguageSelector={renderHeaderLanguageSelector}
+        headerStyle={headerStyle}
+        mobileMenuOpen={appHeaderMenuOpen}
+        onMobileMenuToggle={() => setAppHeaderMenuOpen((open) => !open)}
+      />
+      <div className="ac-workspace-status" role="status" style={{ display: "flex", justifyContent: "flex-end",
+        padding: "8px 16px 0", maxWidth: 1320, margin: "0 auto", boxSizing: "border-box" }}>
         <span title={builderText("notSavedHeaderTooltip")}
           style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
           <LineIcon name="alert" size={14} color={C.text3} /> {bu.notSavedAutomatically}
         </span>
-      )}
-      mobileMenuOpen={appHeaderMenuOpen}
-      onMobileMenuToggle={() => setAppHeaderMenuOpen((open) => !open)}
-    />
+      </div>
+    </>
   );
 
   const mainContent = step === "templates" ? (
@@ -8602,7 +8606,6 @@ Awards: ${form.awards}`;
         <SharedSiteHeader
           lang={lang}
           onLogoClick={() => setAppView("landing")}
-          ctaLabel={lx.createResume}
           onCtaClick={() => startResume("nav_cta")}
           renderLanguageSelector={() => (
             <LanguageDropdown

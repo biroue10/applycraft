@@ -11,15 +11,36 @@
 // so it stays an anchor even inside the SPA where the other tools switch view
 // via client-side state. Interview Prep is a separate lazy-loaded route.
 export const PRIMARY_NAV_ITEMS = [
-  { id: "resume", href: "/resume-builder/", labelKey: "resumeBuilder" },
-  { id: "cover", href: "/cover-letter-builder/", labelKey: "coverLetter" },
-  { id: "ats", href: "/ats-checker/", labelKey: "atsChecker" },
-  { id: "application-pack", href: "/application-pack/", labelKey: "applicationPack", alwaysLink: true },
-  { id: "tracker", href: "/job-tracker/", labelKey: "jobTracker" },
-  { id: "interview", href: "/interview-prep/", labelKey: "interviewPrep", alwaysLink: true },
-  { id: "templates", href: "/resume/templates/", labelKey: "resumeTemplates", alwaysLink: true },
-  { id: "pricing", href: "/pricing/", labelKey: "pricing", alwaysLink: true },
+  { id: "resume", href: "/resume-builder/", labelKey: "resumeBuilder", activeRoutes: ["/resume-builder/", "/free-resume-builder/"] },
+  { id: "cover", href: "/cover-letter-builder/", labelKey: "coverLetter", activeRoutes: ["/cover-letter-builder/", "/cover-letter/templates/"] },
+  { id: "ats", href: "/ats-checker/", labelKey: "atsChecker", activeRoutes: ["/ats-checker/", "/ats-checker-fr/", "/ats-checker-ar/", "/ats-resume-builder/", "/resume-checker/"] },
+  { id: "application-pack", href: "/application-pack/", labelKey: "applicationPack", activeRoutes: ["/application-pack/"], alwaysLink: true },
+  { id: "tracker", href: "/job-tracker/", labelKey: "jobTracker", activeRoutes: ["/job-tracker/"] },
+  { id: "interview", href: "/interview-prep/", labelKey: "interviewPrep", activeRoutes: ["/interview-prep/"], alwaysLink: true },
+  { id: "templates", href: "/resume/templates/", labelKey: "resumeTemplates", activeRoutes: ["/resume/templates/", "/examples/"], alwaysLink: true },
+  { id: "pricing", href: "/pricing/", labelKey: "pricing", activeRoutes: ["/pricing/"], alwaysLink: true },
 ];
+
+export function normalizeNavPath(value = "/") {
+  let path = String(value || "/").split(/[?#]/, 1)[0].replace(/\/{2,}/g, "/");
+  if (!path.startsWith("/")) path = `/${path}`;
+  path = path.replace(/^\/(?:fr|ar)(?=\/)/, "") || "/";
+  return path === "/" ? "/" : `${path.replace(/\/+$/, "")}/`;
+}
+
+export function activeNavIdForPath(value = "/") {
+  const path = normalizeNavPath(value);
+  const matches = [];
+  for (const item of PRIMARY_NAV_ITEMS) {
+    for (const route of item.activeRoutes || []) {
+      const normalizedRoute = normalizeNavPath(route);
+      if (path === normalizedRoute || path.startsWith(normalizedRoute)) {
+        matches.push({ id: item.id, length: normalizedRoute.length });
+      }
+    }
+  }
+  return matches.sort((a, b) => b.length - a.length)[0]?.id || "";
+}
 
 export function primaryNavLabelKey(id) {
   return PRIMARY_NAV_ITEMS.find((item) => item.id === id)?.labelKey || "";

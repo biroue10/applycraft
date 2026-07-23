@@ -13,6 +13,7 @@ const entryAr = await readFile(new URL("../src/i18n/namespaces/ar/entry.js", imp
 const starterContent = await readFile(new URL("../src/data/resumeStarters/starterContent.js", import.meta.url), "utf8");
 const pkg = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
 const siteChrome = await readFile(new URL("../src/siteChrome.jsx", import.meta.url), "utf8");
+const navbarCss = await readFile(new URL("../public/app-navbar.css", import.meta.url), "utf8");
 
 assert.match(landing, /Create my resume/, "homepage needs a specific primary CTA");
 assert.match(landing, /Check my existing resume/, "homepage needs a specific secondary CTA");
@@ -37,9 +38,10 @@ assert.match(app, /UX_MEASUREMENT_ENABLED = false/, "privacy-preserving measurem
 assert.doesNotMatch(app, /from ["'](?:@?fullstory|hotjar|mixpanel|amplitude)|https?:\/\/[^"']*(?:fullstory|hotjar|mixpanel|amplitude|google-analytics)|gtag\(/i, "no invasive analytics should be added");
 assert.ok(pkg.scripts["test:ux"], "package.json should expose npm run test:ux");
 assert.ok(pkg.scripts["test:responsive-layout"], "package.json should expose the responsive layout regression suite");
-assert.match(siteChrome, /max-width: 1480px/, "navbar should enter compact mode before its content clips");
-assert.match(siteChrome, /max-width: 1120px/, "navbar should enter hamburger mode at the measured tablet breakpoint");
+assert.match(navbarCss, /max-width:1480px/, "navbar should enter compact mode before its content clips");
+assert.match(navbarCss, /max-width:1120px/, "navbar should enter hamburger mode at the measured tablet breakpoint");
 assert.match(siteChrome, /ac-mobile-menu-cta/, "narrow mobile navigation must retain the primary CTA");
+assert.match(navbarCss, /aria-current=page/, "navbar CSS should expose one route-driven active-state contract");
 assert.match(app, /function SectionCard\([^)]*builderText = \(key\) => key/, "section menus should receive a safe builderText helper");
 assert.match(app, /builderText=\{builderText\}/, "section menu translation helper should be passed from the builder component");
 assert.match(app, /currentRoleId/, "experience editor should expose a current-role checkbox");
