@@ -184,11 +184,13 @@ const APP_SHELL_ROUTES = new Set([
   "/r/",
   "/resume/builder/",
   "/resume/templates/",
+  "/fr/modeles-cv/",
+  "/ar/resume-templates/",
 ]);
 const LOCALIZED_ROUTE_MAP = {
   "/": { fr: "/fr/", ar: "/ar/" },
   "/resume-builder/": { fr: "/resume-builder/", ar: "/resume-builder/" },
-  "/resume/templates/": { fr: "/resume/templates/", ar: "/resume/templates/" },
+  "/resume/templates/": { fr: "/fr/modeles-cv/", ar: "/ar/resume-templates/" },
   "/cover-letter/templates/": { fr: "/cover-letter/templates/", ar: "/cover-letter/templates/" },
   "/cover-letter-builder/": { fr: "/cover-letter/templates/", ar: "/cover-letter/templates/" },
   "/free-resume-builder/": { fr: "/fr/creer-cv-gratuit/", ar: "/ar/free-resume-builder/" },

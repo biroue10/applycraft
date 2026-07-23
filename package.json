@@ -55,6 +55,8 @@
     "test:visual": "node scripts/visual-regression.mjs",
     "test:responsive-layout": "node scripts/responsive-layout-audit.mjs",
     "test:header-unification": "node scripts/header-unification-tests.mjs",
+    "test:locale-first-paint": "node scripts/locale-first-paint-tests.mjs",
+    "test:navbar-spacing": "node scripts/navbar-spacing-tests.mjs",
     "audit:high": "npm audit --audit-level=high",
     "test:contrast": "node scripts/contrast-tests.mjs",
     "test:interview": "node scripts/interview-tests.mjs",

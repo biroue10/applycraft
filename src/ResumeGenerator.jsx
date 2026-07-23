@@ -2669,7 +2669,7 @@ function routeFromAppPath(pathname = "/", hash = "") {
   const clean = legacyHashRoutes.has(hashRoute) ? hashRoute : pathnameRoute;
   if (!clean) return { ...DEFAULT_APP_ROUTE };
   const route = { ...DEFAULT_APP_ROUTE, appView: "app" };
-  if (clean === "resume" || clean === "resume/templates") return { ...route, navPage: "resume", step: "templates" };
+  if (clean === "resume" || clean === "resume/templates" || clean === "fr/modeles-cv" || clean === "ar/resume-templates") return { ...route, navPage: "resume", step: "templates" };
   if (clean === "resume-builder" || clean === "resume/builder") return { ...route, navPage: "resume", step: "form" };
   if (clean === "cover-letter" || clean === "cover-letter/templates") return { ...route, navPage: "cover", coverStep: "templates" };
   if (clean === "cover-letter-builder" || clean === "cover-letter/builder") return { ...route, navPage: "cover", coverStep: "form" };
@@ -2702,8 +2702,8 @@ function getInitialAppRoute(pathname, hash) {
 }
 
 function routeLanguageOverride(pathname = "") {
-  if (pathname === "/fr" || pathname === "/fr/") return "fr";
-  if (pathname === "/ar" || pathname === "/ar/") return "ar";
+  if (/^\/fr(?:\/|$)/.test(pathname)) return "fr";
+  if (/^\/ar(?:\/|$)/.test(pathname)) return "ar";
   return "";
 }
 
@@ -3142,13 +3142,13 @@ export default function ResumeGenerator() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const nextPath = pathFromRoute({ appView, navPage, step, coverStep });
+    const nextPath = localizeRoute(pathFromRoute({ appView, navPage, step, coverStep }), lang);
     const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     const target = `${nextPath}${window.location.search || ""}`;
     if (currentPath !== target) {
       window.history.pushState({}, "", target);
     }
-  }, [appView, navPage, step, coverStep]);
+  }, [appView, navPage, step, coverStep, lang]);
 
   useEffect(() => {
     if (navPage !== "ats") return undefined;

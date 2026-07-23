@@ -38,7 +38,11 @@ function walk(dir) {
 function urlToFile(url) {
   const p = url.replace(ORIGIN, "") || "/";
   if (p === "/") return path.join(DIST, "index.html");
-  if (p.endsWith("/")) return path.join(DIST, p, "index.html");
+  if (p.endsWith("/")) {
+    const directoryFile = path.join(DIST, p, "index.html");
+    if (existsSync(directoryFile)) return directoryFile;
+    return path.join(DIST, p.slice(0, -1) + ".html");
+  }
   return path.join(DIST, p + ".html"); // SPA route, e.g. /resume/templates
 }
 

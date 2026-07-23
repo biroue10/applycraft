@@ -38,8 +38,8 @@ assert.match(app, /UX_MEASUREMENT_ENABLED = false/, "privacy-preserving measurem
 assert.doesNotMatch(app, /from ["'](?:@?fullstory|hotjar|mixpanel|amplitude)|https?:\/\/[^"']*(?:fullstory|hotjar|mixpanel|amplitude|google-analytics)|gtag\(/i, "no invasive analytics should be added");
 assert.ok(pkg.scripts["test:ux"], "package.json should expose npm run test:ux");
 assert.ok(pkg.scripts["test:responsive-layout"], "package.json should expose the responsive layout regression suite");
-assert.match(navbarCss, /max-width:1480px/, "navbar should enter compact mode before its content clips");
-assert.match(navbarCss, /max-width:1120px/, "navbar should enter hamburger mode at the measured tablet breakpoint");
+assert.match(navbarCss, /max-width:1680px/, "navbar should enter compact mode before long French labels clip");
+assert.match(navbarCss, /max-width:1240px/, "navbar should enter hamburger mode at the measured content breakpoint");
 assert.match(siteChrome, /ac-mobile-menu-cta/, "narrow mobile navigation must retain the primary CTA");
 assert.match(navbarCss, /aria-current=page/, "navbar CSS should expose one route-driven active-state contract");
 assert.match(app, /function SectionCard\([^)]*builderText = \(key\) => key/, "section menus should receive a safe builderText helper");

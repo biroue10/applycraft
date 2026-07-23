@@ -49,6 +49,30 @@ export const ALTERNATES = {
     { hreflang: "ar", href: `${ORIGIN}/ar/application-pack/` },
     { hreflang: "x-default", href: `${ORIGIN}/application-pack/` },
   ],
+  "/resume/templates/": [
+    { hreflang: "en", href: `${ORIGIN}/resume/templates/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/modeles-cv/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/resume-templates/` },
+    { hreflang: "x-default", href: `${ORIGIN}/resume/templates/` },
+  ],
+  "/resume/templates": [
+    { hreflang: "en", href: `${ORIGIN}/resume/templates/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/modeles-cv/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/resume-templates/` },
+    { hreflang: "x-default", href: `${ORIGIN}/resume/templates/` },
+  ],
+  "/fr/modeles-cv/": [
+    { hreflang: "en", href: `${ORIGIN}/resume/templates/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/modeles-cv/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/resume-templates/` },
+    { hreflang: "x-default", href: `${ORIGIN}/resume/templates/` },
+  ],
+  "/ar/resume-templates/": [
+    { hreflang: "en", href: `${ORIGIN}/resume/templates/` },
+    { hreflang: "fr", href: `${ORIGIN}/fr/modeles-cv/` },
+    { hreflang: "ar", href: `${ORIGIN}/ar/resume-templates/` },
+    { hreflang: "x-default", href: `${ORIGIN}/resume/templates/` },
+  ],
   "/interview-prep/": [
     { hreflang: "en", href: `${ORIGIN}/interview-prep/` },
     { hreflang: "fr", href: `${ORIGIN}/fr/interview-prep/` },

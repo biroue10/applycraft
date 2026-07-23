@@ -16,6 +16,8 @@ const ROUTE_LANG = {
   "/interview-prep/":    { lang: "en" },
   "/fr/interview-prep/": { lang: "fr" },
   "/ar/interview-prep/": { lang: "ar", dir: "rtl" },
+  "/fr/modeles-cv/":      { lang: "fr" },
+  "/ar/resume-templates/": { lang: "ar", dir: "rtl" },
 };
 
 const ROUTE_META = {
@@ -49,6 +51,23 @@ const ROUTE_META = {
     image: "https://applycraft.io/og/home.png",
     imageAlt: "ApplyCraft resume template gallery preview",
     locale: "en_US",
+    alternateLocales: ["fr_FR", "ar_MA"],
+  },
+  "/fr/modeles-cv/": {
+    title: "Modèles de CV compatibles ATS | ApplyCraft",
+    description: "Parcourez 60 modèles de CV ApplyCraft, choisissez une mise en page compatible ATS et exportez votre CV en PDF ou DOCX.",
+    image: "https://applycraft.io/og/home-fr.png",
+    imageAlt: "Galerie de modèles de CV ApplyCraft",
+    locale: "fr_FR",
+    alternateLocales: ["en_US", "ar_MA"],
+  },
+  "/ar/resume-templates/": {
+    title: "نماذج سيرة ذاتية متوافقة مع ATS | ApplyCraft",
+    description: "تصفح 60 نموذج سيرة ذاتية من ApplyCraft واختر تصميماً متوافقاً مع ATS وصدّر سيرتك بصيغة PDF أو DOCX.",
+    image: "https://applycraft.io/og/home-ar.png",
+    imageAlt: "معرض نماذج السيرة الذاتية من ApplyCraft",
+    locale: "ar_MA",
+    alternateLocales: ["en_US", "fr_FR"],
   },
   "/resume-builder": {
     title: "Resume Builder — Start a Free Editable Resume | ApplyCraft",
@@ -214,9 +233,11 @@ export default defineConfig({
           "/cover-letter/templates/", "/cover-letter/builder/", "/job-tracker/",
           "/app/ats-checker/", "/master-profile/", "/email-signature/", "/personal-website/",
         ]);
+        const directoryRoutes = new Set(["/fr/modeles-cv/", "/ar/resume-templates/"]);
         server.middlewares.use((request, _response, next) => {
           const [pathname, query = ""] = String(request.url || "").split("?");
           if (htmlRoutes.has(pathname)) request.url = `${pathname.slice(0, -1)}.html${query ? `?${query}` : ""}`;
+          if (directoryRoutes.has(pathname)) request.url = `${pathname}index.html${query ? `?${query}` : ""}`;
           next();
         });
       },

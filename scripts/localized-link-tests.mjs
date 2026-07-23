@@ -14,6 +14,8 @@ const STATIC_APP_ROUTES = new Set([
   "/ar/",
   "/resume-builder/",
   "/resume/templates/",
+  "/fr/modeles-cv/",
+  "/ar/resume-templates/",
   "/cover-letter/templates/",
   "/job-tracker/",
   "/master-profile/",

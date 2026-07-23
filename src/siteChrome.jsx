@@ -177,7 +177,6 @@ export function SiteHeader({
 }) {
   const [internalMenuOpen, setInternalMenuOpen] = useState(false);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
-  const [compactNav, setCompactNav] = useState(false);
   const headerRef = useRef(null);
   const menuButtonRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -200,14 +199,6 @@ export function SiteHeader({
   const moreLabel = lang === "fr" ? "Plus" : lang === "ar" ? "المزيد" : "More";
   const priorityItems = items.slice(0, 4);
   const secondaryItems = items.slice(4);
-
-  useEffect(() => {
-    const query = window.matchMedia("(max-width: 1480px)");
-    const sync = () => setCompactNav(query.matches);
-    sync();
-    query.addEventListener("change", sync);
-    return () => query.removeEventListener("change", sync);
-  }, []);
 
   useEffect(() => {
     const closeOnOutsideClick = (event) => {
@@ -311,7 +302,7 @@ export function SiteHeader({
             </Tag>
             );
           })}
-          {!compactNav && secondaryItems.map((item) => {
+          {secondaryItems.map((item) => {
             const action = actionProps(item, onNavigate);
             const Tag = action.as;
             const active = !!activeId && item.id === activeId;
@@ -331,7 +322,7 @@ export function SiteHeader({
               </Tag>
             );
           })}
-          {compactNav && <div ref={moreMenuRef} className="ac-site-more">
+          <div ref={moreMenuRef} className="ac-site-more">
             <button type="button" aria-expanded={moreMenuOpen} aria-controls="ac-more-menu"
               onClick={() => setMoreMenuOpen((open) => !open)}
               style={{ border: "none", borderRadius: 8, padding: "9px 10px", background: "transparent",
@@ -360,7 +351,7 @@ export function SiteHeader({
                 })}
               </div>
             )}
-          </div>}
+          </div>
         </nav>
         <div style={{ flex: 1 }} />
         <div className="ac-global-header__actions">

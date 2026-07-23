@@ -102,7 +102,7 @@ try {
       assert.ok(result.header, `${path} ${width}: global header must exist`);
       assert.ok(Math.abs(result.header.left) <= 1, `${path} ${width}: header must start at viewport edge`);
       assert.ok(Math.abs(result.header.width - result.pageWidth) <= 1, `${path} ${width}: header must span the full layout viewport`);
-      assert.equal(Math.round(result.header.height), width <= 1120 ? 60 : 64, `${path} ${width}: shared header height`);
+      assert.equal(Math.round(result.header.height), width <= 1240 ? 60 : 64, `${path} ${width}: shared header height`);
       assert.equal(result.header.background, "rgba(6, 8, 15, 0.98)", `${path} ${width}: shared opaque background`);
       assert.equal(result.header.borderBottomWidth, "1px", `${path} ${width}: shared bottom border`);
       assert.equal(result.header.borderBottomColor, "rgb(32, 50, 78)", `${path} ${width}: shared bottom border color`);

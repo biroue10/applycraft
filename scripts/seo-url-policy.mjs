@@ -7,6 +7,8 @@ export const INDEXABLE_APP_PATHS = [
   "/ar/",
   "/resume-builder/",
   "/resume/templates/",
+  "/fr/modeles-cv/",
+  "/ar/resume-templates/",
   "/cover-letter/templates/",
   "/job-tracker/",
   "/interview-prep/",

@@ -17,6 +17,8 @@ export const routes = [
   { path: "/r/:shareId", lazy: sharedResumeRoute },
   { path: "/resume-builder", element: <ResumeGenerator /> },
   { path: "/resume/templates", element: <ResumeGenerator /> },
+  { path: "/fr/modeles-cv/", element: <ResumeGenerator /> },
+  { path: "/ar/resume-templates/", element: <ResumeGenerator /> },
   { path: "/resume/builder", element: <ResumeGenerator /> },
   { path: "/cover-letter/templates", element: <ResumeGenerator /> },
   { path: "/cover-letter/builder", element: <ResumeGenerator /> },
