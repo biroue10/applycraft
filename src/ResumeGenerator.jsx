@@ -996,7 +996,7 @@ const COUNTRIES = [
   { flag: "🇾🇪", name: "Yemen",          code: "+967", digits: [9,   9] },
 ];
 
-function useIsMobile(bp = 768) {
+function useIsMobile(bp = 1120) {
   const [mobile, setMobile] = useState(false);
   useEffect(() => {
     // A resize handler that reads window.innerWidth runs for every resize event
@@ -3054,6 +3054,7 @@ export default function ResumeGenerator() {
   const toggleCoverCollapse = useCallback((k) => setCoverCollapsed(c => ({ ...c, [k]: !c[k] })), []);
   // Landing-page mobile hamburger menu.
   const [landingMenuOpen, setLandingMenuOpen] = useState(false);
+  const [appHeaderMenuOpen, setAppHeaderMenuOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -4602,7 +4603,10 @@ Awards: ${form.awards}`;
       variant="app"
       lang={lang}
       activeId={navPage}
-      onNavigate={enterPrimaryTool}
+      onNavigate={(item) => {
+        setAppHeaderMenuOpen(false);
+        enterPrimaryTool(item);
+      }}
       onLogoClick={() => setAppView("landing")}
       showCta={false}
       renderLanguageSelector={renderHeaderLanguageSelector}
@@ -4613,8 +4617,8 @@ Awards: ${form.awards}`;
           <LineIcon name="alert" size={14} color={C.text3} /> {bu.notSavedAutomatically}
         </span>
       )}
-      mobileMenuOpen={false}
-      onMobileMenuToggle={() => setSidebarOpen(true)}
+      mobileMenuOpen={appHeaderMenuOpen}
+      onMobileMenuToggle={() => setAppHeaderMenuOpen((open) => !open)}
     />
   );
 
@@ -5821,7 +5825,7 @@ Awards: ${form.awards}`;
 
       <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "minmax(420px, 45%) minmax(520px, 55%)",
         gap: 18, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
-        <div className="ac-panel-scrollbar" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileResumeMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
+        <div className="ac-panel-scrollbar" style={{ minWidth: 0, ...(isMobile ? { width: "100%", maxWidth: "100%", boxSizing: "border-box", padding: "10px 8px 84px", display: mobileResumeMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
           padding: "12px 14px 28px" }) }}>
           {!guidanceDismissed && !readyForReview && nextChecklistItem && (
             <button type="button"
@@ -6240,7 +6244,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* ── Preview column ── */}
-        <div className="ac-panel-scrollbar" style={{ minWidth: 0, ...(isMobile ? { padding: "10px 8px 84px", marginTop: 0, display: mobileResumeMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
+        <div className="ac-panel-scrollbar" style={{ minWidth: 0, ...(isMobile ? { width: "100%", maxWidth: "100%", boxSizing: "border-box", padding: "10px 8px 84px", marginTop: 0, display: mobileResumeMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
           padding: "12px 14px 28px" }) }}>
           <PreviewPane
             ref={resumePrintRef}
@@ -7088,7 +7092,7 @@ Awards: ${form.awards}`;
 
         <div style={{ ...splitGrid, gridTemplateColumns: isMobile ? "1fr" : "minmax(420px, 45%) minmax(520px, 55%)",
           gap: 18, flex: 1, minHeight: 0, overflow: "hidden", alignItems: "stretch" }}>
-          <div className="ac-panel-scrollbar" style={{ ...(isMobile ? { padding: "10px 8px 84px", display: mobileCoverMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
+          <div className="ac-panel-scrollbar" style={{ minWidth: 0, ...(isMobile ? { width: "100%", maxWidth: "100%", boxSizing: "border-box", padding: "10px 8px 84px", display: mobileCoverMode === "edit" ? "block" : "none" } : { overflowY: "auto", height: "100%",
             padding: "12px 14px 28px" }) }}>
             {!coverReady && (
               <div style={{ color: C.text3, fontSize: 12.5, lineHeight: 1.45, padding: "0 2px 8px", textAlign: rtl ? "right" : "left" }}>
@@ -7191,7 +7195,7 @@ Awards: ${form.awards}`;
             </div>
           </div>
 
-          <div className="ac-panel-scrollbar" style={{ minWidth: 0, ...(isMobile ? { padding: "10px 8px 84px", marginTop: 0, display: mobileCoverMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
+          <div className="ac-panel-scrollbar" style={{ minWidth: 0, ...(isMobile ? { width: "100%", maxWidth: "100%", boxSizing: "border-box", padding: "10px 8px 84px", marginTop: 0, display: mobileCoverMode === "preview" ? "block" : "none" } : { overflowY: "auto", height: "100%",
             padding: "12px 14px 28px" }) }}>
             <PreviewPane
               ref={coverPrintRef}
@@ -8578,6 +8582,21 @@ Awards: ${form.awards}`;
     };
     return (
       <div style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", overflowX: "hidden" }}>
+        <style>{`
+          .ac-hero-grid > * { min-width: 0; }
+          .ac-hero-visual { max-width: 100%; }
+          @media (max-width: 900px) {
+            .ac-hero-grid {
+              grid-template-columns: minmax(0, 1fr) !important;
+              gap: 34px !important;
+              padding: 112px 20px 52px !important;
+            }
+            .ac-hero-text { text-align: center !important; }
+            .ac-hero-text > p { margin-inline: auto !important; }
+            .ac-hero-text > div { justify-content: center !important; }
+            .ac-hero-visual { width: min(100%, 560px); margin-inline: auto; }
+          }
+        `}</style>
         <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
         {/* Nav */}
         <SharedSiteHeader
@@ -8951,7 +8970,7 @@ Awards: ${form.awards}`;
                 </div>
               );
               return (<>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 32 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(260px, 100%), 1fr))", gap: 32 }}>
               {visible.map((tp, i) => (
                 <FadeIn key={tp.id} delay={i * 60}>
                   <div
@@ -9044,7 +9063,7 @@ Awards: ${form.awards}`;
                 </p>
               </div>
               <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed", minWidth: isMobile ? 360 : 0 }}>
+                <table style={{ width: "100%", maxWidth: "100%", borderCollapse: "collapse", tableLayout: "fixed", minWidth: 0 }}>
                   <thead>
                     <tr>
                       <th scope="col" style={{ width: isMobile ? "46%" : "52%", padding: isMobile ? "12px" : "16px 22px", textAlign: "left", borderBottom: `1px solid ${C.border}` }}>
@@ -9104,7 +9123,7 @@ Awards: ${form.awards}`;
                 </p>
               ) : null}
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(300px, 100%), 1fr))", gap: 16 }}>
               {l2.ml.cards.map((c) => ({ icon: c.icon, title: c.t.replace("{docs}", LOCALIZED_DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT), desc: c.d.replace("{docs}", LOCALIZED_DOCUMENT_LANGUAGE_COUNT).replace("{ui}", UI_LANGUAGE_COUNT) })).map((f, i) => {
                 const icons = ["globe", "document", "arrowRight", "check", "document"];
                 f.icon = icons[i] || "check";
@@ -9140,7 +9159,7 @@ Awards: ${form.awards}`;
                 {l2.priv.desc}
               </p>
             </FadeIn>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16, marginBottom: 40 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(280px, 100%), 1fr))", gap: 16, marginBottom: 40 }}>
               {l2.priv.cards.map((c, i) => ({ icon: ["lock","spark","check","trash","document","lock"][i], title: c.t, body: c.b })).map((f, i) => (
                 <FadeIn key={f.title} delay={i * 60}>
                   <div style={{ background: C.elevated,
@@ -9480,40 +9499,15 @@ Awards: ${form.awards}`;
 
         {/* Mobile top bar */}
         {isMobile && !isFocusedToolView && (
-          <div style={{ display: "flex", alignItems: "center", gap: 0,
+          <div style={{ display: "flex", alignItems: "center",
             borderBottom: `1px solid ${C.border}`, marginBottom: 12, paddingBottom: 8 }}>
-            {/* Scrollable: hamburger + nav items */}
-            <div style={{ display: "flex", alignItems: "center", gap: 6, overflowX: "auto",
-              flex: 1, padding: "4px 0 0", scrollbarWidth: "thin" }}>
-              {/* Hamburger */}
-              <button onClick={() => setSidebarOpen(o => !o)} aria-label={builderText("openMenu")} aria-expanded={sidebarOpen}
-                style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 8, background: C.surface,
-                  border: `1px solid ${C.border}`, color: C.text2, cursor: "pointer",
-                  fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center",
-                  fontFamily: "inherit" }}>
-                ☰
-              </button>
-              {NAV.map((item) => (
-                <button key={item.id} onClick={() => setNavPage(item.id)}
-                  aria-current={navPage === item.id ? "page" : undefined}
-                  style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 5, padding: "6px 11px",
-                    borderRadius: 8, border: `1px solid ${C.border}`, cursor: "pointer", fontSize: 12,
-                    background: navPage === item.id ? `${C.accent}18` : "transparent",
-                    color: navPage === item.id ? C.accent2 : C.text2, fontFamily: "inherit" }}>
-                  {item.icon} {item.label}{item.soon && <span style={{ fontSize: 9, fontWeight: 700, color: C.accent2, background: `${C.accent}20`, borderRadius: 999, padding: "1px 5px", marginLeft: 2 }}>{builderText("soon")}</span>}
-                </button>
-              ))}
-            </div>
-            {/* Pinned right: language picker */}
-            <div style={{ flexShrink: 0, paddingLeft: 8 }}>
-              <LanguageDropdown
-                selected={selectedLang}
-                onSelect={setSiteLanguage}
-                siteOnly
-                siteBadge={builderText("langBadgeSite")}
-                uiBadge={builderText("langBadgeUi")}
-              />
-            </div>
+            <button onClick={() => setSidebarOpen((open) => !open)} aria-label={builderText("openMenu")} aria-expanded={sidebarOpen}
+              style={{ minHeight: 40, borderRadius: 8, background: C.surface, padding: "8px 12px",
+                border: `1px solid ${C.border}`, color: C.text2, cursor: "pointer",
+                fontSize: 13, display: "inline-flex", alignItems: "center", gap: 8,
+                fontFamily: "inherit", fontWeight: 700 }}>
+              <span aria-hidden="true">☰</span> {builderText("openMenu")}
+            </button>
           </div>
         )}
 

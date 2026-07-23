@@ -18,6 +18,19 @@ import { JSDOM } from "jsdom";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const axePath = resolve(__dirname, "../node_modules/axe-core/axe.js");
 const axeSource = readFileSync(axePath, "utf8");
+const siteChromeSource = readFileSync(resolve(__dirname, "../src/siteChrome.jsx"), "utf8");
+
+for (const contract of [
+  /aria-expanded=\{moreMenuOpen\}/,
+  /aria-controls="ac-more-menu"/,
+  /aria-expanded=\{menuOpen\}/,
+  /aria-controls="m"/,
+  /event\.key !== "Escape"/,
+]) {
+  if (!contract.test(siteChromeSource)) {
+    throw new Error(`Responsive navigation accessibility contract is missing: ${contract}`);
+  }
+}
 
 // The homepage in each prerendered locale, so an RTL- or translation-only
 // regression cannot slip through an English-only audit.

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FOOTER_LINK_SECTIONS, localizedFooterHref } from "./footerLinks.js";
 import { FOOTER_UI, LANDING_UI } from "./i18n/index.js";
 import { PRIMARY_NAV_ITEMS } from "./nav/navItems.js";
@@ -6,7 +6,7 @@ import { PRODUCT } from "./product.js";
 import { localizeRoute } from "./seo/localizedRoutes.js";
 import { COLORS } from "./theme/colors.js";
 
-export const SITE_COLORS = { ...COLORS };
+export const SITE_COLORS = COLORS;
 
 // Single source of truth for header height across every context (site navbar,
 // resume/cover-letter builder, ATS checker). Headers set this FIXED height — never
@@ -124,6 +124,11 @@ export function SiteHeader({
   onMobileMenuToggle,
 }) {
   const [internalMenuOpen, setInternalMenuOpen] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const headerRef = useRef(null);
+  const menuButtonRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+  const moreMenuRef = useRef(null);
   const isApp = variant === "app";
   const l = LANDING_UI[lang] || LANDING_UI.en;
   const f = FOOTER_UI[lang] || FOOTER_UI.en;
@@ -139,6 +144,37 @@ export function SiteHeader({
   const toggleMobileMenu = controlledMobileMenu
     ? onMobileMenuToggle
     : () => setInternalMenuOpen((open) => !open);
+  const moreLabel = lang === "fr" ? "Plus" : lang === "ar" ? "المزيد" : "More";
+  const priorityItems = items.slice(0, 4);
+  const secondaryItems = items.slice(4);
+
+  useEffect(() => {
+    const closeOnOutsideClick = (event) => {
+      if (moreMenuOpen && moreMenuRef.current && !moreMenuRef.current.contains(event.target)) {
+        setMoreMenuOpen(false);
+      }
+      if (menuOpen && headerRef.current && !headerRef.current.contains(event.target)) {
+        toggleMobileMenu();
+      }
+    };
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, [menuOpen, moreMenuOpen, toggleMobileMenu]);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    requestAnimationFrame(() => mobileMenuRef.current?.querySelector("a, button")?.focus());
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [menuOpen]);
+
+  const closeMobileMenu = () => {
+    if (!menuOpen) return;
+    toggleMobileMenu();
+  };
   return (
     <>
     <style suppressHydrationWarning>{`
@@ -157,7 +193,56 @@ export function SiteHeader({
         color: ${SITE_COLORS.text2};
         text-decoration: underline;
       }
-      @media (max-width: 720px) {
+      .ac-site-more {
+        display: none;
+        position: relative;
+        flex: 0 0 auto;
+      }
+      .ac-site-more-menu {
+        position: absolute;
+        z-index: 220;
+        top: calc(100% + 8px);
+        inset-inline-end: 0;
+        width: max-content;
+        min-width: 190px;
+        padding: 6px;
+        border: 1px solid ${SITE_COLORS.border};
+        border-radius: 10px;
+        background: ${SITE_COLORS.elevated};
+        box-shadow: 0 18px 45px rgba(0,0,0,.45);
+      }
+      .ac-mobile-menu-cta {
+        display: none !important;
+      }
+      @media (max-width: 1480px) {
+        .ac-site-header > div {
+          padding-inline: 20px !important;
+        }
+        .ac-site-nav-links {
+          gap: 2px !important;
+          margin-inline-start: 12px !important;
+        }
+        .ac-site-nav-secondary {
+          display: none !important;
+        }
+        .ac-site-more {
+          display: block;
+        }
+        .ac-site-header-language {
+          margin-inline-end: 8px !important;
+        }
+        .ac-language-trigger-label {
+          display: none !important;
+        }
+        .ac-language-trigger {
+          padding-inline: 9px !important;
+          gap: 6px !important;
+        }
+        .ac-nav-cta {
+          padding-inline: 18px !important;
+        }
+      }
+      @media (max-width: 1120px) {
         .ac-site-header > div {
           height: ${HEADER_HEIGHT_MOBILE}px !important;
           padding: 0 16px !important;
@@ -204,8 +289,35 @@ export function SiteHeader({
           margin-inline-start: 6px !important;
         }
       }
+      @media (max-width: 600px) {
+        .ac-nav-cta {
+          display: none !important;
+        }
+        .ac-mobile-menu-cta {
+          display: block !important;
+          margin: 8px 10px 4px;
+          text-align: center;
+        }
+      }
+      @media (max-width: 350px) {
+        .ac-nav-logo {
+          max-width: 105px !important;
+        }
+        .ac-brand-logo-img {
+          height: 22px !important;
+          max-width: 105px !important;
+        }
+      }
     `}</style>
-    <header data-site-header="applycraft" className="ac-site-header" onKeyDown={(event) => { if (event.key === "Escape" && menuOpen) toggleMobileMenu(); }} style={{
+    <header ref={headerRef} data-site-header="applycraft" className="ac-site-header" onKeyDown={(event) => {
+      if (event.key !== "Escape") return;
+      if (moreMenuOpen) {
+        setMoreMenuOpen(false);
+      } else if (menuOpen) {
+        closeMobileMenu();
+        requestAnimationFrame(() => menuButtonRef.current?.focus());
+      }
+    }} style={{
       position: isApp ? "sticky" : "fixed",
       top: 0,
       ...(isApp ? {} : { left: 0, right: 0 }),
@@ -255,7 +367,7 @@ export function SiteHeader({
           <BrandLogoImage style={{ height: 30, maxWidth: 170 }} />
         </a>
         <nav aria-label={f.primaryTools} className="ac-site-nav-links" style={{ display: "flex", gap: 4, marginInlineStart: 18 }}>
-          {items.map((item) => {
+          {priorityItems.map((item) => {
             const action = actionProps(item, onNavigate);
             const Tag = action.as;
             const active = !!activeId && item.id === activeId;
@@ -279,6 +391,53 @@ export function SiteHeader({
             </Tag>
             );
           })}
+          {secondaryItems.map((item) => {
+            const action = actionProps(item, onNavigate);
+            const Tag = action.as;
+            const active = !!activeId && item.id === activeId;
+            return (
+              <Tag key={item.href || item.id || item.label} {...action.props}
+                className="ac-site-nav-secondary"
+                aria-current={active ? "page" : undefined}
+                style={{
+                  border: "none", borderRadius: 8, padding: "9px 12px",
+                  background: active ? `${SITE_COLORS.accent}18` : "transparent",
+                  color: active ? SITE_COLORS.accent2 : SITE_COLORS.text2,
+                  textDecoration: "none", fontSize: 13.5, fontWeight: active ? 800 : 650,
+                  fontFamily: "inherit", cursor: "pointer", whiteSpace: "nowrap",
+                }}>
+                {item.label}
+              </Tag>
+            );
+          })}
+          <div ref={moreMenuRef} className="ac-site-more">
+            <button type="button" aria-expanded={moreMenuOpen} aria-controls="ac-more-menu"
+              onClick={() => setMoreMenuOpen((open) => !open)}
+              style={{ border: "none", borderRadius: 8, padding: "9px 10px", background: "transparent",
+                color: SITE_COLORS.text2, fontSize: 13.5, fontWeight: 700, fontFamily: "inherit", cursor: "pointer" }}>
+              {moreLabel} <span aria-hidden="true">▾</span>
+            </button>
+            {moreMenuOpen && (
+              <div id="ac-more-menu" className="ac-site-more-menu">
+                {secondaryItems.map((item) => {
+                  const action = actionProps(item, onNavigate);
+                  const Tag = action.as;
+                  return (
+                    <Tag key={item.href || item.id} {...action.props}
+                      aria-current={activeId && item.id === activeId ? "page" : undefined}
+                      onClick={action.props.onClick ? (event) => {
+                        action.props.onClick(event);
+                        if (!shouldUseNativeNavigation(event)) setMoreMenuOpen(false);
+                      } : () => setMoreMenuOpen(false)}
+                      style={{ display: "block", padding: "10px 12px", borderRadius: 7, color: SITE_COLORS.text1,
+                        textDecoration: "none", whiteSpace: "nowrap", fontSize: 14, fontWeight: 650 }}>
+                      {item.label}
+                    </Tag>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </nav>
         <div style={{ flex: 1 }} />
         {endSlot && (
@@ -312,7 +471,7 @@ export function SiteHeader({
           {cta}
         </a>
         )}
-        <button type="button" aria-label={menuOpen ? f.closeMenu : f.openMenu} aria-expanded={menuOpen} aria-controls="m"
+        <button ref={menuButtonRef} type="button" aria-label={menuOpen ? f.closeMenu : f.openMenu} aria-expanded={menuOpen} aria-controls="m"
             onClick={toggleMobileMenu}
             className="ac-site-mobile-menu-button"
             style={{ marginInlineStart: 8, width: 40, height: 40, borderRadius: 10, border: `1px solid ${SITE_COLORS.border}`,
@@ -322,9 +481,23 @@ export function SiteHeader({
           </button>
       </div>
       {menuOpen && (
-        <nav id="m" aria-label={f.menu} className="ac-site-mobile-menu" style={{ boxShadow: `inset 0 1px 0 ${SITE_COLORS.border}`, background: `${SITE_COLORS.bg}f5`,
+        <nav ref={mobileMenuRef} id="m" aria-label={f.menu} className="ac-site-mobile-menu" style={{ boxShadow: `inset 0 1px 0 ${SITE_COLORS.border}`, background: `${SITE_COLORS.bg}f5`,
           backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
-          padding: "8px 12px 14px", display: "none", flexDirection: "column", gap: 2 }}>
+          padding: "8px 12px 14px", display: "none", flexDirection: "column", gap: 2,
+          maxHeight: `calc(100vh - ${HEADER_HEIGHT_MOBILE}px)`, overflowY: "auto" }}>
+          {showCta && (
+            <a className="ac-mobile-menu-cta" href={resolvedCtaHref}
+              onClick={onCtaClick ? (event) => {
+                if (shouldUseNativeNavigation(event)) return;
+                event.preventDefault();
+                onCtaClick();
+                closeMobileMenu();
+              } : () => closeMobileMenu()}
+              style={{ background: SITE_COLORS.grad, color: "#fff", borderRadius: 3, padding: "11px 16px",
+                fontSize: 14, fontWeight: 700, textDecoration: "none" }}>
+              {cta}
+            </a>
+          )}
           {items.map((item) => {
             const action = actionProps(item, onNavigate);
             const Tag = action.as;
@@ -334,7 +507,7 @@ export function SiteHeader({
                 onClick={item.onClick ? () => { item.onClick(); toggleMobileMenu(); } : action.props.onClick ? (event) => {
                   action.props.onClick(event);
                   if (!shouldUseNativeNavigation(event)) toggleMobileMenu();
-                } : undefined}
+                } : () => closeMobileMenu()}
                 style={{ textAlign: "start", border: "none", background: "transparent",
                   color: SITE_COLORS.text1, padding: "12px 10px", fontSize: 15, fontWeight: 700, cursor: "pointer",
                   fontFamily: "inherit", borderRadius: 8, textDecoration: "none" }}>
@@ -342,7 +515,7 @@ export function SiteHeader({
               </Tag>
             );
           })}
-          {renderLanguageSelector && (
+          {renderLanguageSelector && !keepLanguageOnMobile && (
             <div style={{ padding: "8px 10px 10px" }}>
               {renderLanguageSelector()}
             </div>

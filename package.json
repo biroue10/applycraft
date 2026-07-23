@@ -51,6 +51,7 @@
     "test:navigation-links": "node scripts/navigation-link-tests.mjs",
     "test:builder-sections": "node scripts/builder-section-tests.mjs",
     "test:visual": "node scripts/visual-regression.mjs",
+    "test:responsive-layout": "node scripts/responsive-layout-audit.mjs",
     "audit:high": "npm audit --audit-level=high",
     "test:contrast": "node scripts/contrast-tests.mjs",
     "test:interview": "node scripts/interview-tests.mjs",
@@ -77,6 +78,7 @@
     "jsdom": "^29.1.1",
     "rollup-plugin-visualizer": "^6.0.11",
     "sharp": "^0.35.3",
+    "terser": "^5.49.0",
     "vite": "^6.4.3"
   }
 }

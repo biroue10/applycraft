@@ -13,7 +13,7 @@ import { test, expect } from "@playwright/test";
 test.skip(({ isMobile }) => isMobile, "drives its own viewport sizes");
 
 const HEADER = ".ac-site-header > div";
-const NAV_ITEMS = ".ac-site-nav-links > *";
+const NAV_ITEMS = ".ac-site-nav-links > a";
 const LOGO = ".ac-site-header .ac-brand-logo-img";
 const DESKTOP_HEIGHT = 64;
 
@@ -117,4 +117,13 @@ test("mobile: nav collapses to the menu button in both contexts", async ({ page 
     await expect(page.locator(".ac-site-nav-links")).toBeHidden();
     await expect(page.locator(".ac-site-mobile-menu-button")).toBeVisible();
   }
+});
+
+test("compact navbar preserves secondary links in the More menu", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
+  await expect(page.locator(".ac-site-more > button")).toBeVisible();
+  await expect(page.locator(".ac-site-nav-secondary").first()).toBeHidden();
+  await page.locator(".ac-site-more > button").click();
+  await expect(page.locator(".ac-site-more-menu > a")).toHaveCount(4);
 });

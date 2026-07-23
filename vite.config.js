@@ -232,6 +232,15 @@ export default defineConfig({
   ].filter(Boolean),
   base: "/",
   build: {
+    // Terser produces a materially smaller initial bundle than esbuild for the
+    // large, string-heavy localized app shell. This keeps the shipped JS below
+    // the existing budget without moving navigation behavior to a runtime
+    // dependency or weakening validation.
+    minify: "terser",
+    terserOptions: {
+      compress: { passes: 3 },
+      format: { comments: false },
+    },
     // Report compressed sizes in the build output.
     reportCompressedSize: true,
     // Production maps intentionally stay private/disabled. Public maps would
