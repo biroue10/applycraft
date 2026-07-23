@@ -6,6 +6,7 @@ const baseURL = process.env.NAVBAR_BASE_URL || "http://127.0.0.1:4173";
 const output = process.env.NAVBAR_SCREENSHOTS || ".audit/navbar-state";
 const routes = [
   ["interview-prep", "/interview-prep/", "interview"],
+  ["resume-builder", "/resume-builder/", "resume"],
   ["job-tracker", "/job-tracker/", "tracker"],
   ["application-pack", "/application-pack/", "application-pack"],
   ["cover-letter", "/cover-letter-builder/", "cover"],
@@ -15,7 +16,7 @@ const routes = [
   ["fr-interview", "/fr/interview-prep/", "interview"],
   ["ar-interview", "/ar/interview-prep/", "interview"],
 ];
-const viewports = [[1440, 900], [1280, 720], [1024, 768], [390, 844]];
+const viewports = [[1440, 900], [1366, 768], [1280, 720], [1024, 768], [390, 844]];
 
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
@@ -25,11 +26,11 @@ try {
       const page = await browser.newPage({ viewport: { width, height } });
       await page.addInitScript(() => localStorage.setItem("ac_cookie_consent", "denied"));
       await page.goto(`${baseURL}${route}`, { waitUntil: "networkidle" });
-      const menuButton = page.locator(".ac-site-mobile-menu-button:visible, .ac-static-menu-button:visible");
+      const menuButton = page.locator(".ac-global-header__menu-button:visible");
       if (await menuButton.count()) {
         await menuButton.click();
       } else if (await page.locator(".ac-site-more > button:visible").count() && ["tracker", "interview", "templates", "pricing"].includes(activeId)) {
-        await page.locator(".ac-site-more > button").click();
+        await page.locator(".ac-site-more > button:visible").click();
       }
       const visibleCurrent = page.locator(`.ac-nav-link[data-nav-id="${activeId}"][aria-current="page"]:visible`);
       assert.equal(await visibleCurrent.count(), 1, `${route} ${width}: expected one visible current item`);

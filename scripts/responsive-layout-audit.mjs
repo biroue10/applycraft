@@ -48,7 +48,7 @@ try {
           const element = document.querySelector(selector);
           if (!element) return null;
           const box = element.getBoundingClientRect();
-          return { left: box.left, right: box.right, width: box.width, height: box.height, display: getComputedStyle(element).display };
+          return { left: box.left, right: box.right, top: box.top, bottom: box.bottom, width: box.width, height: box.height, display: getComputedStyle(element).display };
         };
         const viewport = document.documentElement.clientWidth;
         const overflowing = [...document.querySelectorAll("body *")]
@@ -76,18 +76,39 @@ try {
           }));
         return {
           viewport,
+          pageWidth: document.body.getBoundingClientRect().width,
           scrollWidth: document.documentElement.scrollWidth,
-          logo: boxFor(".ac-nav-logo, .ac-static-logo"),
-          nav: boxFor(".ac-site-nav-links, .ac-static-desktop-nav"),
-          language: boxFor(".ac-site-header-language, .ac-static-language"),
-          cta: boxFor(".ac-nav-cta, .ac-static-cta"),
-          menu: boxFor(".ac-site-mobile-menu-button, .ac-static-menu-button"),
+          header: (() => {
+            const element = document.querySelector(".ac-global-header");
+            if (!element) return null;
+            const box = element.getBoundingClientRect();
+            const style = getComputedStyle(element);
+            return { left: box.left, right: box.right, width: box.width, height: box.height,
+              background: style.backgroundColor, borderBottomWidth: style.borderBottomWidth,
+              borderBottomColor: style.borderBottomColor };
+          })(),
+          status: boxFor(".ac-workspace-status-bar"),
+          logo: boxFor(".ac-nav-logo"),
+          nav: boxFor(".ac-global-header__nav"),
+          language: boxFor(".ac-global-header__language"),
+          cta: boxFor(".ac-nav-cta"),
+          menu: boxFor(".ac-global-header__menu-button"),
           hero: boxFor(".ac-hero-visual"),
           overflowing,
         };
       });
 
       assert.ok(result.logo?.width > 0, `${path} ${width}: logo must be visible`);
+      assert.ok(result.header, `${path} ${width}: global header must exist`);
+      assert.ok(Math.abs(result.header.left) <= 1, `${path} ${width}: header must start at viewport edge`);
+      assert.ok(Math.abs(result.header.width - result.pageWidth) <= 1, `${path} ${width}: header must span the full layout viewport`);
+      assert.equal(Math.round(result.header.height), width <= 1120 ? 60 : 64, `${path} ${width}: shared header height`);
+      assert.equal(result.header.background, "rgba(6, 8, 15, 0.98)", `${path} ${width}: shared opaque background`);
+      assert.equal(result.header.borderBottomWidth, "1px", `${path} ${width}: shared bottom border`);
+      assert.equal(result.header.borderBottomColor, "rgb(32, 50, 78)", `${path} ${width}: shared bottom border color`);
+      if (result.status) {
+        assert.ok(result.status.top >= result.header.height - 1, `${path} ${width}: workspace status must remain below header`);
+      }
       assert.ok(result.logo.left >= -1 && result.logo.right <= result.viewport + 1, `${path} ${width}: logo is clipped`);
       assert.ok(result.language?.width > 0, `${path} ${width}: language selector must be visible`);
       assert.ok(result.language.left >= -1 && result.language.right <= result.viewport + 1, `${path} ${width}: language selector is clipped`);
@@ -100,14 +121,14 @@ try {
       if (mobileMode) {
         assert.equal(result.nav?.display, "none", `${path} ${width}: desktop navigation should be hidden`);
         assert.ok(result.menu?.width >= 36, `${path} ${width}: hamburger must be visible`);
-        await page.locator(".ac-site-mobile-menu-button, .ac-static-menu-button").click();
-        const visibleLinks = await page.locator(".ac-site-mobile-menu > a:visible:not(.ac-mobile-menu-cta), .ac-static-mobile-menu > a:visible:not(.ac-static-mobile-cta)").evaluateAll(
+        await page.locator(".ac-global-header__menu-button").click();
+        const visibleLinks = await page.locator(".ac-global-header__mobile-menu > a:visible:not(.ac-mobile-menu-cta)").evaluateAll(
           (links) => links.map((link) => new URL(link.href).pathname),
         );
         assert.equal(visibleLinks.length, 8, `${path} ${width}: all eight localized navigation destinations must remain accessible`);
         assert.equal(new Set(visibleLinks).size, 8, `${path} ${width}: mobile navigation destinations must be unique`);
         if (width <= 600) {
-          const menuCta = page.locator(".ac-mobile-menu-cta:visible, .ac-static-mobile-cta:visible").first();
+          const menuCta = page.locator(".ac-mobile-menu-cta:visible").first();
           if (await menuCta.count()) {
             const ctaBox = await menuCta.boundingBox();
             assert.ok(ctaBox && ctaBox.x >= 0 && ctaBox.x + ctaBox.width <= width, `${path} ${width}: menu CTA is clipped`);

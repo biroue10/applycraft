@@ -50,9 +50,9 @@ for (const file of walk(ROOT)) {
   const route = `/${file.slice(ROOT.length).replace(/index\.html$/, "").replaceAll("\\", "/")}`.replace(/\/+/g, "/");
   let next = html;
   const header = headerHtml(lang, route);
-  if (next.includes('class="ac-static-site-header"')) {
+  if (next.includes('data-site-header="applycraft"')) {
     next = next.replace(/<a class="ac-skip-link"[\s\S]*?<\/header><script src="\/site-header\.js" defer><\/script>/, header);
-  } else if (!next.includes('data-site-header="applycraft"')) {
+  } else {
     if (/<nav class="nav">[\s\S]*?<\/nav>/.test(next)) next = next.replace(/<nav class="nav">[\s\S]*?<\/nav>/, header);
     else if (/<body[^>]*>/.test(next)) next = next.replace(/(<body[^>]*>)/, `$1${header}`);
   }

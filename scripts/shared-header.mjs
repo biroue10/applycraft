@@ -11,10 +11,16 @@ export function headerHtml(lang = "en", route = "/") {
   const f = COPY[locale];
   const home = localizeRoute("/", locale);
   const active = activeNavIdForPath(route);
-  const links = PRIMARY_NAV_ITEMS.map((item) => {
+  const links = PRIMARY_NAV_ITEMS.map((item, index) => {
+    const current = item.id === active ? ' aria-current="page" data-nav-active="true"' : "";
+    const secondary = index >= 4 ? " ac-site-nav-secondary" : "";
+    return `<a class="ac-nav-link${secondary}" data-nav-id="${item.id}" href="${localizeRoute(item.href, locale)}"${current}>${f[item.labelKey] || item.id}</a>`;
+  }).join("");
+  const secondaryLinks = PRIMARY_NAV_ITEMS.slice(4).map((item) => {
     const current = item.id === active ? ' aria-current="page" data-nav-active="true"' : "";
     return `<a class="ac-nav-link" data-nav-id="${item.id}" href="${localizeRoute(item.href, locale)}"${current}>${f[item.labelKey] || item.id}</a>`;
   }).join("");
+  const moreLabel = locale === "fr" ? "Plus" : locale === "ar" ? "المزيد" : "More";
   const currentLanguage = interfaceLanguageByCode(locale);
   const languages = INTERFACE_LANGUAGES.map((code) => {
     const language = interfaceLanguageByCode(code);
@@ -23,16 +29,19 @@ export function headerHtml(lang = "en", route = "/") {
   const ctaHref = locale === "en" ? "/resume-builder/" : localizeRoute("/free-resume-builder/", locale);
   const cta = locale === "fr" ? "Créer mon CV" : locale === "ar" ? "إنشاء سيرتي الذاتية" : "Create Resume";
   const skip = locale === "fr" ? "Aller au contenu principal" : locale === "ar" ? "انتقل إلى المحتوى الرئيسي" : "Skip to main content";
-  return `<a class="ac-skip-link" href="#main-content">${skip}</a><header class="ac-static-site-header" data-site-header="applycraft">
-  <div class="ac-static-header-row">
-    <a class="ac-static-logo" href="${home}" aria-label="${f.brandHome}"><img src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" width="320" height="82"></a>
-    <nav class="ac-static-desktop-nav" aria-label="${f.primaryTools}">${links}</nav>
-    <div class="ac-static-header-actions">
-      <div class="ac-static-language ac-language-switcher"><button class="ac-language-trigger" type="button" aria-label="${f.primaryTools}: ${currentLanguage.native}" aria-haspopup="menu" aria-expanded="false" aria-controls="ac-static-language-menu"><img src="${currentLanguage.flagSrc}" alt="" aria-hidden="true" width="20" height="14"><strong>${currentLanguage.displayCode}</strong><span class="ac-language-trigger-label">${currentLanguage.native}</span><span class="ac-language-chevron" aria-hidden="true">▼</span></button><div id="ac-static-language-menu" class="ac-language-menu" role="menu" hidden>${languages}</div></div>
-      <a class="ac-static-cta" href="${ctaHref}">${cta}</a>
-      <button class="ac-static-menu-button" type="button" aria-expanded="false" aria-controls="ac-static-mobile-menu" aria-label="${f.openMenu}">☰</button>
+  return `<a class="ac-skip-link" href="#main-content">${skip}</a><header class="ac-global-header" data-site-header="applycraft">
+  <div class="ac-global-header__inner">
+    <a class="ac-nav-logo" href="${home}" aria-label="${f.brandHome}"><img class="ac-brand-logo-img" src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" width="320" height="82"></a>
+    <nav class="ac-global-header__nav" aria-label="${f.primaryTools}">${links}<div class="ac-site-more"><button type="button" aria-expanded="false" aria-controls="ac-global-more-menu">${moreLabel} <span aria-hidden="true">▾</span></button><div id="ac-global-more-menu" class="ac-site-more-menu" hidden>${secondaryLinks}</div></div></nav>
+    <div class="ac-global-header__actions">
+      <div class="ac-global-header__language ac-language-switcher"><button class="ac-language-trigger" type="button" aria-label="${f.primaryTools}: ${currentLanguage.native}" aria-haspopup="menu" aria-expanded="false" aria-controls="ac-global-language-menu"><img src="${currentLanguage.flagSrc}" alt="" aria-hidden="true" width="20" height="14"><strong>${currentLanguage.displayCode}</strong><span class="ac-language-trigger-label">${currentLanguage.native}</span><span class="ac-language-chevron" aria-hidden="true">▼</span></button><div id="ac-global-language-menu" class="ac-language-menu" role="menu" hidden>${languages}</div></div>
+      <a class="ac-nav-cta" href="${ctaHref}">${cta}</a>
+      <button class="ac-global-header__menu-button" type="button" aria-expanded="false" aria-controls="ac-global-mobile-menu" aria-label="${f.openMenu}">☰</button>
     </div>
   </div>
-  <nav id="ac-static-mobile-menu" class="ac-static-mobile-menu" aria-label="${f.menu}" hidden>${links}</nav>
+  <nav id="ac-global-mobile-menu" class="ac-global-header__mobile-menu" aria-label="${f.menu}" hidden>${PRIMARY_NAV_ITEMS.map((item) => {
+    const current = item.id === active ? ' aria-current="page" data-nav-active="true"' : "";
+    return `<a class="ac-nav-link" data-nav-id="${item.id}" href="${localizeRoute(item.href, locale)}"${current}>${f[item.labelKey] || item.id}</a>`;
+  }).join("")}</nav>
 </header><script src="/site-header.js" defer></script>`;
 }

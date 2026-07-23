@@ -18,7 +18,7 @@ import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID, TEMPLATE_COUNTRIES, templateCountries } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
 import { positioningFor } from "./productPositioning.js";
-import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter, HEADER_HEIGHT, shouldUseNativeNavigation, BRAND_LOGO_SRC } from "./siteChrome.jsx";
+import { SiteHeader as SharedSiteHeader, SiteFooter as SharedSiteFooter, WorkspaceStatusBar, HEADER_HEIGHT, shouldUseNativeNavigation, BRAND_LOGO_SRC } from "./siteChrome.jsx";
 import { primaryNavLabelKey } from "./nav/navItems.js";
 import { COLORS, chipInk, accentOnPaper } from "./theme/colors.js";
 import { UI, ENTRY_UI, ACCT_UI, LANDING_UI, BUILDER_UI, COVER_UI, ATS_UI, TRACKER_UI, MASTER_UI, STATUS_UI, MODAL_UI, LANDING2_UI, FOOTER_UI } from "./i18n/index.js";
@@ -4590,10 +4590,15 @@ Awards: ${form.awards}`;
   // The in-app navbar IS the marketing navbar (src/siteChrome.jsx) — same height
   // token, logo, item order and labels. The app-only chrome (active tool, save
   // state, tools drawer) is passed in as props, never forked into a second component.
-  const AppToolHeader = ({ headerStyle } = {}) => (
+  const showWorkspaceStatus = (
+    (navPage === "resume" && step !== "templates")
+    || (navPage === "cover" && coverStep !== "templates")
+    || navPage === "ats"
+  );
+
+  const AppToolHeader = () => (
     <>
       <SharedSiteHeader
-        variant="app"
         lang={lang}
         activeId={navPage === "resume" && step === "templates" ? "templates" : navPage}
         onNavigate={(item) => {
@@ -4603,24 +4608,20 @@ Awards: ${form.awards}`;
         onLogoClick={() => setAppView("landing")}
         currentPath={location.pathname}
         onLanguageSelect={setSiteLanguage}
-        headerStyle={headerStyle}
         mobileMenuOpen={appHeaderMenuOpen}
         onMobileMenuToggle={() => setAppHeaderMenuOpen((open) => !open)}
       />
-      <div className="ac-workspace-status" role="status" style={{ display: "flex", justifyContent: "flex-end",
-        padding: "8px 16px 0", maxWidth: 1320, margin: "0 auto", boxSizing: "border-box" }}>
+      {showWorkspaceStatus && <WorkspaceStatusBar>
         <span title={builderText("notSavedHeaderTooltip")}
           style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
           <LineIcon name="alert" size={14} color={C.text3} /> {bu.notSavedAutomatically}
         </span>
-      </div>
+      </WorkspaceStatusBar>}
     </>
   );
 
   const mainContent = step === "templates" ? (
     <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
-      <AppToolHeader headerStyle={{ margin: isMobile ? "0 -4px 24px" : "0 0 42px" }} />
-
       {savedResumes.length > 0 && (
         <section aria-label={builderText("myResumesRegion")} style={{ maxWidth: 1180, margin: "0 auto 6px", padding: isMobile ? "0 4px" : "0 28px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 14 }}>
@@ -5483,7 +5484,6 @@ Awards: ${form.awards}`;
     <div style={{ display: "flex", flexDirection: "column", height: "100%",
       boxSizing: "border-box", padding: isMobile ? "8px 4px" : "10px 16px" }}>
 
-      <AppToolHeader />
 
       {/* ── Builder top bar ── */}
       <div className="ac-app-header" style={{ position: "sticky", top: HEADER_HEIGHT, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
@@ -6820,7 +6820,6 @@ Awards: ${form.awards}`;
 
   const coverTemplatesContent = (
     <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
-      <AppToolHeader />
       <section aria-labelledby="cover-gallery-title" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "24px 4px 0" : "42px 28px 0" }}>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 0.95fr) minmax(280px, 0.42fr)",
           gap: isMobile ? 18 : 40, alignItems: "end", marginBottom: isMobile ? 22 : 30 }}>
@@ -6981,7 +6980,6 @@ Awards: ${form.awards}`;
     return (
       <div style={{ display: "flex", flexDirection: "column", height: "100%",
         boxSizing: "border-box", padding: isMobile ? "8px 4px" : "10px 16px" }}>
-        <AppToolHeader />
         <div className="ac-app-header" style={{ position: "sticky", top: HEADER_HEIGHT, zIndex: 60, margin: isMobile ? "-8px -4px 12px" : "-10px -16px 14px",
           height: isMobile ? "auto" : HEADER_HEIGHT, boxSizing: "border-box",
           padding: isMobile ? "10px 12px" : "0 18px", background: `${C.bg}f4`, backdropFilter: "blur(14px)",
@@ -7393,7 +7391,6 @@ Awards: ${form.awards}`;
 
     return (
       <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
-        <AppToolHeader />
         <section aria-labelledby="ats-checker-title" style={{ maxWidth: 960, margin: "0 auto", padding: isMobile ? "24px 4px 0" : "42px 28px 0" }}>
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999,
@@ -7746,7 +7743,6 @@ Awards: ${form.awards}`;
 
     return (
       <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
-        <AppToolHeader />
         <section aria-labelledby="job-tracker-title" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "24px 4px 0" : "34px 28px 0" }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -8566,7 +8562,7 @@ Awards: ${form.awards}`;
     return (
       <div style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", overflowX: "hidden" }}>
         <style>{`
-          .ac-hero-grid > * { min-width: 0; }
+          .ac-hero-grid :where(*) { min-width: 0; }
           .ac-hero-visual { max-width: 100%; }
           @media (max-width: 900px) {
             .ac-hero-grid {
@@ -8575,8 +8571,8 @@ Awards: ${form.awards}`;
               padding: 112px 20px 52px !important;
             }
             .ac-hero-text { text-align: center !important; }
-            .ac-hero-text > p { margin-inline: auto !important; }
-            .ac-hero-text > div { justify-content: center !important; }
+            .ac-hero-text p { margin-inline: auto !important; }
+            .ac-hero-text div { justify-content: center !important; }
             .ac-hero-visual { width: min(100%, 560px); margin-inline: auto; }
           }
         `}</style>
@@ -9251,7 +9247,7 @@ Awards: ${form.awards}`;
   const sbW = sidebarOpen ? 224 : 56;
 
   return (
-    <div dir={rtl ? "rtl" : "ltr"} style={{ ...rPage, display: "flex", padding: 0, height: "100vh", overflow: "hidden" }}>
+    <div dir={rtl ? "rtl" : "ltr"} style={{ ...rPage, display: "flex", flexDirection: "column", padding: 0, height: "100vh", overflow: "hidden" }}>
       <style>{`
         button:focus-visible,
         input:focus-visible,
@@ -9264,6 +9260,8 @@ Awards: ${form.awards}`;
         }
       `}</style>
       <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
+      <AppToolHeader />
+      <div className="ac-workspace-layout" style={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden" }}>
 
       {/* ── Sidebar (desktop) ── */}
       {!isMobile && !isImmersiveAppView && (
@@ -9416,13 +9414,7 @@ Awards: ${form.awards}`;
                 </div>
               )}
             </div>
-          ) : (
-            <span style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 11px",
-              background: C.surface, border: `1px solid ${C.border}`, borderRadius: 9,
-              color: C.text2, fontSize: 12.5, fontWeight: 700 }}>
-              {bu.notSavedAutomatically}
-            </span>
-          )}
+          ) : null}
         </div>
         <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)} at={at}
           onLogin={user => {
@@ -9536,6 +9528,7 @@ Awards: ${form.awards}`;
         {!isFormView && <SharedSiteFooter lang={lang} />}
         </div>
       </main>
+      </div>
     </div>
   );
 }

@@ -36,7 +36,7 @@ for (const route of routes) {
   assert.deepEqual([...positions].sort((a, b) => a - b), positions, `${route}: language order`);
   assert.doesNotMatch(languageMenu, />\s*GB\s*</, `${route}: no plain GB flag fallback`);
   assert.doesNotMatch(html, /Search interface language|\bSITE\b/, `${route}: no legacy rich selector`);
-  assert.match(html, /class="(?:ac-nav-cta|ac-static-cta)"[^>]*>(?:Create Resume|Créer mon CV|إنشاء سيرتي الذاتية)</, `${route}: canonical localized CTA`);
+  assert.match(html, /class="ac-nav-cta"[^>]*>(?:Create Resume|Créer mon CV|إنشاء سيرتي الذاتية)</, `${route}: canonical localized CTA`);
 }
 
 const ats = readFileSync(builtFile("/ats-checker/"), "utf8");

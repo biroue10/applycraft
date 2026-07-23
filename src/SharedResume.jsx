@@ -101,7 +101,7 @@ function SharedStyles({ pageSize }) {
         html, body, #root {
           background: #fff !important;
         }
-        .ac-site-header,
+        .ac-global-header,
         .ac-site-footer {
           display: none !important;
         }

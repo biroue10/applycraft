@@ -160,9 +160,7 @@ export function LanguageSwitcher({ lang = "en", currentPath = "/", onLanguageSel
   );
 }
 
-// The ONE navbar. `variant="app"` swaps the marketing chrome (fixed position, CTA)
-// for the in-app chrome (sticky position, save-state slot) without forking the
-// component: same height token, same logo, same items, same order, same labels.
+// The one global navbar. Route-specific chrome belongs below this component.
 export function SiteHeader({
   lang = "en",
   navItems,
@@ -174,8 +172,6 @@ export function SiteHeader({
   currentPath,
   onLanguageSelect,
   keepLanguageOnMobile = true,
-  variant = "site",
-  headerStyle,
   mobileMenuOpen = false,
   onMobileMenuToggle,
 }) {
@@ -186,7 +182,6 @@ export function SiteHeader({
   const menuButtonRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const moreMenuRef = useRef(null);
-  const isApp = variant === "app";
   const l = LANDING_UI[lang] || LANDING_UI.en;
   const f = FOOTER_UI[lang] || FOOTER_UI.en;
   const items = (navItems || PRIMARY_NAV_ITEMS).map((item) => ({
@@ -243,7 +238,7 @@ export function SiteHeader({
   };
   return (
     <>
-    <header ref={headerRef} data-site-header="applycraft" className="ac-site-header" onKeyDown={(event) => {
+    <header ref={headerRef} data-site-header="applycraft" className="ac-global-header" onKeyDown={(event) => {
       if (event.key !== "Escape") return;
       if (moreMenuOpen) {
         setMoreMenuOpen(false);
@@ -251,21 +246,10 @@ export function SiteHeader({
         closeMobileMenu();
         requestAnimationFrame(() => menuButtonRef.current?.focus());
       }
-    }} style={{
-      position: isApp ? "sticky" : "fixed",
-      top: 0,
-      ...(isApp ? {} : { left: 0, right: 0 }),
-      zIndex: isApp ? 50 : 100,
-      background: isApp
-        ? `linear-gradient(180deg, ${SITE_COLORS.bg}f7 0%, ${SITE_COLORS.bg}e8 100%)`
-        : `${SITE_COLORS.bg}cc`,
-      backdropFilter: "blur(14px)",
-      WebkitBackdropFilter: "blur(14px)",
-      ...headerStyle,
     }}>
       {/* Height is the token — never derived from content — so switching between
           the marketing site and the app produces zero layout shift. */}
-      <div className={isApp ? "ac-app-header" : undefined} style={{
+      <div className="ac-global-header__inner" style={{
         width: "100%",
         height: HEADER_HEIGHT,
         margin: "0 auto",
@@ -300,7 +284,7 @@ export function SiteHeader({
           }}>
           <BrandLogoImage style={{ height: 30, maxWidth: 170 }} />
         </a>
-        <nav aria-label={f.primaryTools} className="ac-site-nav-links" style={{ display: "flex", gap: 4, marginInlineStart: 18 }}>
+        <nav aria-label={f.primaryTools} className="ac-global-header__nav" style={{ display: "flex", gap: 4, marginInlineStart: 18 }}>
           {priorityItems.map((item) => {
             const action = actionProps(item, onNavigate);
             const Tag = action.as;
@@ -379,7 +363,8 @@ export function SiteHeader({
           </div>}
         </nav>
         <div style={{ flex: 1 }} />
-        <div className={`ac-site-header-language${keepLanguageOnMobile ? " ac-keep-mobile" : ""}`} style={{ flexShrink: 0, marginInlineEnd: 10 }}>
+        <div className="ac-global-header__actions">
+        <div className={`ac-global-header__language${keepLanguageOnMobile ? " ac-keep-mobile" : ""}`}>
           <LanguageSwitcher lang={lang} currentPath={resolvedCurrentPath} onLanguageSelect={onLanguageSelect} />
         </div>
         <a className="ac-nav-cta" href={resolvedCtaHref} onClick={onCtaClick ? (event) => {
@@ -403,15 +388,16 @@ export function SiteHeader({
         </a>
         <button ref={menuButtonRef} type="button" aria-label={menuOpen ? f.closeMenu : f.openMenu} aria-expanded={menuOpen} aria-controls="m"
             onClick={toggleMobileMenu}
-            className="ac-site-mobile-menu-button"
+            className="ac-global-header__menu-button"
             style={{ marginInlineStart: 8, width: 40, height: 40, borderRadius: 10, border: `1px solid ${SITE_COLORS.border}`,
               background: SITE_COLORS.surface, color: SITE_COLORS.text1, cursor: "pointer", flexShrink: 0, fontFamily: "inherit",
           display: "none", alignItems: "center", justifyContent: "center", fontSize: 18, lineHeight: 1 }}>
             {menuOpen ? "✕" : "☰"}
           </button>
+        </div>
       </div>
       {menuOpen && (
-        <nav ref={mobileMenuRef} id="m" aria-label={f.menu} className="ac-site-mobile-menu" style={{ boxShadow: `inset 0 1px 0 ${SITE_COLORS.border}`, background: `${SITE_COLORS.bg}f5`,
+        <nav ref={mobileMenuRef} id="m" aria-label={f.menu} className="ac-global-header__mobile-menu" style={{ boxShadow: `inset 0 1px 0 ${SITE_COLORS.border}`, background: `${SITE_COLORS.bg}f5`,
           backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
           padding: "8px 12px 14px", display: "none", flexDirection: "column", gap: 2,
           maxHeight: `calc(100vh - ${HEADER_HEIGHT_MOBILE}px)`, overflowY: "auto" }}>
@@ -449,6 +435,17 @@ export function SiteHeader({
       )}
     </header>
     </>
+  );
+}
+
+export function WorkspaceStatusBar({ children }) {
+  if (!children) return null;
+  return (
+    <div className="ac-workspace-status-bar">
+      <div className="ac-workspace-status-bar__inner" role="status">
+        {children}
+      </div>
+    </div>
   );
 }
 

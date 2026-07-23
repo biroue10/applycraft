@@ -1,16 +1,19 @@
 (function () {
   "use strict";
   function init(header) {
-    var button = header.querySelector(".ac-static-menu-button");
-    var menu = header.querySelector(".ac-static-mobile-menu");
-    var languageRoot = header.querySelector(".ac-static-language");
+    var button = header.querySelector(".ac-global-header__menu-button");
+    var menu = header.querySelector(".ac-global-header__mobile-menu");
+    var languageRoot = header.querySelector(".ac-global-header__language");
     var languageButton = languageRoot && languageRoot.querySelector(".ac-language-trigger");
     var languageMenu = languageRoot && languageRoot.querySelector(".ac-language-menu");
+    var moreRoot = header.querySelector(".ac-site-more");
+    var moreButton = moreRoot && moreRoot.querySelector(":scope > button");
+    var moreMenu = moreRoot && moreRoot.querySelector(".ac-site-more-menu");
     if (!button || !menu) return;
-    var cta = header.querySelector(".ac-static-cta");
+    var cta = header.querySelector(".ac-nav-cta");
     if (cta) {
       var mobileCta = cta.cloneNode(true);
-      mobileCta.className = "ac-static-mobile-cta";
+      mobileCta.className = "ac-mobile-menu-cta";
       menu.insertBefore(mobileCta, menu.firstChild);
     }
     var open = function () { menu.hidden = false; button.setAttribute("aria-expanded", "true"); button.textContent = "✕"; };
@@ -33,10 +36,25 @@
       document.addEventListener("click", function (event) { if (!languageMenu.hidden && !languageRoot.contains(event.target)) closeLanguage(false); });
       document.addEventListener("keydown", function (event) { if (event.key === "Escape" && !languageMenu.hidden) closeLanguage(true); });
     }
+    if (moreButton && moreMenu) {
+      var closeMore = function (focus) {
+        moreMenu.hidden = true;
+        moreButton.setAttribute("aria-expanded", "false");
+        if (focus) moreButton.focus();
+      };
+      moreButton.addEventListener("click", function () {
+        var willOpen = moreMenu.hidden;
+        moreMenu.hidden = !willOpen;
+        moreButton.setAttribute("aria-expanded", String(willOpen));
+      });
+      moreMenu.addEventListener("click", function (event) { if (event.target.closest("a[href]")) closeMore(false); });
+      document.addEventListener("click", function (event) { if (!moreMenu.hidden && !moreRoot.contains(event.target)) closeMore(false); });
+      document.addEventListener("keydown", function (event) { if (event.key === "Escape" && !moreMenu.hidden) closeMore(true); });
+    }
     menu.addEventListener("click", function (event) { if (event.target.closest("a[href]")) close(false); });
     document.addEventListener("keydown", function (event) { if (event.key === "Escape" && !menu.hidden) close(true); });
     document.addEventListener("click", function (event) { if (!menu.hidden && !header.contains(event.target)) close(false); });
-    window.addEventListener("resize", function () { if (window.innerWidth > 1320 && !menu.hidden) close(false); });
+    window.addEventListener("resize", function () { if (window.innerWidth > 1120 && !menu.hidden) close(false); });
   }
   document.querySelectorAll('[data-site-header="applycraft"]').forEach(init);
 }());

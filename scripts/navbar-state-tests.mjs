@@ -39,7 +39,7 @@ for (const [route, expected] of Object.entries(matrix)) {
 }
 
 for (const [locale, label] of Object.entries({ en: "Create Resume", fr: "Créer mon CV", ar: "إنشاء سيرتي الذاتية" })) {
-  assert.match(headerHtml(locale, locale === "en" ? "/" : `/${locale}/`), new RegExp(`class="ac-static-cta"[^>]*>${label}<`), `${locale}: navbar CTA wording should be canonical`);
+  assert.match(headerHtml(locale, locale === "en" ? "/" : `/${locale}/`), new RegExp(`class="ac-nav-cta"[^>]*>${label}<`), `${locale}: navbar CTA wording should be canonical`);
 }
 
 console.log(`Navbar state tests passed: ${Object.keys(matrix).length} route variants.`);
