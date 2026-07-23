@@ -10,5 +10,7 @@
 /app/ats-checker/ /ats-checker/ 301
 /cover-letter/builder /cover-letter-builder/ 301
 /cover-letter/builder/ /cover-letter-builder/ 301
+/cover-letter /cover-letter-builder/ 301
+/cover-letter/ /cover-letter-builder/ 301
 /linux-administrator-resume /examples/linux-administrator-resume/ 301
 /linux-administrator-resume/ /examples/linux-administrator-resume/ 301

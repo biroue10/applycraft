@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FOOTER_LINK_SECTIONS, localizedFooterHref } from "./footerLinks.js";
 import { FOOTER_UI, LANDING_UI } from "./i18n/index.js";
+import { INTERFACE_LANGUAGES, interfaceLanguageByCode } from "./i18n/languages.js";
 import { PRIMARY_NAV_ITEMS } from "./nav/navItems.js";
 import { PRODUCT } from "./product.js";
-import { localizeRoute } from "./seo/localizedRoutes.js";
+import { localizedLanguageHref, localizeRoute } from "./seo/localizedRoutes.js";
 import { COLORS } from "./theme/colors.js";
 
 export const SITE_COLORS = COLORS;
@@ -21,6 +22,11 @@ const NAV_CTA = {
   en: "Create Resume",
   fr: "Créer mon CV",
   ar: "إنشاء سيرتي الذاتية",
+};
+const LANGUAGE_SWITCHER_COPY = {
+  en: { choose: "Choose interface language", menu: "Interface languages" },
+  fr: { choose: "Choisir la langue de l’interface", menu: "Langues de l’interface" },
+  ar: { choose: "اختر لغة الواجهة", menu: "لغات الواجهة" },
 };
 // Single canonical brand logo, imported anywhere the mark is shown (navbar,
 // footer, and — as the source image — the OG/favicon generators).
@@ -107,6 +113,53 @@ function actionProps(item, onNavigate) {
   return { as: "a", props };
 }
 
+export function LanguageSwitcher({ lang = "en", currentPath = "/", onLanguageSelect, id = "ac-language-menu" }) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef(null);
+  const triggerRef = useRef(null);
+  const current = interfaceLanguageByCode(lang);
+  const copy = LANGUAGE_SWITCHER_COPY[lang] || LANGUAGE_SWITCHER_COPY.en;
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const closeOutside = (event) => {
+      if (!rootRef.current?.contains(event.target)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    return () => document.removeEventListener("pointerdown", closeOutside);
+  }, [open]);
+
+  return (
+    <div ref={rootRef} className="ac-language-switcher" onKeyDown={(event) => {
+      if (event.key !== "Escape" || !open) return;
+      setOpen(false);
+      requestAnimationFrame(() => triggerRef.current?.focus());
+    }}>
+      <button ref={triggerRef} className="ac-language-trigger" type="button"
+        aria-label={`${copy.choose}: ${current.native}`} aria-haspopup="menu"
+        aria-expanded={open} aria-controls={id} onClick={() => setOpen((value) => !value)}>
+        <img src={current.flagSrc} alt="" aria-hidden="true" width="20" height="14" />
+        <strong>{current.displayCode}</strong>
+        <span className="ac-language-trigger-label">{current.native}</span>
+        <span className="ac-language-chevron" aria-hidden="true">{open ? "▲" : "▼"}</span>
+      </button>
+      <div id={id} className="ac-language-menu" role="menu" aria-label={copy.menu} hidden={!open}>
+        {INTERFACE_LANGUAGES.map((code) => {
+          const language = interfaceLanguageByCode(code);
+          return (
+            <a key={code} href={localizedLanguageHref(currentPath, code)} hrefLang={code} lang={code}
+              role="menuitem" aria-current={code === current.code ? "page" : undefined}
+              onClick={() => { onLanguageSelect?.(language); setOpen(false); }}>
+              <img src={language.flagSrc} alt="" aria-hidden="true" width="20" height="14" />
+              <span>{language.native}</span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // The ONE navbar. `variant="app"` swaps the marketing chrome (fixed position, CTA)
 // for the in-app chrome (sticky position, save-state slot) without forking the
 // component: same height token, same logo, same items, same order, same labels.
@@ -118,7 +171,8 @@ export function SiteHeader({
   onLogoClick,
   ctaHref,
   onCtaClick,
-  renderLanguageSelector,
+  currentPath,
+  onLanguageSelect,
   keepLanguageOnMobile = true,
   variant = "site",
   headerStyle,
@@ -142,6 +196,7 @@ export function SiteHeader({
   }));
   const cta = NAV_CTA[lang] || NAV_CTA.en;
   const resolvedCtaHref = ctaHref || defaultCtaHrefForLang(lang);
+  const resolvedCurrentPath = currentPath || (typeof window !== "undefined" ? window.location.pathname : homeHrefForLang(lang));
   const controlledMobileMenu = typeof onMobileMenuToggle === "function";
   const menuOpen = controlledMobileMenu ? mobileMenuOpen : internalMenuOpen;
   const toggleMobileMenu = controlledMobileMenu
@@ -324,11 +379,9 @@ export function SiteHeader({
           </div>}
         </nav>
         <div style={{ flex: 1 }} />
-        {renderLanguageSelector && (
-          <div className={`ac-site-header-language${keepLanguageOnMobile ? " ac-keep-mobile" : ""}`} style={{ flexShrink: 0, marginInlineEnd: 10 }}>
-            {renderLanguageSelector()}
-          </div>
-        )}
+        <div className={`ac-site-header-language${keepLanguageOnMobile ? " ac-keep-mobile" : ""}`} style={{ flexShrink: 0, marginInlineEnd: 10 }}>
+          <LanguageSwitcher lang={lang} currentPath={resolvedCurrentPath} onLanguageSelect={onLanguageSelect} />
+        </div>
         <a className="ac-nav-cta" href={resolvedCtaHref} onClick={onCtaClick ? (event) => {
           if (shouldUseNativeNavigation(event)) return;
           event.preventDefault();
@@ -392,11 +445,6 @@ export function SiteHeader({
               </Tag>
             );
           })}
-          {renderLanguageSelector && !keepLanguageOnMobile && (
-            <div style={{ padding: "8px 10px 10px" }}>
-              {renderLanguageSelector()}
-            </div>
-          )}
         </nav>
       )}
     </header>
@@ -498,7 +546,7 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
   );
 }
 
-export function AppShell({ children, lang = "en", activeId, renderLanguageSelector }) {
+export function AppShell({ children, lang = "en", activeId, currentPath }) {
   return (
     <div style={{
       minHeight: "100vh",
@@ -507,7 +555,7 @@ export function AppShell({ children, lang = "en", activeId, renderLanguageSelect
       flexDirection: "column",
       fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif",
     }}>
-      <SiteHeader lang={lang} activeId={activeId} renderLanguageSelector={renderLanguageSelector} />
+      <SiteHeader lang={lang} activeId={activeId} currentPath={currentPath} />
       {children}
       <SiteFooter lang={lang} className="ac-site-footer" />
     </div>

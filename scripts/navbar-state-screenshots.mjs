@@ -3,7 +3,7 @@ import { mkdir } from "node:fs/promises";
 import { chromium } from "playwright";
 
 const baseURL = process.env.NAVBAR_BASE_URL || "http://127.0.0.1:4173";
-const output = ".audit/navbar-state";
+const output = process.env.NAVBAR_SCREENSHOTS || ".audit/navbar-state";
 const routes = [
   ["interview-prep", "/interview-prep/", "interview"],
   ["job-tracker", "/job-tracker/", "tracker"],
@@ -15,7 +15,7 @@ const routes = [
   ["fr-interview", "/fr/interview-prep/", "interview"],
   ["ar-interview", "/ar/interview-prep/", "interview"],
 ];
-const viewports = [[1440, 900], [1280, 720], [390, 844]];
+const viewports = [[1440, 900], [1280, 720], [1024, 768], [390, 844]];
 
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true });
@@ -36,6 +36,15 @@ try {
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       assert.ok(overflow <= 1, `${route} ${width}: horizontal overflow ${overflow}px`);
       await page.screenshot({ path: `${output}/${name}-${width}x${height}.png`, fullPage: false });
+      const languageButton = page.locator(".ac-language-trigger:visible").first();
+      assert.equal(await languageButton.count(), 1, `${route} ${width}: expected one visible language trigger`);
+      await languageButton.click();
+      const languageLinks = page.locator(".ac-language-menu a:visible");
+      assert.equal(await languageLinks.count(), 3, `${route} ${width}: expected three language choices`);
+      assert.deepEqual(await languageLinks.locator(":scope > span:not(.ac-language-current)").allTextContents(), ["English", "Français", "العربية"], `${route} ${width}: language order`);
+      await page.screenshot({ path: `${output}/${name}-language-open-${width}x${height}.png`, fullPage: false });
+      await page.keyboard.press("Escape");
+      assert.equal(await languageLinks.count(), 0, `${route} ${width}: Escape closes language menu`);
       await page.close();
     }
   }

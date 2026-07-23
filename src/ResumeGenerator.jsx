@@ -4587,16 +4587,6 @@ Awards: ${form.awards}`;
     if (item.id === "cover") setCoverStep("templates");
   };
 
-  const renderHeaderLanguageSelector = () => (
-    <LanguageDropdown
-      selected={selectedLang}
-      onSelect={setSiteLanguage}
-      siteOnly
-      currentPath={location.pathname}
-      {...(INTERFACE_LANGUAGE_DROPDOWN_COPY[lang] || INTERFACE_LANGUAGE_DROPDOWN_COPY.en)}
-    />
-  );
-
   // The in-app navbar IS the marketing navbar (src/siteChrome.jsx) — same height
   // token, logo, item order and labels. The app-only chrome (active tool, save
   // state, tools drawer) is passed in as props, never forked into a second component.
@@ -4611,7 +4601,8 @@ Awards: ${form.awards}`;
           enterPrimaryTool(item);
         }}
         onLogoClick={() => setAppView("landing")}
-        renderLanguageSelector={renderHeaderLanguageSelector}
+        currentPath={location.pathname}
+        onLanguageSelect={setSiteLanguage}
         headerStyle={headerStyle}
         mobileMenuOpen={appHeaderMenuOpen}
         onMobileMenuToggle={() => setAppHeaderMenuOpen((open) => !open)}
@@ -5544,18 +5535,6 @@ Awards: ${form.awards}`;
                   <strong style={{ display: "block", fontSize: 13 }}>{bu.templateLabel}</strong>
                   <span style={{ color: C.text3, fontSize: 12 }}>{tpl.name} · {bu.atsConscious}</span>
                 </button>
-                <div style={{ fontSize: 12, fontWeight: 800, color: C.text3, marginBottom: 7 }}>
-                  {bu.interfaceLanguage}
-                </div>
-                <LanguageDropdown
-                  selected={selectedLang}
-                  onSelect={(l) => {
-                    setSiteLanguage(l);
-                  }}
-                  siteOnly
-                  siteBadge={builderText("langBadgeSite")}
-                  uiBadge={builderText("langBadgeUi")}
-                />
                 <div style={{ fontSize: 12, fontWeight: 800, color: C.text3, margin: "12px 0 7px" }}>
                   {bu.documentLanguage}
                 </div>
@@ -8607,15 +8586,8 @@ Awards: ${form.awards}`;
           lang={lang}
           onLogoClick={() => setAppView("landing")}
           onCtaClick={() => startResume("nav_cta")}
-          renderLanguageSelector={() => (
-            <LanguageDropdown
-              selected={selectedLang}
-              onSelect={setSiteLanguage}
-              siteOnly
-              currentPath={location.pathname}
-              {...(INTERFACE_LANGUAGE_DROPDOWN_COPY[lang] || INTERFACE_LANGUAGE_DROPDOWN_COPY.en)}
-            />
-          )}
+          currentPath={location.pathname}
+          onLanguageSelect={setSiteLanguage}
           mobileMenuOpen={landingMenuOpen}
           onMobileMenuToggle={() => setLandingMenuOpen(o => !o)}
           onNavigate={(item) => { setLandingMenuOpen(false); setAppView("app"); enterPrimaryTool(item); }}
@@ -9270,12 +9242,6 @@ Awards: ${form.awards}`;
 
         </main>
 
-        <nav aria-label={(INTERFACE_LANGUAGE_DROPDOWN_COPY[lang] || INTERFACE_LANGUAGE_DROPDOWN_COPY.en).ariaLabel} style={{ display: "flex", justifyContent: "center", gap: 18, padding: "0 24px 20px", fontSize: 13 }}>
-          <a href="/" hrefLang="en" lang="en" style={{ color: C.text3, textDecoration: "none" }}>{languageByCode("en").native}</a>
-          <a href="/fr/" hrefLang="fr" lang="fr" style={{ color: C.text3, textDecoration: "none" }}>{languageByCode("fr").native}</a>
-          <a href="/ar/" hrefLang="ar" lang="ar" dir="rtl" style={{ color: C.text3, textDecoration: "none" }}>{languageByCode("ar").native}</a>
-        </nav>
-
         {/* Footer */}
         <SharedSiteFooter lang={lang} />
       </div>
@@ -9413,16 +9379,11 @@ Awards: ${form.awards}`;
           ...(isFormView ? { flex: 1, display: "flex", flexDirection: "column", minHeight: 0 } :
             isFocusedToolView ? { maxWidth: "none", margin: 0 } : { maxWidth: 1320, margin: "0 auto" }) }}>
 
-        {/* Persistent top bar: language picker + auth (desktop only) */}
+        {/* Persistent account controls (desktop only). Interface language lives
+            exclusively in the global header; document language stays in the
+            document settings toolbar. */}
         <div style={{ display: isMobile || isFormView || isFocusedToolView ? "none" : "flex", justifyContent: "flex-end", alignItems: "center",
           marginBottom: 10, gap: 8, flexWrap: "wrap" }}>
-          <LanguageDropdown
-            selected={selectedLang}
-            onSelect={setSiteLanguage}
-            siteOnly
-            siteBadge={builderText("langBadgeSite")}
-            uiBadge={builderText("langBadgeUi")}
-          />
           {currentUser ? (
             <div ref={userMenuRef} style={{ position: "relative" }}>
               <button onClick={() => setUserMenuOpen(o => !o)}

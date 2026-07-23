@@ -1436,6 +1436,12 @@ export default {
     if (url.pathname === "/api/feedback") return handleFeedback(request, env);
     if (url.pathname === "/api/share" || url.pathname.startsWith("/api/share/")) return handleShare(request, env, url);
     if (request.method === "GET" || request.method === "HEAD") {
+      if (url.pathname === "/cover-letter" || url.pathname === "/cover-letter/") {
+        return new Response(null, {
+          status: 301,
+          headers: { Location: `/cover-letter-builder/${url.search}`, ...SECURITY_HEADERS },
+        });
+      }
       // Canonicalize the no-trailing-slash form of those routes with a single 301.
       if (url.pathname !== "/" && TRAILING_SLASH_HTML_ASSETS.has(`${url.pathname}/`)) {
         return new Response(null, {
