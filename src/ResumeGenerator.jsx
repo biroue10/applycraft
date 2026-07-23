@@ -473,6 +473,39 @@ const TEMPLATE_GALLERY_META = {
   },
 };
 
+// Maps the finite English attribute/layout vocabulary used across the template
+// gallery to builder i18n keys, so chips render in the active UI language
+// (FR/EN/AR) instead of leaking English. Terms already localized by a
+// template's gallery.{fr,ar} data (e.g. "Maroc", "FR/AR") simply fall through
+// unchanged. Keep in sync with the attr* keys in i18n/namespaces/*/builder.js.
+const TEMPLATE_ATTR_I18N_KEY = {
+  "Recommended": "attrRecommended", "ATS-friendly": "attrAtsFriendly",
+  "ATS-safe": "attrAtsSafe", "ATS-first": "attrAtsFirst",
+  "One-column": "attrOneColumn", "Two-column": "attrTwoColumn",
+  "Traditional": "attrTraditional", "Minimal": "attrMinimal",
+  "Compact": "attrCompact", "Strong header": "attrStrongHeader",
+  "RTL-friendly": "attrRtlFriendly", "RTL-ready": "attrRtlReady",
+  "Executive": "attrExecutive", "Creative": "attrCreative",
+  "Technical": "attrTechnical", "Distinctive": "attrDistinctive",
+  "Corporate": "attrCorporate", "Premium": "attrPremium",
+  "Modern": "attrModern", "Expressive": "attrExpressive",
+  "Header-led": "attrHeaderLed", "Refined": "attrRefined",
+  "Academic": "attrAcademic", "Structured": "attrStructured",
+  "CV style": "attrCvStyle", "Portfolio": "attrPortfolio",
+  "Flexible": "attrFlexible", "Professional": "attrProfessional",
+  "Plain text": "attrPlainText", "Sidebar": "attrSidebar",
+  "Skills sidebar": "attrSkillsSidebar", "Readable": "attrReadable",
+  "Serif": "attrSerif", "Formal": "attrFormal",
+  "Conservative": "attrConservative", "Rules": "attrRules",
+  "Chronological": "attrChronological", "No photo": "attrNoPhoto",
+  "Photo optional": "attrPhotoOptional", "Canada": "attrCanada",
+  "France": "attrFrance", "Morocco": "attrMorocco",
+  "Gulf": "attrGulf", "International": "attrInternational",
+};
+// Localize a single attribute/layout term; passes through anything already
+// localized or outside the known vocabulary (e.g. "FR/AR", locale codes).
+const localizeTemplateTerm = (term, bu) => bu?.[TEMPLATE_ATTR_I18N_KEY[term]] || term;
+
 const TEMPLATE_QUICK_FILTERS = [
   { id: "all", label: "All" },
   { id: "recommended", label: "Recommended" },
@@ -922,6 +955,29 @@ const COVER_THUMB_SAMPLES = {
     body: "I write to express my interest in the Chief Financial Officer position at Grab. Over eighteen years in technology-led finance across APAC, I have led functions through hypergrowth, dual listings, and complex multi-jurisdiction regulatory environments — precisely the terrain Grab navigates every quarter.\n\nAs CFO at Sea Limited, I oversaw $4.2 billion in annual revenue across three distinct verticals and led our Singapore Exchange dual listing in 2021, raising $2.1 billion. Prior to that, at Grab, I built the financial infrastructure that supported our expansion to eight countries in four years.\n\nI believe the next chapter for Grab requires a CFO who can navigate both capital markets and operational rigour simultaneously. That is the work I have spent two decades preparing to do.",
     closing: "I would welcome the opportunity to discuss how my experience aligns with Grab's priorities for the year ahead.",
     signoff: "Yours sincerely,",
+  },
+};
+
+// Locale-appropriate default cover-letter sample. Prevents an English featured
+// letter (Sarah Okonkwo) from showing inside a French/Arabic interface: the
+// preview modal and the recommended template card pick the sample that matches
+// the active UI language. Per-template thumbnails intentionally keep varied
+// languages to showcase versatility; only the featured/default sample follows
+// the UI locale.
+const SAMPLE_COVER_BY_LANG = {
+  en: SAMPLE_COVER,
+  fr: COVER_THUMB_SAMPLES.classic,
+  ar: {
+    name: "ليلى المنصوري", jobTitle: "مديرة تسويق رقمي",
+    email: "layla.mansouri@example.com", phone: "+971 50 123 4567", location: "دبي، الإمارات",
+    date: "٢٧ يونيو ٢٠٢٦",
+    recipientName: "السيد أحمد الهاشمي", recipientTitle: "مدير التسويق",
+    company: "Careem", companyAddress: "أبراج بحيرات جميرا، دبي",
+    subject: "طلب توظيف — مديرة تسويق رقمي",
+    opening: "السيد الهاشمي",
+    body: "يسعدني أن أتقدم بطلبي لشغل وظيفة مديرة التسويق الرقمي في Careem. بخبرة تمتد لسبع سنوات في اكتساب العملاء وإدارة الحملات متعددة القنوات لشركات التقنية الناشئة، أثق في قدرتي على الإسهام بفاعلية في تحقيق أهداف النمو لديكم.\n\nخلال عملي في مجموعة رائدة، أطلقت أربعة أسواق إقليمية جديدة خلال عامين، وطوّرت فريق تسويق من فردين إلى أربعة عشر فرداً. كما أدرت ميزانية إعلانية سنوية على Google وLinkedIn وMeta بعائد استثماري متوسط بلغ 4.2.\n\nإن رؤية Careem في تبسيط الخدمات اليومية لملايين المستخدمين في المنطقة تتوافق تماماً مع قناعتي بأن التقنية يجب أن تُيسّر حياة الناس.",
+    closing: "يشرفني أن أناقش معكم كيف يمكن لخبرتي أن تخدم أولويات Careem في المرحلة المقبلة، وأبقى على استعداد لإجراء مقابلة في الوقت المناسب لكم.",
+    signoff: "مع خالص التقدير،",
   },
 };
 
@@ -2465,7 +2521,7 @@ function AddContentModal({ open, onClose, addedSet, onAdd, sectionName, eui, rtl
   );
 }
 
-function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, kind = "resume", labels = {} }) {
+function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, kind = "resume", labels = {}, bu = {}, coverSample = SAMPLE_COVER }) {
   const dialogRef = useRef(null);
   useEffect(() => {
     if (!template || typeof document === "undefined") return;
@@ -2537,7 +2593,7 @@ function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, k
             overflow: "auto", display: "flex", justifyContent: "center" }}>
             {kind === "cover" ? (
               <div style={{ width: "min(100%, 700px)", minWidth: isMobile ? 0 : 520 }}>
-                <CoverLetterPaper tpl={template} data={SAMPLE_COVER} />
+                <CoverLetterPaper tpl={template} data={coverSample} />
               </div>
             ) : (
               <div style={{ width: "min(100%, 700px)", minWidth: isMobile ? 0 : 520 }}>
@@ -2559,9 +2615,9 @@ function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, k
               <h3 style={{ margin: "0 0 10px", color: C.text1, fontSize: 15.5 }}>{labels.templateDetails || "Template details"}</h3>
               <div style={{ display: "grid", gap: 8 }}>
                 {[
-                  ["Layout", info.layout || "Flexible"],
-                  ["ATS status", kind === "cover" ? "Professional letter layout" : ((info.attributes || []).includes("ATS-friendly") ? "ATS-friendly structure" : "Professional structure")],
-                  ["RTL support", kind === "cover" ? "Uses document language settings" : ((info.filters || []).includes("rtl") ? "Supported" : "Standard left-to-right preview")],
+                  [bu.detailLayout || "Layout", localizeTemplateTerm(info.layout || "Flexible", bu)],
+                  [bu.detailAtsStatus || "ATS status", kind === "cover" ? (bu.detailProfessionalLetter || "Professional letter layout") : ((info.attributes || []).includes("ATS-friendly") ? (bu.detailAtsFriendly || "ATS-friendly structure") : (bu.detailProfessionalStructure || "Professional structure"))],
+                  [bu.detailRtlSupport || "RTL support", kind === "cover" ? (bu.detailUsesDocLang || "Uses document language settings") : ((info.filters || []).includes("rtl") ? (bu.detailRtlSupported || "Supported") : (bu.detailRtlStandard || "Standard left-to-right preview"))],
                 ].map(([label, value]) => (
                   <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 12,
                     borderBottom: `1px solid ${C.border}`, paddingBottom: 8 }}>
@@ -2575,7 +2631,7 @@ function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, k
               {(info.attributes || []).map((attr) => (
                 <span key={attr} style={{ border: `1px solid ${C.border}`, background: C.elevated,
                   color: C.text2, borderRadius: 999, padding: "5px 9px", fontSize: 12, fontWeight: 800 }}>
-                  {attr}
+                  {localizeTemplateTerm(attr, bu)}
                 </span>
               ))}
             </div>
@@ -2655,9 +2711,17 @@ export default function ResumeGenerator() {
   const location = useLocation();
   const initialRoute = getInitialAppRoute(location.pathname, location.hash);
   const routeLang = routeLanguageOverride(location.pathname);
+  // During static generation there is no browser storage or navigator, and the
+  // SSG process renders every route in one shared context — so a persisted
+  // language from an earlier /fr/ or /ar/ render could otherwise leak into the
+  // English routes and mis-localize their pre-rendered chrome (e.g. the footer
+  // home link pointing to /fr/). On the server, derive the language purely from
+  // the route: /fr/* → fr, /ar/* → ar, everything else → en. Client-side this
+  // stays empty so the existing storage/browser-preference logic is untouched.
+  const ssrRouteLang = typeof window === "undefined" ? (routeLang || "en") : "";
   const initialSearchParams = new URLSearchParams(location.search || "");
-  const initialInterfaceLang = initialSearchParams.get("ui") || routeLang;
-  const initialDocumentLang = initialSearchParams.get("docLang") || routeLang;
+  const initialInterfaceLang = initialSearchParams.get("ui") || routeLang || ssrRouteLang;
+  const initialDocumentLang = initialSearchParams.get("docLang") || routeLang || ssrRouteLang;
   const initialTemplateCountry = (() => {
     const value = initialSearchParams.get("country") || "all";
     return TEMPLATE_COUNTRY_FILTERS.includes(value) ? value : "all";
@@ -4722,7 +4786,7 @@ Awards: ${form.awards}`;
                       fontSize: 12.8, fontWeight: 800, cursor: "pointer", fontFamily: "inherit",
                       display: "inline-flex", alignItems: "center", gap: 6 }}>
                     {active && <LineIcon name="check" size={13} color={C.accent2} />}
-                    {filter.label}
+                    {bu[`filter_${filter.id}`] || filter.label}
                   </button>
                 );
               })}
@@ -4750,7 +4814,7 @@ Awards: ${form.awards}`;
                             color: active ? C.accent2 : C.text2, borderRadius: 8, padding: "9px 10px",
                             textAlign: rtl ? "right" : "left", cursor: "pointer", fontFamily: "inherit", fontSize: 13 }}>
                           <LineIcon name={active ? "check" : "document"} size={14} color={active ? C.accent2 : C.text3} />
-                          {filter.label}
+                          {bu[`filter_${filter.id}`] || filter.label}
                         </button>
                       );
                     })}
@@ -4911,6 +4975,7 @@ Awards: ${form.awards}`;
         onUse={(template) => startWithTemplate(template, "template_preview")}
         isMobile={isMobile}
         rtl={rtl}
+        bu={bu}
         labels={{
           previewEyebrow: builderText("templatePreviewEyebrow"),
           useTemplate: builderText("useThisTemplate"),
@@ -5453,7 +5518,6 @@ Awards: ${form.awards}`;
   const resumeTitle = form.name.trim()
     ? builderText("ownedResumeTitle", { name: form.name.trim().split(/\s+/)[0] })
     : builderText("untitledResume");
-  const savedLabel = bu.notSavedShort;
   const translationFieldEntries = Object.entries(form.translationMeta?.fields || {});
   const translationReviewed = Boolean(form.translationMeta?.reviewed)
     || (translationFieldEntries.length > 0 && translationFieldEntries.every(([, meta]) => meta?.translationStatus === TRANSLATION_STATUSES.humanReviewed));
@@ -5496,8 +5560,21 @@ Awards: ${form.awards}`;
           <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
             <h1 style={{ margin: 0, color: C.text1, fontSize: isMobile ? 16 : 18, lineHeight: 1.15,
               fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resumeTitle}</h1>
-            <span title={builderText("notSavedTooltip")}
-              style={{ color: C.text3, fontSize: 11.5, whiteSpace: "nowrap" }}>· {savedLabel}</span>
+            {currentResumeId ? (
+              <span title={builderText("notSavedTooltip")}
+                style={{ display: "inline-flex", alignItems: "center", gap: 4, color: C.text3,
+                  fontSize: 11.5, whiteSpace: "nowrap" }}>
+                <LineIcon name="check" size={11} color={C.text3} /> {bu.savedInline}
+              </span>
+            ) : (
+              <button type="button" onClick={saveCurrentResume} title={builderText("notSavedTooltip")}
+                style={{ display: "inline-flex", alignItems: "center", gap: 5, color: C.accent2,
+                  background: `${C.accent}14`, border: `1px solid ${C.accent}30`, borderRadius: 999,
+                  padding: "2px 9px", fontSize: 11, fontWeight: 800, whiteSpace: "nowrap",
+                  cursor: "pointer", fontFamily: "inherit" }}>
+                {bu.saveInline}
+              </button>
+            )}
             {isTranslatedResume && (
               <button type="button" onClick={() => !translationReviewed && markTranslatedFields(TRANSLATION_STATUSES.humanReviewed)}
                 disabled={translationReviewed}
@@ -6876,7 +6953,7 @@ Awards: ${form.awards}`;
                     boxShadow: active || selected ? `0 0 0 4px ${C.accent}18` : "none",
                     transition: "box-shadow 0.2s ease, outline-color 0.2s ease, transform 0.2s ease",
                     transform: active ? "translateY(-3px)" : "none" }}>
-                      <CoverThumbPreview tp={tp} isMobile={isMobile} />
+                      <CoverThumbPreview tp={tp} isMobile={isMobile} lang={lang} rtl={rtl} />
                       {(selected || recommended) && (
                         <span style={{ position: "absolute", top: 10, right: 10, display: "inline-flex",
                           alignItems: "center", gap: 5, color: selected ? "#fff" : C.accent2,
@@ -6955,6 +7032,8 @@ Awards: ${form.awards}`;
         isMobile={isMobile}
         rtl={rtl}
         kind="cover"
+        bu={bu}
+        coverSample={SAMPLE_COVER_BY_LANG[lang] || SAMPLE_COVER}
         labels={{
           previewEyebrow: builderText("templatePreviewEyebrow"),
           useTemplate: builderText("useThisTemplate"),
@@ -7784,7 +7863,7 @@ Awards: ${form.awards}`;
         {/* Kanban board */}
         <div style={{ overflowX: "auto", margin: isMobile ? "0 -8px" : "0 -20px" }}>
         <div style={{ display: "flex", gap: 14, padding: isMobile ? "0 8px 16px" : "0 20px 16px",
-          alignItems: "flex-start", minHeight: 400, minWidth: "max-content" }}>
+          alignItems: "flex-start", minHeight: 400, minWidth: isMobile ? "max-content" : 0 }}>
           {TRACKER_COLS.map(tcol => {
             const cards = trackerCards.filter(c => c.column === tcol.id
               && (!trackerFilters.query || `${c.company} ${c.position}`.toLowerCase().includes(trackerFilters.query.toLowerCase()))
@@ -7802,7 +7881,8 @@ Awards: ${form.awards}`;
                   if (trackerDragId) moveCard(trackerDragId, tcol.id);
                   setTrackerDragId(null); setTrackerDragOver(null);
                 }}
-                style={{ flex: "0 0 220px", background: isDragTarget ? `${tcol.color}18` : C.surface,
+                style={{ flex: isMobile ? "0 0 220px" : "1 1 0", minWidth: isMobile ? undefined : 176,
+                  background: isDragTarget ? `${tcol.color}18` : C.surface,
                   border: `1.5px solid ${isDragTarget ? tcol.color : C.border}`,
                   borderRadius: 12, padding: "12px 10px", minHeight: 160,
                   transition: "border-color 0.15s, background 0.15s" }}>
@@ -11042,7 +11122,7 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
         <div ref={contentRef} style={{ width: "100%", minHeight: "100%" }}>
           <LinkifyLinksProvider enabled={false}>
             {type === "cover" ? (
-              <CoverLetterPaper tpl={template} data={COVER_THUMB_SAMPLES[template.id] || SAMPLE_COVER} preview />
+              <CoverLetterPaper tpl={template} data={template.id === RECOMMENDED_TEMPLATE_ID ? (SAMPLE_COVER_BY_LANG[lang] || COVER_THUMB_SAMPLES[template.id] || SAMPLE_COVER) : (COVER_THUMB_SAMPLES[template.id] || SAMPLE_COVER)} preview />
             ) : (
               <ResumePaper tpl={template}
                 result={resumeResult || THUMB_SAMPLES[template.id]?.result || SAMPLE_RESUME}
@@ -11080,12 +11160,14 @@ function ThumbPreview({ tp, isMobile, resumeResult = null, resumeRtl = null, res
 }
 
 // ── CoverThumbPreview ─────────────────────────────────────────────
-function CoverThumbPreview({ tp, isMobile }) {
+function CoverThumbPreview({ tp, isMobile, lang = "", rtl = false }) {
   return (
     <DocumentThumbnailPreview
       type="cover"
       template={tp}
       isMobile={isMobile}
+      lang={lang}
+      rtl={rtl}
     />
   );
 }

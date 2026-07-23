@@ -37,6 +37,8 @@ const footer = {
   "badge3": "Édition dans le navigateur",
   "brandHome": "Accueil ApplyCraft",
   "primaryTools": "Outils principaux",
+  "chooseLanguage": "Choisir la langue de l’interface",
+  "languageMenu": "Langues de l’interface",
   "menu": "Menu",
   "openMenu": "Ouvrir le menu",
   "closeMenu": "Fermer le menu",

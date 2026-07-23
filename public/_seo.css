@@ -1,5 +1,12 @@
 /*  ApplyCraft – shared SEO page styles  */
 @import url('/scrollbars.css');
+/* Authoritative global navbar styles. Imported here so EVERY static SEO page
+   (all of which load _seo.css) inherits the exact same header assets as the
+   vite-react-ssg app pages, which link /app-navbar.css directly. Without this
+   the class-based static navbar rendered zero-padding nav links (broken header
+   on /ats-checker-*, /*/application-pack, /*/pricing, …). Keep this the single
+   source so the two page systems can never drift apart again. */
+@import url('/app-navbar.css');
 
 /* Self-hosted brand fonts. IBM Plex Sans (Latin, variable 400–700) + IBM Plex
    Sans Arabic (static 400/600/700). The two carry complementary unicode-range
