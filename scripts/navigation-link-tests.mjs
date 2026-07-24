@@ -33,7 +33,7 @@ const localizedRequired = {
     "/resume-builder/?ui=fr&docLang=fr",
     "/cover-letter/templates/?ui=fr&docLang=fr",
     "/ats-checker-fr/",
-    "/job-tracker/?ui=fr&docLang=fr",
+    "/job-tracker/?ui=fr",
     "/fr/interview-prep/",
     "/fr/pricing/",
   ],
@@ -41,7 +41,7 @@ const localizedRequired = {
     "/resume-builder/?ui=ar&docLang=ar",
     "/cover-letter/templates/?ui=ar&docLang=ar",
     "/ats-checker-ar/",
-    "/job-tracker/?ui=ar&docLang=ar",
+    "/job-tracker/?ui=ar",
     "/ar/interview-prep/",
   ],
 };

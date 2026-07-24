@@ -36,7 +36,7 @@ import {
 import { LANGUAGE_SCHEMA_VERSION, LANGUAGE_SCHEMA_VERSION_KEY } from "./i18n/config.js";
 import { documentLabelsFor } from "./i18n/documentLabels.js";
 import { formatLetterDate, defaultCoverSignoff, COVER_SIGNOFFS, LETTER_LOCALE } from "./i18n/letterDefaults.js";
-import { localizeRoute, localizedLanguageHref } from "./seo/localizedRoutes.js";
+import { buildInternalUrl, localizeRoute, localizedLanguageHref } from "./seo/localizedRoutes.js";
 import { jobContextQuery } from "./interview/context.js";
 
 // Event ids normally match their lowercase constant name. Keeping this tiny
@@ -2674,7 +2674,7 @@ function routeFromAppPath(pathname = "/", hash = "") {
   if (clean === "cover-letter" || clean === "cover-letter/templates") return { ...route, navPage: "cover", coverStep: "templates" };
   if (clean === "cover-letter-builder" || clean === "cover-letter/builder") return { ...route, navPage: "cover", coverStep: "form" };
   if (clean === "job-tracker") return { ...route, navPage: "tracker" };
-  if (clean === "ats-checker" || clean === "app/ats-checker" || hashRoute === "ats-checker") return { ...route, navPage: "ats" };
+  if (clean === "ats-checker" || clean === "ats-checker-fr" || clean === "ats-checker-ar" || clean === "app/ats-checker" || hashRoute === "ats-checker") return { ...route, navPage: "ats" };
   if (clean === "master-profile") return { ...route, navPage: "master" };
   if (clean === "about") return { ...route, navPage: "about" };
   if (clean === "email-signature") return { ...route, navPage: "signature" };
@@ -3144,11 +3144,17 @@ export default function ResumeGenerator() {
     if (typeof window === "undefined") return;
     const nextPath = localizeRoute(pathFromRoute({ appView, navPage, step, coverStep }), lang);
     const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    const target = `${nextPath}${window.location.search || ""}`;
+    const target = buildInternalUrl(nextPath, {
+      interfaceLanguage: lang === "en" ? "" : lang,
+      documentLanguage: docLang,
+      preserveDocumentLanguage: docLang !== "en",
+      preserveAllowedParams: ["starter", "template", "country", "importResume", "ac_checkout", "jobTitle", "company", "applicationLanguage"],
+      currentHref: currentPath,
+    });
     if (currentPath !== target) {
       window.history.pushState({}, "", target);
     }
-  }, [appView, navPage, step, coverStep, lang]);
+  }, [appView, navPage, step, coverStep, lang, docLang]);
 
   useEffect(() => {
     if (navPage !== "ats") return undefined;
