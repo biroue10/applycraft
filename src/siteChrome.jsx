@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FOOTER_LINK_SECTIONS, localizedFooterHref } from "./footerLinks.js";
 import { FOOTER_UI, LANDING_UI } from "./i18n/index.js";
 import { INTERFACE_LANGUAGES, interfaceLanguageByCode } from "./i18n/languages.js";
+import { LANGUAGE_SWITCHER_COPY, NAV_CTA } from "./nav/navCopy.js";
 import { PRIMARY_NAV_ITEMS } from "./nav/navItems.js";
 import { PRODUCT } from "./product.js";
 import { localizedLanguageHref, localizeRoute } from "./seo/localizedRoutes.js";
@@ -18,16 +19,6 @@ export const HEADER_HEIGHT = 64;         // desktop, px
 export const HEADER_HEIGHT_MOBILE = 60;  // <=720px, px
 
 const AUTHOR_EMAIL = "hello@applycraft.io";
-const NAV_CTA = {
-  en: "Create Resume",
-  fr: "Créer mon CV",
-  ar: "إنشاء سيرتي الذاتية",
-};
-const LANGUAGE_SWITCHER_COPY = {
-  en: { choose: "Choose interface language", menu: "Interface languages" },
-  fr: { choose: "Choisir la langue de l’interface", menu: "Langues de l’interface" },
-  ar: { choose: "اختر لغة الواجهة", menu: "لغات الواجهة" },
-};
 // Single canonical brand logo, imported anywhere the mark is shown (navbar,
 // footer, and — as the source image — the OG/favicon generators).
 export const BRAND_LOGO_SRC = "/assets/brand/applycraft-logo-navbar.png";
@@ -240,16 +231,7 @@ export function SiteHeader({
     }}>
       {/* Height is the token — never derived from content — so switching between
           the marketing site and the app produces zero layout shift. */}
-      <div className="ac-global-header__inner" style={{
-        width: "100%",
-        height: HEADER_HEIGHT,
-        margin: "0 auto",
-        padding: "0 32px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        boxSizing: "border-box",
-      }}>
+      <div className="ac-global-header__inner">
         <a
           href={homeHrefForLang(lang)}
           onClick={onLogoClick ? (event) => {
@@ -275,7 +257,7 @@ export function SiteHeader({
           }}>
           <BrandLogoImage style={{ height: 30, maxWidth: 170 }} />
         </a>
-        <nav aria-label={f.primaryTools} className="ac-global-header__nav" style={{ display: "flex", gap: 4, marginInlineStart: 18 }}>
+        <nav aria-label={f.primaryTools} className="ac-global-header__nav">
           {priorityItems.map((item) => {
             const action = actionProps(item, onNavigate);
             const Tag = action.as;
@@ -285,19 +267,7 @@ export function SiteHeader({
               className="ac-nav-link"
               data-nav-id={item.id}
               aria-current={active ? "page" : undefined}
-              style={{
-              border: "none",
-              borderRadius: 8,
-              padding: "9px 12px",
-              background: active ? `${SITE_COLORS.accent}18` : "transparent",
-              color: active ? SITE_COLORS.accent2 : SITE_COLORS.text2,
-              textDecoration: "none",
-              fontSize: 13.5,
-              fontWeight: 650,
-              fontFamily: "inherit",
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-            }}>
+            >
               {item.label}
             </Tag>
             );
@@ -311,13 +281,7 @@ export function SiteHeader({
                 className="ac-nav-link ac-site-nav-secondary"
                 data-nav-id={item.id}
                 aria-current={active ? "page" : undefined}
-                style={{
-                  border: "none", borderRadius: 8, padding: "9px 12px",
-                  background: active ? `${SITE_COLORS.accent}18` : "transparent",
-                  color: active ? SITE_COLORS.accent2 : SITE_COLORS.text2,
-                  textDecoration: "none", fontSize: 13.5, fontWeight: 650,
-                  fontFamily: "inherit", cursor: "pointer", whiteSpace: "nowrap",
-                }}>
+              >
                 {item.label}
               </Tag>
             );
@@ -353,7 +317,6 @@ export function SiteHeader({
             )}
           </div>
         </nav>
-        <div style={{ flex: 1 }} />
         <div className="ac-global-header__actions">
         <div className={`ac-global-header__language${keepLanguageOnMobile ? " ac-keep-mobile" : ""}`}>
           <LanguageSwitcher lang={lang} currentPath={resolvedCurrentPath} onLanguageSelect={onLanguageSelect} />
@@ -388,10 +351,7 @@ export function SiteHeader({
         </div>
       </div>
       {menuOpen && (
-        <nav ref={mobileMenuRef} id="m" aria-label={f.menu} className="ac-global-header__mobile-menu" style={{ boxShadow: "none", borderTop: 0, background: `${SITE_COLORS.bg}f5`,
-          backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
-          padding: "8px 12px 14px", display: "none", flexDirection: "column", gap: 2,
-          maxHeight: `calc(100vh - ${HEADER_HEIGHT_MOBILE}px)`, overflowY: "auto" }}>
+        <nav ref={mobileMenuRef} id="m" aria-label={f.menu} className="ac-global-header__mobile-menu">
           <a className="ac-mobile-menu-cta" href={resolvedCtaHref}
               onClick={onCtaClick ? (event) => {
                 if (shouldUseNativeNavigation(event)) return;
@@ -399,8 +359,7 @@ export function SiteHeader({
                 onCtaClick();
                 closeMobileMenu();
               } : () => closeMobileMenu()}
-              style={{ background: SITE_COLORS.grad, color: "#fff", borderRadius: 3, padding: "11px 16px",
-                fontSize: 14, fontWeight: 700, textDecoration: "none" }}>
+          >
               {cta}
           </a>
           {items.map((item) => {
@@ -415,9 +374,7 @@ export function SiteHeader({
                   action.props.onClick(event);
                   if (!shouldUseNativeNavigation(event)) toggleMobileMenu();
                 } : () => closeMobileMenu()}
-                style={{ textAlign: "start", border: "none", background: "transparent",
-                  color: SITE_COLORS.text1, padding: "12px 10px", fontSize: 15, fontWeight: 700, cursor: "pointer",
-                  fontFamily: "inherit", borderRadius: 8, textDecoration: "none" }}>
+              >
                 {item.label}
               </Tag>
             );
@@ -541,7 +498,7 @@ export function AppShell({ children, lang = "en", activeId, currentPath }) {
       background: SITE_COLORS.bg,
       display: "flex",
       flexDirection: "column",
-      fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif",
+      fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif",
     }}>
       <SiteHeader lang={lang} activeId={activeId} currentPath={currentPath} />
       {children}

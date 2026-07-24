@@ -41,10 +41,14 @@ const PAGES = [
 ];
 
 async function audit({ file, url }) {
-  const dom = new JSDOM(readFileSync(resolve(__dirname, "..", file), "utf8"), {
+  // This audit targets prerendered markup. Do not fetch or execute deployment
+  // scripts from the production origin: doing so makes a local build audit
+  // depend on which asset version Cloudflare currently serves.
+  const html = readFileSync(resolve(__dirname, "..", file), "utf8")
+    .replace(/<script\b[^>]*\bsrc=(?:"[^"]*"|'[^']*')[^>]*><\/script>/gi, "");
+  const dom = new JSDOM(html, {
     url,
     runScripts: "dangerously",
-    resources: "usable",
   });
   const { window } = dom;
   const scriptEl = window.document.createElement("script");

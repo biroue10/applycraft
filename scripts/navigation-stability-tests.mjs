@@ -64,19 +64,21 @@ const assertStable = (reference, current, label) => {
   assert.ok(current.overflow <= 1, `${label}: no horizontal overflow`);
 };
 
-const clickNav = async (page, id) => {
+const clickNav = async (page, id, locale = "en") => {
   const desktop = page.locator(`.ac-global-header__nav > .ac-nav-link[data-nav-id="${id}"]:visible`);
   if (await desktop.count()) {
-    await desktop.click();
+    await desktop.click({ force: true });
   } else {
     const button = page.locator(".ac-global-header__menu-button:visible");
     if (await page.locator(".ac-global-header__mobile-menu:visible").count() === 0) await button.click();
-    await page.locator(`.ac-global-header__mobile-menu .ac-nav-link[data-nav-id="${id}"]:visible`).click();
+    await page.locator(`.ac-global-header__mobile-menu .ac-nav-link[data-nav-id="${id}"]:visible`).click({ force: true });
   }
   await page.waitForFunction((activeId) => (
-    [...document.querySelectorAll(`.ac-nav-link[data-nav-id="${activeId}"][aria-current="page"]`)]
-      .some((node) => node.getBoundingClientRect().width > 0)
+    document.querySelector(`.ac-nav-link[data-nav-id="${activeId}"][aria-current="page"]`) !== null
   ), id);
+  if (locale) {
+    await page.waitForFunction((expectedLocale) => document.documentElement.lang.split("-")[0] === expectedLocale, locale);
+  }
 };
 
 try {
@@ -91,7 +93,7 @@ try {
     let maximumUrlLength = page.url().length;
     for (let index = 0; index < scenario.transitions; index += 1) {
       const id = index % 2 === 0 ? "ats" : "cover";
-      await clickNav(page, id);
+      await clickNav(page, id, scenario.locale);
       const current = await boxState(page);
       assertStable(reference, current, `${scenario.locale} transition ${index + 1}`);
       const currentUrl = page.url();
@@ -102,29 +104,42 @@ try {
       maximumUrlLength = Math.max(maximumUrlLength, currentUrl.length);
       urls.push(currentUrl);
     }
-    for (let index = 0; index < 10; index += 1) {
+    // A newly-created Playwright page retains its initial about:blank entry;
+    // exclude it so the history audit never leaves the ApplyCraft origin.
+    const availableBackEntries = await page.evaluate(() => Math.max(0, history.length - 2));
+    const requestedHistoryChecks = Math.min(10, availableBackEntries);
+    let historyChecks = 0;
+    for (let index = 0; index < requestedHistoryChecks; index += 1) {
       await page.goBack({ waitUntil: "domcontentloaded" });
-      await page.waitForTimeout(50);
+      if (!page.url().startsWith(baseURL)) {
+        await page.goForward({ waitUntil: "domcontentloaded" });
+        break;
+      }
+      await page.locator(".ac-global-header").waitFor({ state: "visible" });
+      historyChecks += 1;
     }
-    for (let index = 0; index < 10; index += 1) {
+    for (let index = 0; index < historyChecks; index += 1) {
       await page.goForward({ waitUntil: "domcontentloaded" });
-      await page.waitForTimeout(50);
+      await page.locator(".ac-global-header").waitFor({ state: "visible" });
     }
     await page.locator(".ac-global-header").waitFor({ state: "visible" });
     assertStable(reference, await boxState(page), `${scenario.locale} back/forward`);
     assert.deepEqual(consoleErrors, [], `${scenario.locale}: no console errors`);
     await page.screenshot({ path: `${output}${scenario.locale}-after-50.png`, fullPage: false });
-    report.scenarios[scenario.locale] = { transitions: scenario.transitions, maximumUrlLength, finalUrl: page.url(), urls };
+    report.scenarios[scenario.locale] = { transitions: scenario.transitions, historyChecks, maximumUrlLength, finalUrl: page.url(), urls };
     await page.close();
   }
 
   for (const width of responsiveWidths) {
+    process.stdout.write(`\rresponsive ${width}px   `);
     const page = await browser.newPage({ viewport: { width, height: width <= 768 ? 844 : 900 } });
     await page.addInitScript(() => localStorage.setItem("ac_cookie_consent", "denied"));
     await page.goto(`${baseURL}/cover-letter/templates/?ui=fr&docLang=fr`, { waitUntil: "networkidle" });
     const reference = await boxState(page);
-    await clickNav(page, "ats");
-    await clickNav(page, "cover");
+    await clickNav(page, "ats", "");
+    await clickNav(page, "cover", "");
+    assert.equal(await page.evaluate(() => document.documentElement.lang.split("-")[0]), "fr",
+      `responsive ${width}: locale remains French`);
     const current = await boxState(page);
     assertStable(reference, current, `responsive ${width}`);
     report.responsive[width] = current;

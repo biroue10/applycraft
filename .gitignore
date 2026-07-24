@@ -15,6 +15,7 @@ playwright-report
 
 # Local Lighthouse JSON, Chromium logs, and preview logs
 .audit/
+public/interface-locale-bootstrap.js
 
 # Local Cloudflare Functions secrets
 .dev.vars

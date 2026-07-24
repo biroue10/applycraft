@@ -4653,8 +4653,8 @@ Awards: ${form.awards}`;
   // tool in place instead of loading its route.
   const enterPrimaryTool = (item) => {
     setNavPage(item.id);
-    if (item.id === "resume") setStep("templates");
-    if (item.id === "cover") setCoverStep("templates");
+    if (item.id === "resume") setStep("form");
+    if (item.id === "cover") setCoverStep("form");
   };
 
   // The in-app navbar IS the marketing navbar (src/siteChrome.jsx) — same height
@@ -10807,7 +10807,7 @@ const page = {
                radial-gradient(ellipse 55% 45% at 85% 100%, ${C.glowBlue} 0%, transparent 60%),
                ${C.bg}`,
   padding: "16px 8px",
-  fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, -apple-system, sans-serif",
+  fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif",
   color: C.text1,
 };
 // Pre-baked mobile/desktop variants so the component doesn't spread+override on every render.

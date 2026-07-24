@@ -7,15 +7,15 @@
 // Labels resolve against the shared `footer` i18n namespace, which is translated
 // in every locale — never hardcode an English label here. Hrefs are localized at
 // render time through localizeRoute() (src/seo/localizedRoutes.js).
-// `alwaysLink` marks an item that lives on its own route (a full page load),
-// so it stays an anchor even inside the SPA where the other tools switch view
-// via client-side state. Interview Prep is a separate lazy-loaded route.
+// `alwaysLink` keeps primary destinations as canonical anchor navigations.
+// Public/static and SSG workspace routes are not all owned by one client router;
+// native navigation therefore preserves correct metadata and browser history.
 export const PRIMARY_NAV_ITEMS = [
-  { id: "resume", href: "/resume-builder/", labelKey: "resumeBuilder", activeRoutes: ["/resume-builder/", "/free-resume-builder/"] },
-  { id: "cover", href: "/cover-letter-builder/", labelKey: "coverLetter", activeRoutes: ["/cover-letter-builder/", "/cover-letter/templates/"] },
-  { id: "ats", href: "/ats-checker/", labelKey: "atsChecker", activeRoutes: ["/ats-checker/", "/ats-checker-fr/", "/ats-checker-ar/", "/ats-resume-builder/", "/resume-checker/"] },
+  { id: "resume", href: "/resume-builder/", labelKey: "resumeBuilder", activeRoutes: ["/resume-builder/", "/free-resume-builder/"], alwaysLink: true },
+  { id: "cover", href: "/cover-letter-builder/", labelKey: "coverLetter", activeRoutes: ["/cover-letter-builder/", "/cover-letter/templates/"], alwaysLink: true },
+  { id: "ats", href: "/ats-checker/", labelKey: "atsChecker", activeRoutes: ["/ats-checker/", "/ats-checker-fr/", "/ats-checker-ar/", "/ats-resume-builder/", "/resume-checker/"], alwaysLink: true },
   { id: "application-pack", href: "/application-pack/", labelKey: "applicationPack", activeRoutes: ["/application-pack/"], alwaysLink: true },
-  { id: "tracker", href: "/job-tracker/", labelKey: "jobTracker", activeRoutes: ["/job-tracker/"] },
+  { id: "tracker", href: "/job-tracker/", labelKey: "jobTracker", activeRoutes: ["/job-tracker/"], alwaysLink: true },
   { id: "interview", href: "/interview-prep/", labelKey: "interviewPrep", activeRoutes: ["/interview-prep/"], alwaysLink: true },
   { id: "templates", href: "/resume/templates/", labelKey: "resumeTemplates", activeRoutes: ["/resume/templates/", "/examples/"], alwaysLink: true },
   { id: "pricing", href: "/pricing/", labelKey: "pricing", activeRoutes: ["/pricing/"], alwaysLink: true },

@@ -4,8 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/generate-interface-locale-bootstrap.mjs",
     "dev": "vite",
-    "build": "node scripts/generate-consent-asset.mjs && node scripts/generate-blog-indexes.mjs && node scripts/generate-application-pack-pages.mjs && node scripts/generate-workspace-hubs.mjs && node scripts/generate-seo-intent-registry.mjs && node scripts/refresh-static-footers.mjs && node scripts/build-ats-import.mjs && vite-react-ssg build",
+    "build": "node scripts/generate-interface-locale-bootstrap.mjs && node scripts/generate-consent-asset.mjs && node scripts/generate-blog-indexes.mjs && node scripts/generate-application-pack-pages.mjs && node scripts/generate-workspace-hubs.mjs && node scripts/generate-seo-intent-registry.mjs && node scripts/refresh-static-footers.mjs && node scripts/build-ats-import.mjs && vite-react-ssg build",
     "preview": "vite preview",
     "seo:sitemap": "node scripts/generate-sitemap.mjs",
     "seo:pages": "node scripts/generate-consent-asset.mjs && node scripts/generate-seo-pages.mjs && node scripts/generate-localized-seo-pages.mjs && node scripts/generate-company-pages.mjs && node scripts/refresh-static-footers.mjs",
@@ -60,6 +61,7 @@
     "test:navbar-visual-state": "node scripts/navbar-visual-state-tests.mjs",
     "test:url-navigation": "node scripts/url-navigation-tests.mjs",
     "test:navigation-stability": "node scripts/navigation-stability-tests.mjs",
+    "test:navbar-all-routes": "node scripts/navbar-all-routes-tests.mjs",
     "audit:high": "npm audit --audit-level=high",
     "test:contrast": "node scripts/contrast-tests.mjs",
     "test:interview": "node scripts/interview-tests.mjs",
