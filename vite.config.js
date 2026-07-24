@@ -308,9 +308,7 @@ export default defineConfig({
   ssgOptions: {
     onBeforePageRender(path, html) {
       const { lang = "en", dir } = ROUTE_LANG[path] ?? {};
-      const htmlTag = dir
-        ? `<html lang="${lang}" dir="${dir}">`
-        : `<html lang="${lang}">`;
+      const htmlTag = `<html lang="${lang}" dir="${dir || "ltr"}">`;
 
       // Preload the exact self-hosted font used by the route's hero text. The
       // base document uses Latin; Arabic pages swap the hint at build time so

@@ -247,12 +247,12 @@ export default function InterviewPrep() {
                 are plain text (sanitized on read, re-sanitized in the Worker) and are
                 rendered as text by React — never as markup. */}
             {hasContext ? (
-              <div dir={ivDir} style={{ marginTop: 16, padding: "12px 16px", borderRadius: 12,
+              <div style={{ marginTop: 16, padding: "12px 16px", borderRadius: 12,
                 background: `${C.accent}12`, border: `1px solid ${C.borderHi}` }}>
                 <div style={{ fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1,
                   color: C.text3, marginBottom: 4 }}>{c.context.badge}</div>
                 <div style={{ fontSize: 15, fontWeight: 700, color: C.text1 }}>
-                  {contextHeadline(c, jobContext)}
+                  <bdi dir="auto">{contextHeadline(c, jobContext)}</bdi>
                 </div>
               </div>
             ) : null}

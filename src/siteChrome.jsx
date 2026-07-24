@@ -493,8 +493,9 @@ export function SiteFooter({ lang = "en", className = "ac-site-footer" }) {
 }
 
 export function AppShell({ children, lang = "en", activeId, currentPath }) {
+  const interfaceDirection = interfaceLanguageByCode(lang).dir;
   return (
-    <div style={{
+    <div lang={lang} dir={interfaceDirection} data-interface-shell style={{
       minHeight: "100vh",
       background: SITE_COLORS.bg,
       display: "flex",

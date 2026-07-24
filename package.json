@@ -57,6 +57,7 @@
     "test:responsive-layout": "node scripts/responsive-layout-audit.mjs",
     "test:header-unification": "node scripts/header-unification-tests.mjs",
     "test:locale-first-paint": "node scripts/locale-first-paint-tests.mjs",
+    "test:locale-direction": "node scripts/locale-direction-tests.mjs",
     "test:navbar-spacing": "node scripts/navbar-spacing-tests.mjs",
     "test:navbar-visual-state": "node scripts/navbar-visual-state-tests.mjs",
     "test:url-navigation": "node scripts/url-navigation-tests.mjs",

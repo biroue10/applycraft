@@ -20,7 +20,7 @@ assert.ok(headerPages.length >= 80, "expected the shared build-time header on pu
 for (const file of headerPages) {
   const html = readFileSync(file, "utf8");
   assert.equal((html.match(/data-site-header="applycraft"/g) || []).length, 1, `${file}: exactly one global header`);
-  assert.match(html, /<header class="ac-global-header" data-site-header="applycraft">/, `${file}: canonical outer header`);
+  assert.match(html, /<header\b(?=[^>]*\bclass="ac-global-header")(?=[^>]*\bdata-site-header="applycraft")[^>]*>/, `${file}: canonical outer header`);
   assert.match(html, /class="ac-global-header__inner"/, `${file}: canonical inner container`);
   assert.match(html, /class="ac-global-header__actions"/, `${file}: canonical action group`);
   assert.match(html, /class="ac-global-header__language ac-language-switcher"/, `${file}: shared language selector`);
