@@ -79,6 +79,12 @@ const clickNav = async (page, id, locale = "en") => {
   if (locale) {
     await page.waitForFunction((expectedLocale) => document.documentElement.lang.split("-")[0] === expectedLocale, locale);
   }
+  await page.waitForFunction(() => {
+    const header = document.querySelector(".ac-global-header");
+    return header && getComputedStyle(header).position === "sticky"
+      && Math.abs(header.getBoundingClientRect().x) <= 1;
+  });
+  await page.evaluate(() => document.fonts?.ready);
 };
 
 try {
