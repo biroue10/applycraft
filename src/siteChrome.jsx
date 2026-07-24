@@ -293,7 +293,7 @@ export function SiteHeader({
               color: active ? SITE_COLORS.accent2 : SITE_COLORS.text2,
               textDecoration: "none",
               fontSize: 13.5,
-              fontWeight: active ? 800 : 650,
+              fontWeight: 650,
               fontFamily: "inherit",
               cursor: "pointer",
               whiteSpace: "nowrap",
@@ -315,7 +315,7 @@ export function SiteHeader({
                   border: "none", borderRadius: 8, padding: "9px 12px",
                   background: active ? `${SITE_COLORS.accent}18` : "transparent",
                   color: active ? SITE_COLORS.accent2 : SITE_COLORS.text2,
-                  textDecoration: "none", fontSize: 13.5, fontWeight: active ? 800 : 650,
+                  textDecoration: "none", fontSize: 13.5, fontWeight: 650,
                   fontFamily: "inherit", cursor: "pointer", whiteSpace: "nowrap",
                 }}>
                 {item.label}
@@ -367,9 +367,9 @@ export function SiteHeader({
             color: "#fff",
             border: "none",
             textDecoration: "none",
-            borderRadius: 3,
-            padding: "10px 24px",
-            fontSize: 14,
+            borderRadius: 6,
+            padding: "9px 16px",
+            fontSize: 13,
             fontWeight: 700,
             cursor: "pointer",
             flexShrink: 0,
@@ -380,7 +380,7 @@ export function SiteHeader({
         <button ref={menuButtonRef} type="button" aria-label={menuOpen ? f.closeMenu : f.openMenu} aria-expanded={menuOpen} aria-controls="m"
             onClick={toggleMobileMenu}
             className="ac-global-header__menu-button"
-            style={{ marginInlineStart: 8, width: 40, height: 40, borderRadius: 10, border: `1px solid ${SITE_COLORS.border}`,
+            style={{ width: 40, height: 40, borderRadius: 9, border: `1px solid ${SITE_COLORS.border}`,
               background: SITE_COLORS.surface, color: SITE_COLORS.text1, cursor: "pointer", flexShrink: 0, fontFamily: "inherit",
           display: "none", alignItems: "center", justifyContent: "center", fontSize: 18, lineHeight: 1 }}>
             {menuOpen ? "✕" : "☰"}
@@ -388,7 +388,7 @@ export function SiteHeader({
         </div>
       </div>
       {menuOpen && (
-        <nav ref={mobileMenuRef} id="m" aria-label={f.menu} className="ac-global-header__mobile-menu" style={{ boxShadow: `inset 0 1px 0 ${SITE_COLORS.border}`, background: `${SITE_COLORS.bg}f5`,
+        <nav ref={mobileMenuRef} id="m" aria-label={f.menu} className="ac-global-header__mobile-menu" style={{ boxShadow: "none", borderTop: 0, background: `${SITE_COLORS.bg}f5`,
           backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)",
           padding: "8px 12px 14px", display: "none", flexDirection: "column", gap: 2,
           maxHeight: `calc(100vh - ${HEADER_HEIGHT_MOBILE}px)`, overflowY: "auto" }}>

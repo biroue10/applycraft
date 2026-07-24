@@ -53,7 +53,8 @@ for (const token of [
 }
 for (const rule of [
   "background:var(--ac-header-background)",
-  "border-bottom:1px solid var(--ac-header-border)",
+  "border-bottom:0",
+  "box-shadow:none",
   "height:var(--ac-header-height)",
 ]) {
   assert.ok(appCss.includes(rule), `app header uses ${rule}`);

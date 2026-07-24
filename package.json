@@ -57,6 +57,7 @@
     "test:header-unification": "node scripts/header-unification-tests.mjs",
     "test:locale-first-paint": "node scripts/locale-first-paint-tests.mjs",
     "test:navbar-spacing": "node scripts/navbar-spacing-tests.mjs",
+    "test:navbar-visual-state": "node scripts/navbar-visual-state-tests.mjs",
     "audit:high": "npm audit --audit-level=high",
     "test:contrast": "node scripts/contrast-tests.mjs",
     "test:interview": "node scripts/interview-tests.mjs",
