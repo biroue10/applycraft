@@ -30,7 +30,6 @@ const builder = {
   "complete": "complete",
   "save": "Keep for this session",
   "saveResume": "Keep for this session",
-  "keepForThisSession": "Keep for this session",
   "customize": "Customize",
   "documentSettings": "Document settings",
   "interfaceLanguage": "Interface language",
@@ -101,13 +100,20 @@ const builder = {
   ,"closeMenu": "Close menu"
   ,"moreOptions": "More options"
   ,"myResumesRegion": "My resumes"
-  ,"savedLocalTooltip": "Your document is not saved automatically."
-  ,"savedLocalHeaderTooltip": "Your document is not saved automatically."
-  ,"notSavedTooltip": "Download your PDF or DOCX before closing this page."
-  ,"notSavedHeaderTooltip": "For privacy, form data is cleared when you leave or reopen the builder."
-  ,"sessionSaveTooltip": "Keep this version only until this page is closed."
-  ,"saveResumeTooltip": "Keep this version only until this page is closed."
-  ,"noAutosaveReminder": "Download your résumé before closing this page. Your content is not saved automatically."
+  ,"draftSaving": "Saving…"
+  ,"draftSavedDevice": "Draft saved on this device"
+  ,"draftRestored": "Draft restored"
+  ,"draftSaveError": "Could not save draft"
+  ,"draftLocalPrivacy": "Your draft is stored in this browser on this device."
+  ,"clearLocalDraft": "Clear local draft"
+  ,"clearDraftConfirm": "Clear the local draft from this browser? This cannot be undone."
+  ,"draftCleared": "Local draft cleared"
+  ,"startNewResume": "Start a new resume"
+  ,"startNewConfirm": "Start a new resume and replace the current local draft?"
+  ,"starterReplaceConfirm": "Replace the local draft with this template? Cancel keeps the draft."
+  ,"summaryCounter": "{count} characters · Recommended: 200–500"
+  ,"summaryGuidance": "Aim for 3–5 concise lines highlighting your role, experience and strongest value."
+  ,"summaryTooLong": "Consider shortening this summary."
   ,"renameSection": "Rename section"
   ,"removeSection": "Remove section"
   ,"restoreDefaultLabel": "Restore default label"

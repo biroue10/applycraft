@@ -26,11 +26,11 @@ assert.match(templateRegistry, /RECOMMENDED_TEMPLATE_ID = "modern"/, "resume flo
 assert.match(builder, /Use template/, "template selector should expose a clear use action");
 assert.match(builder, /Recommended/, "template selector should call out the default");
 assert.match(app, /mobileResumeMode/, "mobile edit and preview modes should be explicit");
-assert.match(builder, /Download your résumé before closing this page/, "editor should warn that document content is not autosaved");
+assert.match(builder, /Draft saved on this device/, "editor should accurately describe local draft autosave");
 assert.match(app, /clearApplyCraftLocalData/, "app should clear old sensitive document storage keys");
 assert.match(app, /beforeunload/, "app should warn before closing with unsaved document content");
-assert.doesNotMatch(app, /localStorage\.setItem\("ac_resume_draft"/, "resume drafts should not be autosaved locally");
-assert.doesNotMatch(app, /localStorage\.getItem\("ac_resume_draft"/, "resume drafts should not be restored locally");
+assert.match(app, /resumeDraft\.js/, "resume drafts should use the validated local persistence module");
+assert.match(app, /initialResumeDraft/, "resume drafts should restore synchronously before editor render");
 assert.match(common, /Download PDF/, "PDF export should remain obvious");
 assert.match(common, /Download DOCX/, "DOCX export should remain obvious");
 assert.match(landing2, /write content in any language/i, "multilingual claim should be accurate");

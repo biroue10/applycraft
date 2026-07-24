@@ -30,7 +30,6 @@ const builder = {
   "complete": "مكتمل",
   "save": "الاحتفاظ لهذه الجلسة",
   "saveResume": "الاحتفاظ لهذه الجلسة",
-  "keepForThisSession": "الاحتفاظ لهذه الجلسة",
   "customize": "تخصيص",
   "documentSettings": "إعدادات المستند",
   "interfaceLanguage": "لغة الواجهة",
@@ -101,13 +100,20 @@ const builder = {
   ,"closeMenu": "إغلاق القائمة"
   ,"moreOptions": "خيارات إضافية"
   ,"myResumesRegion": "سيري الذاتية"
-  ,"savedLocalTooltip": "لا يتم حفظ المستند تلقائياً."
-  ,"savedLocalHeaderTooltip": "لا يتم حفظ المستند تلقائياً."
-  ,"notSavedTooltip": "قم بتنزيل ملف PDF أو DOCX قبل إغلاق هذه الصفحة."
-  ,"notSavedHeaderTooltip": "حفاظاً على خصوصيتك، يتم مسح الحقول عند مغادرة أو إعادة فتح أداة الإنشاء."
-  ,"sessionSaveTooltip": "احتفظ بهذه النسخة فقط حتى يتم إغلاق هذه الصفحة."
-  ,"saveResumeTooltip": "احتفظ بهذه النسخة فقط حتى يتم إغلاق هذه الصفحة."
-  ,"noAutosaveReminder": "قم بتنزيل سيرتك الذاتية قبل إغلاق هذه الصفحة. لا يتم حفظ المحتوى تلقائياً."
+  ,"draftSaving": "جارٍ الحفظ…"
+  ,"draftSavedDevice": "تم حفظ المسودة على هذا الجهاز"
+  ,"draftRestored": "تمت استعادة المسودة"
+  ,"draftSaveError": "تعذّر حفظ المسودة"
+  ,"draftLocalPrivacy": "تُخزّن مسودتك في هذا المتصفح على هذا الجهاز."
+  ,"clearLocalDraft": "حذف المسودة المحلية"
+  ,"clearDraftConfirm": "هل تريد حذف المسودة المحلية من هذا المتصفح؟ لا يمكن التراجع عن هذا الإجراء."
+  ,"draftCleared": "تم حذف المسودة المحلية"
+  ,"startNewResume": "بدء سيرة ذاتية جديدة"
+  ,"startNewConfirm": "هل تريد بدء سيرة ذاتية جديدة واستبدال المسودة المحلية الحالية؟"
+  ,"starterReplaceConfirm": "استبدال المسودة المحلية بهذا القالب؟ الإلغاء يحتفظ بالمسودة."
+  ,"summaryCounter": "{count} حرفًا · الموصى به: من 200 إلى 500"
+  ,"summaryGuidance": "اكتب من 3 إلى 5 أسطر موجزة توضّح دورك وخبرتك وأبرز قيمة تقدمها."
+  ,"summaryTooLong": "يُفضّل اختصار هذا الملخص."
   ,"renameSection": "إعادة تسمية القسم"
   ,"removeSection": "إزالة القسم"
   ,"restoreDefaultLabel": "استعادة التسمية الافتراضية"

@@ -30,7 +30,6 @@ const builder = {
   "complete": "complété",
   "save": "Conserver pour cette session",
   "saveResume": "Conserver pour cette session",
-  "keepForThisSession": "Conserver pour cette session",
   "customize": "Personnaliser",
   "documentSettings": "Paramètres du document",
   "interfaceLanguage": "Langue de l'interface",
@@ -101,13 +100,20 @@ const builder = {
   ,"closeMenu": "Fermer le menu"
   ,"moreOptions": "Plus d'options"
   ,"myResumesRegion": "Mes CV"
-  ,"savedLocalTooltip": "Votre document n’est pas enregistré automatiquement."
-  ,"savedLocalHeaderTooltip": "Votre document n’est pas enregistré automatiquement."
-  ,"notSavedTooltip": "Téléchargez votre PDF ou DOCX avant de fermer cette page."
-  ,"notSavedHeaderTooltip": "Pour votre confidentialité, les champs sont réinitialisés lorsque vous quittez ou rouvrez le créateur."
-  ,"sessionSaveTooltip": "Conserver cette version uniquement jusqu’à la fermeture de cette page."
-  ,"saveResumeTooltip": "Conserver cette version uniquement jusqu’à la fermeture de cette page."
-  ,"noAutosaveReminder": "Téléchargez votre CV avant de fermer cette page. Votre contenu n’est pas enregistré automatiquement."
+  ,"draftSaving": "Enregistrement…"
+  ,"draftSavedDevice": "Brouillon enregistré sur cet appareil"
+  ,"draftRestored": "Brouillon restauré"
+  ,"draftSaveError": "Impossible d’enregistrer le brouillon"
+  ,"draftLocalPrivacy": "Votre brouillon est stocké dans ce navigateur sur cet appareil."
+  ,"clearLocalDraft": "Supprimer le brouillon local"
+  ,"clearDraftConfirm": "Supprimer le brouillon local de ce navigateur ? Cette action est irréversible."
+  ,"draftCleared": "Brouillon local supprimé"
+  ,"startNewResume": "Commencer un nouveau CV"
+  ,"startNewConfirm": "Commencer un nouveau CV et remplacer le brouillon local actuel ?"
+  ,"starterReplaceConfirm": "Remplacer le brouillon local par ce modèle ? Annuler conserve le brouillon."
+  ,"summaryCounter": "{count} caractères · Recommandé : 200 à 500"
+  ,"summaryGuidance": "Visez 3 à 5 lignes concises présentant votre métier, votre expérience et votre principal atout."
+  ,"summaryTooLong": "Envisagez de raccourcir ce résumé."
   ,"renameSection": "Renommer la section"
   ,"removeSection": "Supprimer la section"
   ,"restoreDefaultLabel": "Restaurer le libellé par défaut"

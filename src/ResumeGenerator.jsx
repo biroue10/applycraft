@@ -1071,7 +1071,18 @@ function useIsMobile(bp = 1120) {
 
 const SITE_LANGUAGE_STORAGE_KEY = "ac_site_language";
 const STORAGE_POLICY_VERSION_KEY = "ac_storage_policy_version";
-const STORAGE_POLICY_VERSION = "no-document-autosave-v1";
+const STORAGE_POLICY_VERSION = "local-resume-draft-v1";
+const RESUME_DRAFT_KEY = "applycraft:resume-builder:draft:v1";
+const meaningfulDraft = (data) => data && ["name", "title", "email", "phone", "location", "linkedin", "website", "summary"]
+  .some((key) => String(data[key] || "").trim())
+  || data && Object.entries(data).some(([key, value]) => key.endsWith("Entries") && Array.isArray(value)
+    && value.some((entry) => entry && Object.values(entry).some((item) => typeof item === "string" && item.trim())));
+const initialResumeDraft = () => {
+  try {
+    const draft = JSON.parse(localStorage.getItem(RESUME_DRAFT_KEY));
+    return draft?.version === 1 && meaningfulDraft(draft.data) ? draft : null;
+  } catch { return null; }
+};
 const SENSITIVE_STORAGE_KEYS = [
   "ac_resume_draft",
   "ac_resume_draft_saved_at",
@@ -2217,8 +2228,8 @@ function HeroResumePreview({ isMobile, lang = "en" }) {
       <div style={{ position: "relative", display: "grid", gridTemplateColumns: compact ? "1fr" : "42px 1fr",
         gap: compact ? 12 : 14, alignItems: "center" }}>
         <div aria-label="Choose resume theme color" role="group"
-          style={{ ...panel, borderRadius: 999, padding: compact ? "8px 10px" : "10px 8px",
-            display: "flex", flexDirection: compact ? "row" : "column", gap: 8,
+          style={{ ...panel, borderRadius: 999, padding: compact ? "4px" : "10px 8px",
+            display: "flex", flexDirection: compact ? "row" : "column", gap: compact ? 4 : 8,
             justifyContent: "center", justifySelf: compact ? "center" : "auto" }}>
           {HERO_PREVIEW_THEMES.map(color => (
             <button key={color} type="button" aria-label={`Use ${color} resume accent`}
@@ -2226,8 +2237,8 @@ function HeroResumePreview({ isMobile, lang = "en" }) {
               onClick={() => setSelectedAccent(color)}
               onFocus={e => { e.currentTarget.style.boxShadow = focusRing; }}
               onBlur={e => { e.currentTarget.style.boxShadow = accent === color ? `0 0 0 2px #fff, 0 0 0 4px ${color}` : "none"; }}
-              style={{ width: compact ? 24 : 22, height: compact ? 24 : 22, borderRadius: "50%",
-                background: color, border: "2px solid #fff", cursor: "pointer",
+              style={{ width: 44, height: 44, borderRadius: "50%",
+                background: color, border: "10px solid rgba(255,255,255,0.92)", cursor: "pointer",
                 boxShadow: selectedAccent === color ? `0 0 0 2px #fff, 0 0 0 4px ${color}` : "none",
                 transition: "transform 0.18s ease, box-shadow 0.18s ease" }}
               onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.08)"; }}
@@ -2727,6 +2738,8 @@ export default function ResumeGenerator() {
     const value = initialSearchParams.get("country") || "all";
     return TEMPLATE_COUNTRY_FILTERS.includes(value) ? value : "all";
   })();
+  const explicitResumeStart = initialSearchParams.has("starter") || initialSearchParams.has("template") || initialSearchParams.has("importResume");
+  const initialLocalDraft = !explicitResumeStart && initialRoute.navPage === "resume" && typeof window !== "undefined" ? initialResumeDraft() : null;
   const [navPage, setNavPage] = useState(initialRoute.navPage);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sideSearch, setSideSearch] = useState("");
@@ -2751,6 +2764,9 @@ export default function ResumeGenerator() {
   const docLang = selectedDocumentLang?.code || "en";
   const documentRtl = isRtlLang(docLang);
   const [tpl, setTpl] = useState(() => (
+    initialLocalDraft?.templateId
+      ? TEMPLATES.find((template) => template.id === initialLocalDraft.templateId) || null
+      :
     initialRoute.navPage === "resume" && initialRoute.step === "form"
       ? TEMPLATES.find((template) => template.id === RECOMMENDED_TEMPLATE_ID) || TEMPLATES.find((template) => !template.blank) || null
       : null
@@ -2762,7 +2778,11 @@ export default function ResumeGenerator() {
     certifications: "", languages: "", projects: "", volunteer: "", awards: "",
     sectionTitles: {},
   }), []);
-  const [form, setForm] = useState(() => emptyResumeForm);
+  const [form, setForm] = useState(() => initialLocalDraft ? migrateForm({ ...emptyResumeForm, ...initialLocalDraft.data }) : emptyResumeForm);
+  const [draftState, setDraftState] = useState(() => initialLocalDraft ? "restored" : "idle");
+  const draftSaveTimerRef = useRef(null);
+  const draftPersistedRef = useRef(Boolean(initialLocalDraft));
+  const [currentResumeId, setCurrentResumeId] = useState(() => initialLocalDraft?.documentId === "local" ? null : initialLocalDraft?.documentId || null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -2960,8 +2980,7 @@ export default function ResumeGenerator() {
   // Analytics init + optional-account bootstrap (runs once in the browser).
   useEffect(() => {
     initAnalytics();
-    clearApplyCraftLocalData();
-    track(EVENTS.DOCUMENT_AUTOSAVE_DISABLED, { storagePolicy: "no_document_content_persistence" });
+    track(EVENTS.DOCUMENT_AUTOSAVE_ENABLED, { storagePolicy: "local_device_only" });
     try {
       track(EVENTS.LANGUAGE_MIGRATION_COMPLETED, {
         interface_language: lang,
@@ -3427,8 +3446,33 @@ export default function ResumeGenerator() {
     [form, fullPhone, photoUrl, docLang, lang]
   );
   useEffect(() => {
+    if (typeof window === "undefined" || navPage !== "resume" || !meaningfulDraft(form)) {
+      draftPersistedRef.current = !meaningfulDraft(form);
+      if (!meaningfulDraft(form)) setDraftState("idle");
+      return undefined;
+    }
+    draftPersistedRef.current = false;
+    setDraftState("saving");
+    clearTimeout(draftSaveTimerRef.current);
+    draftSaveTimerRef.current = setTimeout(async () => {
+      const { createResumeDraftEnvelope, writeResumeDraft } = await import("./resumeDraft.js");
+      const envelope = createResumeDraftEnvelope({
+        data: form,
+        interfaceLanguage: lang,
+        documentLanguage: docLang,
+        templateId: tpl?.id,
+        documentId: currentResumeId || "local",
+      });
+      const saved = writeResumeDraft(envelope);
+      draftPersistedRef.current = saved;
+      setDraftState(saved ? "saved" : "error");
+    }, 650);
+    return () => clearTimeout(draftSaveTimerRef.current);
+  }, [form, tpl?.id, currentResumeId, navPage, lang, docLang]);
+
+  useEffect(() => {
     if (typeof window === "undefined") return undefined;
-    const hasResumeContent = !isResumeDataEmpty(liveData);
+    const hasResumeContent = !isResumeDataEmpty(liveData) && !draftPersistedRef.current;
     const hasCoverContent = hasMeaningfulCoverLetterContent(coverForm);
     if (!hasResumeContent && !hasCoverContent) return undefined;
     const handler = (event) => {
@@ -3481,7 +3525,6 @@ export default function ResumeGenerator() {
 
   // ── Multiple resumes (save / open / new) with the free-tier limit ─────────
   const [savedResumes, setSavedResumes] = useState(() => resumes.listResumes());
-  const [currentResumeId, setCurrentResumeId] = useState(null);
   const [subModalOpen, setSubModalOpen] = useState(false);
   const refreshResumes = useCallback(() => setSavedResumes(resumes.listResumes()), []);
 
@@ -3504,6 +3547,10 @@ export default function ResumeGenerator() {
   }, [doSaveResume]);
 
   const newResume = useCallback(() => {
+    if (meaningfulDraft(form) && typeof window !== "undefined" && !window.confirm(bu.startNewConfirm)) return;
+    void import("./resumeDraft.js").then((module) => module.clearResumeDraft());
+    draftPersistedRef.current = true;
+    setDraftState("idle");
     setForm(emptyResumeForm);
     setCurrentResumeId(null);
     setTpl(null);
@@ -3512,7 +3559,19 @@ export default function ResumeGenerator() {
     setStep("templates");
     setStatusMsg(st.newStarted);
     setTimeout(() => setStatusMsg(""), 2000);
-  }, [emptyResumeForm]);
+  }, [emptyResumeForm, form, bu.startNewConfirm]);
+
+  const clearLocalResumeDraft = useCallback(() => {
+    if (typeof window !== "undefined" && !window.confirm(bu.clearDraftConfirm)) return;
+    clearTimeout(draftSaveTimerRef.current);
+    void import("./resumeDraft.js").then((module) => module.clearResumeDraft());
+    draftPersistedRef.current = true;
+    setDraftState("idle");
+    setForm(emptyResumeForm);
+    setCurrentResumeId(null);
+    setStatusMsg(bu.draftCleared);
+    setTimeout(() => setStatusMsg(""), 2500);
+  }, [bu.clearDraftConfirm, bu.draftCleared, emptyResumeForm]);
 
   const openResume = useCallback((id) => {
     const r = resumes.getResume(id);
@@ -3719,6 +3778,19 @@ export default function ResumeGenerator() {
     }
     if (importRequested) setUploadModalOpen(true);
 
+    const savedDraft = (starterId || templateId) ? initialResumeDraft() : null;
+    if (savedDraft && !window.confirm(bu.starterReplaceConfirm)) {
+      setForm(migrateForm({ ...emptyResumeForm, ...savedDraft.data }));
+      setTpl(TEMPLATES.find((item) => item.id === savedDraft.templateId) || recommendedTemplate || null);
+      setDocumentLanguagePreference(languageByCode(savedDraft.documentLanguage || "en"));
+      setDraftState("restored");
+      draftPersistedRef.current = true;
+      setNavPage("resume");
+      setStep("form");
+      setAppView("app");
+      return undefined;
+    }
+
     if (!starterId && templateId) {
       const template = TEMPLATES.find((item) => item.id === templateId) || recommendedTemplate;
       setForm(emptyResumeForm);
@@ -3781,7 +3853,7 @@ export default function ResumeGenerator() {
       }
     })();
     return () => { cancelled = true; };
-  }, [location.pathname, location.search, interfaceLanguage, documentLanguage, emptyResumeForm, lang, recommendedTemplate, setDocumentLanguagePreference, setSiteLanguage, translateLabel]);
+  }, [location.pathname, location.search, interfaceLanguage, documentLanguage, emptyResumeForm, lang, recommendedTemplate, setDocumentLanguagePreference, setSiteLanguage, translateLabel, bu.starterReplaceConfirm]);
 
   // ── Optional account / sync / paid-pass handlers ──────────────────────────
   const handleSyncNow = useCallback(async () => {
@@ -4613,14 +4685,20 @@ Awards: ${form.awards}`;
   }
 
   const getTemplateMeta = (template) => {
-    const baseMeta = TEMPLATE_GALLERY_META[template.id] || (template.variant ? TEMPLATE_GALLERY_META[template.variant] : null);
     const localizedMeta = template.gallery?.[lang] || template.gallery?.en || null;
+    const tag = String(template.tag || "").toLowerCase();
+    const inferredFilters = template.filters || [
+      tag.includes("two-column") || tag.includes("sidebar") ? "two" : "one",
+      tag.includes("ats") ? "ats" : "",
+      tag.includes("compact") ? "compact" : "",
+      ["modern", "minimal", "compact"].includes(template.id) ? "recommended" : "",
+    ].filter(Boolean);
     return {
-      description: localizedMeta?.description || templateTagText(template) || baseMeta?.description || "Professional layout with clear sections and export support.",
-      bestFor: localizedMeta?.bestFor || baseMeta?.bestFor || "Best for general professional applications.",
-      attributes: localizedMeta?.attributes || baseMeta?.attributes || ["Professional", "Flexible"],
-      layout: localizedMeta?.layout || baseMeta?.layout || "Flexible",
-      filters: [...new Set([...(baseMeta?.filters || []), ...(template.filters || [])])],
+      description: localizedMeta?.description || templateTagText(template) || template.name,
+      bestFor: localizedMeta?.bestFor || templateTagText(template) || template.name,
+      attributes: localizedMeta?.attributes || [bu.attrProfessional, bu.attrFlexible],
+      layout: localizedMeta?.layout || bu.attrFlexible,
+      filters: [...new Set(inferredFilters)],
       countries: templateCountries(template),
     };
   };
@@ -4683,8 +4761,14 @@ Awards: ${form.awards}`;
       />
       {showWorkspaceStatus && <WorkspaceStatusBar>
         <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
-          <LineIcon name="alert" size={14} color={C.text3} /> {
-            navPage === "resume" ? bu.noAutosaveReminder : bu.notSavedAutomatically
+          <LineIcon name={navPage === "resume" && draftState !== "error" ? "check" : "alert"} size={14} color={C.text3} /> {
+            navPage === "resume"
+              ? (draftState === "saving" ? bu.draftSaving
+                : draftState === "restored" ? bu.draftRestored
+                  : draftState === "error" ? bu.draftSaveError
+                    : draftState === "saved" ? bu.draftSavedDevice
+                      : bu.draftLocalPrivacy)
+              : bu.notSavedAutomatically
           }
         </span>
       </WorkspaceStatusBar>}
@@ -5067,17 +5151,23 @@ Awards: ${form.awards}`;
   };
 
   const field = (key, multiline, ph, id, error) => {
+    const fieldId = id || `field-${key}`;
+    const errorId = `${fieldId}-error`;
+    const describedBy = [key === "summary" ? "field-summary-guidance" : "", error ? errorId : ""].filter(Boolean).join(" ") || undefined;
     const errStyle = error ? { borderColor: "#f87171", boxShadow: "0 0 0 3px rgba(248,113,113,0.15)" } : {};
     const onChange = (e) => { set(key)(e); if (error) clearFieldError(key); };
     return multiline ? (
       <>
         <FormattingBar fieldKey={key} />
-        <textarea id={id || `field-${key}`} value={form[key]} onChange={onChange} placeholder={ph || ""} rows={5}
+        <textarea id={fieldId} value={form[key]} onChange={onChange} placeholder={ph || ""} rows={5}
+          aria-invalid={error ? "true" : undefined} aria-describedby={describedBy}
           dir={documentRtl ? "rtl" : "ltr"}
           style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit", ...errStyle }} />
       </>
     ) : (
-      <input id={id || `field-${key}`} value={form[key]} onChange={onChange} placeholder={ph || ""} dir={documentRtl ? "rtl" : "ltr"} style={{ ...inputStyle, ...errStyle }} />
+      <input id={fieldId} value={form[key]} onChange={onChange} placeholder={ph || ""} dir={documentRtl ? "rtl" : "ltr"}
+        aria-invalid={error ? "true" : undefined} aria-describedby={describedBy}
+        style={{ ...inputStyle, ...errStyle }} />
     );
   };
 
@@ -5571,13 +5661,13 @@ Awards: ${form.awards}`;
             <h1 style={{ margin: 0, color: C.text1, fontSize: isMobile ? 16 : 18, lineHeight: 1.15,
               fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{resumeTitle}</h1>
             {currentResumeId ? (
-              <span title={builderText("notSavedTooltip")}
+              <span title={bu.draftLocalPrivacy}
                 style={{ display: "inline-flex", alignItems: "center", gap: 4, color: C.text3,
                   fontSize: 11.5, whiteSpace: "nowrap" }}>
                 <LineIcon name="check" size={11} color={C.text3} /> {bu.savedInline}
               </span>
             ) : (
-              <button type="button" onClick={saveCurrentResume} title={builderText("notSavedTooltip")}
+              <button type="button" onClick={saveCurrentResume} title={bu.draftLocalPrivacy}
                 style={{ display: "inline-flex", alignItems: "center", gap: 5, color: C.accent2,
                   background: `${C.accent}14`, border: `1px solid ${C.accent}30`, borderRadius: 999,
                   padding: "2px 9px", fontSize: 11, fontWeight: 800, whiteSpace: "nowrap",
@@ -5746,7 +5836,8 @@ Awards: ${form.awards}`;
               </label>
             ) : null,
             items: [
-              { label: bu.keepForThisSession, hint: bu.notSavedAutomatically, onClick: saveCurrentResume },
+              { label: bu.startNewResume, hint: bu.draftLocalPrivacy, onClick: newResume },
+              { label: bu.clearLocalDraft, hint: bu.draftLocalPrivacy, onClick: clearLocalResumeDraft, color: C.danger },
               { label: `ATS ${atsScore}`, hint: atsOpen ? bu.closeAtsChecker : builderText("reviewAtsTips"), onClick: () => setAtsOpen((o) => !o), primary: atsOpen },
             ],
           })}
@@ -5955,25 +6046,29 @@ Awards: ${form.awards}`;
             <label htmlFor="field-name" style={lbl}>{t.name} <span style={{ color: "#f87171" }}>*</span></label>
             <IconInput icon="✏️">
               <input id="field-name" value={form.name} onChange={onNameChange}
+                autoComplete="name" aria-invalid={nameError ? "true" : undefined}
+                aria-describedby={nameError ? "field-name-error" : undefined}
                 placeholder={t.placeholderName}
                 style={{ ...inputStyle, ...(nameError ? { borderColor: "#f87171", boxShadow: "0 0 0 3px rgba(248,113,113,0.15)" } : {}) }} />
             </IconInput>
-            {nameError && <p style={fieldErr}>{nameError}</p>}
+            {nameError && <p id="field-name-error" role="alert" style={fieldErr}>{nameError}</p>}
           </div>
           <label htmlFor="field-title" style={lbl}>{t.title}</label>
           <IconInput icon="💼">{field("title", false, t.placeholderTitle, undefined, titleError)}</IconInput>
-          {titleError && <p style={fieldErr}>{titleError}</p>}
+          {titleError && <p id="field-title-error" role="alert" style={fieldErr}>{titleError}</p>}
 
           <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
             <div style={{ flex: 1 }} data-field-wrap="">
               <label htmlFor="field-email" style={lbl}>{t.email}</label>
               <IconInput icon="✉️">
-                <input id="field-email" value={form.email} onChange={onEmailChange}
+                <input id="field-email" type="email" autoComplete="email" value={form.email} onChange={onEmailChange}
                   onBlur={() => setEmailError(validateEmail(form.email))}
+                  aria-invalid={emailError ? "true" : undefined}
+                  aria-describedby={emailError ? "field-email-error" : undefined}
                   placeholder={t.placeholderEmail}
                   style={{ ...inputStyle, ...(emailError ? { borderColor: "#f87171", boxShadow: "0 0 0 3px rgba(248,113,113,0.15)" } : {}) }} />
               </IconInput>
-              {emailError && <p style={fieldErr}>{emailError}</p>}
+              {emailError && <p id="field-email-error" role="alert" style={fieldErr}>{emailError}</p>}
             </div>
             <div style={{ flex: 1 }} data-field-wrap="">
               <label htmlFor="field-phone" style={lbl}>{t.phone}</label>
@@ -5987,18 +6082,20 @@ Awards: ${form.awards}`;
                     <option key={c.name} value={c.code}>{c.flag} {c.code}</option>
                   ))}
                 </select>
-                <input id="field-phone" value={form.phone} onChange={onPhoneChange}
+                <input id="field-phone" type="tel" autoComplete="tel" value={form.phone} onChange={onPhoneChange}
                   onBlur={() => setPhoneError(validatePhone(form.phone))}
+                  aria-invalid={phoneError ? "true" : undefined}
+                  aria-describedby={phoneError ? "field-phone-error" : undefined}
                   placeholder={t.placeholderPhone}
                   style={{ ...inputStyle, flex: 1, ...(phoneError ? { borderColor: "#f87171", boxShadow: "0 0 0 3px rgba(248,113,113,0.15)" } : {}) }} />
               </div>
-              {phoneError && <p style={fieldErr}>{phoneError}</p>}
+              {phoneError && <p id="field-phone-error" role="alert" style={fieldErr}>{phoneError}</p>}
             </div>
           </div>
 
           <label htmlFor="field-location" style={lbl}>{t.location}</label>
           <IconInput icon="📍">{field("location", false, t.placeholderLocation, undefined, locationError)}</IconInput>
-          {locationError && <p style={fieldErr}>{locationError}</p>}
+          {locationError && <p id="field-location-error" role="alert" style={fieldErr}>{locationError}</p>}
 
           <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row", marginTop: 0 }}>
             <div style={{ flex: 1 }}>
@@ -6017,7 +6114,11 @@ Awards: ${form.awards}`;
           <FieldCard icon="📝" title={t.summary} rtl={rtl} eui={eui}
             collapsed={!!collapsedSections.summary} onToggleCollapse={() => toggleSectionCollapse("summary")}>
             {field("summary", true, t.placeholderSummary, undefined, summaryError)}
-            {summaryError && <p style={fieldErr}>{summaryError}</p>}
+            <p id="field-summary-guidance" style={{ margin: "7px 0 0", color: form.summary.length > 700 ? C.danger : form.summary.length > 500 ? C.warning : C.text3, fontSize: 11.5, lineHeight: 1.5 }}>
+              {builderText("summaryCounter", { count: Array.from(form.summary).length })}<br />
+              {form.summary.length > 500 ? bu.summaryTooLong : bu.summaryGuidance}
+            </p>
+            {summaryError && <p id="field-summary-error" role="alert" style={fieldErr}>{summaryError}</p>}
             <Hint text="2–4 sentences. Who you are, your years of experience, and your biggest strength." />
           </FieldCard>
 
@@ -6033,7 +6134,7 @@ Awards: ${form.awards}`;
             </div>
           )}
           <div id="field-experience">{renderSection("experience", t.experience)}</div>
-          {experienceError && <p style={fieldErr}>{experienceError}</p>}
+          {experienceError && <p id="field-experience-error" role="alert" style={fieldErr}>{experienceError}</p>}
 
           {/* ── Achievement Coach Panel ── */}
           {coachOpen && (() => {
@@ -6160,12 +6261,12 @@ Awards: ${form.awards}`;
           })()}
 
           <div id="field-education">{renderSection("education", t.education)}</div>
-          {educationError && <p style={fieldErr}>{educationError}</p>}
+          {educationError && <p id="field-education-error" role="alert" style={fieldErr}>{educationError}</p>}
 
           {/* ── SECTION: Skills & Languages ── */}
           <SectionHeader icon="⚡" title={builderText("skillsAndLanguages")} filled={!!form.skills} filledLabel={builderText("filledBadge")} />
           <div id="field-skills">{renderSection("skills", t.skills.replace(/\s*\(.*\)/, ""))}</div>
-          {skillsError && <p style={fieldErr}>{skillsError}</p>}
+          {skillsError && <p id="field-skills-error" role="alert" style={fieldErr}>{skillsError}</p>}
           {renderSection("languages", t.languages.replace(/\s*\(.*\)/, ""))}
 
           {/* ── Added optional sections ── */}
@@ -9242,7 +9343,6 @@ Awards: ${form.awards}`;
                   setMaster({...defaultMaster});
                   deleteTrackerData();
                   setAtsFromChecker("");
-                  setDraftSavedAt("");
                   setStatusMsg(st.localDataDeleted);
                   setTimeout(() => setStatusMsg(""), 2500);
                 }}

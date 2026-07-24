@@ -1454,7 +1454,18 @@ export default {
       const assetUrl = new URL("/r", url.origin);
       return withSecurityHeaders(await env.ASSETS.fetch(new Request(assetUrl, request)));
     }
-    return withSecurityHeaders(await env.ASSETS.fetch(request));
+    const assetResponse = await env.ASSETS.fetch(request);
+    if ((request.method === "GET" || request.method === "HEAD") && assetResponse.status === 404) {
+      const notFoundUrl = new URL("/404/", url.origin);
+      const notFoundAsset = await env.ASSETS.fetch(new Request(notFoundUrl, request));
+      const headers = new Headers(notFoundAsset.headers);
+      headers.set("Content-Type", "text/html; charset=UTF-8");
+      return withSecurityHeaders(new Response(request.method === "HEAD" ? null : notFoundAsset.body, {
+        status: 404,
+        headers,
+      }));
+    }
+    return withSecurityHeaders(assetResponse);
   },
 };
 

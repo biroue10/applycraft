@@ -12,6 +12,11 @@ const PAGE_COPY = {
   fr: { lang: "fr", dir: "ltr", title: "Pack de candidature multilingue | ApplyCraft", description: "Reliez Profil maître, CV adapté, lettre assortie, vérification ATS, suivi et préparation à l’entretien dans un parcours privé.", home: "Accueil ApplyCraft", cta: "Créer mon dossier de candidature", profile: "Ouvrir le Profil maître", resume: "Créer le CV adapté", cover: "Créer la lettre assortie", ats: "Lancer la vérification ATS", tracker: "Suivre la candidature", interview: "Préparer l’entretien", heading: "Un profil. Un poste. Une candidature cohérente.", body: "Le Pack de candidature relie des outils ApplyCraft existants. Chaque étape ouvre une fonctionnalité réelle ; vous gardez le contrôle sur les informations saisies, enregistrées, exportées ou envoyées aux assistants IA facultatifs.", privacyTitle: "La confidentialité reste intégrée au parcours", privacyBody: "L’édition, les vérifications ATS et les exports standards fonctionnent d’abord dans le navigateur. Le suivi et le Profil maître ne sont enregistrés qu’après une action explicite. Les requêtes IA facultatives envoient le contenu sélectionné pour cette action ; relisez chaque suggestion.", breadcrumb: "Pack de candidature", stepDescriptions: ["Conservez les exigences du poste à traiter.", "Sélectionnez expériences, compétences et preuves réelles.", "Créez un CV ciblé à partir de vos informations.", "Gardez le poste, les preuves et la langue cohérents.", "Contrôlez structure, vocabulaire et texte extractible.", "Notez le CV et la lettre réellement envoyés.", "Entraînez-vous avec le contexte du poste enregistré."] },
   ar: { lang: "ar", dir: "rtl", title: "حزمة تقديم متعددة اللغات | ApplyCraft", description: "اربط ملفك المهني وسيرتك المخصصة وخطابك ومراجعة ATS وتتبع الطلب والاستعداد للمقابلة في مسار خاص واحد.", home: "الصفحة الرئيسية لـ ApplyCraft", cta: "إنشاء حزمة التقديم الخاصة بي", profile: "فتح الملف المهني الرئيسي", resume: "إنشاء سيرة مخصصة", cover: "إنشاء خطاب متناسق", ats: "بدء مراجعة ATS", tracker: "تتبّع الطلب", interview: "الاستعداد للمقابلة", heading: "ملف واحد. دور واحد. طلب متناسق.", body: "تربط حزمة التقديم أدوات ApplyCraft الموجودة. تفتح كل خطوة ميزة حقيقية، وتبقى أنت المتحكم في ما تدخله أو تحفظه أو تصدّره أو ترسله إلى مساعدات الذكاء الاصطناعي الاختيارية.", privacyTitle: "تبقى الخصوصية جزءًا من المسار", privacyBody: "يتم تحرير المستندات وفحوص ATS والتصدير العادي أولًا في المتصفح. ولا تُحفظ بيانات المتابعة والملف المهني إلا بعد إجراء صريح. وترسل طلبات الذكاء الاصطناعي الاختيارية المحتوى المحدد لهذا الإجراء فقط؛ راجع كل اقتراح.", breadcrumb: "حزمة التقديم", stepDescriptions: ["احتفظ بمتطلبات الدور التي تريد معالجتها.", "حدّد الخبرات والمهارات والأدلة الحقيقية.", "أنشئ سيرة مركزة من المعلومات التي قدمتها.", "حافظ على اتساق الدور والأدلة واللغة.", "راجع البنية والمصطلحات والنص القابل للاستخراج.", "سجّل السيرة والخطاب اللذين أرسلتهما فعليًا.", "تدرّب على الأسئلة باستخدام سياق الدور المحفوظ."] },
 };
+const RESUME_CTA = {
+  en: "Create Resume",
+  fr: "Créer mon CV",
+  ar: "إنشاء سيرتي الذاتية",
+};
 
 const toolHrefs = {
   en: ["/master-profile", "/resume-builder/", "/cover-letter-builder/", "/ats-checker/", "/job-tracker/", "/interview-prep/"],
@@ -21,7 +26,7 @@ const toolHrefs = {
 
 function page(locale) {
   const p = { ...positioningFor(locale), applicationPack: applicationPackCopy(locale) };
-  const c = PAGE_COPY[locale];
+  const c = { ...PAGE_COPY[locale], cta: RESUME_CTA[locale] };
   const canonical = `${ORIGIN}${ROUTES[locale]}`;
   const alternates = Object.entries(ROUTES).map(([code, route]) => `<link rel="alternate" hreflang="${code}" href="${ORIGIN}${route}"/>`).join("\n");
   const labels = [c.profile, c.resume, c.cover, c.ats, c.tracker, c.interview];

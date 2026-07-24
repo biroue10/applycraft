@@ -43,7 +43,7 @@
   --color-text-primary:#EEF2FF;
   --color-text-secondary:#B6C2D6;
   --color-text-muted:#8B9EB8;
-  --color-accent-primary:#6366F1;
+  --color-accent-primary:#4F46E5;
   --color-accent-secondary:#818CF8;
   --color-border-subtle:#20324E;
   --color-border-strong:#344967;
@@ -251,4 +251,9 @@ button.footer-legal-link{background:none;border:0;padding:0;font:inherit;cursor:
   .brand-logo-img,.ac-brand-logo-img{height:24px;max-width:125px}
   .nav-cta{padding:7px 10px;font-size:12.5px}
   .ac-nav-cta{display:none}
+}
+
+@media(max-width:1240px){
+  .ac-global-header__menu-button,.ac-language-trigger{min-width:44px;min-height:44px}
+  .ac-global-header__mobile-menu>.ac-nav-link{min-height:44px;display:flex;align-items:center}
 }
