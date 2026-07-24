@@ -60,6 +60,7 @@
     "test:locale-direction": "node scripts/locale-direction-tests.mjs",
     "test:navbar-spacing": "node scripts/navbar-spacing-tests.mjs",
     "test:navbar-visual-state": "node scripts/navbar-visual-state-tests.mjs",
+    "test:navbar-active-persistence": "node scripts/navbar-active-persistence-tests.mjs",
     "test:url-navigation": "node scripts/url-navigation-tests.mjs",
     "test:navigation-stability": "node scripts/navigation-stability-tests.mjs",
     "test:navbar-all-routes": "node scripts/navbar-all-routes-tests.mjs",

@@ -190,6 +190,7 @@ export function SiteHeader({
   const moreLabel = lang === "fr" ? "Plus" : lang === "ar" ? "المزيد" : "More";
   const priorityItems = items.slice(0, 4);
   const secondaryItems = items.slice(4);
+  const hasActiveSecondary = secondaryItems.some((item) => item.id === activeId);
 
   useEffect(() => {
     const closeOnOutsideClick = (event) => {
@@ -262,7 +263,7 @@ export function SiteHeader({
           {priorityItems.map((item) => {
             const action = actionProps(item, onNavigate);
             const Tag = action.as;
-            const active = !!activeId && item.id === activeId;
+            const active = item.id === activeId;
             return (
             <Tag key={item.href || item.id || item.label} {...action.props}
               className="ac-nav-link"
@@ -276,7 +277,7 @@ export function SiteHeader({
           {secondaryItems.map((item) => {
             const action = actionProps(item, onNavigate);
             const Tag = action.as;
-            const active = !!activeId && item.id === activeId;
+            const active = item.id === activeId;
             return (
               <Tag key={item.href || item.id || item.label} {...action.props}
                 className="ac-nav-link ac-site-nav-secondary"
@@ -289,9 +290,8 @@ export function SiteHeader({
           })}
           <div ref={moreMenuRef} className="ac-site-more">
             <button type="button" aria-expanded={moreMenuOpen} aria-controls="ac-more-menu"
-              onClick={() => setMoreMenuOpen((open) => !open)}
-              style={{ border: "none", borderRadius: 8, padding: "9px 10px", background: "transparent",
-                color: SITE_COLORS.text2, fontSize: 13.5, fontWeight: 700, fontFamily: "inherit", cursor: "pointer" }}>
+              data-active-child={hasActiveSecondary ? "true" : undefined}
+              onClick={() => setMoreMenuOpen((open) => !open)}>
               {moreLabel} <span aria-hidden="true">▾</span>
             </button>
             {moreMenuOpen && (
@@ -303,7 +303,7 @@ export function SiteHeader({
                     <Tag key={item.href || item.id} {...action.props}
                       className="ac-nav-link"
                       data-nav-id={item.id}
-                      aria-current={activeId && item.id === activeId ? "page" : undefined}
+                      aria-current={item.id === activeId ? "page" : undefined}
                       onClick={action.props.onClick ? (event) => {
                         action.props.onClick(event);
                         if (!shouldUseNativeNavigation(event)) setMoreMenuOpen(false);
@@ -370,7 +370,7 @@ export function SiteHeader({
               <Tag key={item.href || item.id || item.label} {...action.props}
                 className="ac-nav-link"
                 data-nav-id={item.id}
-                aria-current={activeId && item.id === activeId ? "page" : undefined}
+                aria-current={item.id === activeId ? "page" : undefined}
                 onClick={item.onClick ? () => { item.onClick(); toggleMobileMenu(); } : action.props.onClick ? (event) => {
                   action.props.onClick(event);
                   if (!shouldUseNativeNavigation(event)) toggleMobileMenu();

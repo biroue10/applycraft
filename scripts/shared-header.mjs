@@ -21,6 +21,9 @@ export function headerHtml(lang = "en", route = "/") {
     return `<a class="ac-nav-link" data-nav-id="${item.id}" href="${localizeRoute(item.href, locale)}"${current}>${f[item.labelKey] || item.id}</a>`;
   }).join("");
   const moreLabel = locale === "fr" ? "Plus" : locale === "ar" ? "المزيد" : "More";
+  const moreCurrent = PRIMARY_NAV_ITEMS.slice(4).some((item) => item.id === active)
+    ? ' data-active-child="true"'
+    : "";
   const currentLanguage = interfaceLanguageByCode(locale);
   const languages = INTERFACE_LANGUAGES.map((code) => {
     const language = interfaceLanguageByCode(code);
@@ -32,7 +35,7 @@ export function headerHtml(lang = "en", route = "/") {
   return `<a class="ac-skip-link" href="#main-content">${skip}</a><header class="ac-global-header" data-site-header="applycraft" dir="${currentLanguage.dir}">
   <div class="ac-global-header__inner">
     <a class="ac-nav-logo" href="${home}" aria-label="${f.brandHome}"><img class="ac-brand-logo-img" src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" width="320" height="82"></a>
-    <nav class="ac-global-header__nav" aria-label="${f.primaryTools}">${links}<div class="ac-site-more"><button type="button" aria-expanded="false" aria-controls="ac-global-more-menu">${moreLabel} <span aria-hidden="true">▾</span></button><div id="ac-global-more-menu" class="ac-site-more-menu" hidden>${secondaryLinks}</div></div></nav>
+    <nav class="ac-global-header__nav" aria-label="${f.primaryTools}">${links}<div class="ac-site-more"><button type="button" aria-expanded="false" aria-controls="ac-global-more-menu"${moreCurrent}>${moreLabel} <span aria-hidden="true">▾</span></button><div id="ac-global-more-menu" class="ac-site-more-menu" hidden>${secondaryLinks}</div></div></nav>
     <div class="ac-global-header__actions">
       <div class="ac-global-header__language ac-language-switcher"><button class="ac-language-trigger" type="button" aria-label="${f.chooseLanguage}: ${currentLanguage.native}" aria-haspopup="menu" aria-expanded="false" aria-controls="ac-global-language-menu"><img src="${currentLanguage.flagSrc}" alt="" aria-hidden="true" width="20" height="14"><strong>${currentLanguage.displayCode}</strong><span class="ac-language-trigger-label">${currentLanguage.native}</span><span class="ac-language-chevron" aria-hidden="true">▼</span></button><div id="ac-global-language-menu" class="ac-language-menu" role="menu" aria-label="${f.languageMenu}" hidden>${languages}</div></div>
       <a class="ac-nav-cta" href="${ctaHref}">${cta}</a>

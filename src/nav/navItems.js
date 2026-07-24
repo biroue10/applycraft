@@ -22,7 +22,13 @@ export const PRIMARY_NAV_ITEMS = [
 ];
 
 export function normalizeNavPath(value = "/") {
-  let path = String(value || "/").split(/[?#]/, 1)[0].replace(/\/{2,}/g, "/");
+  let path;
+  try {
+    path = new URL(String(value || "/"), "https://a").pathname;
+  } catch {
+    path = "/";
+  }
+  path = path.replace(/\/{2,}/g, "/");
   if (!path.startsWith("/")) path = `/${path}`;
   path = path.replace(/^\/(?:fr|ar)(?=\/)/, "") || "/";
   return path === "/" ? "/" : `${path.replace(/\/+$/, "")}/`;
