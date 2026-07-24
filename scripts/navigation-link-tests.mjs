@@ -31,7 +31,7 @@ for (const href of requiredEnglishLinks) {
 const localizedRequired = {
   fr: [
     "/resume-builder/?ui=fr&docLang=fr",
-    "/cover-letter/templates/?ui=fr&docLang=fr",
+    "/cover-letter-builder/?ui=fr",
     "/ats-checker-fr/",
     "/job-tracker/?ui=fr",
     "/fr/interview-prep/",
@@ -39,7 +39,7 @@ const localizedRequired = {
   ],
   ar: [
     "/resume-builder/?ui=ar&docLang=ar",
-    "/cover-letter/templates/?ui=ar&docLang=ar",
+    "/cover-letter-builder/?ui=ar",
     "/ats-checker-ar/",
     "/job-tracker/?ui=ar",
     "/ar/interview-prep/",

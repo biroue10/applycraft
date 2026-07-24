@@ -669,22 +669,22 @@ const THUMB_SAMPLES = {
     },
   },
   tech: {
-    rtl: false,
+    rtl: true,
     result: {
-      name: "Ahmed El-Sayed",
-      title: "DevOps Engineer",
-      contact: ["ahmed@example.com", "+20 100 234 5678", "Cairo, Egypt", "github.com/aelsayed"],
-      summary: "DevOps engineer with 7 years automating infrastructure and CI/CD pipelines for fintech and e-commerce platforms across the MENA region.",
+      name: "أحمد السيد",
+      title: "مهندس عمليات سحابية",
+      contact: ["ahmed@example.com", "+20 100 234 5678", "القاهرة، مصر", "github.com/aelsayed"],
+      summary: "مهندس عمليات سحابية بخبرة سبع سنوات في أتمتة البنية التحتية ومسارات النشر لمنصات التقنية المالية والتجارة الإلكترونية.",
       sections: [
-        { heading: "Experience", items: [
-          "Senior DevOps — Fawry (2021–Present)",
-          "Reduced deployment time from 4h to 18min via GitHub Actions + Terraform",
-          "Maintained 99.98% uptime for payment gateway processing $200M/month",
-          "DevOps Engineer — Souq.com/Amazon (2017–2021)",
-          "Migrated 140 microservices to Kubernetes on AWS EKS",
+        { heading: "الخبرة المهنية", items: [
+          "مهندس عمليات أول — فوري (2021–الحاضر)",
+          "خفض وقت النشر من أربع ساعات إلى 18 دقيقة",
+          "حافظ على توافر بوابة الدفع بنسبة 99.98٪",
+          "مهندس عمليات — سوق.كوم (2017–2021)",
+          "نقل 140 خدمة مصغرة إلى Kubernetes",
         ]},
-        { heading: "Skills", items: ["Kubernetes", "Terraform", "AWS", "Docker", "GitHub Actions", "Prometheus", "Go", "Python"] },
-        { heading: "Education", items: ["B.Sc. Computer Engineering — Cairo University — 2017"] },
+        { heading: "المهارات", items: ["Kubernetes", "Terraform", "AWS", "Docker", "GitHub Actions", "Python"] },
+        { heading: "التعليم", items: ["بكالوريوس هندسة الحاسبات — جامعة القاهرة — 2017"] },
       ],
     },
   },
@@ -799,7 +799,7 @@ const THUMB_SAMPLE_LANG = {
   elegant: "es",
   executive: "en",
   creative: "ar",
-  tech: "en",
+  tech: "ar",
   sharp: "en",
   nordic: "no",
   slate: "en",
@@ -4645,7 +4645,7 @@ Awards: ${form.awards}`;
 
   const visibleTemplates = TEMPLATES
     .filter(filterTemplates)
-    .sort((a, b) => (a.id === RECOMMENDED_TEMPLATE_ID ? -1 : b.id === RECOMMENDED_TEMPLATE_ID ? 1 : 0));
+    .sort((a, b) => (sampleLangForTemplate(b) === lang) - (sampleLangForTemplate(a) === lang));
 
   const isTemplateGalleryView = navPage === "resume" && step === "templates";
 
@@ -4682,9 +4682,10 @@ Awards: ${form.awards}`;
         onMobileMenuToggle={() => setAppHeaderMenuOpen((open) => !open)}
       />
       {showWorkspaceStatus && <WorkspaceStatusBar>
-        <span title={builderText("notSavedHeaderTooltip")}
-          style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
-          <LineIcon name="alert" size={14} color={C.text3} /> {bu.notSavedAutomatically}
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
+          <LineIcon name="alert" size={14} color={C.text3} /> {
+            navPage === "resume" ? bu.noAutosaveReminder : bu.notSavedAutomatically
+          }
         </span>
       </WorkspaceStatusBar>}
     </>

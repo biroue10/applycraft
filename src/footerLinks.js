@@ -6,7 +6,7 @@ export const FOOTER_LINK_SECTIONS = [
     links: [
       { href: "/", labelKey: "resumeBuilder" },
       { href: "/resume/templates/", labelKey: "resumeTemplates" },
-      { href: "/cover-letter/templates/", labelKey: "coverLetter" },
+      { href: "/cover-letter-builder/", labelKey: "coverLetter" },
       { href: "/ats-checker/", labelKey: "atsChecker" },
       { href: "/application-pack/", labelKey: "applicationPack" },
       { href: "/job-tracker/", labelKey: "jobTracker" },

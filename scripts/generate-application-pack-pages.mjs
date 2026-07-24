@@ -15,8 +15,8 @@ const PAGE_COPY = {
 
 const toolHrefs = {
   en: ["/master-profile", "/resume-builder/", "/cover-letter-builder/", "/ats-checker/", "/job-tracker/", "/interview-prep/"],
-  fr: ["/master-profile?ui=fr&docLang=fr", "/resume-builder/?ui=fr&docLang=fr", "/cover-letter/templates/?ui=fr&docLang=fr", "/ats-checker-fr/", "/job-tracker/?ui=fr&docLang=fr", "/fr/interview-prep/"],
-  ar: ["/master-profile?ui=ar&docLang=ar", "/resume-builder/?ui=ar&docLang=ar", "/cover-letter/templates/?ui=ar&docLang=ar", "/ats-checker-ar/", "/job-tracker/?ui=ar&docLang=ar", "/ar/interview-prep/"],
+  fr: ["/master-profile?ui=fr&docLang=fr", "/resume-builder/?ui=fr&docLang=fr", "/cover-letter-builder/?ui=fr", "/ats-checker-fr/", "/job-tracker/?ui=fr", "/fr/interview-prep/"],
+  ar: ["/master-profile?ui=ar&docLang=ar", "/resume-builder/?ui=ar&docLang=ar", "/cover-letter-builder/?ui=ar", "/ats-checker-ar/", "/job-tracker/?ui=ar", "/ar/interview-prep/"],
 };
 
 function page(locale) {
