@@ -220,7 +220,8 @@ export function SiteHeader({
   };
   return (
     <>
-    <header ref={headerRef} data-site-header="applycraft" className="ac-global-header" onKeyDown={(event) => {
+    <header ref={headerRef} data-site-header="applycraft" className="ac-global-header"
+      dir={interfaceLanguageByCode(lang).dir} onKeyDown={(event) => {
       if (event.key !== "Escape") return;
       if (moreMenuOpen) {
         setMoreMenuOpen(false);

@@ -136,23 +136,27 @@ function compare(source, destination, label) {
   return transitionMax;
 }
 
-async function ready(page) {
+async function ready(page, locale = "en") {
   await page.locator(".ac-global-header").waitFor({ state: "visible" });
+  await page.waitForFunction((expectedLocale) => (
+    document.documentElement.lang.split("-")[0] === expectedLocale
+    && document.querySelector(".ac-global-header")?.dir === (expectedLocale === "ar" ? "rtl" : "ltr")
+  ), locale);
   await page.evaluate(() => document.fonts?.ready);
 }
 
-async function openRoute(page, href) {
+async function openRoute(page, href, locale = "en") {
   await page.goto(`${baseURL}${href}`, { waitUntil: "domcontentloaded" });
-  await ready(page);
+  await ready(page, locale);
 }
 
-async function clickDestination(page, id) {
+async function clickDestination(page, id, locale = "en") {
   const link = page.locator(`.ac-global-header__nav > .ac-nav-link[data-nav-id="${id}"]`);
   await link.click();
   await page.waitForFunction((activeId) => (
     new Set([...document.querySelectorAll('.ac-nav-link[aria-current="page"]')].map((node) => node.dataset.navId)).has(activeId)
   ), id);
-  await ready(page);
+  await ready(page, locale);
 }
 
 try {
@@ -170,11 +174,11 @@ try {
         const errors = [];
         page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
         const sourceHref = localizeRoute(sourceRoute.href, locale);
-        await openRoute(page, sourceHref);
+        await openRoute(page, sourceHref, locale);
         const source = await measure(page);
         await page.evaluate(() => { window.__acHeaderIdentity = document.querySelector(".ac-global-header"); });
         process.stdout.write(`\r${locale} ${sourceRoute.id} -> ${destinationRoute.id}   `);
-        await clickDestination(page, destinationRoute.id);
+        await clickDestination(page, destinationRoute.id, locale);
         const destination = await measure(page);
         const persisted = await page.evaluate(() => window.__acHeaderIdentity === document.querySelector(".ac-global-header"));
         if (persisted) report.persistedHeaderTransitions += 1;

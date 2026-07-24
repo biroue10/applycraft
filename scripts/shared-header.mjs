@@ -29,7 +29,7 @@ export function headerHtml(lang = "en", route = "/") {
   const ctaHref = locale === "en" ? "/resume-builder/" : localizeRoute("/free-resume-builder/", locale);
   const cta = locale === "fr" ? "Créer mon CV" : locale === "ar" ? "إنشاء سيرتي الذاتية" : "Create Resume";
   const skip = locale === "fr" ? "Aller au contenu principal" : locale === "ar" ? "انتقل إلى المحتوى الرئيسي" : "Skip to main content";
-  return `<a class="ac-skip-link" href="#main-content">${skip}</a><header class="ac-global-header" data-site-header="applycraft">
+  return `<a class="ac-skip-link" href="#main-content">${skip}</a><header class="ac-global-header" data-site-header="applycraft" dir="${currentLanguage.dir}">
   <div class="ac-global-header__inner">
     <a class="ac-nav-logo" href="${home}" aria-label="${f.brandHome}"><img class="ac-brand-logo-img" src="/assets/brand/applycraft-logo-navbar.png" alt="ApplyCraft" width="320" height="82"></a>
     <nav class="ac-global-header__nav" aria-label="${f.primaryTools}">${links}<div class="ac-site-more"><button type="button" aria-expanded="false" aria-controls="ac-global-more-menu">${moreLabel} <span aria-hidden="true">▾</span></button><div id="ac-global-more-menu" class="ac-site-more-menu" hidden>${secondaryLinks}</div></div></nav>

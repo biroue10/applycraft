@@ -37,6 +37,7 @@ const source = `(function () {
   function apply() {
     var root = document.getElementById("root");
     if (!root || !root.querySelector(".ac-global-header")) return false;
+    root.querySelector(".ac-global-header").setAttribute("dir", current.meta.dir);
     root.querySelectorAll("[data-nav-id]").forEach(function (link) {
       var label = current.nav[link.getAttribute("data-nav-id")];
       if (label) link.textContent = label;
