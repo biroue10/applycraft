@@ -16,8 +16,8 @@ for (const [locale, profiles] of Object.entries(expected)) {
 for (const id of ["classic", "modern", "minimal", "bold", "creative", "tech"]) {
   assert.match(source, new RegExp(`\\b${id}:\\s*\\{`), `template sample ${id} must exist`);
 }
-assert.match(source, /\.sort\(\(a, b\) => \(sampleLangForTemplate\(b\) === lang\)/,
-  "gallery must prioritize the active locale");
+assert.match(source, /localizedThumbSample\(tp, lang\)\.result/,
+  "gallery cards must inject profiles for the active locale");
 assert.match(source, /tech:\s*"ar"/, "third Arabic sample must be registered RTL/Arabic");
 assert.match(source, /tech:\s*\{\s*rtl:\s*true/, "Arabic technical profile must render RTL");
 

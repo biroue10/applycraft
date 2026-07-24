@@ -807,8 +807,9 @@ const THUMB_SAMPLE_LANG = {
   prism: "en",
 };
 
-function sampleLangForTemplate(template) {
-  return THUMB_SAMPLES[template?.id]?.lang || THUMB_SAMPLE_LANG[template?.id] || "en";
+function localizedThumbSample(template, locale) {
+  const ids = Object.keys(THUMB_SAMPLE_LANG).filter((id) => THUMB_SAMPLE_LANG[id] === locale);
+  return THUMB_SAMPLES[ids[TEMPLATES.indexOf(template) % 3]];
 }
 
 // ── Sample data used in template thumbnail previews ───────────────
@@ -2521,7 +2522,7 @@ function AddContentModal({ open, onClose, addedSet, onAdd, sectionName, eui, rtl
   );
 }
 
-function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, kind = "resume", labels = {}, bu = {}, coverSample = SAMPLE_COVER }) {
+function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, locale, kind = "resume", labels = {}, bu = {}, coverSample = SAMPLE_COVER }) {
   const dialogRef = useRef(null);
   useEffect(() => {
     if (!template || typeof document === "undefined") return;
@@ -2553,9 +2554,9 @@ function TemplatePreviewModal({ template, meta, onClose, onUse, isMobile, rtl, k
     attributes: ["Professional", "Flexible"],
     layout: "Flexible",
   };
-  const sample = kind === "cover" ? {} : (THUMB_SAMPLES[template.id] || {});
+  const sample = kind == "cover" ? {} : localizedThumbSample(template, locale);
   const isRtlPreview = sample.rtl || rtl;
-  const sampleLang = sampleLangForTemplate(template);
+  const sampleLang = locale;
   return (
     <div onClick={onClose} dir={rtl ? "rtl" : "ltr"}
       style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,0.68)",
@@ -4644,8 +4645,7 @@ Awards: ${form.awards}`;
   };
 
   const visibleTemplates = TEMPLATES
-    .filter(filterTemplates)
-    .sort((a, b) => (sampleLangForTemplate(b) === lang) - (sampleLangForTemplate(a) === lang));
+    .filter(filterTemplates);
 
   const isTemplateGalleryView = navPage === "resume" && step === "templates";
 
@@ -4899,7 +4899,9 @@ Awards: ${form.awards}`;
                     boxShadow: active || selected ? `0 0 0 4px ${C.accent}18` : "none",
                     transition: "box-shadow 0.2s ease, outline-color 0.2s ease, transform 0.2s ease",
                     transform: active ? "translateY(-3px)" : "none" }}>
-                      <ThumbPreview tp={tp} isMobile={isMobile} />
+                      <ThumbPreview tp={tp} isMobile={isMobile}
+                        resumeResult={localizedThumbSample(tp, lang).result}
+                        resumeLang={lang} />
                       {(selected || recommended) && (
                         <span style={{ position: "absolute", top: 10, right: 10, display: "inline-flex",
                           alignItems: "center", gap: 5, color: selected ? "#fff" : C.accent2,
@@ -4982,6 +4984,7 @@ Awards: ${form.awards}`;
         onUse={(template) => startWithTemplate(template, "template_preview")}
         isMobile={isMobile}
         rtl={rtl}
+        locale={lang}
         bu={bu}
         labels={{
           previewEyebrow: builderText("templatePreviewEyebrow"),
@@ -9041,7 +9044,9 @@ Awards: ${form.awards}`;
                     <div style={{ borderRadius: 0, overflow: "hidden",
                       boxShadow: "0 4px 22px rgba(0,0,0,0.38)",
                       transition: "box-shadow 0.22s ease" }}>
-                      <ThumbPreview tp={tp} isMobile={false} />
+                      <ThumbPreview tp={tp} isMobile={false}
+                        resumeResult={localizedThumbSample(tp, lang).result}
+                        resumeLang={lang} />
                     </div>
                     <div style={{ padding: "10px 4px 0" }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>{tp.name}</div>
@@ -11134,7 +11139,7 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
               <ResumePaper tpl={template}
                 result={resumeResult || THUMB_SAMPLES[template.id]?.result || SAMPLE_RESUME}
                 rtl={rtl}
-                lang={lang || sampleLangForTemplate(template)}
+                lang={lang}
                 placeholder={false}
                 preview />
             )}
@@ -11159,7 +11164,7 @@ function ThumbPreview({ tp, isMobile, resumeResult = null, resumeRtl = null, res
       type="resume"
       template={tp}
       isMobile={isMobile}
-      rtl={resumeRtl ?? (THUMB_SAMPLES[tp.id]?.rtl || false)}
+      rtl={resumeRtl ?? resumeLang === "ar"}
       lang={resumeLang}
       resumeResult={resumeResult}
     />
