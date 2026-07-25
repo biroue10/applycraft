@@ -17,8 +17,9 @@ export const LOCALIZED_ROUTES = {
   "/blog/": {
     en: "/blog/",
     fr: "/fr/blog/",
-    // Switch Arabic blog links to /ar/blog/ when an Arabic blog index exists.
-    ar: "/blog/",
+    // No Arabic blog index exists yet, so send Arabic readers to the localized
+    // homepage instead of linking back to the unchanged English blog.
+    ar: "/ar/",
   },
   "/examples/": { en: "/examples/", fr: "/examples/french-cv-example/" },
   "/canadian-resume-builder/": { en: "/canadian-resume-builder/", fr: "/fr/creer-cv-canadien/", ar: "/ar/resume-templates/?country=canada" },

@@ -113,6 +113,8 @@ test("interface language switcher metadata has stable local flags and safe route
   assert.equal(localizedLanguageHref("/", "fr"), "/fr/");
   assert.equal(localizedLanguageHref("/fr/", "en"), "/");
   assert.equal(localizedLanguageHref("/fr/", "ar"), "/ar/");
+  assert.equal(localizedLanguageHref("/blog/", "ar"), "/ar/");
+  assert.equal(localizedLanguageHref("/fr/blog/", "ar"), "/ar/");
   assert.equal(localizedLanguageHref("/fr/blog/exemple-cv-maroc/", "ar"), "/ar/");
 });
 
