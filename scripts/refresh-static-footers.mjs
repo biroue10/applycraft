@@ -1,11 +1,12 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { footerHtml } from "./shared-footer.mjs";
 import { headerHtml } from "./shared-header.mjs";
 import { localizeRoute } from "../src/seo/localizedRoutes.js";
 import { PRODUCT } from "../src/product.js";
 
-const ROOT = new URL("../public/", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("../public/", import.meta.url));
 
 function walk(dir) {
   const entries = readdirSync(dir, { withFileTypes: true });
