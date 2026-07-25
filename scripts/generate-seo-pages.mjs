@@ -123,7 +123,7 @@ function faqHtml(items, lang = "en") {
 </section>`;
 }
 
-function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard, features, faqs, canonicalPath, _cssPath, lang = "en", dir = "", ogLocale = "en_US", ogAlternateLocales = [], alternates = [], socialImage, socialImageAlt, builderHref = "", templateHref = "", starterHref = "", guideHref = "", guideLabel = "" }) {
+function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard, features, faqs, canonicalPath, _cssPath, lang = "en", dir = "", ogLocale = "en_US", ogAlternateLocales = [], alternates = [], socialImage, socialImageAlt, builderHref = "", templateHref = "", starterHref = "", guideHref = "", guideLabel = "", seoContent = "" }) {
   const canonical = `${SITE}${canonicalPath}`;
   const cssRel = _cssPath || CSS_PATH;
   const htmlAttrs = dir ? `lang="${lang}" dir="${dir}"` : `lang="${lang}"`;
@@ -265,6 +265,12 @@ ${nav(lang, isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl)}
     </section>
   </div>
 
+  ${seoContent ? `<div class="page">
+    <section class="section seo-guide">
+      ${seoContent}
+    </section>
+  </div>` : ""}
+
   ${faqHtml(faqs, lang)}
 
   <div class="page">
@@ -363,8 +369,8 @@ const PAGES = [
   {
     slug: "free-resume-builder",
     canonicalPath: "/free-resume-builder/",
-    title: "Free Resume Builder | ApplyCraft",
-    description: "Create a professional resume for free with no sign-up, no hidden fees, no watermarks, and no download paywall. Export PDF or DOCX instantly.",
+    title: "Free Resume Builder — No Sign-Up, PDF & DOCX | ApplyCraft",
+    description: "Build a professional resume free with no sign-up, watermark, hidden fee, or download paywall. Choose a template and export PDF or DOCX.",
     eyebrow: "Free Builder",
     h1: "Free Resume Builder — No Sign-Up, No Hidden Fees",
     sub: "Build your resume without an account, hidden fees, watermarks, or download paywalls. Create a polished document and download it as PDF or DOCX in minutes.",
@@ -372,6 +378,17 @@ const PAGES = [
     ogAlternateLocales: ["fr_FR", "ar_MA"],
     socialImage: `${SITE}/og/free-resume-builder.png`,
     keywords: "free resume builder, resume builder no sign up, free cv maker, free resume download, no watermark resume builder",
+    seoContent: `<h2>How to build a free resume that recruiters can scan</h2>
+      <p>Choose a simple reverse-chronological layout, match the job title, and turn responsibilities into results. Use familiar section headings such as Experience, Education, and Skills so both recruiters and applicant tracking systems can understand the document.</p>
+      <h3>A practical five-step workflow</h3>
+      <ol>
+        <li>Choose one of the <a href="/resume/templates/">resume templates</a> and keep the layout easy to scan.</li>
+        <li>Add a focused headline and a short summary tailored to the target role.</li>
+        <li>Write two to four achievement bullets for each recent position, using numbers where they are accurate.</li>
+        <li>Compare the wording with the job description using the <a href="/ats-checker/">free ATS checker</a>.</li>
+        <li>Proofread the final version and export both PDF and DOCX when the employer does not specify a format.</li>
+      </ol>
+      <p>Need a role-specific starting point? Browse the <a href="/examples/">resume examples</a>, including examples for teachers, technology roles, customer service, accounting, and career changes.</p>`,
     resumeCard: rcGeneric({
       name: "Jordan Lee", title: "Marketing Manager",
       email: "jordan.lee@email.com", city: "New York, NY",
@@ -546,13 +563,24 @@ const PAGES = [
     canonicalPath: "/resume-in-french/",
     lang: "fr",
     ogLocale: "fr_FR",
-    title: "CV en français gratuit | ApplyCraft",
-    description: `Créez un CV professionnel en français avec ${RESUME_TEMPLATE_COUNT} modèles. Prévisualisation en direct, export PDF et DOCX. Gratuit, sans inscription.`,
+    title: "French CV Format: Free Example and Template | ApplyCraft",
+    description: `Learn the French CV format with a free example, layout advice and ${RESUME_TEMPLATE_COUNT} templates. Create a CV in French and export PDF or DOCX.`,
     eyebrow: "CV en Français",
     socialImageAlt: "Aperçu du créateur de CV ApplyCraft en français",
     h1: "Créez votre CV en Français",
     sub: `${RESUME_TEMPLATE_COUNT} modèles professionnels, prévisualisation en direct, et export PDF ou DOCX — entièrement gratuit. Rédigez votre CV en français en quelques minutes.`,
-    keywords: "cv en français, faire son cv en français, modèle cv français, créer cv gratuit, cv professionnel français",
+    keywords: "french cv, french cv format, french cv example, french cv layout, cv in french, french resume template",
+    seoContent: `<h2>French CV format: the essential layout</h2>
+      <p>A French CV normally uses a concise reverse-chronological structure: contact details, a precise job title, a short profile, professional experience, education, skills, and languages. Keep the layout readable and adapt the vocabulary to the language used in the vacancy.</p>
+      <h3>French CV or English resume?</h3>
+      <p>Use a French CV when the vacancy and working language are French. For an international company, keep a separate English version rather than mixing both languages in one document. See the <a href="/examples/french-cv-example/">complete French CV example</a> for section-by-section wording.</p>
+      <h3>Photo, length, and file format</h3>
+      <ul>
+        <li>A photo is optional in France; omit it when applying to markets where photos are discouraged.</li>
+        <li>One page works well for junior and mid-level candidates; a relevant two-page CV can suit senior profiles.</li>
+        <li>Send a PDF unless the employer specifically requests DOCX.</li>
+      </ul>
+      <p>To write with a French interface, open the <a href="/fr/creer-cv-gratuit/">free French CV builder</a>. Candidates applying in Morocco can also use the <a href="/fr/blog/exemple-cv-maroc/">Moroccan CV example</a>.</p>`,
     resumeCard: `<div class="resume-card">
   <div class="rc-header" style="border-color:#6366F1">
     <div class="rc-name">Marie Dupont</div>
@@ -937,12 +965,25 @@ const PAGES = [
   {
     slug: "linux-system-administrator-resume",
     canonicalPath: "/linux-system-administrator-resume/",
-    title: "Linux System Administrator Resume — Templates | ApplyCraft",
-    description: "Build a Linux sysadmin resume that showcases your skills in shell scripting, server management, and DevOps tools. ATS-friendly templates. Free.",
+    title: "Linux System Administrator Resume Example | ApplyCraft",
+    description: "Use a Linux system administrator resume example with skills, achievement bullets and an ATS-conscious template. Customize it free and export PDF or DOCX.",
     eyebrow: "Linux / Sysadmin",
     h1: "Linux System Administrator Resume",
     sub: "Templates built for Linux engineers, system administrators, and DevOps professionals. Highlight your infrastructure, scripting, and automation expertise.",
     keywords: "linux system administrator resume, linux sysadmin resume, linux admin cv, devops resume, system administrator resume template",
+    seoContent: `<h2>Linux system administrator resume checklist</h2>
+      <p>Recruiters need evidence of scale, reliability, automation, and security—not a list of commands. State the number of servers, users, environments, regions, or incidents you supported, then connect each metric to a technical action.</p>
+      <h3>Skills to organize by category</h3>
+      <ul>
+        <li><strong>Linux:</strong> RHEL, Ubuntu, Debian, Amazon Linux, package management, systemd, and troubleshooting.</li>
+        <li><strong>Automation:</strong> Bash, Python, Ansible, Terraform, Puppet, or Chef.</li>
+        <li><strong>Cloud and containers:</strong> AWS, Azure, GCP, Docker, Kubernetes, and CI/CD.</li>
+        <li><strong>Reliability and security:</strong> monitoring, backups, patching, IAM, SELinux, firewalls, and incident response.</li>
+      </ul>
+      <h3>Achievement bullet example</h3>
+      <p><strong>Before:</strong> Responsible for Linux servers and patching.</p>
+      <p><strong>After:</strong> Automated monthly patching for 180 Linux servers with Ansible, reducing maintenance time by 65% while sustaining 99.95% availability.</p>
+      <p>Use only metrics you can verify. Then compare the finished document with the vacancy in the <a href="/ats-checker/">ATS checker</a> and review more <a href="/examples/">role-specific resume examples</a>.</p>`,
     resumeCard: rcGeneric({
       name: "Priya Nair", title: "Senior Linux Systems Administrator",
       email: "priya.nair@email.com", city: "Austin, TX",
@@ -1646,12 +1687,22 @@ const EXAMPLES = [
   {
     slug: "teacher-resume",
     canonicalPath: "/examples/teacher-resume/",
-    title: "Teacher Resume Example — Free Template | ApplyCraft",
-    description: "Free teacher resume example with certifications, classroom achievements, and ATS-friendly formatting. Edit every line and download as PDF or DOCX.",
+    title: "Free Teacher Resume Template and Example | ApplyCraft",
+    description: "Customize a free teacher resume template with classroom achievement examples, skills and ATS-conscious formatting. Export your resume as PDF or DOCX.",
     eyebrow: "Resume Example",
     h1: "Teacher Resume Example",
     sub: "An ATS-optimised teacher resume example with licensure, grade levels, and measurable student outcomes. Edit every section and download free — no sign-up.",
-    keywords: "teacher resume example, teaching resume sample, elementary teacher resume template, educator cv example",
+    keywords: "teacher resume template free, free teacher resume template, teacher resume example, teaching resume sample, educator cv example",
+    seoContent: `<h2>How to write a teacher resume that shows classroom impact</h2>
+      <p>A strong teacher resume connects instructional methods to student outcomes. Include grade levels, subjects, class sizes, curriculum responsibilities, assessment results, inclusion practices, and the learning platforms you used.</p>
+      <h3>Teacher achievement examples</h3>
+      <ul>
+        <li>Raised the share of students meeting grade-level reading benchmarks from 68% to 84% through weekly small-group instruction.</li>
+        <li>Designed a project-based science unit for 120 students and increased assignment completion by 18%.</li>
+        <li>Coordinated individualized learning plans with families, specialists, and support staff for 14 students.</li>
+      </ul>
+      <p>Replace these figures with your own evidence. New teachers can emphasize student teaching, classroom placements, certifications, safeguarding training, curriculum projects, and relevant volunteer experience.</p>
+      <p>Choose a readable design from the <a href="/resume/templates/">free resume templates</a>, tailor the wording to each vacancy, and use the <a href="/ats-checker/">ATS checker</a> before applying.</p>`,
     resumeCard: rcGeneric({
       name: "Rachel Bennett", title: "Elementary School Teacher | State Certified (K–6)",
       email: "rachel.bennett@email.com", city: "Columbus, OH",

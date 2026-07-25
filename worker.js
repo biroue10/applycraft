@@ -47,6 +47,16 @@ const TRAILING_SLASH_HTML_ASSETS = new Map([
   ["/r/", "/r.html"],
 ]);
 
+// Retired public aliases should resolve in one hop to the indexable URL. Keeping
+// these redirects at the edge prevents legacy links from competing with the
+// canonical landing pages in Search Console.
+const LEGACY_PUBLIC_REDIRECTS = new Map([
+  ["/app/ats-checker", "/ats-checker/"],
+  ["/app/ats-checker/", "/ats-checker/"],
+  ["/cover-letter/builder", "/cover-letter-builder/"],
+  ["/cover-letter/builder/", "/cover-letter-builder/"],
+]);
+
 const ACTIONS = {
   "generate-resume": {
     maxTokens: 1000,
@@ -1440,6 +1450,13 @@ export default {
         return new Response(null, {
           status: 301,
           headers: { Location: `/cover-letter-builder/${url.search}`, ...SECURITY_HEADERS },
+        });
+      }
+      const canonicalRedirect = LEGACY_PUBLIC_REDIRECTS.get(url.pathname);
+      if (canonicalRedirect) {
+        return new Response(null, {
+          status: 301,
+          headers: { Location: `${canonicalRedirect}${url.search}`, ...SECURITY_HEADERS },
         });
       }
       // Canonicalize the no-trailing-slash form of those routes with a single 301.

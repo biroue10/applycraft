@@ -183,6 +183,13 @@ img{max-width:100%;height:auto}
 .card h3{font-size:16px;font-weight:700;margin-bottom:10px}
 .card p{font-size:13.5px;color:var(--color-text-secondary);margin:0}
 .card-icon{font-size:28px;margin-bottom:12px}
+.seo-guide{max-width:820px}
+.seo-guide h3{font-size:19px;margin:28px 0 10px}
+.seo-guide p,.seo-guide li{line-height:1.75}
+.seo-guide ul,.seo-guide ol{margin:0 0 20px;padding-left:24px;color:var(--color-text-secondary)}
+.seo-guide li{margin-bottom:8px}
+.seo-guide a{color:#A5B4FC;text-underline-offset:3px}
+.seo-guide a:hover,.seo-guide a:focus{color:#C7D2FE}
 
 /* â”€â”€ FAQ â”€â”€ */
 .faq{padding:56px 0}

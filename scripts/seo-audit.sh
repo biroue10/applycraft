@@ -229,12 +229,12 @@ const EXPECTED_IMPORTANT_TITLES = new Map([
   ["/examples/linux-administrator-resume/", "Linux Administrator Resume | ApplyCraft"],
   ["/examples/sales-representative-resume/", "Sales Representative Resume | ApplyCraft"],
   ["/examples/software-engineer-resume/", "Software Engineer Resume | ApplyCraft"],
-  ["/fr/blog/exemple-cv-maroc/", "Exemple de CV Maroc 2026 | ApplyCraft"],
+  ["/fr/blog/exemple-cv-maroc/", "Exemple CV Maroc 2026 : modèle gratuit | ApplyCraft"],
   ["/fr/creer-cv-canadien/", "Créateur de CV canadien | ApplyCraft"],
   ["/fr/creer-cv-gratuit/", "Créer un CV gratuit | ApplyCraft"],
   ["/fr/interview-prep/", "Préparation entretien IA | ApplyCraft"],
-  ["/free-resume-builder/", "Free Resume Builder | ApplyCraft"],
-  ["/resume-in-french/", "CV en français gratuit | ApplyCraft"],
+  ["/free-resume-builder/", "Free Resume Builder — No Sign-Up, PDF & DOCX | ApplyCraft"],
+  ["/resume-in-french/", "French CV Format: Free Example and Template | ApplyCraft"],
   ["/student-resume-builder/", "Student Resume Builder | ApplyCraft"],
 ]);
 
