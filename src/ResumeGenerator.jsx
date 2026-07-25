@@ -4732,8 +4732,18 @@ Awards: ${form.awards}`;
   // tool in place instead of loading its route.
   const enterPrimaryTool = (item) => {
     setNavPage(item.id);
-    if (item.id === "resume") setStep("form");
-    if (item.id === "cover") setCoverStep("form");
+    if (item.id === "resume") {
+      if (!tpl && recommendedTemplate) setTpl(recommendedTemplate);
+      setStep("form");
+    }
+    if (item.id === "cover") {
+      if (!coverTpl) {
+        setCoverTpl(COVER_TEMPLATES.find((template) => template.id === "modern")
+          || COVER_TEMPLATES.find((template) => !template.blank)
+          || null);
+      }
+      setCoverStep("form");
+    }
   };
 
   // The in-app navbar IS the marketing navbar (src/siteChrome.jsx) — same height
