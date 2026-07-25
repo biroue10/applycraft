@@ -21,6 +21,7 @@ import { EVENTS } from "../src/analytics.js";
 import consentEn from "../src/i18n/namespaces/en/consent.js";
 import consentFr from "../src/i18n/namespaces/fr/consent.js";
 import consentAr from "../src/i18n/namespaces/ar/consent.js";
+import { localizedFooterHref } from "../src/footerLinks.js";
 
 const app = await readFile(new URL("../src/ResumeGenerator.jsx", import.meta.url), "utf8");
 const analytics = await readFile(new URL("../src/analytics.js", import.meta.url), "utf8");
@@ -116,6 +117,7 @@ test("interface language switcher metadata has stable local flags and safe route
   assert.equal(localizedLanguageHref("/blog/", "ar"), "/ar/");
   assert.equal(localizedLanguageHref("/fr/blog/", "ar"), "/ar/");
   assert.equal(localizedLanguageHref("/fr/blog/exemple-cv-maroc/", "ar"), "/ar/");
+  assert.equal(localizedFooterHref({ href: "/blog/" }, "ar"), "/blog/");
 });
 
 test("language migration keeps interface and document languages independent", () => {

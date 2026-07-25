@@ -52,5 +52,9 @@ export const FOOTER_LINK_SECTIONS = [
 
 export function localizedFooterHref(link, lang = "en") {
   if (!link || link.external) return link?.href || "";
+  // Until an Arabic blog index exists, keep the Arabic footer's Blog resource
+  // link on the English blog. The language switcher may still return Arabic
+  // readers to /ar/, but footer links must not collapse two labels onto /ar/.
+  if (lang === "ar" && link.href === "/blog/") return "/blog/";
   return localizeRoute(link.href, lang);
 }
