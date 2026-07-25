@@ -38,7 +38,7 @@ function isNoindex(html) {
 
 function gitLastmod(filePath) {
   try {
-    const rel = relative(ROOT, filePath);
+    const rel = relative(ROOT, filePath).replaceAll("\\", "/");
     return execFileSync("git", ["log", "-1", "--format=%cs", "--", rel], {
       cwd: ROOT,
       encoding: "utf8",
