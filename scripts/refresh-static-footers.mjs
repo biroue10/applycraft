@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { footerHtml } from "./shared-footer.mjs";
 import { headerHtml } from "./shared-header.mjs";
 import { localizeRoute } from "../src/seo/localizedRoutes.js";
+import { localizedFooterHref } from "../src/footerLinks.js";
 import { PRODUCT } from "../src/product.js";
 
 const ROOT = fileURLToPath(new URL("../public/", import.meta.url));
@@ -23,7 +24,7 @@ function localizeInternalAnchors(html, lang) {
     if (!href.startsWith("/") && !href.startsWith("https://applycraft.io/")) return full;
     if (/English|Anglais|Français|French|العربية|Arabic|Arabe|الفرنسية|الإنجليزية/i.test(`${href} ${label}`)) return full;
     const local = href.replace(/^https:\/\/applycraft\.io/i, "").replaceAll("&amp;", "&");
-    const localized = localizeRoute(local, lang);
+    const localized = localizedFooterHref({ href: local }, lang);
     if (localized === local) return full;
     return `<a${before}href="${localized.replaceAll("&", "&amp;")}"${after}>${label}</a>`;
   });
