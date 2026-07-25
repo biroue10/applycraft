@@ -7,18 +7,18 @@
 // Labels resolve against the shared `footer` i18n namespace, which is translated
 // in every locale — never hardcode an English label here. Hrefs are localized at
 // render time through localizeRoute() (src/seo/localizedRoutes.js).
-// `alwaysLink` keeps primary destinations as canonical anchor navigations.
-// Public/static and SSG workspace routes are not all owned by one client router;
-// native navigation therefore preserves correct metadata and browser history.
+// Hrefs remain real anchors for public/static pages and modified clicks. Inside
+// the React application, SiteHeader intercepts normal clicks so moving between
+// tools does not tear down and recreate the navbar.
 export const PRIMARY_NAV_ITEMS = [
-  { id: "resume", href: "/resume-builder/", labelKey: "resumeBuilder", activeRoutes: ["/resume-builder/", "/free-resume-builder/"], alwaysLink: true },
-  { id: "ats", href: "/ats-checker/", labelKey: "atsChecker", activeRoutes: ["/ats-checker/", "/ats-checker-fr/", "/ats-checker-ar/", "/ats-resume-builder/", "/resume-checker/"], alwaysLink: true },
-  { id: "templates", href: "/resume/templates/", labelKey: "resumeTemplates", activeRoutes: ["/resume/templates/", "/examples/"], alwaysLink: true },
-  { id: "cover", href: "/cover-letter-builder/", labelKey: "coverLetter", activeRoutes: ["/cover-letter-builder/", "/cover-letter/templates/"], alwaysLink: true },
-  { id: "application-pack", href: "/application-pack/", labelKey: "applicationPack", activeRoutes: ["/application-pack/"], alwaysLink: true },
-  { id: "tracker", href: "/job-tracker/", labelKey: "jobTracker", activeRoutes: ["/job-tracker/"], alwaysLink: true },
-  { id: "interview", href: "/interview-prep/", labelKey: "interviewPrep", activeRoutes: ["/interview-prep/"], alwaysLink: true },
-  { id: "pricing", href: "/pricing/", labelKey: "pricing", activeRoutes: ["/pricing/"], alwaysLink: true },
+  { id: "resume", href: "/resume-builder/", labelKey: "resumeBuilder", activeRoutes: ["/resume-builder/", "/free-resume-builder/"] },
+  { id: "ats", href: "/ats-checker/", labelKey: "atsChecker", activeRoutes: ["/ats-checker/", "/ats-checker-fr/", "/ats-checker-ar/", "/ats-resume-builder/", "/resume-checker/"] },
+  { id: "templates", href: "/resume/templates/", labelKey: "resumeTemplates", activeRoutes: ["/resume/templates/", "/examples/"] },
+  { id: "cover", href: "/cover-letter-builder/", labelKey: "coverLetter", activeRoutes: ["/cover-letter-builder/", "/cover-letter/templates/"] },
+  { id: "application-pack", href: "/application-pack/", labelKey: "applicationPack", activeRoutes: ["/application-pack/"] },
+  { id: "tracker", href: "/job-tracker/", labelKey: "jobTracker", activeRoutes: ["/job-tracker/"] },
+  { id: "interview", href: "/interview-prep/", labelKey: "interviewPrep", activeRoutes: ["/interview-prep/"] },
+  { id: "pricing", href: "/pricing/", labelKey: "pricing", activeRoutes: ["/pricing/"] },
 ];
 
 export function normalizeNavPath(value = "/") {

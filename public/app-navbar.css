@@ -1,3 +1,6 @@
+@view-transition{navigation:auto}
+.ac-global-header{view-transition-name:applycraft-header}
+::view-transition-old(applycraft-header),::view-transition-new(applycraft-header){animation-duration:0s;mix-blend-mode:normal}
 :root{--ac-header-height:64px;--ac-header-background:rgba(6,8,15,.98);--ac-header-border:#20324e;--ac-header-z-index:100;--ac-header-inline-padding:clamp(16px,2vw,32px);--ac-header-logo-height:30px;--ac-header-action-height:38px;--ac-site-max-width:1840px;--ac-page-inline-padding:clamp(16px,2vw,32px);--ac-nav-text:#AAB7CA;--ac-nav-hover:#EEF2FF;--ac-nav-hover-bg:#FFFFFF0A;--ac-nav-active-text:#A5B4FC;--ac-nav-active-bg:#6366F118;--ac-nav-active-accent:#818CF8}
 .ac-global-header{position:sticky;top:0;z-index:var(--ac-header-z-index);width:100%;height:var(--ac-header-height);box-sizing:border-box;background:var(--ac-header-background);border-bottom:0;box-shadow:none;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font-family:'IBM Plex Sans','IBM Plex Sans Arabic',system-ui,sans-serif;font-size:16px;line-height:1.2}
 .ac-global-header__inner{width:min(100%,var(--ac-site-max-width))!important;height:var(--ac-header-height)!important;margin-inline:auto!important;padding-inline:var(--ac-header-inline-padding)!important;display:flex;align-items:center;box-sizing:border-box}
