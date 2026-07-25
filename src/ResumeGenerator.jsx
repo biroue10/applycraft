@@ -72,6 +72,7 @@ const LANDING2_LOADERS = {
 // before they enter the viewport.
 const InteractiveResumeDemo = React.lazy(() => import("./components/InteractiveResumeDemo.jsx"));
 const ApplicationPackSection = React.lazy(() => import("./components/ApplicationPackSection.jsx"));
+const LandingStats = React.lazy(() => import("./components/LandingStats.jsx"));
 const TrackerPrivacyControls = React.lazy(() => import("./components/TrackerPrivacyControls.jsx"));
 const EvidenceLibrary = React.lazy(() => import("./components/EvidenceLibrary.jsx"));
 const TrackerFilters = React.lazy(() => import("./components/TrackerFilters.jsx"));
@@ -8938,31 +8939,22 @@ Awards: ${form.awards}`;
           </div>
         </div>
 
-        {/* Stats strip */}
-        <div style={{ background: C.surface, padding: "28px 24px" }}>
-          <div style={{ maxWidth: 900, margin: "0 auto",
-            display: "flex", justifyContent: "space-around", alignItems: "center",
-            flexWrap: "wrap", gap: "16px 32px" }}>
-            {[
-              { n: `${RESUME_TEMPLATE_COUNT}`, label: lx.statTemplates },
-              { n: `${COVER_TEMPLATE_COUNT}`, label: lx.statCover },
-              { n: `${LOCALIZED_DOCUMENT_LANGUAGE_COUNT}`, label: lx.statDocLangs },
-              { n: "2", label: lx.statFormats },
-              { n: "∞", label: lx.statDownloads },
-            ].map(s => (
-              <div key={s.label} style={{ textAlign: "center", minWidth: 80 }}>
-                <div style={{ fontSize: "clamp(22px, 3vw, 32px)", fontWeight: 800, lineHeight: 1,
-                  background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{s.n}</div>
-                <div style={{ fontSize: 11.5, color: C.text3, marginTop: 5, textTransform: "uppercase",
-                  letterSpacing: "0.8px", fontWeight: 600 }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* A small, independently testable landing component; counts come
+            directly from the template registry rather than duplicated copy. */}
+        <React.Suspense fallback={null}>
+          <LandingStats colors={C} items={[
+            { value: `${RESUME_TEMPLATE_COUNT}`, label: lx.statTemplates },
+            { value: `${COVER_TEMPLATE_COUNT}`, label: lx.statCover },
+            { value: `${LOCALIZED_DOCUMENT_LANGUAGE_COUNT}`, label: lx.statDocLangs },
+            { value: "2", label: lx.statFormats },
+            { value: "∞", label: lx.statDownloads },
+          ]} />
+        </React.Suspense>
 
         {/* Full workflow UI is a small below-the-fold chunk; its public route is
             crawlable even before hydration and links to every real tool. */}
-        <DeferredApplicationPack locale={lang} mobile={isMobile} />
+        {/* Advanced multi-tool workflows live on their own route. Keeping them
+            out of the first-time landing flow prevents competing entry points. */}
 
         <DeferredInteractiveResumeDemo
           isMobile={isMobile}
@@ -9018,7 +9010,9 @@ Awards: ${form.awards}`;
           </section>
         </FadeIn>
 
-        {/* Master Profile teaser */}
+        {/* Master Profile is introduced after a user enters the builder, where
+            its “build once, tailor later” value has the right context. */}
+        {false && (
         <FadeIn>
           <div style={{ padding: "72px 24px 80px" }}>
             <div style={{ maxWidth: 860, margin: "0 auto", display: "flex",
@@ -9065,6 +9059,7 @@ Awards: ${form.awards}`;
             </div>
           </div>
         </FadeIn>
+        )}
 
         {/* How it works */}
         <div style={{ padding: "72px 24px 80px" }}>
@@ -9185,7 +9180,8 @@ Awards: ${form.awards}`;
           </div>
         </div>
 
-        {/* Free pledge */}
+        {/* The hero trust row and comparison already explain the free promise. */}
+        {false && (
         <FadeIn>
           <div style={{ background: `linear-gradient(135deg, ${C.accent}14 0%, ${C.accent2}08 100%)`,
             padding: "80px 24px", textAlign: "center" }}>
@@ -9210,6 +9206,7 @@ Awards: ${form.awards}`;
             </div>
           </div>
         </FadeIn>
+        )}
 
         {/* Comparison — why we stand out */}
         <FadeIn>
@@ -9361,7 +9358,8 @@ Awards: ${form.awards}`;
           </div>
         </div>
 
-        {/* Early adopter CTA — replaces fake testimonials */}
+        {/* Feedback remains available in the footer; omit this duplicate
+            interruption from the primary create-or-check journey.
         <div style={{ padding: "72px 24px" }}>
           <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center" }}>
             <FadeIn>
@@ -9386,6 +9384,7 @@ Awards: ${form.awards}`;
             </FadeIn>
           </div>
         </div>
+        */}
 
         {/* FAQ */}
         <div style={{ padding: "80px 24px 80px" }}>

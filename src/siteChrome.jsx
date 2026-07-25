@@ -188,8 +188,10 @@ export function SiteHeader({
     ? onMobileMenuToggle
     : () => setInternalMenuOpen((open) => !open);
   const moreLabel = lang === "fr" ? "Plus" : lang === "ar" ? "المزيد" : "More";
-  const priorityItems = items.slice(0, 4);
-  const secondaryItems = items.slice(4);
+  // Keep the first decision deliberately small: build, check, or browse.
+  // Supporting workflows remain available under “More”.
+  const priorityItems = items.slice(0, 3);
+  const secondaryItems = items.slice(3);
   const hasActiveSecondary = secondaryItems.some((item) => item.id === activeId);
 
   useEffect(() => {

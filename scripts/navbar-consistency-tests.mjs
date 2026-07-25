@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { INTERFACE_LANGUAGES, interfaceLanguageByCode } from "../src/i18n/languages.js";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const DIST = join(ROOT, "dist");
 const routes = [
   "/", "/resume-builder/", "/cover-letter-builder/", "/ats-checker/",

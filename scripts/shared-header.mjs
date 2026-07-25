@@ -13,15 +13,15 @@ export function headerHtml(lang = "en", route = "/") {
   const active = activeNavIdForPath(route);
   const links = PRIMARY_NAV_ITEMS.map((item, index) => {
     const current = item.id === active ? ' aria-current="page" data-nav-active="true"' : "";
-    const secondary = index >= 4 ? " ac-site-nav-secondary" : "";
+    const secondary = index >= 3 ? " ac-site-nav-secondary" : "";
     return `<a class="ac-nav-link${secondary}" data-nav-id="${item.id}" href="${localizeRoute(item.href, locale)}"${current}>${f[item.labelKey] || item.id}</a>`;
   }).join("");
-  const secondaryLinks = PRIMARY_NAV_ITEMS.slice(4).map((item) => {
+  const secondaryLinks = PRIMARY_NAV_ITEMS.slice(3).map((item) => {
     const current = item.id === active ? ' aria-current="page" data-nav-active="true"' : "";
     return `<a class="ac-nav-link" data-nav-id="${item.id}" href="${localizeRoute(item.href, locale)}"${current}>${f[item.labelKey] || item.id}</a>`;
   }).join("");
   const moreLabel = locale === "fr" ? "Plus" : locale === "ar" ? "المزيد" : "More";
-  const moreCurrent = PRIMARY_NAV_ITEMS.slice(4).some((item) => item.id === active)
+  const moreCurrent = PRIMARY_NAV_ITEMS.slice(3).some((item) => item.id === active)
     ? ' data-active-child="true"'
     : "";
   const currentLanguage = interfaceLanguageByCode(locale);

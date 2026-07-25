@@ -12,12 +12,12 @@
 // native navigation therefore preserves correct metadata and browser history.
 export const PRIMARY_NAV_ITEMS = [
   { id: "resume", href: "/resume-builder/", labelKey: "resumeBuilder", activeRoutes: ["/resume-builder/", "/free-resume-builder/"], alwaysLink: true },
-  { id: "cover", href: "/cover-letter-builder/", labelKey: "coverLetter", activeRoutes: ["/cover-letter-builder/", "/cover-letter/templates/"], alwaysLink: true },
   { id: "ats", href: "/ats-checker/", labelKey: "atsChecker", activeRoutes: ["/ats-checker/", "/ats-checker-fr/", "/ats-checker-ar/", "/ats-resume-builder/", "/resume-checker/"], alwaysLink: true },
+  { id: "templates", href: "/resume/templates/", labelKey: "resumeTemplates", activeRoutes: ["/resume/templates/", "/examples/"], alwaysLink: true },
+  { id: "cover", href: "/cover-letter-builder/", labelKey: "coverLetter", activeRoutes: ["/cover-letter-builder/", "/cover-letter/templates/"], alwaysLink: true },
   { id: "application-pack", href: "/application-pack/", labelKey: "applicationPack", activeRoutes: ["/application-pack/"], alwaysLink: true },
   { id: "tracker", href: "/job-tracker/", labelKey: "jobTracker", activeRoutes: ["/job-tracker/"], alwaysLink: true },
   { id: "interview", href: "/interview-prep/", labelKey: "interviewPrep", activeRoutes: ["/interview-prep/"], alwaysLink: true },
-  { id: "templates", href: "/resume/templates/", labelKey: "resumeTemplates", activeRoutes: ["/resume/templates/", "/examples/"], alwaysLink: true },
   { id: "pricing", href: "/pricing/", labelKey: "pricing", activeRoutes: ["/pricing/"], alwaysLink: true },
 ];
 
