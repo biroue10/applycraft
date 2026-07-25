@@ -66,9 +66,11 @@ const assertStable = (reference, current, label) => {
 
 const clickNav = async (page, id, locale = "en") => {
   const desktop = page.locator(`.ac-global-header__nav > .ac-nav-link[data-nav-id="${id}"]:visible`);
+  let usedMobileMenu = false;
   if (await desktop.count()) {
     await desktop.click({ force: true });
   } else {
+    usedMobileMenu = true;
     const button = page.locator(".ac-global-header__menu-button:visible");
     if (await page.locator(".ac-global-header__mobile-menu:visible").count() === 0) await button.click();
     await page.locator(`.ac-global-header__mobile-menu .ac-nav-link[data-nav-id="${id}"]:visible`).click({ force: true });
@@ -84,6 +86,9 @@ const clickNav = async (page, id, locale = "en") => {
     return header && getComputedStyle(header).position === "sticky"
       && Math.abs(header.getBoundingClientRect().x) <= 1;
   });
+  if (usedMobileMenu) {
+    await page.waitForFunction(() => !document.querySelector(".ac-global-header__mobile-menu"));
+  }
   await page.evaluate(() => document.fonts?.ready);
 };
 

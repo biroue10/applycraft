@@ -4768,7 +4768,7 @@ Awards: ${form.awards}`;
         currentPath={location.pathname}
         onLanguageSelect={setSiteLanguage}
         mobileMenuOpen={appHeaderMenuOpen}
-        onMobileMenuToggle={() => setAppHeaderMenuOpen((open) => !open)}
+        onMobileMenuToggle={setAppHeaderMenuOpen}
       />
       {showWorkspaceStatus && <WorkspaceStatusBar>
         <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.text3, fontSize: 12.5, fontWeight: 700 }}>
@@ -8794,7 +8794,7 @@ Awards: ${form.awards}`;
           currentPath={location.pathname}
           onLanguageSelect={setSiteLanguage}
           mobileMenuOpen={landingMenuOpen}
-          onMobileMenuToggle={() => setLandingMenuOpen(o => !o)}
+          onMobileMenuToggle={setLandingMenuOpen}
           onNavigate={(item) => { setLandingMenuOpen(false); setAppView("app"); enterPrimaryTool(item); }}
         />
         <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)} at={at}

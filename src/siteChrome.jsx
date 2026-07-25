@@ -184,9 +184,10 @@ export function SiteHeader({
   const resolvedCurrentPath = currentPath || (typeof window !== "undefined" ? window.location.pathname : homeHrefForLang(lang));
   const controlledMobileMenu = typeof onMobileMenuToggle === "function";
   const menuOpen = controlledMobileMenu ? mobileMenuOpen : internalMenuOpen;
-  const toggleMobileMenu = controlledMobileMenu
+  const setMobileMenuOpen = controlledMobileMenu
     ? onMobileMenuToggle
-    : () => setInternalMenuOpen((open) => !open);
+    : setInternalMenuOpen;
+  const toggleMobileMenu = () => setMobileMenuOpen(!menuOpen);
   const moreLabel = lang === "fr" ? "Plus" : lang === "ar" ? "المزيد" : "More";
   // Keep the first decision deliberately small: build, check, or browse.
   // Supporting workflows remain available under “More”.
@@ -200,12 +201,12 @@ export function SiteHeader({
         setMoreMenuOpen(false);
       }
       if (menuOpen && headerRef.current && !headerRef.current.contains(event.target)) {
-        toggleMobileMenu();
+        setMobileMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", closeOnOutsideClick);
     return () => document.removeEventListener("mousedown", closeOnOutsideClick);
-  }, [menuOpen, moreMenuOpen, toggleMobileMenu]);
+  }, [menuOpen, moreMenuOpen, setMobileMenuOpen]);
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -219,7 +220,7 @@ export function SiteHeader({
 
   const closeMobileMenu = () => {
     if (!menuOpen) return;
-    toggleMobileMenu();
+    setMobileMenuOpen(false);
   };
   return (
     <>
@@ -373,9 +374,9 @@ export function SiteHeader({
                 className="ac-nav-link"
                 data-nav-id={item.id}
                 aria-current={item.id === activeId ? "page" : undefined}
-                onClick={item.onClick ? () => { item.onClick(); toggleMobileMenu(); } : action.props.onClick ? (event) => {
+                onClick={item.onClick ? () => { item.onClick(); closeMobileMenu(); } : action.props.onClick ? (event) => {
                   action.props.onClick(event);
-                  if (!shouldUseNativeNavigation(event)) toggleMobileMenu();
+                  if (!shouldUseNativeNavigation(event)) closeMobileMenu();
                 } : () => closeMobileMenu()}
               >
                 {item.label}
