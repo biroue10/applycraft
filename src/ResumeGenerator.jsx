@@ -7445,14 +7445,18 @@ Awards: ${form.awards}`;
   const ComingSoon = ({ id, label }) => {
     const copy = COMING_SOON_COPY[id] || { title: label, sub: builderText("featureOnWay"), cta: builderText("stayTuned") };
     return (
-      <div style={{ padding: isMobile ? 20 : 40, maxWidth: 560 }}>
-        <PageHeader eyebrow={builderText("comingSoon")} icon="🚧" title={copy.title} sub={copy.sub} isMobile={isMobile} />
-        <div style={{ marginTop: 8, fontSize: 14.5, color: C.text2 }}>
-          {copy.cta}{" "}
-          <a href={`mailto:${AUTHOR.email}?subject=${encodeURIComponent(copy.title + " — early access")}`}
-            style={{ color: C.accent2, fontWeight: 600, textDecoration: "none" }}>
-            {AUTHOR.email} →
-          </a>
+      <div style={{ minHeight: isMobile ? 320 : "clamp(360px, 52vh, 560px)",
+        padding: isMobile ? "40px 20px" : "64px 40px", display: "grid",
+        placeItems: "center", boxSizing: "border-box" }}>
+        <div style={{ width: "100%", maxWidth: 560, textAlign: "center" }}>
+          <PageHeader eyebrow={builderText("comingSoon")} icon="🚧" title={copy.title} sub={copy.sub} isMobile={isMobile} />
+          <div style={{ marginTop: 12, fontSize: 14.5, color: C.text2 }}>
+            {copy.cta}{" "}
+            <a href={`mailto:${AUTHOR.email}?subject=${encodeURIComponent(copy.title + " — early access")}`}
+              style={{ color: C.accent2, fontWeight: 600, textDecoration: "none" }}>
+              {AUTHOR.email} →
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -8744,6 +8748,9 @@ Awards: ${form.awards}`;
     navPage === "tracker" ||
     navPage === "ats";
   const isImmersiveAppView = isFormView || isFocusedToolView;
+  // The global header is now the single navigation surface. Keeping the old
+  // icon rail hidden avoids duplicate, unlabeled navigation on workspace pages.
+  const showWorkspaceSidebar = false;
 
   // ── Landing page ──────────────────────────────────────────────────
   if (appView === "landing") {
@@ -8942,7 +8949,7 @@ Awards: ${form.awards}`;
         {/* A small, independently testable landing component; counts come
             directly from the template registry rather than duplicated copy. */}
         <React.Suspense fallback={null}>
-          <LandingStats colors={C} items={[
+          <LandingStats colors={C} ariaLabel={lx.productOverview} items={[
             { value: `${RESUME_TEMPLATE_COUNT}`, label: lx.statTemplates },
             { value: `${COVER_TEMPLATE_COUNT}`, label: lx.statCover },
             { value: `${LOCALIZED_DOCUMENT_LANGUAGE_COUNT}`, label: lx.statDocLangs },
@@ -9455,7 +9462,7 @@ Awards: ${form.awards}`;
       <div className="ac-workspace-layout" data-clarity-mask="true" style={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden" }}>
 
       {/* ── Sidebar (desktop) ── */}
-      {!isMobile && !isImmersiveAppView && (
+      {showWorkspaceSidebar && !isMobile && !isImmersiveAppView && (
         <aside style={{ width: sbW, flexShrink: 0,
           background: `linear-gradient(180deg, ${C.sidebar} 0%, rgba(6,8,15,0.96) 100%)`,
           borderRight: `1px solid ${C.border}`,
@@ -9645,7 +9652,7 @@ Awards: ${form.awards}`;
         )}
 
         {/* Mobile top bar */}
-        {isMobile && !isFocusedToolView && (
+        {showWorkspaceSidebar && isMobile && !isFocusedToolView && (
           <div style={{ display: "flex", alignItems: "center",
             borderBottom: `1px solid ${C.border}`, marginBottom: 12, paddingBottom: 8 }}>
             <button onClick={() => setSidebarOpen((open) => !open)} aria-label={builderText("openMenu")} aria-expanded={sidebarOpen}
@@ -9659,7 +9666,7 @@ Awards: ${form.awards}`;
         )}
 
         {/* Mobile sidebar drawer */}
-        {isMobile && sidebarOpen && (
+        {showWorkspaceSidebar && isMobile && sidebarOpen && (
           <>
             <div onClick={() => setSidebarOpen(false)}
               style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 200 }} />

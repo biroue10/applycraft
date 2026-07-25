@@ -1,8 +1,8 @@
 import React from "react";
 
-export default function LandingStats({ colors, items }) {
+export default function LandingStats({ colors, items, ariaLabel }) {
   return (
-    <section aria-label="Product overview" style={{ background: colors.surface, padding: "28px 24px" }}>
+    <section aria-label={ariaLabel} style={{ background: colors.surface, padding: "28px 24px" }}>
       <div style={{
         maxWidth: 900,
         margin: "0 auto",
