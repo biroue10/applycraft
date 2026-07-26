@@ -125,14 +125,14 @@ const PAGES = {
 <p class="meta">Last updated: ${TODAY} · Effective immediately</p>
 <p class="lead">ApplyCraft is designed to handle as little of your data as possible. The free builder is browser-first by default, while optional online features process selected data only when you choose to use them.</p>
 
-<div class="callout"><p>⚡ <strong style="color:#E4EBF5">Short version:</strong> Core editing happens in your browser. Resume drafts may be saved locally in this browser on this device so they can be restored; they are not automatically uploaded to ApplyCraft. Optional online features process selected data only when you choose them. ApplyCraft does not send résumé content to analytics.</p></div>
+<div class="callout"><p>⚡ <strong style="color:#E4EBF5">Short version:</strong> Core editing happens in your browser. Resume drafts may be saved locally in this browser on this device so they can be restored; they are not automatically uploaded to ApplyCraft. If you use optional online features, selected data may be processed so those features can work. ApplyCraft does not send résumé content to analytics.</p></div>
 
 <h2>1. Who we are</h2>
 <p>ApplyCraft is an independent product built and operated by Biroue Digital Ltd (<a href="mailto:${EMAIL}">${EMAIL}</a>). This website is accessible at <strong>applycraft.io</strong>.</p>
 
 <h2 id="data-we-collect">2. What data we collect</h2>
 <h3>2.1 Resume and cover letter content</h3>
-<p>By default, resume and cover-letter data is edited and stored only in your own browser. ApplyCraft does not require an account, and user-written content is not sent to or stored on our servers unless you explicitly use an optional online feature below.</p>
+<p>By default, resume and cover-letter data is edited only in your browser. The Resume Builder stores its current draft in local browser storage on this device so it can be restored; you can clear that draft from the editor. ApplyCraft does not require an account, and user-written content is not sent to or stored on our servers unless you explicitly use an optional online feature below.</p>
 
 <h3 id="optional-account">2.4 Optional account and Master Profile sync</h3>
 <p>You may optionally provide an email address to save your <strong>Master Profile</strong> and sync it across your devices. This is entirely optional — the resume builder, all templates, and PDF/DOCX export work fully without it.</p>
@@ -148,8 +148,9 @@ const PAGES = {
 <h3>2.3 Uploaded files</h3>
 <p>If you upload a PDF or DOCX resume using the upload feature, the intended behavior is browser-side processing. Avoid uploading sensitive documents if you are using a modified build or third-party mirror of ApplyCraft.</p>
 
-<h3>2.4 Private offline share links</h3>
-<p>Private offline share links store the document data inside the URL fragment. Anyone with the full link can view the document, so only share it with people you trust. These links do not require server-side document storage, but they can be long.</p>
+<h3>2.4 Share links</h3>
+<p>When you explicitly create a short share link, ApplyCraft stores a copy of the shared document in Cloudflare KV for 30 days and returns a random, unlisted URL. The copy is automatically deleted when it expires. Anyone with the link can view the document, so only share it with people you trust.</p>
+<p>You can instead create a private offline share link. It keeps encoded document data inside the URL fragment and does not require server-side document storage, but the link can be long.</p>
 
 <h2 id="cookies">3. Cookies and tracking</h2>
 <p>ApplyCraft sets <strong>no advertising cookies</strong> and runs <strong>no ad networks</strong> (no Facebook Pixel or advertising pixels). We use <strong>Google Analytics 4</strong> (measurement ID <code>G-V4RE1M2Q52</code>) for aggregate product analytics and <strong>Microsoft Clarity</strong> for consented session recordings, heatmaps, and interaction insights. Google LLC and Microsoft Corporation act as processors for this data.</p>
@@ -167,7 +168,8 @@ const PAGES = {
   <tr><th scope="row">Export PDF or DOCX</th><td>Generated for download on your device</td><td>Your explicit export request</td></tr>
   <tr><th scope="row">Store Job Tracker metadata</th><td>Local storage on this device; document content is excluded</td><td>Enabling the storage option</td></tr>
   <tr><th scope="row">Use an AI helper</th><td>The selected text is proxied to Anthropic</td><td>Your explicit AI action after the notice</td></tr>
-  <tr><th scope="row">Create a private offline link</th><td>Encrypted document data remains in the URL fragment</td><td>Your explicit share action</td></tr>
+  <tr><th scope="row">Create a short share link</th><td>A copy of the shared document is stored in Cloudflare KV for 30 days</td><td>Your explicit share action</td></tr>
+  <tr><th scope="row">Create a private offline link</th><td>Encoded document data remains in the URL fragment</td><td>Your explicit share action</td></tr>
 </tbody></table>
 <p>You can clear local Job Tracker metadata from the tracker and export a copy first. ApplyCraft does not log full resumes, cover letters, names, email addresses, job descriptions or interview answers as analytics events.</p>
 
@@ -186,7 +188,7 @@ const PAGES = {
 <p>For any privacy-related request, contact us at <a href="mailto:${EMAIL}">${EMAIL}</a>. We respond within 72 hours.</p>
 
 <h2>6. Data retention</h2>
-<p>For the free, no-account builder we do not store your active résumé content on our servers by default. If you opt into Master Profile sync, we retain your email and stored Master Profile until you delete them via "Delete my saved data" or by contacting us. Cloudflare access logs are automatically deleted after 30 days. If you contact us by email, your email and its contents are retained only for as long as necessary to respond.</p>
+<p>For the free, no-account builder we do not store your active résumé content on our servers by default. Short-link copies are stored for 30 days and then automatically deleted. If you opt into Master Profile sync, we retain your email and stored Master Profile until you delete them via "Delete my saved data" or by contacting us. Cloudflare access logs are automatically deleted after 30 days. If you contact us by email, your email and its contents are retained only for as long as necessary to respond.</p>
 
 <h2>7. Children's privacy</h2>
 <p>ApplyCraft is not directed at children under 13 (or 16 in the EU). We do not knowingly collect data from children. If you believe a child has submitted data, contact us and we will take appropriate action.</p>
@@ -201,7 +203,7 @@ const PAGES = {
 </ul>
 
 <h2>9. Security</h2>
-<p>All traffic to applycraft.io is encrypted via HTTPS/TLS. The free builder holds no personal data on our servers. For opted-in accounts we store only your email and Master Profile content, which you can delete at any time, keeping our data footprint minimal.</p>
+<p>All traffic to applycraft.io is encrypted via HTTPS/TLS. The free builder does not upload document content during normal editing. It stores document content only when you explicitly create a short share link or enable another online storage feature. Short-link copies expire after 30 days. For opted-in accounts we store only your email and Master Profile content, which you can delete at any time, keeping our data footprint minimal.</p>
 
 <h2>10. Changes to this policy</h2>
 <p>We may update this policy. The "Last updated" date at the top will reflect any changes. Continued use of ApplyCraft after changes constitutes acceptance of the updated policy.</p>
@@ -431,7 +433,7 @@ const PAGES = {
 
 <div class="roadmap-item">
   <h3>Privacy-first document handling</h3>
-  <p>Core editing happens in the browser. Resume drafts may be stored locally on this device for restoration and are not automatically uploaded.</p>
+  <p>Core editing happens in the browser, and document content is not saved automatically after you leave the builder.</p>
 </div>
 
 <h2>📋 In progress</h2>
@@ -459,11 +461,6 @@ const PAGES = {
 </div>
 
 <div class="roadmap-item">
-  <h3>Short public share links</h3>
-  <p>Short public links are planned for later. They will require storing a copy of the shared document and will include a clear privacy notice before creation.</p>
-</div>
-
-<div class="roadmap-item">
   <h3>Private offline share links</h3>
   <p>Current: private offline share links are available using URL fragments. They do not require server-side document storage, but the links can be long.</p>
 </div>
@@ -479,6 +476,10 @@ const PAGES = {
 </div>
 
 <h2>✅ Recently shipped</h2>
+<div class="roadmap-item">
+  <h3>Short share links</h3>
+  <p>Create a compact <code>/r/{id}</code> link backed by 30-day expiring storage, with private offline links still available.</p>
+</div>
 <p>See the <a href="/changelog/">full changelog</a> for everything that's already live.</p>
 
 <hr/>

@@ -3615,20 +3615,24 @@ export default function ResumeGenerator() {
 
   // ── Share / email document (⋮ menu on the resume + cover editors) ─────────
   const [shareUrl, setShareUrl] = useState("");
+  const [shareMode, setShareMode] = useState("short");
   const shareCopy = useMemo(() => ({
     create: statusText("shareCreate"),
+    createOffline: statusText("shareCreateOffline"),
     email: statusText("shareEmail"),
     copyShort: statusText("shareCopyPrivate"),
     open: statusText("shareOpen"),
     ready: statusText("shareReady"),
+    offlineReady: statusText("shareOfflineReady"),
     canView: statusText("shareCanView"),
     stored: statusText("shareStored"),
+    offlineStored: statusText("shareOfflineStored"),
+    creating: statusText("shareCreating"),
     failed: statusText("shareFailed"),
     empty: statusText("shareEmptyResume"),
-    privateReady: statusText("shareReady"),
     emailBody: (url) => statusText("shareEmailBody", { url }),
   }), [statusText]);
-  const shareLink = useCallback(async (getPayload) => {
+  const shareLink = useCallback(async (getPayload, mode = "short") => {
     try {
       const payload = getPayload();
       if (payload?.k === "resume" && isResumeDataEmpty(payload.d)) {
@@ -3637,11 +3641,15 @@ export default function ResumeGenerator() {
         setTimeout(() => setStatusMsg(""), 3000);
         return "";
       }
-      const { buildPrivateShareUrl } = await import("./share.js");
-      const url = buildPrivateShareUrl(payload);
+      setStatusMsg(shareCopy.creating);
+      const { buildPrivateShareUrl, createShortShareLink } = await import("./share.js");
+      const url = mode === "offline"
+        ? buildPrivateShareUrl(payload)
+        : (await createShortShareLink(payload, { expiresInDays: 30 })).url;
       setShareUrl(url);
+      setShareMode(mode);
       try { navigator.clipboard && navigator.clipboard.writeText(url); } catch { /* noop */ }
-      setStatusMsg(shareCopy.privateReady);
+      setStatusMsg(mode === "offline" ? shareCopy.offlineReady : shareCopy.ready);
       setTimeout(() => setStatusMsg(""), 2500);
       return url;
     } catch {
@@ -3649,7 +3657,7 @@ export default function ResumeGenerator() {
       setTimeout(() => setStatusMsg(""), 2500);
       return "";
     }
-  }, [shareCopy.empty, shareCopy.failed, shareCopy.privateReady]);
+  }, [shareCopy.creating, shareCopy.empty, shareCopy.failed, shareCopy.offlineReady, shareCopy.ready]);
   const emailLink = useCallback(async (getPayload, subject) => {
     const url = await shareLink(getPayload);
     if (!url) return;
@@ -3704,13 +3712,18 @@ export default function ResumeGenerator() {
               color: C.text1, padding: "10px 10px", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", borderRadius: 8 }}>
             🔗 {shareCopy.create}
           </button>
+          <button type="button" role="menuitem" onClick={() => shareLink(getPayload, "offline")}
+            style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none",
+              color: C.text2, padding: "10px 10px", fontSize: 12.5, fontWeight: 650, cursor: "pointer", fontFamily: "inherit", borderRadius: 8 }}>
+            🔒 {shareCopy.createOffline}
+          </button>
           {shareUrl && (
             <div style={{ marginTop: 8, padding: "9px 10px", background: C.elevated, borderRadius: 8 }}>
               <div style={{ fontSize: 11, color: C.text3, marginBottom: 6 }}>
-                {shareCopy.ready}
+                {shareMode === "offline" ? shareCopy.offlineReady : shareCopy.ready}
               </div>
               <div style={{ fontSize: 11, color: C.text3, marginBottom: 6, lineHeight: 1.5 }}>
-                {shareCopy.stored}<br />{shareCopy.canView}
+                {shareMode === "offline" ? shareCopy.offlineStored : shareCopy.stored}<br />{shareCopy.canView}
               </div>
               <input readOnly value={shareUrl} onFocus={(e) => e.target.select()}
                 style={{ width: "100%", boxSizing: "border-box", fontSize: 11.5, padding: "6px 8px", background: C.surface,

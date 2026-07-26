@@ -11,5 +11,10 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "html_handling": "force-trailing-slash"
-  }
+  },
+  "kv_namespaces": [
+    {
+      "binding": "SHARES"
+    }
+  ]
 }

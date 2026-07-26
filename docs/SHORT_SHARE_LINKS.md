@@ -1,11 +1,11 @@
 # Short Share Links
 
-Short public links are planned, but not active in the product right now.
-ApplyCraft currently uses private offline `/r#...` links that keep document
-data inside the URL fragment and do not require server-side document storage.
+Short public links are active in the product through `/r/{id}` URLs. ApplyCraft
+also retains private offline `/r#...` links that keep document data inside the
+URL fragment and do not require server-side document storage.
 
-When short public links are reactivated, they will use the Worker endpoint
-`POST /api/share` and a Cloudflare KV namespace.
+Short links use the Worker endpoint `POST /api/share` and a Cloudflare KV
+namespace.
 
 Required binding:
 
@@ -18,17 +18,26 @@ names, but production should bind the namespace as `SHARES`. Without one of
 these bindings, `/api/share` returns a safe
 `SHARE_STORAGE_UNAVAILABLE` response and no document content is stored.
 
-Recommended setup:
+The production Worker config declares the binding without an ID:
 
-```bash
-npx wrangler kv namespace create SHARES
+```json
+{
+  "kv_namespaces": [
+    {
+      "binding": "SHARES"
+    }
+  ]
+}
 ```
 
-Then add the returned namespace ID to the Cloudflare Worker deployment as the
-`SHARES` binding. Keep `RATE_LIMIT_KV` bound separately when available so
-share creation and AI endpoints use centralized rate limiting across isolates.
+Cloudflare's automatic resource provisioning creates and binds the namespace
+during deployment. If automatic provisioning is unavailable for a deployment,
+create the namespace with `npx wrangler kv namespace create SHARES`, then add
+the returned ID to the binding. Keep `RATE_LIMIT_KV` bound separately when
+available so share creation and AI endpoints use centralized rate limiting
+across isolates.
 
-Planned privacy behavior:
+Privacy behavior:
 
 - Short links store a copy of the versioned share payload in KV.
 - Links expire automatically through KV TTL.

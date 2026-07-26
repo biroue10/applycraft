@@ -94,6 +94,9 @@
 <p>Si vous importez un PDF ou DOCX avec la fonction « améliorer un CV existant », le texte est lu dans votre navigateur pour préremplir le formulaire. Évitez d'importer des documents sensibles si vous utilisez une version modifiée ou un miroir tiers d'ApplyCraft.</p>
 <h3>2.4 Journaux techniques</h3>
 <p>Notre hébergeur et CDN (Cloudflare) enregistre des journaux d'accès standard — adresse IP, type de navigateur, URL demandée et horodatage — pour la sécurité et la prévention des abus. Nous ne les utilisons pas à des fins publicitaires ni pour établir un profil de vous.</p>
+<h3>2.5 Liens de partage</h3>
+<p>Lorsque vous créez explicitement un lien court, ApplyCraft stocke une copie du document partagé dans Cloudflare KV pendant 30 jours et fournit une URL aléatoire non répertoriée. La copie est automatiquement supprimée à son expiration. Toute personne disposant du lien peut consulter le document : partagez-le uniquement avec des personnes de confiance.</p>
+<p>Vous pouvez choisir à la place un lien privé hors ligne. Il conserve les données encodées du document dans le fragment de l'URL et ne nécessite aucun stockage côté serveur, mais il peut être long.</p>
 
 <h2>3. Cookies et analyse</h2>
 <p>ApplyCraft ne pose <strong>aucun cookie publicitaire</strong> et n'utilise <strong>aucune régie publicitaire</strong>. Nous utilisons, uniquement avec votre consentement, <strong>Google Analytics 4</strong> pour les mesures agrégées et <strong>Microsoft Clarity</strong> pour les enregistrements de session, cartes thermiques et informations sur les interactions.</p>
@@ -120,7 +123,7 @@
 </ul>
 
 <h2>8. Conservation des données</h2>
-<p>L'éditeur gratuit sans compte stocke votre travail uniquement dans votre navigateur, que vous contrôlez. Si vous activez la synchronisation du Profil principal, nous conservons votre e-mail et votre Profil principal stocké jusqu'à ce que vous les supprimiez. Les journaux d'accès Cloudflare sont éphémères et utilisés uniquement pour la sécurité. Si vous nous contactez par e-mail, votre message n'est conservé que le temps nécessaire pour répondre.</p>
+<p>L'éditeur gratuit sans compte stocke votre travail dans votre navigateur par défaut. Les copies créées pour les liens courts sont conservées pendant 30 jours puis automatiquement supprimées. Si vous activez la synchronisation du Profil principal, nous conservons votre e-mail et votre Profil principal stocké jusqu'à ce que vous les supprimiez. Les journaux d'accès Cloudflare sont éphémères et utilisés uniquement pour la sécurité. Si vous nous contactez par e-mail, votre message n'est conservé que le temps nécessaire pour répondre.</p>
 
 <h2>9. Vie privée des enfants</h2>
 <p>ApplyCraft ne s'adresse pas aux enfants de moins de 13 ans (ou 16 ans dans l'UE). Nous ne collectons pas sciemment de données d'enfants. Si vous pensez qu'un enfant a soumis des données, contactez-nous et nous prendrons les mesures appropriées.</p>

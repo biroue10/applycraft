@@ -9,6 +9,7 @@ import {
 import { isResumeDataEmpty, normalizeResumeData } from "../src/resumeData.js";
 import { getCoverTemplateById, getResumeTemplateById } from "../src/documents/templateRegistry.js";
 import { isRtlLang } from "../src/i18n/languages.js";
+import worker from "../worker.js";
 
 function roundTrip(payload) {
   return normalizeSharedDocument(decodeShare(encodeShare(payload)));
@@ -61,6 +62,47 @@ assert.equal(getResumeTemplateById(decoded.t).id, "modern", "Modern resume templ
 const privateUrl = buildPrivateShareUrl(arabicModernResume, "https://applycraft.io");
 assert.match(privateUrl, /^https:\/\/applycraft\.io\/r#/, "private offline links should use the legacy hash route");
 assert.ok(privateUrl.length > "https://applycraft.io/r#".length, "private offline links should include an encoded payload");
+
+class MemoryKv {
+  constructor() {
+    this.values = new Map();
+  }
+
+  async get(key) {
+    return this.values.get(key) || null;
+  }
+
+  async put(key, value) {
+    this.values.set(key, value);
+  }
+
+  async delete(key) {
+    this.values.delete(key);
+  }
+}
+
+const shareKv = new MemoryKv();
+const shareEnv = {
+  SHARES: shareKv,
+  APP_ORIGIN: "https://applycraft.io",
+  ALLOWED_ORIGINS: "https://applycraft.io",
+  ENABLE_DEV_ORIGINS: "false",
+};
+const createResponse = await worker.fetch(new Request("https://applycraft.io/api/share", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Origin: "https://applycraft.io",
+  },
+  body: JSON.stringify({ payload: arabicModernResume, expiresInDays: 30 }),
+}), shareEnv);
+assert.equal(createResponse.status, 201, "short-link API should create a stored share");
+const createdShare = await createResponse.json();
+assert.match(createdShare.url, /^https:\/\/applycraft\.io\/r\/[A-Za-z0-9_-]{10}$/, "short-link API should return a compact viewer URL");
+const readResponse = await worker.fetch(new Request(`https://applycraft.io/api/share/${createdShare.shareId}`), shareEnv);
+assert.equal(readResponse.status, 200, "stored short link should be readable");
+const readShare = await readResponse.json();
+assert.equal(readShare.payload.d.name, arabicModernResume.d.name, "stored short link should preserve document data");
 
 const cover = roundTrip({
   v: 2,
@@ -132,14 +174,15 @@ assert.ok(/v:\s*2,\s*k:\s*"resume"/.test(generatorSource), "resume share payload
 assert.ok(/v:\s*2,\s*k:\s*"cover"/.test(generatorSource), "cover share payload should use schema v2");
 assert.ok(/l:\s*docLang/.test(generatorSource), "share payloads should include document language");
 assert.ok(/isCustom: Boolean\(form\.sectionTitles\?\.\[key\]\)/.test(generatorSource), "live sections should preserve custom-label metadata");
-assert.ok(generatorSource.includes("shareCreate"), "share UI should read private/offline labels from translations");
+assert.ok(generatorSource.includes("shareCreate"), "share UI should read short-link labels from translations");
+assert.ok(generatorSource.includes("shareCreateOffline"), "share UI should preserve the private offline-link option");
 assert.ok(generatorSource.includes("shareEmptyResume"), "share UI should warn before sharing an empty resume");
 assert.ok(generatorSource.includes("downloadEmptyResume"), "export UI should warn before downloading an empty resume");
 assert.ok(generatorSource.includes("isResumeDataEmpty"), "resume share/export flow should check empty resume data");
-assert.ok(generatorSource.includes("shareStored"), "share UI should read long-link explanation from translations");
-assert.ok(enStatusSource.includes("Create private offline link"), "share UI should label hash links as private/offline");
-assert.ok(enStatusSource.includes("This link keeps the document data inside the URL"), "share UI should explain why hash links can be long");
-assert.ok(!generatorSource.includes("createShortShareLink"), "default share menu should not call the paused short-link API");
-assert.ok(!generatorSource.includes("Create short public link"), "default share menu should not present short public links as active");
+assert.ok(generatorSource.includes("shareStored"), "share UI should explain short-link storage");
+assert.ok(generatorSource.includes("shareOfflineStored"), "share UI should explain why offline links can be long");
+assert.ok(enStatusSource.includes("Create short link"), "share UI should label short links clearly");
+assert.ok(enStatusSource.includes("Create private offline link"), "share UI should retain private offline links");
+assert.ok(generatorSource.includes("createShortShareLink"), "default share menu should call the storage-backed short-link API");
 
 console.log("share tests passed");
