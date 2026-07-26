@@ -1,314 +1,338 @@
-<div align="center">
+# ApplyCraft
 
-<img src="docs/screenshots/01_cover.png" alt="ApplyCraft — The CV builder with English, French, and Arabic multilingual support" width="600"/>
+<p align="center">
+  <strong>Build, tailor, check, export, and manage job applications from one multilingual workspace.</strong>
+</p>
 
-<br/>
+<p align="center">
+  <a href="https://applycraft.io/">Live application</a> ·
+  <a href="https://applycraft.io/resume-builder/">Resume builder</a> ·
+  <a href="https://applycraft.io/ats-checker/">ATS checker</a> ·
+  <a href="https://applycraft.io/resume/templates/">Templates</a> ·
+  <a href="https://applycraft.io/blog/">Blog</a>
+</p>
 
-**The resume builder that speaks your language — English, French, and Arabic — while letting candidates write in any language.**
+<p align="center">
+  <a href="https://github.com/biroue10/applycraft/actions/workflows/deploy.yml"><img alt="Build and deployment status" src="https://github.com/biroue10/applycraft/actions/workflows/deploy.yml/badge.svg"></a>
+  <a href="https://github.com/biroue10/applycraft/actions/workflows/security.yml"><img alt="Security checks status" src="https://github.com/biroue10/applycraft/actions/workflows/security.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-see%20LICENSE-315bea"></a>
+  <img alt="Interface languages: English, French, and Arabic" src="https://img.shields.io/badge/UI-English%20%C2%B7%20French%20%C2%B7%20Arabic-101827">
+</p>
 
-Built for the French- and Arabic-speaking job seekers the big generic builders overlook: real right-to-left Arabic, not an afterthought, and country-specific formats for Canada, Morocco, the Gulf and international applications.
+![ApplyCraft French landing page](docs/screenshots/applycraft-home-fr.webp)
 
-60+ ATS-friendly templates · localized EN/FR/AR interface with RTL · live preview · unlimited free PDF and DOCX · no watermark · no sign-up · no paying to download.
+ApplyCraft is a browser-first career workspace for creating professional resumes and cover letters, checking ATS readiness, tracking applications, and preparing for interviews. The production interface supports English, French, and Arabic—including right-to-left layouts—and provides PDF and DOCX exports without requiring an account for the core workflow.
 
-[![Live site](https://img.shields.io/badge/Live%20site-applycraft.io-6366F1?style=flat-square)](https://applycraft.io)
-[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
-[![Built with](https://img.shields.io/badge/built%20with-React%2018%20%2B%20Vite%206-61DAFB?style=flat-square&logo=react)](https://vitejs.dev)
-[![Deployed on](https://img.shields.io/badge/deployed%20on-Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflare)](https://pages.cloudflare.com)
+> [!NOTE]
+> The ATS checker provides heuristic guidance. It cannot guarantee that a resume will pass a specific employer's ATS or lead to an interview.
 
-### → [Try it live at applycraft.io](https://applycraft.io)
+## Contents
 
-</div>
+- [Product overview](#product-overview)
+- [Product tour](#product-tour)
+- [How the product works](#how-the-product-works)
+- [Technology](#technology)
+- [Local development](#local-development)
+- [Configuration](#configuration)
+- [Quality and testing](#quality-and-testing)
+- [Internationalization, SEO, and accessibility](#internationalization-seo-and-accessibility)
+- [Privacy and security](#privacy-and-security)
+- [Deployment](#deployment)
+- [Project structure](#project-structure)
+- [Contributing and support](#contributing-and-support)
 
----
+## Product overview
 
-## What is ApplyCraft?
+| Area | What it provides | Open |
+| --- | --- | --- |
+| Resume builder | Guided sections, live preview, styling controls, local drafts, PDF/DOCX export, and sharing | [Build a resume](https://applycraft.io/resume-builder/) |
+| Resume templates | 60 customizable templates, with ATS-friendly, one-column, two-column, and market filters | [Browse templates](https://applycraft.io/resume/templates/) |
+| ATS checker | Resume structure, completeness, quantification, date, and job-description keyword checks | [Check a resume](https://applycraft.io/ats-checker/) |
+| Cover letter builder | Structured recipient, profile, opening, body, closing, and export workflow | [Build a cover letter](https://applycraft.io/cover-letter-builder/) |
+| Application pack | Resume and cover-letter variants organized for a specific application | [Open application pack](https://applycraft.io/application-pack/) |
+| Job tracker | Kanban workflow from saved role to offer, with filters and local import/export | [Track applications](https://applycraft.io/job-tracker/) |
+| Interview preparation | Practice workspace for common questions and structured answers | [Prepare for interviews](https://applycraft.io/interview-prep/) |
+| Career content | Practical guidance about resumes, ATS systems, cover letters, and job searches | [Read the blog](https://applycraft.io/blog/) |
 
-ApplyCraft is a free, privacy-first resume and cover letter builder built for the global job market. No account. No watermark. No paywall. Just open the browser, pick a template, fill in your details, and download a polished PDF or DOCX in under 5 minutes.
+Additional localized entry points:
 
-**60+ ATS-friendly templates with country-specific formats · fully localized EN/FR/AR interface (write in any language) · ∞ free PDF/DOCX downloads**
+- [English](https://applycraft.io/)
+- [Français](https://applycraft.io/fr/)
+- [العربية](https://applycraft.io/ar/)
+- [French ATS checker](https://applycraft.io/ats-checker-fr/)
+- [Arabic ATS checker](https://applycraft.io/ats-checker-ar/)
 
----
+## Product tour
 
-## Features at a glance
+### Resume templates
+
+Search and filter templates by layout, ATS suitability, recommendation, and target market. A selected design can be customized in the builder.
+
+[![ApplyCraft resume template gallery](docs/screenshots/applycraft-resume-templates.webp)](https://applycraft.io/resume/templates/)
+
+### Resume builder
+
+The builder combines guided editing with a live document preview. Users can change content, colors, sections, and layout before exporting to PDF or DOCX.
+
+Core capabilities include:
+
+- reusable profile data and tailored resume versions;
+- locally saved drafts;
+- PDF and DOCX export;
+- short share links with an expiry window;
+- private offline links that encode the document in the URL;
+- a shared-document viewer with PDF download;
+- multilingual content and right-to-left document support.
+
+### ATS checker
+
+The checker can analyze pasted text or an imported PDF/DOCX. Supplying a job description adds a keyword-gap comparison.
+
+[![ApplyCraft ATS resume checker](docs/screenshots/applycraft-ats-checker.webp)](https://applycraft.io/ats-checker/)
+
+### Cover letter builder
+
+The cover-letter workflow separates the recipient, candidate details, opening, body, and closing so each part can be reviewed independently.
+
+[![ApplyCraft cover letter builder](docs/screenshots/applycraft-cover-letter-builder.webp)](https://applycraft.io/cover-letter-builder/)
+
+### Job tracker
+
+Applications move through saved, preparing, applied, interview, offer, and rejected stages. Tracker metadata can remain on the device and can be exported or imported by the user.
+
+[![ApplyCraft job tracker](docs/screenshots/applycraft-job-tracker.webp)](https://applycraft.io/job-tracker/)
+
+### Blog and career guides
+
+The blog publishes long-form guides for job seekers, including ATS explanations, resume tailoring, Canadian resume formats, interview questions, and application strategy.
+
+[![ApplyCraft blog](docs/screenshots/applycraft-blog.webp)](https://applycraft.io/blog/)
+
+### Responsive and right-to-left experiences
+
+The interface is responsive, and the Arabic experience uses a dedicated right-to-left layout.
 
 <table>
-<tr>
-<td width="50%">
-
-### 01 · Live demo — no account needed
-
-<img src="docs/screenshots/02_live_demo.png" alt="Live demo — type 3 fields and see your resume appear instantly"/>
-
-Type 3 fields. See your resume appear instantly. Download when ready.
-
-Real-time preview updates as you type. ATS score shown live. Export to PDF or DOCX with one click.
-
-</td>
-<td width="50%">
-
-### 02 · Achievement coaching
-
-<img src="docs/screenshots/03_achievement_coaching.png" alt="Achievement coaching — from weak to powerful in one click"/>
-
-**From weak to powerful in one click.**
-
-Paste a flat job duty and ApplyCraft rewrites it into a quantified, recruiter-ready bullet — complete with metrics, impact, and strong action verbs.
-
-> **Before:** *"Responsible for helping customers with their issues and making sure they were satisfied."*
->
-> **After:** *"Resolved 40+ billing enquiries per day via phone and email, maintaining 96% CSAT across 6 months."*
-
-</td>
-</tr>
+  <tr>
+    <td align="center"><img alt="ApplyCraft mobile experience" src="docs/screenshots/applycraft-mobile.webp" width="240"></td>
+    <td><img alt="ApplyCraft Arabic landing page" src="docs/screenshots/applycraft-home-ar.webp"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Mobile</strong></td>
+    <td align="center"><strong>Arabic / RTL</strong></td>
+  </tr>
 </table>
 
----
+## How the product works
 
-## How it works
-
-<div align="center">
-<img src="docs/screenshots/05_how_it_works.png" alt="A polished CV in three steps" width="540"/>
-</div>
-
-<br/>
-
-| Step | What you do | What happens |
-|------|-------------|--------------|
-| **1 · Pick a template** | Browse the full registry-backed design library | Templates use ATS-conscious structure and responsive layouts |
-| **2 · Fill in your details** | Type into the live form | The preview updates in real time as you write |
-| **3 · Download and apply** | Click Export | PDF or DOCX — ready to send in under 5 minutes |
-
----
-
-## Master Profile — build once, tailor for everything
-
-<div align="center">
-<img src="docs/screenshots/04_master_profile.png" alt="Master Profile — build once, tailor for everything" width="540"/>
-</div>
-
-<br/>
-
-Stop retyping your CV for every job. With the Master Profile workflow:
-
-1. **Fill your complete career history once** — all roles, projects, skills, and achievements
-2. **Paste any job description** — from any job board or company site
-3. **AI scores and selects relevant items** — ranked by fit for that specific role
-4. **One-click tailored resume, ready to send** — no retyping, ever
-
----
-
-## Professional resume templates
-
-<div align="center">
-<img src="docs/screenshots/06_templates.png" alt="Professional resume templates — Classic, Modern, Minimal, Bold, Elegant, Executive and more" width="540"/>
-</div>
-
-<br/>
-
-Classic · Modern · Minimal · Bold · Elegant · Executive · Creative · Tech · Sharp · Slate · Prism · Compact · Horizon · Nordic · Dusk · Vertex · Academy · Spark · Stone · Ivy · Carbon · Pulse
-
-Every template is:
-- **ATS-conscious** — structured for automated parsing, avoiding tables or text boxes that commonly break parsers
-- **Print-ready** — precise margins, clean typography, correct page breaks
-- **RTL-aware** — layouts mirror automatically for Arabic, Hebrew, Farsi
-
----
-
-## Multilingual superpowers
-
-<div align="center">
-<img src="docs/screenshots/08_multilingual.png" alt="Built for the global job market — English, French, and Arabic support with RTL layouts" width="540"/>
-</div>
-
-<br/>
-
-ApplyCraft is the only resume builder designed from the ground up for multilingual careers.
-
-| Feature | Detail |
-|---------|--------|
-| **Write in any language** | Fully localized interface and document labels are production-ready in English, French, and Arabic |
-| **Full interface in 5 languages** | Complete interface translation for EN, FR, ES, AR, and DE |
-| **Full right-to-left** | Arabic, Hebrew, Farsi, Pashto, Urdu and other RTL languages render correctly |
-| **Formatting survives** | Your layout and design stay perfect after translation |
-| **Translate an existing CV** | Paste your CV and translate all content instantly — no rebuilding |
-
----
-
-## Free means actually free
-
-<div align="center">
-<img src="docs/screenshots/07_free.png" alt="Free means actually free — no watermarks, no account, no credit card" width="540"/>
-</div>
-
-<br/>
-
-- No watermarks
-- No account required
-- No credit card
-- Browser-first editing — your resume data never leaves your machine
-- PDF and DOCX downloads included
-
-**The core editor is free forever — unlimited resumes and exports. Optional power-ups (AI tailoring, sync) use a one-time 7-day pass, never a subscription.**
-
----
-
-## Privacy & trust
-
-<div align="center">
-<img src="docs/screenshots/09_privacy_cta.png" alt="Your resume data stays yours. Always." width="540"/>
-</div>
-
-<br/>
-
-- **No account required** — nothing to sign up for, nothing to leak
-- **Privacy-conscious design** — no analytics on resume content
-- **Browser-side export** — PDF and DOCX generated in your browser, never uploaded
-- **Clear your session anytime** — one click wipes everything locally
-
-> **Note on AI features:** When AI achievement coaching is enabled (requires an Anthropic API key — see below), the text you submit for rewriting is sent to Anthropic's API. No other resume data is transmitted. When no API key is configured the feature falls back silently to the live preview — nothing leaves the browser.
-
----
-
-## Tech stack
-
-| Layer | Technology |
-|-------|------------|
-| Framework | React 18 |
-| Build tool | Vite 6 + vite-react-ssg (static prerendering) |
-| Styling | CSS-in-JS + shared `_seo.css` for static pages |
-| PDF export | jsPDF (lazy-loaded) |
-| DOCX export | docx.js (lazy-loaded) |
-| HTML sanitisation | DOMPurify |
-| AI | Anthropic Claude API (optional — see below) |
-| Hosting | Cloudflare Pages |
-| CDN | Cloudflare global network |
-
----
-
-## How the AI works
-
-The achievement-coaching feature calls the Anthropic Claude API (`claude-sonnet-4-6`) directly from the browser:
-
-```js
-fetch("https://api.anthropic.com/v1/messages", {
-  headers: { "Content-Type": "application/json", "x-api-key": YOUR_KEY },
-  body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, messages: [...] }),
-})
+```mermaid
+flowchart LR
+    A["Create or import a profile"] --> B["Choose a template"]
+    B --> C["Write and tailor content"]
+    C --> D["Review ATS guidance"]
+    D --> E["Export or share"]
+    E --> F["Track the application"]
+    F --> G["Prepare for the interview"]
 ```
 
-**Three things to know:**
+The core editor is designed to work without an account:
 
-1. **No key = graceful fallback.** If the API key is missing or the call fails, the app silently falls back to the live-preview data. Nothing breaks.
-2. **Key handling.** The key should never be hardcoded in front-end code. For production, route the call through a Cloudflare Worker or other serverless function that holds the key as an environment secret, and point the `fetch` in `src/ResumeGenerator.jsx` at that Worker URL instead.
-3. **What gets sent.** Only the text fields you explicitly submit for rewriting are sent to the API. Your resume is not silently uploaded in the background.
+1. The browser stores the active draft locally.
+2. React renders the editor and a live document preview.
+3. PDF and DOCX exports are generated from the document data.
+4. Optional server-backed features—such as short links, AI helpers, email, accounts, or payments—are isolated behind explicit actions and configuration.
 
----
+## Technology
 
-## Run locally
+| Layer | Main tools |
+| --- | --- |
+| Front end | React 18, React Router, Vite |
+| Static generation | `vite-react-ssg`, generated route pages, sitemap and blog indexes |
+| Documents | jsPDF, DOCX, PDF.js, browser print/export utilities |
+| Data encoding | `lz-string`, `fflate`, browser storage |
+| Edge backend | Cloudflare Worker and KV-backed short links |
+| Analytics | Optional Google Analytics and Microsoft Clarity |
+| Testing | Playwright, Vitest, jsdom, axe-core, custom SEO and security audits |
+| Automation | GitHub Actions, Cloudflare deployment hooks, IndexNow submission |
+
+## Local development
+
+### Requirements
+
+- [Node.js](https://nodejs.org/) 24.x recommended
+- npm
+- Git
+
+### Install and run
 
 ```bash
-# 1. Clone
 git clone https://github.com/biroue10/applycraft.git
 cd applycraft
-
-# 2. Install dependencies (Node 20+ required)
-npm install
-
-# 3. Start dev server
+npm ci
+cp .env.example .env
 npm run dev
-# → opens at http://localhost:5173
 ```
 
-### Build for production
+Open the URL printed by Vite, normally `http://localhost:5173`.
+
+On Windows PowerShell, copy the environment file with:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+### Production build
 
 ```bash
-npm run build      # SSG build → dist/
-npm run preview    # serve the dist/ locally
+npm run build
+npm run preview
 ```
 
-The build uses `vite-react-ssg` to prerender the landing page as real HTML so Googlebot can index it without executing JavaScript.
+The generated static application is written to `dist/`.
 
----
+## Configuration
+
+The repository includes [`.env.example`](.env.example). Copy it to `.env` for local development and keep real secrets out of Git.
+
+| Variable group | Purpose | Typical local value |
+| --- | --- | --- |
+| `VITE_ACCOUNTS_ENABLED` | Enables optional account UI | `false` |
+| `VITE_PAYMENTS_ENABLED` | Enables optional payment UI | `false` |
+| `VITE_GA_ENABLED`, `VITE_CLARITY_ENABLED` | Enables optional analytics integrations | `false` |
+| `VITE_GA_MEASUREMENT_ID`, `VITE_CLARITY_PROJECT_ID` | Public analytics identifiers | blank |
+| `ANTHROPIC_API_KEY` | Server-side key for configured AI helpers | blank unless testing AI |
+| `RESEND_API_KEY`, `RESEND_FROM_EMAIL` | Optional transactional email | blank |
+| `LEMON_SQUEEZY_*` | Optional checkout and webhook configuration | blank |
+| `APP_ORIGIN`, `ALLOWED_ORIGINS` | Production URL and Worker origin restrictions | local or production origin |
+
+> [!IMPORTANT]
+> Never expose server secrets through `VITE_*` variables. Vite variables are bundled into client-side code.
+
+Short-link storage is configured through the Cloudflare KV binding in [`wrangler.json`](wrangler.json). The Worker implementation lives in [`worker.js`](worker.js).
+
+## Quality and testing
+
+The CI pipeline runs build, localization, SEO, accessibility, performance, document, and security checks. Useful commands include:
+
+| Command | Purpose |
+| --- | --- |
+| `npm run build` | Generate production pages and assets |
+| `npm run test:e2e` | Run end-to-end browser tests |
+| `npm run test:ats` | Validate ATS scoring behavior |
+| `npm run test:free-exports` | Check free PDF/DOCX export paths |
+| `npm run test:share` | Verify document sharing |
+| `npm run test:i18n` | Check locale integrity |
+| `npm run test:a11y` | Run accessibility checks |
+| `npm run test:security` | Run repository security tests |
+| `npm run validate:seo` | Audit generated SEO output |
+| `npm run validate:performance` | Check performance budgets |
+
+Before opening a pull request, run at least:
+
+```bash
+npm run build
+npm run test:i18n
+npm run test:a11y
+npm run test:security
+npm run validate:seo
+```
+
+End-to-end tests may require Playwright browsers:
+
+```bash
+npx playwright install
+```
+
+## Internationalization, SEO, and accessibility
+
+### Internationalization
+
+- Production UI locales: English, French, and Arabic.
+- Arabic pages use right-to-left direction and localized navigation.
+- User-authored resume content is not limited to the interface language.
+- Locale copy is organized under [`src/i18n`](src/i18n).
+- Hardcoded user-facing strings are checked by the i18n guard.
+
+### SEO
+
+The build process generates and validates:
+
+- localized metadata and canonical URLs;
+- `hreflang` relationships;
+- structured data and breadcrumbs;
+- blog and content indexes;
+- `robots.txt` and `sitemap.xml`;
+- Open Graph assets;
+- static HTML for indexable routes.
+
+See the public [sitemap](https://applycraft.io/sitemap.xml) and [robots.txt](https://applycraft.io/robots.txt).
+
+### Accessibility
+
+The project includes automated axe checks, contrast validation, keyboard-oriented navigation, semantic labels, and reduced-motion considerations. Accessibility feedback can be reported through [GitHub Issues](https://github.com/biroue10/applycraft/issues) or the public [accessibility page](https://applycraft.io/accessibility/).
+
+## Privacy and security
+
+ApplyCraft follows a browser-first model for the core editing workflow:
+
+- resume and cover-letter drafts are stored locally by default;
+- core PDF/DOCX generation runs from the user's document data;
+- account creation is not required for the primary builder;
+- analytics are consent-controlled and environment-configurable;
+- optional short links store a document copy for the stated retention period;
+- optional AI, email, account, and payment features may send only the data needed for the selected action.
+
+Security controls include origin restrictions, rate limits, request-size limits, content security policies, dependency auditing, secret scanning, CodeQL, and automated security tests.
+
+Read the public policies:
+
+- [Privacy policy](https://applycraft.io/privacy/)
+- [Cookie policy](https://applycraft.io/cookies/)
+- [Terms of service](https://applycraft.io/terms/)
+- [AI disclosure](https://applycraft.io/ai-disclosure/)
+- [Security policy](SECURITY.md)
+
+## Deployment
+
+Production builds are automated by [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). A push to `main` triggers the validation pipeline, builds the static application, and runs the configured production update steps, including search-engine notifications.
+
+Cloudflare Worker settings are defined in [`wrangler.json`](wrangler.json). Required production secrets and bindings must be configured in the deployment environment; they must not be committed to the repository.
 
 ## Project structure
 
-```
-resume-app/
+```text
+applycraft/
+├── .github/workflows/   # CI, deployment, security, and SEO automation
+├── docs/                # Project documentation and README screenshots
+├── public/              # Static pages, generated content inputs, and public assets
+├── scripts/             # Build generators, audits, and maintenance tools
 ├── src/
-│   ├── main.jsx              # SSG entry point (ViteReactSSG)
-│   ├── routes.jsx            # React route definitions
-│   └── ResumeGenerator.jsx   # Main app component
-├── public/
-│   ├── ats-checker/          # Free ATS checker tool (EN)
-│   ├── ats-checker-fr/       # Free ATS checker — French
-│   ├── ats-checker-ar/       # Free ATS checker — Arabic (RTL)
-│   ├── ats-engine.js         # Shared ATS scoring engine
-│   ├── resume-in-french/     # French landing page
-│   ├── resume-in-arabic/     # Arabic landing page (RTL)
-│   ├── examples/             # 8 resume example pages
-│   ├── sitemap.xml           # 31 URLs, all priorities set
-│   ├── robots.txt            # Sitemap reference, no blocks
-│   ├── og.png                # Open Graph image (1200×630)
-│   └── _redirects            # Cloudflare Pages SPA fallback
-├── docs/
-│   └── screenshots/          # Product screenshots for README
-├── vite.config.js            # SSG options, hreflang injection
-└── package.json
+│   ├── application/     # Application workspace and tracking flows
+│   ├── ats/             # ATS analysis logic and interfaces
+│   ├── components/      # Shared UI components
+│   ├── documents/       # Resume and cover-letter document models
+│   ├── i18n/            # Locale namespaces and translation utilities
+│   ├── interview/       # Interview-preparation workflows
+│   ├── pdf/             # PDF rendering and export support
+│   └── seo/             # Metadata and structured-data utilities
+├── tests/               # Unit, integration, regression, and browser tests
+├── worker.js            # Cloudflare Worker API
+├── wrangler.json        # Worker configuration and bindings
+└── vite.config.js       # Vite and static-generation configuration
 ```
 
----
+## Contributing and support
 
-## SEO
+Contributions are welcome:
 
-- **Static prerendering** via vite-react-ssg — landing page ships as real HTML
-- **Sitemap** covering 31 URLs with priority tiers
-- **hreflang clusters** for EN / FR / AR resume builder and ATS checker variants
-- **JSON-LD schemas** on every page (WebPage, SoftwareApplication, FAQPage)
-- **Core Web Vitals** optimised — jsPDF and html2canvas are lazy-loaded
+1. [Open an issue](https://github.com/biroue10/applycraft/issues) describing the bug or proposed change.
+2. Fork the repository and create a focused branch.
+3. Add or update tests when behavior changes.
+4. Run the relevant quality checks.
+5. Open a pull request with screenshots for visual changes.
 
----
-
-## Roadmap
-
-- [x] Registry-backed resume templates + 18 cover letter templates
-- [x] PDF and DOCX export
-- [x] RTL support (Arabic, Hebrew, Farsi, Pashto, Urdu)
-- [x] Write in any language, with production localized support in English, French, and Arabic
-- [x] Free ATS checker (EN, FR, AR)
-- [x] Static prerendering (SSG) for SEO
-- [ ] Serverless API key proxy (Cloudflare Worker) for safe AI usage
-- [ ] More templates and layouts
-- [ ] Cover letter AI coaching
-- [ ] Saved sessions via Supabase (optional auth)
-- [ ] PDF export with full Unicode / non-Latin font support
-
----
-
-## Contributing
-
-```bash
-git clone https://github.com/biroue10/applycraft.git
-cd applycraft
-npm install
-npm run dev
-```
-
-1. Create a branch: `git checkout -b feat/your-feature`
-2. Make your changes
-3. Open a pull request — describe what you changed and why
-
-Bug reports and feature requests go in [GitHub Issues](https://github.com/biroue10/applycraft/issues).
-
----
+For product help, visit the [Help Center](https://applycraft.io/help/) or email [hello@applycraft.io](mailto:hello@applycraft.io).
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
-
----
-
-<div align="center">
-
-Built by [Isaac Biroue](https://github.com/biroue10) · [applycraft.io](https://applycraft.io)
-
-</div>
+Copyright © 2026 ApplyCraft by Biroue Digital Ltd. See [`LICENSE`](LICENSE) for the repository's licensing terms.
