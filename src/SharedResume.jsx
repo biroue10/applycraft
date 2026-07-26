@@ -64,9 +64,10 @@ function browserCopy() {
   return ERROR_COPY[code] || ERROR_COPY.en;
 }
 
-function shareIdFromPath(pathname) {
+function shareIdFromLocation(pathname, search = "") {
   const match = String(pathname || "").match(/^\/r\/([^/]+)$/);
-  const id = match?.[1] || "";
+  const queryId = new URLSearchParams(String(search || "")).get("s") || "";
+  const id = match?.[1] || queryId;
   return SHARE_ID_RE.test(id) ? id : "";
 }
 
@@ -166,7 +167,7 @@ export default function SharedResume() {
     if (typeof window === "undefined") return;
     let cancelled = false;
     async function load() {
-      const shareId = shareIdFromPath(window.location.pathname);
+      const shareId = shareIdFromLocation(window.location.pathname, window.location.search);
       try {
         if (shareId) {
           const loaded = await fetchShortSharedDocument(shareId);

@@ -1,6 +1,6 @@
 # Short Share Links
 
-Short public links are active in the product through `/r/{id}` URLs. ApplyCraft
+Short public links are active in the product through `/r/?s={id}` URLs. ApplyCraft
 also retains private offline `/r#...` links that keep document data inside the
 URL fragment and do not require server-side document storage.
 

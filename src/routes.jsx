@@ -14,7 +14,6 @@ export const routes = [
   { path: "/fr/", element: <ResumeGenerator /> },
   { path: "/ar/", element: <ResumeGenerator /> },
   { path: "/r", lazy: sharedResumeRoute },
-  { path: "/r/:shareId", lazy: sharedResumeRoute },
   { path: "/resume-builder", element: <ResumeGenerator /> },
   { path: "/resume/templates", element: <ResumeGenerator /> },
   { path: "/fr/modeles-cv/", element: <ResumeGenerator /> },

@@ -1041,7 +1041,7 @@ async function handleShare(request, env, url) {
       expirationTtl: Math.ceil((new Date(expiresAt).getTime() - now) / 1000),
     });
     const origin = env.APP_ORIGIN || new URL(request.url).origin;
-    return jsonResponse({ ok: true, shareId, url: `${origin}/r/${shareId}`, expiresAt, deleteToken }, 201, cors.headers);
+    return jsonResponse({ ok: true, shareId, url: `${origin}/r/?s=${shareId}`, expiresAt, deleteToken }, 201, cors.headers);
   }
 
   if (idMatch && request.method === "GET") {
@@ -1468,11 +1468,14 @@ export default {
       }
     }
     if (request.method === "GET" && /^\/r\/[A-Za-z0-9_-]{8,24}$/.test(url.pathname)) {
-      // Fetch the canonical asset path internally. With force-trailing-slash,
-      // requesting /r would return a redirect to /r/ and make the browser lose
-      // the share ID from its visible /r/{id} URL.
-      const assetUrl = new URL("/r/", url.origin);
-      return withSecurityHeaders(await env.ASSETS.fetch(new Request(assetUrl, request)));
+      // The shared viewer is prerendered at /r/. Keep the identifier in a query
+      // parameter so vite-react-ssg hydrates the static route instead of trying
+      // to load the dynamic path as JSON. Preserve already-issued /r/{id} links.
+      const shareId = url.pathname.slice("/r/".length);
+      return new Response(null, {
+        status: 302,
+        headers: { Location: `/r/?s=${shareId}`, ...SECURITY_HEADERS },
+      });
     }
     const assetResponse = await env.ASSETS.fetch(request);
     if ((request.method === "GET" || request.method === "HEAD") && assetResponse.status === 404) {

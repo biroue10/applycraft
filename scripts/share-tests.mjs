@@ -98,26 +98,17 @@ const createResponse = await worker.fetch(new Request("https://applycraft.io/api
 }), shareEnv);
 assert.equal(createResponse.status, 201, "short-link API should create a stored share");
 const createdShare = await createResponse.json();
-assert.match(createdShare.url, /^https:\/\/applycraft\.io\/r\/[A-Za-z0-9_-]{10}$/, "short-link API should return a compact viewer URL");
+assert.match(createdShare.url, /^https:\/\/applycraft\.io\/r\/\?s=[A-Za-z0-9_-]{10}$/, "short-link API should return a compact static-viewer URL");
 const readResponse = await worker.fetch(new Request(`https://applycraft.io/api/share/${createdShare.shareId}`), shareEnv);
 assert.equal(readResponse.status, 200, "stored short link should be readable");
 const readShare = await readResponse.json();
 assert.equal(readShare.payload.d.name, arabicModernResume.d.name, "stored short link should preserve document data");
 
-let requestedViewerAsset = "";
 const viewerResponse = await worker.fetch(new Request(`https://applycraft.io/r/${createdShare.shareId}`), {
-  ASSETS: {
-    async fetch(request) {
-      requestedViewerAsset = new URL(request.url).pathname;
-      return new Response("<!doctype html><div id=\"root\"></div>", {
-        status: 200,
-        headers: { "Content-Type": "text/html; charset=UTF-8" },
-      });
-    },
-  },
+  ASSETS: { fetch: async () => new Response("unused") },
 });
-assert.equal(viewerResponse.status, 200, "short viewer route should return the shared-resume shell without redirecting");
-assert.equal(requestedViewerAsset, "/r/", "short viewer route should fetch the canonical trailing-slash asset internally");
+assert.equal(viewerResponse.status, 302, "previous path-style short links should redirect to the static viewer route");
+assert.equal(viewerResponse.headers.get("Location"), `/r/?s=${createdShare.shareId}`, "path-style links should preserve their share ID");
 
 const cover = roundTrip({
   v: 2,
@@ -177,6 +168,7 @@ assert.ok(!/function\s+ResumeView\b/.test(sharedSource), "generic ResumeView ren
 assert.ok(!/function\s+CoverView\b/.test(sharedSource), "generic CoverView renderer should be removed");
 assert.ok(/lang=\{doc\.l\}/.test(sharedSource), "shared document article should receive document language");
 assert.ok(/dir=\{resolved\.rtl \? "rtl" : "ltr"\}/.test(sharedSource), "shared document article should receive document direction");
+assert.ok(sharedSource.includes("window.location.search"), "shared viewer should read short IDs from the static route query string");
 assert.ok(/@media print/.test(sharedSource), "shared viewer should include print styles");
 assert.ok(sharedSource.includes("SharedDocumentErrorBoundary"), "shared viewer should wrap documents in an error boundary");
 assert.ok(sharedSource.includes("This shared résumé could not be displayed."), "shared viewer should include friendly English render fallback");
