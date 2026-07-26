@@ -1,7 +1,8 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const CSS_FILE = join(ROOT, "public/scrollbars.css");
 const css = readFileSync(CSS_FILE, "utf8");
 const failures = [];
@@ -63,6 +64,8 @@ const webkitImplementations = (css.match(/\*::\-webkit-scrollbar\s*\{/g) || []).
 if (webkitImplementations !== 1) fail(`expected one global WebKit scrollbar root rule, found ${webkitImplementations}`);
 if (!readFileSync(join(ROOT, "public/_seo.css"), "utf8").includes("@import url('/scrollbars.css')")) fail("static-page stylesheet does not import the shared scrollbar CSS");
 if (!readFileSync(join(ROOT, "index.html"), "utf8").includes('href="/scrollbars.css"')) fail("React shell does not link the shared scrollbar CSS");
+if (!/\.ac-preview-scroll-hidden\s*\{[^}]*scrollbar-color\s*:\s*transparent transparent/i.test(css)) fail("expanded document previews should use an invisible scrollbar");
+if (!readFileSync(join(ROOT, "src/ResumeGenerator.jsx"), "utf8").includes('className={expanded ? "ac-preview-scroll-hidden" : undefined}')) fail("expanded preview should apply the invisible scrollbar class");
 
 if (failures.length) {
   console.error("Scrollbar tests failed:");

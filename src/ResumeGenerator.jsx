@@ -11105,6 +11105,7 @@ const PreviewPane = React.forwardRef(function PreviewPane({
       </div>
       <div
         ref={overlayRef}
+        className={expanded ? "ac-preview-scroll-hidden" : undefined}
         onClick={() => setExpanded((e) => !e)}
         title={expanded ? undefined : labels.expand}
         role={expanded ? "dialog" : undefined}
@@ -11122,7 +11123,7 @@ const PreviewPane = React.forwardRef(function PreviewPane({
         }}
       >
         {!expanded && overlay}
-        <div ref={printRef} style={expanded ? { width: "min(780px, 94vw)", maxHeight: "94vh", overflowY: "auto", borderRadius: 8 } : {
+        <div ref={printRef} className={expanded ? "ac-preview-scroll-hidden" : undefined} style={expanded ? { width: "min(780px, 94vw)", maxHeight: "94vh", overflowY: "auto", borderRadius: 8 } : {
           maxWidth: 760, margin: "0 auto", transform: `scale(${zoom / 100})`, transformOrigin: "top center",
           transition: "transform 0.18s ease", paddingBottom: `${Math.max(0, 100 - zoom) * 2}px`,
         }}>
