@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { decodeShare, fetchShortSharedDocument, normalizeSharedDocument, SHARE_ID_RE } from "./share.js";
 import { isRtlLang } from "./i18n/languages.js";
 import { ResumePaper, CoverLetterPaper } from "./documents/DocumentPapers.jsx";
@@ -27,6 +27,9 @@ const ERROR_COPY = {
     renderTitle: "This shared résumé could not be displayed.",
     renderBody: "Ask the sender for a fresh link, or build your own resume for free.",
     cta: "Build my resume - free",
+    download: "Download PDF",
+    downloading: "Preparing PDF...",
+    downloadFailed: "PDF download failed. Please try again.",
   },
   fr: {
     loading: "Chargement...",
@@ -41,6 +44,9 @@ const ERROR_COPY = {
     renderTitle: "Ce CV partagé n’a pas pu être affiché.",
     renderBody: "Demandez un nouveau lien à l'expéditeur ou créez votre CV gratuitement.",
     cta: "Créer mon CV gratuitement",
+    download: "Télécharger le PDF",
+    downloading: "Préparation du PDF...",
+    downloadFailed: "Le téléchargement du PDF a échoué. Veuillez réessayer.",
   },
   ar: {
     loading: "جار التحميل...",
@@ -55,6 +61,9 @@ const ERROR_COPY = {
     renderTitle: "تعذر عرض السيرة الذاتية المشتركة.",
     renderBody: "اطلب من المرسل رابطًا جديدًا أو أنشئ سيرتك الذاتية مجانًا.",
     cta: "إنشاء سيرتي الذاتية مجانًا",
+    download: "تنزيل PDF",
+    downloading: "جارٍ تجهيز PDF...",
+    downloadFailed: "فشل تنزيل PDF. يرجى المحاولة مرة أخرى.",
   },
 };
 
@@ -88,13 +97,43 @@ function SharedStyles({ pageSize }) {
       .ac-shared-stage {
         max-width: 1120px;
         margin: 0 auto;
-        padding: calc(${HEADER_HEIGHT}px + 2rem) 1rem 3rem;
+        padding: 1rem 1rem 3rem;
         display: flex;
         justify-content: center;
       }
+      .ac-shared-actions {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: calc(${HEADER_HEIGHT}px + 1.25rem) 1rem 0;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .ac-shared-download {
+        border: 0;
+        border-radius: 7px;
+        padding: 0.75rem 1.1rem;
+        background: ${GRAD};
+        color: #fff;
+        font: inherit;
+        font-size: 0.9rem;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 10px 28px rgba(37, 99, 235, 0.24);
+      }
+      .ac-shared-download:disabled {
+        cursor: wait;
+        opacity: 0.7;
+      }
+      .ac-shared-download-error {
+        color: #fca5a5;
+        font-size: 0.82rem;
+        margin-inline-end: 0.8rem;
+        align-self: center;
+      }
       @media (max-width: 720px) {
         .ac-shared-main { padding: 0 !important; }
-        .ac-shared-stage { padding: calc(60px + 1rem) 0.75rem 2rem !important; }
+        .ac-shared-actions { padding: calc(60px + 1rem) 0.75rem 0 !important; }
+        .ac-shared-stage { padding: 0.75rem 0.75rem 2rem !important; }
         .ac-shared-document-wrap { width: 100%; }
       }
       @media print {
@@ -103,7 +142,8 @@ function SharedStyles({ pageSize }) {
           background: #fff !important;
         }
         .ac-global-header,
-        .ac-site-footer {
+        .ac-site-footer,
+        .ac-shared-actions {
           display: none !important;
         }
         .ac-shared-main {
@@ -158,10 +198,101 @@ class SharedDocumentErrorBoundary extends React.Component {
   }
 }
 
+function safePdfFilename(value, fallback = "resume") {
+  return String(value || fallback)
+    .normalize("NFKD")
+    .replace(/[^\w\s-]/g, "")
+    .trim()
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || fallback;
+}
+
+async function downloadSharedPdf(node, doc) {
+  if (!node || typeof document === "undefined") throw new Error("missing_document");
+  if (document.fonts?.ready) {
+    try { await document.fonts.ready; } catch { /* continue with available fonts */ }
+  }
+  const { default: html2canvas } = await import("html2canvas");
+  const { jsPDF } = await import("jspdf");
+  const source = node.querySelector?.(".resume-paper") || node.querySelector?.("article") || node;
+  const host = document.createElement("div");
+  const rtl = isRtlLang(doc.l);
+  Object.assign(host.style, {
+    position: "fixed",
+    left: "-10000px",
+    top: "0",
+    width: "794px",
+    background: "#fff",
+    pointerEvents: "none",
+    zIndex: "-1",
+    direction: rtl ? "rtl" : "ltr",
+  });
+  const clone = source.cloneNode(true);
+  Object.assign(clone.style, {
+    width: "794px",
+    maxWidth: "794px",
+    transform: "none",
+    margin: "0",
+    boxShadow: "none",
+    overflow: "visible",
+    direction: rtl ? "rtl" : "ltr",
+  });
+  clone.setAttribute("lang", doc.l || "en");
+  clone.setAttribute("dir", rtl ? "rtl" : "ltr");
+  host.appendChild(clone);
+  document.body.appendChild(host);
+  try {
+    const canvas = await html2canvas(clone, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+      windowWidth: 794,
+    });
+    const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: doc.p === "letter" ? "letter" : "a4" });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const sliceHeight = Math.max(1, Math.floor(canvas.width * (pageHeight / pageWidth)));
+    let y = 0;
+    let pageIndex = 0;
+    while (y < canvas.height) {
+      const currentSliceHeight = Math.min(sliceHeight, canvas.height - y);
+      const pageCanvas = document.createElement("canvas");
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = currentSliceHeight;
+      const context = pageCanvas.getContext("2d");
+      if (!context) throw new Error("canvas");
+      context.drawImage(canvas, 0, y, canvas.width, currentSliceHeight, 0, 0, canvas.width, currentSliceHeight);
+      if (pageIndex > 0) pdf.addPage();
+      pdf.addImage(
+        pageCanvas.toDataURL("image/png"),
+        "PNG",
+        0,
+        0,
+        pageWidth,
+        pageWidth * (currentSliceHeight / canvas.width),
+        undefined,
+        "FAST",
+      );
+      y += currentSliceHeight;
+      pageIndex += 1;
+    }
+    const defaultName = doc.k === "cover" ? "cover-letter" : "resume";
+    const personName = doc.d?.name || doc.d?.fullName || defaultName;
+    pdf.save(`${safePdfFilename(personName, defaultName)}${doc.k === "cover" ? "-cover-letter" : ""}.pdf`);
+  } finally {
+    host.remove();
+  }
+}
+
 export default function SharedResume() {
   const [doc, setDoc] = useState(null);
   const [ready, setReady] = useState(false);
   const [loadError, setLoadError] = useState("");
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState(false);
+  const documentRef = useRef(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -208,6 +339,18 @@ export default function SharedResume() {
       : loadError
         ? copy.networkBody
         : copy.invalidBody;
+  const handleDownload = async () => {
+    if (!doc || !documentRef.current || downloading) return;
+    setDownloading(true);
+    setDownloadError(false);
+    try {
+      await downloadSharedPdf(documentRef.current, doc);
+    } catch {
+      setDownloadError(true);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <AppShell lang={doc?.l || "en"}>
@@ -227,8 +370,14 @@ export default function SharedResume() {
           </div>
         ) : (
           <SharedDocumentErrorBoundary copy={copy}>
+            <div className="ac-shared-actions">
+              {downloadError && <span role="alert" className="ac-shared-download-error">{copy.downloadFailed}</span>}
+              <button type="button" className="ac-shared-download" disabled={downloading} onClick={handleDownload}>
+                {downloading ? copy.downloading : copy.download}
+              </button>
+            </div>
             <div className="ac-shared-stage">
-              <div className="ac-shared-document-wrap">
+              <div ref={documentRef} className="ac-shared-document-wrap">
                 <article lang={doc.l} dir={resolved.rtl ? "rtl" : "ltr"} data-share-kind={doc.k} data-template-id={resolved.template.id}>
                   {doc.k === "cover" ? (
                     <CoverLetterPaper tpl={resolved.template} data={doc.d || {}} rtl={resolved.rtl} lang={doc.l} preview={false} />

@@ -170,6 +170,10 @@ assert.ok(/lang=\{doc\.l\}/.test(sharedSource), "shared document article should 
 assert.ok(/dir=\{resolved\.rtl \? "rtl" : "ltr"\}/.test(sharedSource), "shared document article should receive document direction");
 assert.ok(sharedSource.includes("window.location.search"), "shared viewer should read short IDs from the static route query string");
 assert.ok(/@media print/.test(sharedSource), "shared viewer should include print styles");
+assert.ok(sharedSource.includes("downloadSharedPdf"), "shared viewer should provide a direct PDF download");
+assert.ok(sharedSource.includes("html2canvas"), "shared PDF download should capture the rendered template");
+assert.ok(sharedSource.includes("className=\"ac-shared-download\""), "shared viewer should render a localized download button");
+assert.ok(/pdf\.save\(/.test(sharedSource), "shared PDF download should save the generated file");
 assert.ok(sharedSource.includes("SharedDocumentErrorBoundary"), "shared viewer should wrap documents in an error boundary");
 assert.ok(sharedSource.includes("This shared résumé could not be displayed."), "shared viewer should include friendly English render fallback");
 assert.ok(sharedSource.includes("Ce CV partagé n’a pas pu être affiché."), "shared viewer should include friendly French render fallback");
