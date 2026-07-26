@@ -10,13 +10,13 @@
 // Run: npm run test:product
 // ──────────────────────────────────────────────────────────────────────────
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const { PRODUCT } = await import(path.join(root, "src/product.js"));
-const { ACTIVE_SEARCH_PASS } = await import(path.join(root, "src/config.js"));
+const { PRODUCT } = await import(pathToFileURL(path.join(root, "src/product.js")).href);
+const { ACTIVE_SEARCH_PASS } = await import(pathToFileURL(path.join(root, "src/config.js")).href);
 
 let failures = 0;
 const check = (name, fn) => {
@@ -88,6 +88,7 @@ const htmlFiles = walkHtml(path.join(root, "public"));
 const claimMismatches = [];
 const templateCountMismatches = [];
 const unsupportedStats = [];
+const invalidProductImages = [];
 for (const f of htmlFiles) {
   const html = readFileSync(f, "utf8");
   for (const m of html.matchAll(outdatedLocalizedClaimRe)) claimMismatches.push(`${path.relative(root, f)}: "${m[0]}"`);
@@ -95,6 +96,18 @@ for (const f of htmlFiles) {
   if (staleCount) templateCountMismatches.push(`${path.relative(root, f)}: "${staleCount[0]}"`);
   const unsupportedStat = html.match(unsupportedCoverLetterStatRe);
   if (unsupportedStat) unsupportedStats.push(`${path.relative(root, f)}: "${unsupportedStat[0]}"`);
+  for (const match of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    const schema = JSON.parse(match[1]);
+    if (schema["@type"] !== "Product") continue;
+    if (!schema.image || !String(schema.image).startsWith("https://applycraft.io/")) {
+      invalidProductImages.push(`${path.relative(root, f)}: Product.image must be an absolute ApplyCraft URL`);
+      continue;
+    }
+    const imagePath = String(schema.image).replace("https://applycraft.io/", "");
+    if (!existsSync(path.join(root, "public", imagePath))) {
+      invalidProductImages.push(`${path.relative(root, f)}: missing public/${imagePath}`);
+    }
+  }
 }
 check("static HTML avoids stale broad language claims", () =>
   assert.equal(claimMismatches.length, 0,
@@ -105,6 +118,9 @@ check("static HTML avoids hardcoded old resume template counts", () =>
 check("cover-letter pages avoid unsupported precise hiring-manager statistics", () =>
   assert.equal(unsupportedStats.length, 0,
     `unsupported cover-letter statistics:\n       ${unsupportedStats.join("\n       ")}`));
+check("merchant Product structured data has a valid image", () =>
+  assert.equal(invalidProductImages.length, 0,
+    `invalid Product images:\n       ${invalidProductImages.join("\n       ")}`));
 
 console.log("");
 if (failures) { console.error(`Product consistency: ${failures} check(s) failed.`); process.exit(1); }
