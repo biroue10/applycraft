@@ -1,9 +1,10 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 import { INDEXABLE_APP_PATHS, SITE, isIndexablePublicUrl, normalizePublicPath } from "./seo-url-policy.mjs";
 import { blogArticles } from "./blog-articles.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const PUBLIC = join(ROOT, "public");
 const HTML_ROOT = PUBLIC;
 const SITEMAP = join(HTML_ROOT, "sitemap.xml");

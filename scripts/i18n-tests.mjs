@@ -261,7 +261,7 @@ test("direct RTL PDF export avoids popup print flow and preserves visual metadat
   assert.match(app, /clone\.setAttribute\("lang", docLang/);
   assert.match(app, /clone\.setAttribute\("dir", direction\)/);
   assert.match(app, /canvas\.width \* \(pageHeight \/ pageWidth\)/);
-  assert.match(app, /inner\.style\.alignItems = "flex-start"/);
+  assert.match(app, /inner\.style\.alignItems = "stretch"/);
   assert.match(app, /export_type: "visual_pdf"/);
   assert.match(app, /await exportVisualPdf\(resumePrintRef/);
   assert.match(app, /await exportVisualPdf\(coverPrintRef/);

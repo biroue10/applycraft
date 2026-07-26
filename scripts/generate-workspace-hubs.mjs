@@ -1,8 +1,9 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { footerHtml } from "./shared-footer.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const ORIGIN = "https://applycraft.io";
 const hubs = [
   { slug: "international-job-applications", title: "International Job Application Resources", description: "Practical resume, CV and cover-letter guidance for candidates applying across countries and languages.", intro: "International applications are easier to manage when your core career evidence stays consistent while format, terminology and language adapt to the target market. These resources explain the differences without presenting country guidance as an absolute rule.", groups: [

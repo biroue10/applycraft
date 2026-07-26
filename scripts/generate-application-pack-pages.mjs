@@ -1,10 +1,11 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { positioningFor } from "../src/productPositioning.js";
 import { applicationPackCopy } from "../src/application/applicationPackCopy.js";
 import { footerHtml } from "./shared-footer.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const ORIGIN = "https://applycraft.io";
 const ROUTES = { en: "/application-pack/", fr: "/fr/application-pack/", ar: "/ar/application-pack/" };
 const PAGE_COPY = {
@@ -37,7 +38,7 @@ function page(locale) {
 
 for (const locale of Object.keys(ROUTES)) {
   const out = join(ROOT, "public", ROUTES[locale].slice(1), "index.html");
-  mkdirSync(new URL(".", `file://${out}`).pathname, { recursive: true });
+  mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, page(locale));
   console.log(`✓ ${ROUTES[locale]}`);
 }

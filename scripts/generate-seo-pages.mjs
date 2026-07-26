@@ -983,7 +983,7 @@ const PAGES = [
       <h3>Achievement bullet example</h3>
       <p><strong>Before:</strong> Responsible for Linux servers and patching.</p>
       <p><strong>After:</strong> Automated monthly patching for 180 Linux servers with Ansible, reducing maintenance time by 65% while sustaining 99.95% availability.</p>
-      <p>Use only metrics you can verify. Then compare the finished document with the vacancy in the <a href="/ats-checker/">ATS checker</a> and review more <a href="/examples/">role-specific resume examples</a>.</p>`,
+      <p>Use only metrics you can verify. Review the detailed <a href="/blog/linux-system-administrator-resume-skills-ats/">Linux resume skills and ATS keyword guide</a>, compare the finished document with the vacancy in the <a href="/ats-checker/">ATS checker</a>, and explore more <a href="/examples/">role-specific resume examples</a>.</p>`,
     resumeCard: rcGeneric({
       name: "Priya Nair", title: "Senior Linux Systems Administrator",
       email: "priya.nair@email.com", city: "Austin, TX",
@@ -1030,6 +1030,15 @@ const EXAMPLES = [
     h1: "IT Support Technician Resume Example",
     sub: "A professionally written, ATS-optimised resume example for IT Support Technicians. Edit every line and download as PDF or DOCX — free.",
     keywords: "IT support technician resume example, IT technician resume sample, help desk resume example, IT support cv example",
+    seoContent: `<h2>IT support resume skills and evidence</h2>
+      <p>Show the environment you supported: user count, ticket volume, support tier, operating systems, service targets, and communication channels. Then connect tools to outcomes instead of publishing an unfiltered keyword list.</p>
+      <h3>Achievement bullet examples</h3>
+      <ul>
+        <li>Resolved 35–45 weekly tickets while maintaining 96% SLA compliance.</li>
+        <li>Improved first-contact resolution from 62% to 78% by publishing 24 knowledge articles.</li>
+        <li>Reduced laptop provisioning from two days to four hours with standardized Intune profiles.</li>
+      </ul>
+      <p>For a complete skills framework, certification guidance, and ATS keyword method, read the <a href="/blog/it-support-resume-skills-ats-keywords/">IT support resume guide</a>. Use the <a href="/ats-checker/">ATS checker</a> to compare your finished resume with the actual vacancy.</p>`,
     resumeCard: rcGeneric({
       name: "Daniel Park", title: "IT Support Technician | CompTIA A+ | ITIL Foundation",
       email: "daniel.park@email.com", city: "Dallas, TX",
@@ -1525,6 +1534,15 @@ const EXAMPLES = [
     h1: "Accountant Resume Example",
     sub: "An ATS-optimised accountant resume example with certifications, accounting software, and measurable financial results. Edit every line and download free.",
     keywords: "accountant resume example, accounting resume sample, CPA resume template, staff accountant cv example",
+    seoContent: `<h2>Accountant resume checklist</h2>
+      <p>Make certifications, accounting standards, close and reconciliation experience, and software easy to find. The strongest bullets quantify money, time, volume, accuracy, or audit outcomes.</p>
+      <h3>Metrics that add credibility</h3>
+      <ul>
+        <li>Month-end close time and the process improvement that reduced it.</li>
+        <li>Portfolio, budget, invoice, account, or client volume.</li>
+        <li>Cost savings, recovered revenue, error reduction, and audit results.</li>
+      </ul>
+      <p>Read the detailed <a href="/blog/accountant-resume-skills-achievements/">accountant resume skills and achievement guide</a>, then replace every sample with your own verifiable evidence. Keep the layout readable and check the final wording with the <a href="/ats-checker/">ATS checker</a>.</p>`,
     resumeCard: rcGeneric({
       name: "David Okafor", title: "Senior Accountant | CPA",
       email: "david.okafor@email.com", city: "Houston, TX",
@@ -1702,7 +1720,7 @@ const EXAMPLES = [
         <li>Coordinated individualized learning plans with families, specialists, and support staff for 14 students.</li>
       </ul>
       <p>Replace these figures with your own evidence. New teachers can emphasize student teaching, classroom placements, certifications, safeguarding training, curriculum projects, and relevant volunteer experience.</p>
-      <p>Choose a readable design from the <a href="/resume/templates/">free resume templates</a>, tailor the wording to each vacancy, and use the <a href="/ats-checker/">ATS checker</a> before applying.</p>`,
+      <p>Use the companion <a href="/blog/teacher-resume-skills-achievements/">teacher skills and achievement examples</a> to develop truthful bullets. Choose a readable design from the <a href="/resume/templates/">free resume templates</a>, tailor the wording to each vacancy, and use the <a href="/ats-checker/">ATS checker</a> before applying.</p>`,
     resumeCard: rcGeneric({
       name: "Rachel Bennett", title: "Elementary School Teacher | State Certified (K–6)",
       email: "rachel.bennett@email.com", city: "Columbus, OH",
