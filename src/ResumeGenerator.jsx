@@ -15,6 +15,7 @@ import { ResumePaper, CoverLetterPaper, structureSectionItems } from "./document
 import { analyzeResumeQuality, formatDateRange, isPlaceholderOnly, normalizeDateRange, presentLabel } from "./resumeQuality.js";
 import { serializeResumeTranslationContent, TRANSLATABLE_RESUME_FIELDS, TRANSLATION_STATUSES } from "./translationCore.js";
 import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
+import TrackApplicationAction from "./components/TrackApplicationAction.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID, TEMPLATE_COUNTRIES, templateCountries } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
 import { positioningFor } from "./productPositioning.js";
@@ -76,7 +77,6 @@ const LandingStats = React.lazy(() => import("./components/LandingStats.jsx"));
 const TrackerPrivacyControls = React.lazy(() => import("./components/TrackerPrivacyControls.jsx"));
 const EvidenceLibrary = React.lazy(() => import("./components/EvidenceLibrary.jsx"));
 const TrackerFilters = React.lazy(() => import("./components/TrackerFilters.jsx"));
-const TrackApplicationAction = React.lazy(() => import("./components/TrackApplicationAction.jsx"));
 const ATS_RESULT_LOADERS = {
   en: () => import("./i18n/atsResults/en.js"),
   fr: () => import("./i18n/atsResults/fr.js"),
@@ -2911,8 +2911,11 @@ export default function ResumeGenerator() {
       direction,
     });
     const clone = source.cloneNode(true);
+    const pagePixelHeight = Math.round((794 * 841.89) / 595.28);
     clone.style.width = "794px";
     clone.style.maxWidth = "794px";
+    clone.style.minHeight = `${pagePixelHeight}px`;
+    clone.style.height = "auto";
     clone.style.transform = "none";
     clone.style.margin = "0";
     clone.style.boxShadow = "none";
@@ -2922,8 +2925,9 @@ export default function ResumeGenerator() {
     clone.setAttribute("dir", direction);
     const inner = clone.firstElementChild;
     if (inner) {
-      inner.style.minHeight = "auto";
-      inner.style.alignItems = "flex-start";
+      inner.style.minHeight = `${pagePixelHeight}px`;
+      inner.style.height = "auto";
+      inner.style.alignItems = "stretch";
     }
     host.appendChild(clone);
     document.body.appendChild(host);
@@ -4330,9 +4334,9 @@ Awards: ${form.awards}`;
       setStatusMsg(st.incompleteDownload);
       setTimeout(() => setStatusMsg(""), 3500);
     }
-    if (documentRtl) {
+    if (resumePrintRef.current) {
       setExporting("pdf");
-      track(EVENTS.PDF_EXPORT_STARTED, { document_type: "resume", language: docLang, template: tpl?.id || "", document_direction: "rtl" });
+      track(EVENTS.PDF_EXPORT_STARTED, { document_type: "resume", language: docLang, template: tpl?.id || "", document_direction: documentRtl ? "rtl" : "ltr" });
       try {
         await exportVisualPdf(resumePrintRef, src.name || "resume", "resume");
         setExportSuccess(st.pdfSuccess);
@@ -6417,7 +6421,7 @@ Awards: ${form.awards}`;
               <div style={{ marginTop: 10, background: "#4ade8012", border: "none",
                 color: "#4ade80", borderRadius: 8, padding: "9px 11px", fontSize: 12.5,
                 lineHeight: 1.5 }}>
-                {exportSuccess} <React.Suspense fallback={null}><TrackApplicationAction locale={lang} form={form} template={tpl} documentLanguage={docLang} resumeId={currentResumeId} untitled={bu.untitledResume} onOpen={(card) => { setTrackerModal({ open: true, card }); setNavPage("tracker"); }} /></React.Suspense>
+                {exportSuccess} <TrackApplicationAction locale={lang} form={form} template={tpl} documentLanguage={docLang} resumeId={currentResumeId} untitled={bu.untitledResume} onOpen={(card) => { setTrackerModal({ open: true, card }); setNavPage("tracker"); }} />
               </div>
             )}
             {result && (

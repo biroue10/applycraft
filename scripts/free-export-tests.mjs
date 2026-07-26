@@ -53,6 +53,10 @@ assert.match(app, /onClick=\{\(\) => \{ setActiveToolbarPanel\(null\); downloadC
 assert.match(app, /onClick=\{\(\) => \{ setActiveToolbarPanel\(null\); downloadCoverDOCX\(\); \}\}/, "cover letter DOCX export button should call the export directly");
 assert.match(exportBodies.coverDocx, /document_type: "cover"/, "cover DOCX analytics should stay document-type only");
 assert.match(exportBodies.coverDocx, /ExternalHyperlink/, "cover DOCX export should preserve supported hyperlinks");
+assert.match(app, /import TrackApplicationAction from "\.\/components\/TrackApplicationAction\.jsx"/, "post-export action should ship with the main builder bundle");
+assert.doesNotMatch(app, /React\.lazy\(\(\) => import\("\.\/components\/TrackApplicationAction\.jsx"\)\)/, "export success must not depend on a stale lazy chunk");
+assert.match(exportBodies.resumePdf, /if \(resumePrintRef\.current\)/, "resume PDF should export the active visual template");
+assert.match(exportBodies.resumePdf, /exportVisualPdf\(resumePrintRef/, "resume PDF should capture the visible preview");
 
 const forbiddenCopy = [
   /Sign up to download/i,
