@@ -1,27 +1,4 @@
-/* ApplyCraft's single CSS-only scrollbar system. Theme colour variables are
-   provided by both the React shell and the static-page stylesheet. */
-:root{
-  --scrollbar-size:10px;
-  --scrollbar-track:var(--color-bg-page);
-  --scrollbar-thumb:var(--color-accent-primary);
-  --scrollbar-thumb-hover:var(--color-accent-secondary);
-  --scrollbar-thumb-active:var(--color-text-secondary);
-  --scrollbar-thumb-border:var(--color-bg-page);
-}
-html{scrollbar-gutter:stable}
-*{scrollbar-width:thin;scrollbar-color:var(--scrollbar-thumb) var(--scrollbar-track)}
-*::-webkit-scrollbar{width:var(--scrollbar-size);height:var(--scrollbar-size)}
-*::-webkit-scrollbar-track{background:var(--scrollbar-track)}
-*::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border:2px solid var(--scrollbar-thumb-border);border-radius:999px;background-clip:padding-box}
-*::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-thumb-hover);border-color:var(--scrollbar-thumb-border);background-clip:padding-box}
-*::-webkit-scrollbar-thumb:active{background:var(--scrollbar-thumb-active)}
-*::-webkit-scrollbar-corner{background:var(--scrollbar-track)}
-
-/* Full-screen document previews remain scrollable, but the scrollbar is
-   intentionally transparent so it does not appear inside the CV page. */
-.ac-preview-scroll-hidden{scrollbar-color:transparent transparent}
-.ac-preview-scroll-hidden::-webkit-scrollbar-track,
-.ac-preview-scroll-hidden::-webkit-scrollbar-thumb,
-.ac-preview-scroll-hidden::-webkit-scrollbar-thumb:hover,
-.ac-preview-scroll-hidden::-webkit-scrollbar-thumb:active,
-.ac-preview-scroll-hidden::-webkit-scrollbar-corner{background:transparent;border-color:transparent;box-shadow:none}
+/* Keep every page and panel scrollable without displaying native scrollbars. */
+html{scrollbar-gutter:auto}
+*{-ms-overflow-style:none;scrollbar-width:none}
+*::-webkit-scrollbar{display:none;width:0;height:0;background:transparent}
