@@ -3477,7 +3477,10 @@ export default function ResumeGenerator() {
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
-    const hasResumeContent = !isResumeDataEmpty(liveData) && !draftPersistedRef.current;
+    // Only warn for actual user-entered content that has not reached local
+    // storage yet. liveData also includes untouched presentation defaults.
+    // draftState makes this effect rerun as soon as autosave completes.
+    const hasResumeContent = meaningfulDraft(form) && !draftPersistedRef.current;
     const hasCoverContent = hasMeaningfulCoverLetterContent(coverForm);
     if (!hasResumeContent && !hasCoverContent) return undefined;
     const handler = (event) => {
@@ -3489,7 +3492,7 @@ export default function ResumeGenerator() {
     };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
-  }, [liveData, coverForm]);
+  }, [form, coverForm, draftState]);
   const shouldReviewBeforeExport = useCallback((format, skipReview = false) => {
     if (skipReview) return false;
     const warnings = analyzeResumeQuality(result || liveData, { ...form, phone: fullPhone }, { lang: docLang });

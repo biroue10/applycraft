@@ -29,6 +29,8 @@ assert.match(app, /mobileResumeMode/, "mobile edit and preview modes should be e
 assert.match(builder, /Draft saved on this device/, "editor should accurately describe local draft autosave");
 assert.match(app, /clearApplyCraftLocalData/, "app should clear old sensitive document storage keys");
 assert.match(app, /beforeunload/, "app should warn before closing with unsaved document content");
+assert.match(app, /meaningfulDraft\(form\) && !draftPersistedRef\.current/, "beforeunload should ignore untouched/default resume data");
+assert.match(app, /\[form, coverForm, draftState\]/, "beforeunload should be removed as soon as autosave completes");
 assert.match(app, /resumeDraft\.js/, "resume drafts should use the validated local persistence module");
 assert.match(app, /initialResumeDraft/, "resume drafts should restore synchronously before editor render");
 assert.match(common, /Download PDF/, "PDF export should remain obvious");
