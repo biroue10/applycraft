@@ -104,6 +104,21 @@ assert.equal(readResponse.status, 200, "stored short link should be readable");
 const readShare = await readResponse.json();
 assert.equal(readShare.payload.d.name, arabicModernResume.d.name, "stored short link should preserve document data");
 
+let requestedViewerAsset = "";
+const viewerResponse = await worker.fetch(new Request(`https://applycraft.io/r/${createdShare.shareId}`), {
+  ASSETS: {
+    async fetch(request) {
+      requestedViewerAsset = new URL(request.url).pathname;
+      return new Response("<!doctype html><div id=\"root\"></div>", {
+        status: 200,
+        headers: { "Content-Type": "text/html; charset=UTF-8" },
+      });
+    },
+  },
+});
+assert.equal(viewerResponse.status, 200, "short viewer route should return the shared-resume shell without redirecting");
+assert.equal(requestedViewerAsset, "/r/", "short viewer route should fetch the canonical trailing-slash asset internally");
+
 const cover = roundTrip({
   v: 2,
   k: "cover",

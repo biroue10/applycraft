@@ -1468,7 +1468,10 @@ export default {
       }
     }
     if (request.method === "GET" && /^\/r\/[A-Za-z0-9_-]{8,24}$/.test(url.pathname)) {
-      const assetUrl = new URL("/r", url.origin);
+      // Fetch the canonical asset path internally. With force-trailing-slash,
+      // requesting /r would return a redirect to /r/ and make the browser lose
+      // the share ID from its visible /r/{id} URL.
+      const assetUrl = new URL("/r/", url.origin);
       return withSecurityHeaders(await env.ASSETS.fetch(new Request(assetUrl, request)));
     }
     const assetResponse = await env.ASSETS.fetch(request);
