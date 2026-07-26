@@ -229,15 +229,27 @@ async function downloadSharedPdf(node, doc) {
     direction: rtl ? "rtl" : "ltr",
   });
   const clone = source.cloneNode(true);
+  const pagePixelHeight =
+    doc.p === "letter"
+      ? Math.round((794 * 792) / 612)
+      : Math.round((794 * 841.89) / 595.28);
   Object.assign(clone.style, {
     width: "794px",
     maxWidth: "794px",
+    minHeight: `${pagePixelHeight}px`,
+    height: "auto",
     transform: "none",
     margin: "0",
     boxShadow: "none",
     overflow: "visible",
     direction: rtl ? "rtl" : "ltr",
   });
+  const inner = clone.firstElementChild;
+  if (inner) {
+    inner.style.minHeight = `${pagePixelHeight}px`;
+    inner.style.height = "auto";
+    inner.style.alignItems = "stretch";
+  }
   clone.setAttribute("lang", doc.l || "en");
   clone.setAttribute("dir", rtl ? "rtl" : "ltr");
   host.appendChild(clone);
