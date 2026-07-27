@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-26T17:57:50.986Z",
+  "generatedAt": "2026-07-27T00:12:03.074Z",
   "pages": [
     {
       "route": "/about\\",
@@ -168,6 +168,18 @@
       "primaryCta": "",
       "overlappingPages": [],
       "differentiationNote": "Serve the specific informational or product intent expressed by How to Beat ATS Resume Filters (2026 Guide)"
+    },
+    {
+      "route": "/blog\\bilingual-resume-template-arabic-english-french\\",
+      "locale": "en",
+      "primaryKeyword": "bilingual resume template: arabic, english and french",
+      "secondaryKeywords": [],
+      "searchIntent": "Serve the specific informational or product intent expressed by Bilingual Resume Template: Arabic, English and French",
+      "canonical": "https://applycraft.io/blog/bilingual-resume-template-arabic-english-french/",
+      "parentHub": "",
+      "primaryCta": "",
+      "overlappingPages": [],
+      "differentiationNote": "Serve the specific informational or product intent expressed by Bilingual Resume Template: Arabic, English and French"
     },
     {
       "route": "/blog\\canadian-resume-for-immigrants\\",
@@ -900,6 +912,18 @@
       "primaryCta": "",
       "overlappingPages": [],
       "differentiationNote": "Serve the specific informational or product intent expressed by Lettre de motivation Maroc — modèle et exemple 2026"
+    },
+    {
+      "route": "/fr\\blog\\modele-cv-bilingue-francais-anglais-arabe\\",
+      "locale": "en",
+      "primaryKeyword": "modèle de cv bilingue français, anglais et arabe",
+      "secondaryKeywords": [],
+      "searchIntent": "Serve the specific informational or product intent expressed by Modèle de CV bilingue français, anglais et arabe",
+      "canonical": "https://applycraft.io/fr/blog/modele-cv-bilingue-francais-anglais-arabe/",
+      "parentHub": "",
+      "primaryCta": "",
+      "overlappingPages": [],
+      "differentiationNote": "Serve the specific informational or product intent expressed by Modèle de CV bilingue français, anglais et arabe"
     },
     {
       "route": "/fr\\blog\\passer-filtres-ats\\",
