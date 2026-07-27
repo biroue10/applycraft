@@ -6,7 +6,12 @@ Applied to all responses: a restrictive CSP (`default-src 'self'`, `object-src
 HSTS, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
 `Referrer-Policy: strict-origin-when-cross-origin`, a locked-down
 `Permissions-Policy`, `Cross-Origin-Opener-Policy` and
-`Cross-Origin-Resource-Policy: same-origin`.
+`Cross-Origin-Resource-Policy: same-origin`. Legacy Adobe cross-domain policy
+discovery is disabled with `X-Permitted-Cross-Domain-Policies: none`.
+
+The same header set is applied by `worker.js` to generated API, redirect, error,
+and asset responses. Keep `scripts/security-tests.mjs` assertions in sync so a
+future Worker change cannot silently weaken dynamic responses.
 
 ### `script-src 'unsafe-inline'` — why it's still there, how to remove it
 Every prerendered/static page embeds inline `<script type="application/ld+json">`
@@ -62,3 +67,35 @@ goes down.
 Protected endpoints (AI, and any future account/sync/payment handlers ported
 into the Worker) should all route through `checkRateLimitKV` + `validatePayload`
 + `readLimitedBody`.
+
+## Domain, DNS and email security (production checklist)
+
+These controls live in Cloudflare/your registrar rather than this repository:
+
+1. Require phishing-resistant 2FA (passkey or hardware key) on Cloudflare,
+   GitHub, the registrar and the destination mailbox. Store recovery codes
+   offline and keep two account owners where possible.
+2. Enable registrar lock and DNSSEC. Confirm the Cloudflare DNSSEC status is
+   **Active** before treating the domain as protected.
+3. Keep Cloudflare proxying enabled for web records so the origin IP is not
+   exposed. Do not publish the origin IP in unrelated DNS records.
+4. Enable managed WAF rules, bot protection and a rate-limiting rule for
+   `/api/*`. The Worker limiter is defense in depth, not a WAF replacement.
+5. Review Cloudflare Audit Logs and GitHub security alerts weekly. Rotate any
+   credential immediately if it appears in a commit, log, screenshot or chat.
+6. Maintain exactly one SPF record and enable DKIM for every legitimate sending
+   service. Review DMARC aggregate reports before moving gradually from
+   `p=none` to `p=quarantine`, then `p=reject`. Never change to enforcement
+   until all legitimate senders pass SPF or DKIM with DMARC alignment.
+7. Add restrictive CAA records after confirming the certificate authorities
+   actually used by Cloudflare. Incorrect CAA values can prevent certificate
+   renewal.
+
+### Handling unsolicited domain-sale or security email
+
+An unsolicited offer to sell a similar domain is not evidence that the site was
+breached. Do not click links, open attachments, reply, pay, or reuse contact
+details from the message. Verify any domain independently through the registrar
+and ICANN lookup. A real vulnerability report should identify the affected URL,
+reproduction steps and impact without demanding payment; route it through the
+security contact published by the site.

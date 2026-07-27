@@ -252,6 +252,9 @@ async function testSecurityHeaders() {
   assert.match(response.headers.get("Content-Security-Policy"), /frame-ancestors 'none'/);
   assert.equal(response.headers.get("X-Frame-Options"), "DENY");
   assert.equal(response.headers.get("X-Content-Type-Options"), "nosniff");
+  assert.equal(response.headers.get("Cross-Origin-Opener-Policy"), "same-origin");
+  assert.equal(response.headers.get("Cross-Origin-Resource-Policy"), "same-origin");
+  assert.equal(response.headers.get("X-Permitted-Cross-Domain-Policies"), "none");
 }
 
 async function testStaticSinks() {

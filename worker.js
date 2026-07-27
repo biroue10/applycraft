@@ -449,6 +449,8 @@ const SECURITY_HEADERS = {
   "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), interest-cohort=()",
   "X-Frame-Options": "DENY",
   "Cross-Origin-Opener-Policy": "same-origin",
+  "Cross-Origin-Resource-Policy": "same-origin",
+  "X-Permitted-Cross-Domain-Policies": "none",
 };
 
 function jsonResponse(body, status, corsHeaders = {}) {
