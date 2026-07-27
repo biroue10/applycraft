@@ -20,6 +20,9 @@ export function hasMeaningfulResumeDraft(data) {
   if (!data || typeof data !== "object") return false;
   const scalar = ["name", "title", "email", "phone", "location", "linkedin", "website", "summary"];
   if (scalar.some((key) => String(data[key] || "").trim())) return true;
+  if (Array.isArray(data.customSections) && data.customSections.some((section) => (
+    String(section?.heading || "").trim() || String(section?.content || "").trim()
+  ))) return true;
   return Object.keys(data).some((key) => key.endsWith("Entries")
     && Array.isArray(data[key])
     && data[key].some((entry) => entry && Object.entries(entry)

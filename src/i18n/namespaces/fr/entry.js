@@ -44,6 +44,13 @@ const entry = {
   "addContent": "Ajouter du contenu",
   "addContentSub": "Choisissez une section à ajouter à votre CV",
   "alreadyAdded": "Déjà ajouté",
+  "customSection": "Créer votre propre section",
+  "customSectionHint": "Ajoutez une section avec le titre et le contenu de votre choix.",
+  "customSectionPlaceholder": "Ex. Conférences",
+  "createSection": "Créer la section",
+  "customSectionTitle": "Titre de la section",
+  "customSectionContent": "Contenu de la section",
+  "customSectionContentPlaceholder": "Ajoutez un élément par ligne. Utilisez des puces si nécessaire.",
   "close": "Fermer",
   "optional": "Facultatif"
 };

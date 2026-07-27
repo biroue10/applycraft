@@ -40,6 +40,8 @@ import { formatLetterDate, defaultCoverSignoff, COVER_SIGNOFFS, LETTER_LOCALE } 
 import { buildInternalUrl, localizeRoute, localizedLanguageHref } from "./seo/localizedRoutes.js";
 import { jobContextQuery } from "./interview/context.js";
 
+const CustomResumeSectionUI = React.lazy(() => import("./components/CustomResumeSectionUI.jsx"));
+
 // Event ids normally match their lowercase constant name. Keeping this tiny
 // call-site map avoids pulling the full analytics whitelist into first paint.
 const EVENTS = new Proxy({ COVER_STARTED: "cover_letter_started" }, {
@@ -1530,6 +1532,14 @@ function parseEntries(key, text) {
 function migrateForm(form) {
   const out = { ...form };
   if (!out.sectionTitles || typeof out.sectionTitles !== "object") out.sectionTitles = {};
+  out.customSections = (Array.isArray(out.customSections) ? out.customSections : [])
+    .slice(0, 20)
+    .map((section) => ({
+      id: String(section?.id || uid()),
+      heading: String(section?.heading || "").slice(0, 120),
+      content: String(section?.content || "").slice(0, 12000),
+      visible: section?.visible !== false,
+    }));
   SECTION_KEYS.forEach((key) => {
     const arrKey = key + "Entries";
     let entries = Array.isArray(out[arrKey]) ? out[arrKey] : null;
@@ -1646,6 +1656,16 @@ function buildLiveData(form, t, lang = "en") {
   add("publications",    headingOf("publications", t.publications));
   add("references",      headingOf("references", t.references));
   add("extracurricular", headingOf("extracurricular", t.extracurricular));
+  (form.customSections || []).forEach((section) => {
+    const heading = String(section?.heading || "").trim();
+    const items = String(section?.content || "")
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    if (section?.visible !== false && heading && items.length) {
+      sections.push({ key: `custom-${section.id}`, heading, isCustom: true, items });
+    }
+  });
   return {
     name: form.name || "",
     title: form.title || "",
@@ -2469,10 +2489,80 @@ function DeferredApplicationPack({ locale, mobile }) {
   return null;
 }
 
+function CustomSectionCard({ section, eui, rtl, collapsed, onToggle, onChange, onRemove }) {
+  const hasContent = Boolean(String(section.content || "").trim());
+  return (
+    <section style={{ background: collapsed ? SECTION_TOKENS.rowBg : SECTION_TOKENS.expandedBg,
+      borderRadius: 12, boxShadow: collapsed ? "none" : SECTION_TOKENS.expandedShadow,
+      marginTop: 10, overflow: "hidden" }}>
+      <header role="button" tabIndex={0} aria-expanded={!collapsed}
+        aria-label={collapsed ? eui.expand : eui.collapse}
+        onClick={onToggle}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onToggle();
+          }
+        }}
+        style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "12px 14px" }}>
+        <span aria-hidden style={{ fontSize: 16 }}>📝</span>
+        <h3 style={{ flex: 1, margin: 0, color: C.text1, fontSize: 15.5, fontWeight: 800,
+          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{section.heading}</h3>
+        <span aria-hidden style={{ width: 8, height: 8, borderRadius: "50%",
+          background: statusTone(hasContent ? "Complete" : "Missing"), opacity: hasContent ? 0.95 : 0.55 }} />
+        <button type="button" onClick={(event) => {
+          event.stopPropagation();
+          onChange({ visible: section.visible === false });
+        }}
+          aria-label={section.visible === false ? eui.show : eui.hide}
+          title={section.visible === false ? eui.show : eui.hide}
+          style={{ border: "none", background: "transparent", color: C.text2, cursor: "pointer",
+            fontFamily: "inherit", fontSize: 16, padding: 6 }}>
+          {section.visible === false ? "◯" : "◉"}
+        </button>
+        <button type="button" onClick={(event) => {
+          event.stopPropagation();
+          onRemove();
+        }}
+          aria-label={eui.remove} title={eui.remove}
+          style={{ border: "none", background: "transparent", color: "#f87171", cursor: "pointer",
+            fontFamily: "inherit", fontSize: 18, padding: 6 }}>×</button>
+        <span aria-hidden style={{ color: C.text2, fontSize: 22 }}>{collapsed ? "▸" : "▾"}</span>
+      </header>
+      {!collapsed && (
+        <div style={{ padding: "4px 16px 16px", boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.rowDivider}` }}>
+          <label htmlFor={`custom-heading-${section.id}`}
+            style={{ display: "block", color: C.text3, fontSize: 11, fontWeight: 700, margin: "10px 0 4px" }}>
+            {eui.customSectionTitle}
+          </label>
+          <input id={`custom-heading-${section.id}`} value={section.heading}
+            onChange={(event) => onChange({ heading: event.target.value.slice(0, 120) })}
+            dir={rtl ? "rtl" : "ltr"}
+            style={{ width: "100%", boxSizing: "border-box", background: C.elevated,
+              border: `1px solid ${C.border}`, borderRadius: 8, padding: "9px 11px",
+              color: C.text1, fontFamily: "inherit", fontSize: 13 }} />
+          <label htmlFor={`custom-content-${section.id}`}
+            style={{ display: "block", color: C.text3, fontSize: 11, fontWeight: 700, margin: "12px 0 4px" }}>
+            {eui.customSectionContent}
+          </label>
+          <textarea id={`custom-content-${section.id}`} value={section.content}
+            onChange={(event) => onChange({ content: event.target.value.slice(0, 12000) })}
+            placeholder={eui.customSectionContentPlaceholder} rows={6}
+            dir={rtl ? "rtl" : "ltr"}
+            style={{ width: "100%", boxSizing: "border-box", resize: "vertical", minHeight: 120,
+              background: C.elevated, border: `1px solid ${C.border}`, borderRadius: 8,
+              padding: "10px 11px", color: C.text1, fontFamily: "inherit", fontSize: 13, lineHeight: 1.55 }} />
+        </div>
+      )}
+    </section>
+  );
+}
+
 // Section picker opened by the "Add content" button. Accessible (role=dialog,
 // focus trap, Esc/backdrop close, visible ×); bottom-sheet on mobile.
-function AddContentModal({ open, onClose, addedSet, onAdd, sectionName, eui, rtl, isMobile }) {
+function AddContentModal({ open, onClose, addedSet, onAdd, onAddCustom, sectionName, eui, rtl, isMobile }) {
   const dialogRef = useRef(null);
+  const availableSections = PICKER_CATALOG.filter((key) => !addedSet.has(key));
   useEffect(() => {
     if (!open || typeof document === "undefined") return;
     const prev = document.activeElement;
@@ -2508,27 +2598,26 @@ function AddContentModal({ open, onClose, addedSet, onAdd, sectionName, eui, rtl
             style={{ background: "none", border: "none", color: C.text3, cursor: "pointer", fontSize: 22, lineHeight: 1, padding: "0 2px" }}>×</button>
         </div>
         <p style={{ margin: "0 0 16px", fontSize: 13, color: C.text2 }}>{eui.addContentSub}</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {PICKER_CATALOG.map((key) => {
-            const added = addedSet.has(key);
+        {availableSections.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {availableSections.map((key) => {
             return (
-              <button key={key} type="button" disabled={added} onClick={() => onAdd(key)}
+              <button key={key} type="button" onClick={() => onAdd(key)}
                 style={{ display: "flex", alignItems: "center", gap: 12, textAlign: rtl ? "right" : "left",
-                  background: added ? "transparent" : SECTION_TOKENS.softSurface, border: "none", borderRadius: 10,
-                  padding: "11px 14px", cursor: added ? "default" : "pointer", fontFamily: "inherit", color: C.text1,
-                  opacity: added ? 0.55 : 1, width: "100%" }}>
+                  background: SECTION_TOKENS.softSurface, border: "none", borderRadius: 10,
+                  padding: "11px 14px", cursor: "pointer", fontFamily: "inherit", color: C.text1, width: "100%" }}>
                 <span aria-hidden style={{ fontSize: 18, flexShrink: 0 }}>{PICKER_ICONS[key]}</span>
                 <span style={{ flex: 1, fontSize: 14, fontWeight: 700 }}>{sectionName(key)}</span>
-                {added
-                  ? <span style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, flexShrink: 0 }}>✓ {eui.alreadyAdded}</span>
-                  : <span aria-hidden style={{ fontSize: 18, color: C.accent2, fontWeight: 800, flexShrink: 0 }}>+</span>}
+                <span aria-hidden style={{ fontSize: 18, color: C.accent2, fontWeight: 800, flexShrink: 0 }}>+</span>
               </button>
             );
           })}
-        </div>
-        {/* TODO: custom/blank section with a user-defined title — the app has no
-            custom-section concept yet; add a "Custom section" entry here that
-            creates a user-titled generic section when that model exists. */}
+          </div>
+        )}
+        <React.Suspense fallback={null}>
+          <CustomResumeSectionUI mode="creator" eui={eui} theme={C} tokens={SECTION_TOKENS}
+            mobile={isMobile} separated={availableSections.length > 0} onCreate={onAddCustom} />
+        </React.Suspense>
       </div>
     </div>
   );
@@ -2777,7 +2866,7 @@ export default function ResumeGenerator() {
     linkedin: "", website: "",
     summary: "", experience: "", education: "", skills: "",
     certifications: "", languages: "", projects: "", volunteer: "", awards: "",
-    sectionTitles: {},
+    sectionTitles: {}, customSections: [],
   }), []);
   const [form, setForm] = useState(() => initialLocalDraft ? migrateForm({ ...emptyResumeForm, ...initialLocalDraft.data }) : emptyResumeForm);
   const [draftState, setDraftState] = useState(() => initialLocalDraft ? "restored" : "idle");
@@ -3355,7 +3444,7 @@ export default function ResumeGenerator() {
     const next = migrateForm({
       name: p.name || "", title: p.title || "", email: p.email || "", phone: p.phone || "",
       location: p.location || "", linkedin: p.linkedin || "", website: p.website || "",
-      summary: p.summary || "", sectionTitles: {}, addedSections: [],
+      summary: p.summary || "", sectionTitles: {}, addedSections: [], customSections: [],
       documentLanguage: detectedDocumentLanguage,
       translationMeta: null,
       experienceEntries: (p.experience || []).map((e) => entry({
@@ -3432,6 +3521,28 @@ export default function ResumeGenerator() {
     });
     setCollapsedSections((c) => ({ ...c, [key]: false })); // open it
     setAddContentOpen(false);
+  }, []);
+  const addCustomSection = useCallback((heading) => {
+    const cleanHeading = String(heading || "").trim().slice(0, 120);
+    if (!cleanHeading) return;
+    const section = { id: uid(), heading: cleanHeading, content: "", visible: true };
+    setForm((f) => ({ ...f, customSections: [...(f.customSections || []), section].slice(0, 20) }));
+    setCollapsedSections((current) => ({ ...current, [`custom-${section.id}`]: false }));
+    setAddContentOpen(false);
+  }, []);
+  const changeCustomSection = useCallback((id, changes) => {
+    setForm((f) => ({
+      ...f,
+      customSections: (f.customSections || []).map((section) => (
+        section.id === id ? { ...section, ...changes } : section
+      )),
+    }));
+  }, []);
+  const removeCustomSection = useCallback((id) => {
+    setForm((f) => ({
+      ...f,
+      customSections: (f.customSections || []).filter((section) => section.id !== id),
+    }));
   }, []);
   // Takes an optional section out of the editor. The entries stay on the form,
   // so re-adding it from the picker restores whatever was typed — buildLiveData
@@ -6305,6 +6416,16 @@ Awards: ${form.awards}`;
             <div key={key}>{renderSection(key, sectionName(key))}</div>
           ))}
 
+          {(form.customSections || []).map((section) => (
+            <React.Suspense key={section.id} fallback={null}>
+              <CustomResumeSectionUI mode="card" section={section} eui={eui} theme={C} tokens={SECTION_TOKENS}
+                rtl={documentRtl} collapsed={collapsedSections[`custom-${section.id}`] !== false}
+                onToggle={() => toggleSectionCollapse(`custom-${section.id}`)}
+                onChange={(changes) => changeCustomSection(section.id, changes)}
+                onRemove={() => removeCustomSection(section.id)} />
+            </React.Suspense>
+          ))}
+
           {/* ── Add content ── */}
           <div style={{ display: "flex", justifyContent: rtl ? "flex-start" : "flex-end", marginTop: 16 }}>
             <button type="button" onClick={() => setAddContentOpen(true)}
@@ -6315,7 +6436,8 @@ Awards: ${form.awards}`;
             </button>
           </div>
           <AddContentModal open={addContentOpen} onClose={() => setAddContentOpen(false)}
-            addedSet={addedSet} onAdd={addSection} sectionName={sectionName} eui={eui} rtl={rtl} isMobile={isMobile} />
+            addedSet={addedSet} onAdd={addSection} onAddCustom={addCustomSection}
+            sectionName={sectionName} eui={eui} rtl={rtl} isMobile={isMobile} />
 
           {/* ── ATS Checker Panel ── */}
           {atsOpen && (() => {

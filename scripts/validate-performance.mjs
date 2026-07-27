@@ -11,10 +11,11 @@
 import { readFileSync, readdirSync, statSync } from "fs";
 import { join, basename } from "path";
 import { gzipSync } from "zlib";
+import { fileURLToPath } from "url";
 
-const DIST = new URL("../dist/assets", import.meta.url).pathname;
-const DIST_ROOT = new URL("../dist", import.meta.url).pathname;
-const PUBLIC = new URL("../public", import.meta.url).pathname;
+const DIST = fileURLToPath(new URL("../dist/assets", import.meta.url));
+const DIST_ROOT = fileURLToPath(new URL("../dist", import.meta.url));
+const PUBLIC = fileURLToPath(new URL("../public", import.meta.url));
 
 // ── Budgets ────────────────────────────────────────────────────────────────
 

@@ -44,6 +44,13 @@ const entry = {
   "addContent": "إضافة محتوى",
   "addContentSub": "اختر قسمًا لإضافته إلى سيرتك الذاتية",
   "alreadyAdded": "مضاف بالفعل",
+  "customSection": "إنشاء قسم خاص بك",
+  "customSectionHint": "أضف قسمًا بعنوان ومحتوى من اختيارك.",
+  "customSectionPlaceholder": "مثال: المؤتمرات",
+  "createSection": "إنشاء القسم",
+  "customSectionTitle": "عنوان القسم",
+  "customSectionContent": "محتوى القسم",
+  "customSectionContentPlaceholder": "أضف عنصرًا واحدًا في كل سطر، واستخدم النقاط عند الحاجة.",
   "close": "إغلاق",
   "optional": "اختياري"
 };

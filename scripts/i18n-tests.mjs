@@ -221,6 +221,14 @@ test("custom section label behavior is present and protected", () => {
   assert.match(app, /restoreDefaultLabel/);
   assert.match(app, /delete nextTitles\[key\]/);
   assert.match(app, /headingOf = \(key, def\) => \(form\.sectionTitles && form\.sectionTitles\[key\]\) \|\| def/);
+  assert.match(app, /customSections/);
+  assert.match(app, /CustomResumeSectionUI/);
+  assert.match(app, /key: `custom-\$\{section\.id\}`/);
+  for (const language of ["en", "fr", "ar"]) {
+    assert.equal(typeof resources[language]?.entry?.customSection, "string");
+    assert.equal(typeof resources[language]?.entry?.createSection, "string");
+    assert.equal(typeof resources[language]?.entry?.customSectionContentPlaceholder, "string");
+  }
 });
 
 test("analytics whitelist contains multilingual events only with safe scalar props", () => {

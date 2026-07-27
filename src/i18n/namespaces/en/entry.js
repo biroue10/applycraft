@@ -44,6 +44,13 @@ const entry = {
   "addContent": "Add content",
   "addContentSub": "Choose a section to add to your resume",
   "alreadyAdded": "Already added",
+  "customSection": "Create your own section",
+  "customSectionHint": "Add a section with your own title and content.",
+  "customSectionPlaceholder": "e.g. Conferences",
+  "createSection": "Create section",
+  "customSectionTitle": "Section title",
+  "customSectionContent": "Section content",
+  "customSectionContentPlaceholder": "Add one item per line. Use bullets when helpful.",
   "close": "Close",
   "optional": "Optional"
 };

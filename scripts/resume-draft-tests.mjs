@@ -8,12 +8,18 @@ const storage = {
   removeItem: (key) => values.delete(key),
 };
 const envelope = createResumeDraftEnvelope({
-  data: { name: "ليلى", summary: "مهندسة برمجيات", experienceEntries: [{ id: "1", title: "مطوّرة", visible: true }] },
+  data: {
+    name: "ليلى",
+    summary: "مهندسة برمجيات",
+    experienceEntries: [{ id: "1", title: "مطوّرة", visible: true }],
+    customSections: [{ id: "custom-1", heading: "المؤتمرات", content: "متحدثة في مؤتمر تقني", visible: true }],
+  },
   interfaceLanguage: "ar", documentLanguage: "ar", templateId: "modern",
 });
 assert.equal(envelope.version, 1);
 assert.equal(writeResumeDraft(envelope, storage), true);
 assert.equal(readResumeDraft(storage).data.summary, "مهندسة برمجيات");
+assert.equal(readResumeDraft(storage).data.customSections[0].heading, "المؤتمرات");
 values.set("unrelated", "keep");
 assert.equal(clearResumeDraft(storage), true);
 assert.equal(values.has(RESUME_DRAFT_KEY), false);
