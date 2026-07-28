@@ -24,6 +24,8 @@ function localizeInternalAnchors(html, lang) {
     if (!href.startsWith("/") && !href.startsWith("https://applycraft.io/")) return full;
     if (/English|Anglais|Français|French|العربية|Arabic|Arabe|الفرنسية|الإنجليزية/i.test(`${href} ${label}`)) return full;
     const local = href.replace(/^https:\/\/applycraft\.io/i, "").replaceAll("&amp;", "&");
+    const pathname = local.split(/[?#]/, 1)[0];
+    if (/\.[a-z0-9]{2,8}$/i.test(pathname) || /\bdownload(?:\s|=|>|$)/i.test(`${before} ${after}`)) return full;
     const localized = localizedFooterHref({ href: local }, lang);
     if (localized === local) return full;
     return `<a${before}href="${localized.replaceAll("&", "&amp;")}"${after}>${label}</a>`;

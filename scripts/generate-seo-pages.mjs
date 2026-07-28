@@ -1486,7 +1486,7 @@ const EXAMPLES = [
   {
     slug: "registered-nurse-resume",
     canonicalPath: "/examples/registered-nurse-resume/",
-    title: "Registered Nurse Resume Example — Free Template | ApplyCraft",
+    title: "Registered Nurse Resume Example | ApplyCraft",
     description: "Free registered nurse (RN) resume example with licences, certifications, and clinical skills in an ATS-friendly layout. Edit and download as PDF or DOCX.",
     eyebrow: "Resume Example",
     h1: "Registered Nurse Resume Example",
@@ -1758,11 +1758,12 @@ const EXAMPLES = [
 
 // ── Generate all pages ────────────────────────────────────────────────────────
 const GENERATED_PAGES = PAGES.filter((p) => !REDIRECTED_SLUGS.has(p.slug));
+const cleanGeneratedHtml = (html) => html.replace(/[ \t]+$/gm, "");
 
 for (const p of GENERATED_PAGES) {
   const dir = join(ROOT, p.slug);
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, "index.html"), page(p), "utf8");
+  writeFileSync(join(dir, "index.html"), cleanGeneratedHtml(page(p)), "utf8");
   console.log(`✓ /public/${p.slug}/index.html`);
 }
 
@@ -1770,7 +1771,7 @@ for (const p of EXAMPLES) {
   const dir = join(ROOT, "examples", p.slug);
   mkdirSync(dir, { recursive: true });
   const cssPathForExamples = "../../_seo.css";
-  writeFileSync(join(dir, "index.html"), page({ ...p, _cssPath: cssPathForExamples }), "utf8");
+  writeFileSync(join(dir, "index.html"), cleanGeneratedHtml(page({ ...p, _cssPath: cssPathForExamples })), "utf8");
   console.log(`✓ /public/examples/${p.slug}/index.html`);
 }
 

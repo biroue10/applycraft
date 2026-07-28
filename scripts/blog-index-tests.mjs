@@ -1,8 +1,9 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { blogArticles, publishedBlogArticles } from "./blog-articles.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const DIST = join(ROOT, "dist");
 const PUBLIC = join(ROOT, "public");
 const failures = [];
