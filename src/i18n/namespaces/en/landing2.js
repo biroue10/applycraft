@@ -86,7 +86,7 @@ const landing2 = {
         "English only"
       ]
     ],
-    "footnote": "“Typical builders” reflects common practices across popular paid resume tools. Optional ApplyCraft power-ups (AI tailoring, cross-device sync) are a one-time 7-day pass — never a subscription."
+    "footnote": "ApplyCraft’s core resume and cover letter builder is free, with no mandatory account, watermark, or download paywall. “Typical builders” reflects common practices across popular paid tools; optional AI tailoring and cross-device sync use a one-time 7-day pass, never a subscription."
   },
   "ml": {
     "eyebrow": "Multilingual superpowers",

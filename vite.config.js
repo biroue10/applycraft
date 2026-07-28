@@ -23,7 +23,7 @@ const ROUTE_LANG = {
 const ROUTE_META = {
   "/": {
     title: "Free Resume Builder in English, French, Arabic | ApplyCraft",
-    description: positioningFor("en").supportingText,
+    description: "Create professional ATS-friendly resumes and cover letters for free in English, French, and Arabic. Choose from 60 templates and export to PDF or DOCX.",
     image: "https://applycraft.io/og/home.png",
     imageAlt: "ApplyCraft resume builder and cover letter maker preview",
     locale: "en_US",
