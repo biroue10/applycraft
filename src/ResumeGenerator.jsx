@@ -11075,9 +11075,9 @@ function PageFooter({ t }) {
 
 const C = {
   ...COLORS,             // bg / sidebar / surface / elevated / border / text / accent / grad
-  gradHov:  "linear-gradient(135deg,#5254CC 0%,#2563EB 100%)",
-  glow:     "rgba(99,102,241,0.14)",  // indigo glow
-  glowBlue: "rgba(59,130,246,0.10)", // blue glow
+  gradHov:  "linear-gradient(135deg,#7E22CE 0%,#1D4ED8 100%)",
+  glow:     "rgba(147,51,234,0.16)",  // purple glow
+  glowBlue: "rgba(37,99,235,0.12)",  // blue glow
   // success / warning / danger now come from ...COLORS (single source of truth).
   radiusSm: 6,
   radiusMd: 10,

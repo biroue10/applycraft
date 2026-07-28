@@ -24,8 +24,8 @@ export const COLORS = {
   text2: "#B6C2D6",
   text3: "#8B9EB8",
 
-  accent: "#4F46E5",
-  accent2: "#818CF8",
+  accent: "#7C3AED",
+  accent2: "#A78BFA",
   blue: "#3B82F6",
 
   // Semantic status tier. Promoted here (from the local `C` palette) so every
@@ -37,7 +37,7 @@ export const COLORS = {
   success: "#4ADE80",
   warning: "#FBBF24",
 
-  grad: "linear-gradient(135deg,#4F46E5 0%,#2563EB 100%)",
+  grad: "linear-gradient(135deg,#9333EA 0%,#2563EB 100%)",
 
   // Muted ink for the light (paper) surfaces of the resume previews. #9CA3AF,
   // the old value, measured 2.53:1 on white.

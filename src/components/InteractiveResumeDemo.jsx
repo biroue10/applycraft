@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { LANDING2_UI } from "../i18n/index.js";
 import { COLORS, accentOnPaper } from "../theme/colors.js";
 
-const C = { ...COLORS, gradHov: "linear-gradient(135deg,#5254CC 0%,#2563EB 100%)",
-  glow: "rgba(99,102,241,0.14)", glowBlue: "rgba(59,130,246,0.10)",
+const C = { ...COLORS, gradHov: "linear-gradient(135deg,#7E22CE 0%,#1D4ED8 100%)",
+  glow: "rgba(147,51,234,0.16)", glowBlue: "rgba(37,99,235,0.12)",
   radiusSm: 6, radiusMd: 10, radiusLg: 14 };
 
 function FadeIn({ children, delay = 0, style = {}, as: Tag = "div" }) {
