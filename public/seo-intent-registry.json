@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-27T00:12:03.074Z",
+  "generatedAt": "2026-07-28T15:00:22.094Z",
   "pages": [
     {
       "route": "/about\\",
@@ -172,14 +172,14 @@
     {
       "route": "/blog\\bilingual-resume-template-arabic-english-french\\",
       "locale": "en",
-      "primaryKeyword": "bilingual resume template: arabic, english and french",
+      "primaryKeyword": "bilingual resume: arabic, english &amp; french",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by Bilingual Resume Template: Arabic, English and French",
+      "searchIntent": "Serve the specific informational or product intent expressed by Bilingual Resume: Arabic, English &amp; French",
       "canonical": "https://applycraft.io/blog/bilingual-resume-template-arabic-english-french/",
       "parentHub": "",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by Bilingual Resume Template: Arabic, English and French"
+      "differentiationNote": "Serve the specific informational or product intent expressed by Bilingual Resume: Arabic, English &amp; French"
     },
     {
       "route": "/blog\\canadian-resume-for-immigrants\\",
@@ -916,14 +916,14 @@
     {
       "route": "/fr\\blog\\modele-cv-bilingue-francais-anglais-arabe\\",
       "locale": "en",
-      "primaryKeyword": "modèle de cv bilingue français, anglais et arabe",
+      "primaryKeyword": "cv bilingue français, anglais et arabe",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by Modèle de CV bilingue français, anglais et arabe",
+      "searchIntent": "Serve the specific informational or product intent expressed by CV bilingue français, anglais et arabe",
       "canonical": "https://applycraft.io/fr/blog/modele-cv-bilingue-francais-anglais-arabe/",
       "parentHub": "",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by Modèle de CV bilingue français, anglais et arabe"
+      "differentiationNote": "Serve the specific informational or product intent expressed by CV bilingue français, anglais et arabe"
     },
     {
       "route": "/fr\\blog\\passer-filtres-ats\\",

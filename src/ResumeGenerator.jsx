@@ -2820,16 +2820,15 @@ export default function ResumeGenerator() {
   // home link pointing to /fr/). On the server, derive the language purely from
   // the route: /fr/* → fr, /ar/* → ar, everything else → en. Client-side this
   // stays empty so the existing storage/browser-preference logic is untouched.
-  const ssrRouteLang = typeof window === "undefined" ? (routeLang || "en") : "";
+  const routeDefaultLang = routeLang || "en";
   const initialSearchParams = new URLSearchParams(location.search || "");
-  const initialInterfaceLang = initialSearchParams.get("ui") || routeLang || ssrRouteLang;
-  const initialDocumentLang = initialSearchParams.get("docLang") || routeLang || ssrRouteLang;
+  const initialInterfaceLang = initialSearchParams.get("ui") || routeDefaultLang;
+  const initialDocumentLang = initialSearchParams.get("docLang") || routeDefaultLang;
   const initialTemplateCountry = (() => {
     const value = initialSearchParams.get("country") || "all";
     return TEMPLATE_COUNTRY_FILTERS.includes(value) ? value : "all";
   })();
   const explicitResumeStart = initialSearchParams.has("starter") || initialSearchParams.has("template") || initialSearchParams.has("importResume");
-  const initialLocalDraft = !explicitResumeStart && initialRoute.navPage === "resume" && typeof window !== "undefined" ? initialResumeDraft() : null;
   const [navPage, setNavPage] = useState(initialRoute.navPage);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sideSearch, setSideSearch] = useState("");
@@ -2844,8 +2843,8 @@ export default function ResumeGenerator() {
   const [coverTemplateHover, setCoverTemplateHover] = useState("");
   const [coverTemplateFocus, setCoverTemplateFocus] = useState("");
   const [step, setStep] = useState(initialRoute.step);
-  const [interfaceLanguage, setInterfaceLanguage] = useState(() => isInterfaceLang(initialInterfaceLang) ? initialInterfaceLang : initialInterfaceLanguage());
-  const [documentLanguage, setDocumentLanguage] = useState(() => isDocumentLang(initialDocumentLang) ? initialDocumentLang : initialDocumentLanguage());
+  const [interfaceLanguage, setInterfaceLanguage] = useState(() => isInterfaceLang(initialInterfaceLang) ? initialInterfaceLang : "en");
+  const [documentLanguage, setDocumentLanguage] = useState(() => isDocumentLang(initialDocumentLang) ? initialDocumentLang : "en");
   const [lazyLanding2, setLazyLanding2] = useState(null);
   const [lazyAtsResults, setLazyAtsResults] = useState(null);
   const selectedLang = languageByCode(interfaceLanguage);
@@ -2854,9 +2853,6 @@ export default function ResumeGenerator() {
   const docLang = selectedDocumentLang?.code || "en";
   const documentRtl = isRtlLang(docLang);
   const [tpl, setTpl] = useState(() => (
-    initialLocalDraft?.templateId
-      ? TEMPLATES.find((template) => template.id === initialLocalDraft.templateId) || null
-      :
     initialRoute.navPage === "resume" && initialRoute.step === "form"
       ? TEMPLATES.find((template) => template.id === RECOMMENDED_TEMPLATE_ID) || TEMPLATES.find((template) => !template.blank) || null
       : null
@@ -2868,11 +2864,11 @@ export default function ResumeGenerator() {
     certifications: "", languages: "", projects: "", volunteer: "", awards: "",
     sectionTitles: {}, customSections: [],
   }), []);
-  const [form, setForm] = useState(() => initialLocalDraft ? migrateForm({ ...emptyResumeForm, ...initialLocalDraft.data }) : emptyResumeForm);
-  const [draftState, setDraftState] = useState(() => initialLocalDraft ? "restored" : "idle");
+  const [form, setForm] = useState(() => emptyResumeForm);
+  const [draftState, setDraftState] = useState("idle");
   const draftSaveTimerRef = useRef(null);
-  const draftPersistedRef = useRef(Boolean(initialLocalDraft));
-  const [currentResumeId, setCurrentResumeId] = useState(() => initialLocalDraft?.documentId === "local" ? null : initialLocalDraft?.documentId || null);
+  const draftPersistedRef = useRef(false);
+  const [currentResumeId, setCurrentResumeId] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -2918,20 +2914,75 @@ export default function ResumeGenerator() {
   const [photoUrl, setPhotoUrl] = useState(null);
   const [authModal, setAuthModal] = useState(false);
   const [authModalTab, setAuthModalTab] = useState("login");
-  const [currentUser, setCurrentUser] = useState(() => accountSession.getAccount());
+  const [currentUser, setCurrentUser] = useState(null);
   // Optional account / sync / paid-pass UI state.
   const [saveProfileOpen, setSaveProfileOpen] = useState(false);
   const [upsell, setUpsell] = useState(null); // null | "sync" | "tailor"
   const [syncStatus, setSyncStatus] = useState("");
   const [aiTailoring, setAiTailoring] = useState(false);
-  const hasPass = accountSession.hasActivePass();
+  const hasPass = Boolean(
+    currentUser?.activePass
+    && currentUser.passExpires
+    && new Date(currentUser.passExpires).getTime() > Date.now()
+  );
   const translationLimit = hasPass ? 30 : currentUser ? 3 : 1;
-  const [translationUsage, setTranslationUsage] = useState(() => readTranslationUsage(translationLimit));
+  const [translationUsage, setTranslationUsage] = useState(() => ({
+    fullResumeTranslationsUsed: 0,
+    limit: 1,
+    resetAt: null,
+  }));
   const [translationDevBypass, setTranslationDevBypass] = useState({ active: false, token: "", header: "" });
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
   const resumePrintRef = useRef(null);
   const coverPrintRef = useRef(null);
+  const browserStateRestoredRef = useRef(false);
+  useEffect(() => {
+    if (browserStateRestoredRef.current) return;
+    browserStateRestoredRef.current = true;
+
+    const hasInterfaceOverride = initialSearchParams.has("ui") || Boolean(routeLang);
+    const hasDocumentOverride = initialSearchParams.has("docLang") || Boolean(routeLang);
+    const savedDraft = !explicitResumeStart && initialRoute.navPage === "resume"
+      ? initialResumeDraft()
+      : null;
+    const savedAccount = accountSession.getAccount();
+    const restoredHasPass = Boolean(
+      savedAccount?.activePass
+      && savedAccount.passExpires
+      && new Date(savedAccount.passExpires).getTime() > Date.now()
+    );
+    const restoredLimit = restoredHasPass ? 30 : savedAccount ? 3 : 1;
+    const restoredInterfaceLanguage = hasInterfaceOverride
+      ? initialInterfaceLang
+      : initialInterfaceLanguage();
+    const restoredDocumentLanguage = hasDocumentOverride
+      ? initialDocumentLang
+      : savedDraft?.documentLanguage || initialDocumentLanguage();
+
+    if (savedDraft) draftPersistedRef.current = true;
+    React.startTransition(() => {
+      if (isInterfaceLang(restoredInterfaceLanguage)) {
+        setInterfaceLanguage(restoredInterfaceLanguage);
+        setPhoneCode(LANG_CODE[restoredInterfaceLanguage] || "+1");
+      }
+      if (isDocumentLang(restoredDocumentLanguage)) {
+        setDocumentLanguage(restoredDocumentLanguage);
+      }
+      if (savedDraft) {
+        setForm(migrateForm({ ...emptyResumeForm, ...savedDraft.data }));
+        setTpl(TEMPLATES.find((template) => template.id === savedDraft.templateId)
+          || TEMPLATES.find((template) => template.id === RECOMMENDED_TEMPLATE_ID)
+          || null);
+        setCurrentResumeId(savedDraft.documentId === "local" ? null : savedDraft.documentId || null);
+        setDraftState("restored");
+      }
+      setCurrentUser(savedAccount);
+      setTranslationUsage(readTranslationUsage(restoredLimit));
+    });
+  // Browser state is restored once, after the deterministic hydration render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const setSiteLanguage = useCallback((language) => {
     const nextCode = SITE_LANGUAGE_CODES.has(language?.code) ? language.code : "en";
     setInterfaceLanguage(nextCode);
@@ -3153,18 +3204,9 @@ export default function ResumeGenerator() {
   const [jdKws, setJdKws] = useState(null);
   const [tailorSel, setTailorSel] = useState(null);
   const [skillDraft, setSkillDraft] = useState("");
-  const [trackerStorageEnabled, setTrackerStorageEnabled] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try { return localStorage.getItem("ac_tracker_metadata_enabled") === "true"; } catch { return false; }
-  });
-  const [trackerCards, setTrackerCards] = useState(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      if (localStorage.getItem("ac_tracker_metadata_enabled") !== "true") return [];
-      const saved = safeParseStoredJson(localStorage.getItem("ac_tracker_metadata_v1"), []);
-      return Array.isArray(saved) ? saved : [];
-    } catch { return []; }
-  });
+  const [trackerStorageEnabled, setTrackerStorageEnabled] = useState(false);
+  const [trackerCards, setTrackerCards] = useState([]);
+  const [trackerStorageReady, setTrackerStorageReady] = useState(false);
   const [trackerModal, setTrackerModal] = useState({ open: false, card: null });
   const trackerDialogRef = useRef(null);
   useFocusTrap(trackerDialogRef, trackerModal.open);
@@ -3180,7 +3222,23 @@ export default function ResumeGenerator() {
   const [trackerDragOver, setTrackerDragOver] = useState(null);
   const [trackerFilters, setTrackerFilters] = useState({ query: "", market: "", language: "", resume: "", followUpDue: false });
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    let enabled = false;
+    let cards = [];
+    try {
+      enabled = localStorage.getItem("ac_tracker_metadata_enabled") === "true";
+      if (enabled) {
+        const saved = safeParseStoredJson(localStorage.getItem("ac_tracker_metadata_v1"), []);
+        cards = Array.isArray(saved) ? saved : [];
+      }
+    } catch { /* storage can be unavailable in private browsing */ }
+    React.startTransition(() => {
+      setTrackerStorageEnabled(enabled);
+      setTrackerCards(cards);
+      setTrackerStorageReady(true);
+    });
+  }, []);
+  useEffect(() => {
+    if (typeof window === "undefined" || !trackerStorageReady) return;
     try {
       if (trackerStorageEnabled) {
         localStorage.setItem("ac_tracker_metadata_enabled", "true");
@@ -3190,7 +3248,7 @@ export default function ResumeGenerator() {
         localStorage.removeItem("ac_tracker_metadata_v1");
       }
     } catch { /* storage can be unavailable in private browsing */ }
-  }, [trackerCards, trackerStorageEnabled]);
+  }, [trackerCards, trackerStorageEnabled, trackerStorageReady]);
   const [atsText, setAtsText] = useState("");
   const [atsJd, setAtsJd] = useState("");
   const [atsResult, setAtsResult] = useState(null);
@@ -3206,7 +3264,9 @@ export default function ResumeGenerator() {
   // them when the document language changes — but only while the user has not edited them.
   const coverAutoDefaults = useRef({ date: "", signoff: "" });
   const [coverForm, setCoverForm] = useState(() => {
-    const date = formatLetterDate(new Date(), docLang);
+    // Static generation cannot know the visitor's current date. Keep the
+    // hydration render deterministic and let the effect below fill it in.
+    const date = "";
     const signoff = defaultCoverSignoff(docLang);
     coverAutoDefaults.current = { date, signoff };
     return {
