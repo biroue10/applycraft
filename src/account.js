@@ -59,19 +59,25 @@ export async function verifyMagicToken(token) {
 
 // Detect + consume a magic-link token from the current URL. Returns the
 // verified account (or null) and strips the token from the address bar.
+let loginConsumptionPromise = null;
 export async function consumeLoginFromUrl() {
   if (typeof window === "undefined") return null;
   const url = new URL(window.location.href);
   const token = url.searchParams.get("ac_login");
   if (!token) return null;
-  url.searchParams.delete("ac_login");
-  window.history.replaceState({}, "", url.toString());
-  try {
-    const data = await verifyMagicToken(token);
-    return data.account || null;
-  } catch {
-    return null;
-  }
+  if (loginConsumptionPromise) return loginConsumptionPromise;
+  loginConsumptionPromise = (async () => {
+    try {
+      const data = await verifyMagicToken(token);
+      return data.account || null;
+    } catch {
+      return null;
+    } finally {
+      url.searchParams.delete("ac_login");
+      window.history.replaceState({}, "", url.toString());
+    }
+  })();
+  return loginConsumptionPromise;
 }
 
 // ── Master Profile cloud sync (PAID — server enforces the active pass) ──────
