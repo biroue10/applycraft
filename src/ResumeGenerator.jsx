@@ -1893,8 +1893,13 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, b
   const dragFrom = useRef(null);
   const list = entries || [];
   const visibleCount = list.filter(entry => entry.visible !== false).length;
+  const hasEntries = list.length > 0;
   const status = visibleCount > 0 ? "Complete" : "Missing";
-  const countLabel = visibleCount === 0 ? status : `${visibleCount} ${visibleCount === 1 ? "entry" : "entries"} · ${status}`;
+  const countLabel = visibleCount > 0
+    ? builderText("sectionItemsAdded", { count: visibleCount })
+    : optional
+      ? builderText("sectionOptionalStatus")
+      : builderText("sectionNextStepStatus");
   const statusColor = statusTone(status);
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -1929,18 +1934,28 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, b
   };
   const commitHeading = () => { setEditingHeading(false); const h = headingDraft.trim(); if (h && h !== heading) onEditHeading(h); else setHeadingDraft(heading); };
   return (
-    <section style={{ background: collapsed ? SECTION_TOKENS.rowBg : SECTION_TOKENS.expandedBg,
-      border: "none",
-      borderRadius: 12, boxShadow: collapsed ? "none" : SECTION_TOKENS.expandedShadow,
-      padding: 0, overflow: "visible", marginTop: 10 }}>
+    <section style={{ position: "relative", background: collapsed ? SECTION_TOKENS.rowBg : SECTION_TOKENS.expandedBg,
+      border: `1px solid ${collapsed ? SECTION_TOKENS.cardEdge : SECTION_TOKENS.cardEdgeActive}`,
+      borderRadius: SECTION_TOKENS.radius,
+      boxShadow: collapsed ? SECTION_TOKENS.rowShadow : SECTION_TOKENS.expandedShadow,
+      padding: 0, overflow: "visible", marginTop: 10,
+      transition: "background 160ms ease, border-color 160ms ease, box-shadow 160ms ease" }}>
+      {!collapsed && (
+        <span aria-hidden style={{ position: "absolute", insetInlineStart: -1, top: 16, width: 3, height: 32,
+          borderRadius: rtl ? "3px 0 0 3px" : "0 3px 3px 0",
+          background: `linear-gradient(180deg, ${C.accent2}, ${C.accent})` }} />
+      )}
       <header role="button" tabIndex={0} aria-expanded={!collapsed}
         aria-label={collapsed ? eui.expand : eui.collapse}
         onClick={() => { if (!editingHeading && !menuOpen) onToggleCollapse(); }}
         onKeyDown={(e) => { if (!editingHeading && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); onToggleCollapse(); } }}
-        style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", userSelect: "none",
-          padding: collapsed ? "12px 14px" : "14px 16px",
+        style={{ display: "flex", alignItems: "center", gap: 11, cursor: "pointer", userSelect: "none",
+          padding: collapsed ? "11px 13px" : "13px 15px",
           boxShadow: collapsed ? "none" : `inset 0 -1px 0 ${SECTION_TOKENS.rowDivider}` }}>
-        <span aria-hidden style={{ fontSize: 16, flexShrink: 0 }}>{schema.icon}</span>
+        <span aria-hidden style={{ width: 34, height: 34, display: "inline-flex", alignItems: "center",
+          justifyContent: "center", flexShrink: 0, fontSize: 16, borderRadius: 10,
+          background: `${C.accent}16`, border: `1px solid ${C.accent}24`,
+          boxShadow: `inset 0 1px 0 ${SECTION_TOKENS.iconHighlight}` }}>{schema.icon}</span>
         {editingHeading ? (
           <input autoFocus value={headingDraft} onChange={(e) => setHeadingDraft(e.target.value)}
             onClick={(e) => e.stopPropagation()}
@@ -1949,13 +1964,19 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, b
             style={{ flex: 1, background: C.elevated, border: `1px solid ${C.accent}`, borderRadius: 8, padding: "6px 10px",
               color: C.text1, fontSize: 16, fontWeight: 800, fontFamily: "inherit", outline: "none" }} />
         ) : (
-          <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 8 }}>
-            <h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 800, color: C.text1, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{heading}</h3>
-            <span title={countLabel} aria-label={countLabel}
-              style={{ width: 8, height: 8, borderRadius: "50%", background: statusColor, opacity: visibleCount > 0 ? 0.95 : 0.55, flexShrink: 0 }} />
-            {visibleCount > 0 && (
-              <span aria-hidden style={{ color: C.text3, fontSize: 11.5, fontWeight: 700 }}>{visibleCount}</span>
-            )}
+          <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 3 }}>
+            <h3 style={{ margin: 0, fontSize: 15.5, fontWeight: 850, color: C.text1, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "100%" }}>{heading}</h3>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, minHeight: 17 }}>
+              <span title={countLabel} aria-label={countLabel}
+                style={{ display: "inline-flex", alignItems: "center", gap: 5,
+                  color: visibleCount > 0 ? SECTION_TOKENS.statusComplete : C.text3,
+                  fontSize: 10.5, fontWeight: 800, lineHeight: 1, borderRadius: 999,
+                  background: visibleCount > 0 ? `${SECTION_TOKENS.statusComplete}12` : SECTION_TOKENS.softSurface,
+                  padding: "3px 7px", whiteSpace: "nowrap" }}>
+                <span aria-hidden style={{ width: 5, height: 5, borderRadius: "50%", background: statusColor,
+                  opacity: visibleCount > 0 ? 1 : 0.65 }} />
+                {countLabel}
+              </span>
             {/* Optional sections are shown from the start, so say plainly that
                 leaving one empty is fine. Dropped once it holds content — at
                 that point the badge is noise. */}
@@ -1964,6 +1985,7 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, b
                 letterSpacing: 0.6, background: C.elevated, borderRadius: 999, padding: "2px 7px",
                 flexShrink: 0, whiteSpace: "nowrap" }}>{eui.optional}</span>
             )}
+            </div>
           </div>
         )}
         <div ref={menuRef} style={{ position: "relative" }}>
@@ -2014,7 +2036,7 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, b
       </header>
       {!collapsed && (
         <SectionErrorBoundary label={eui?.sectionError} resetKey={collapsed}>
-          <div style={{ padding: "8px 16px 16px" }}>
+          <div style={{ padding: hasEntries ? "8px 16px 14px" : "12px 14px 14px" }}>
             <div onDragOver={(e) => { e.preventDefault(); }}>
               {list.map((entry, i) => (
                 <EntryRow key={entry.id} sectionKey={sectionKey} entry={entry} index={i} eui={eui} rtl={rtl}
@@ -2029,12 +2051,30 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, b
                   dropSide={over && over.index === i && dragFrom.current != null && dragFrom.current !== i ? over.side : null} />
               ))}
             </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: SECTION_TOKENS.gap3 }}>
+            <div style={hasEntries
+              ? { display: "flex", alignItems: "center", justifyContent: "center", marginTop: SECTION_TOKENS.gap3 }
+              : { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14,
+                  flexWrap: "wrap",
+                  padding: "12px 13px", borderRadius: 12, background: SECTION_TOKENS.emptySurface,
+                  border: `1px dashed ${SECTION_TOKENS.emptyEdge}` }}>
+              {!hasEntries && (
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ color: C.text1, fontSize: 13, fontWeight: 850, lineHeight: 1.3 }}>
+                    {builderText("sectionEmptyTitle", { section: heading })}
+                  </div>
+                  <div style={{ color: C.text3, fontSize: 11.5, lineHeight: 1.45, marginTop: 3 }}>
+                    {builderText(optional ? "sectionEmptyOptionalHint" : "sectionEmptyRequiredHint")}
+                  </div>
+                </div>
+              )}
               <button type="button" onClick={() => { const id = onAdd(); if (id) setExpandedId(id); }}
-                style={{ display: "inline-flex", alignItems: "center", gap: 6, background: `${C.accent}18`,
-                  border: "none", borderRadius: 999, padding: "8px 18px", fontSize: 13, fontWeight: 700,
-                  color: C.accent2, cursor: "pointer", fontFamily: "inherit" }}>
-                + {eui.addEntry}
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  flexShrink: 0, background: hasEntries ? `${C.accent}18` : `linear-gradient(135deg, ${C.accent}, ${C.accent2})`,
+                  border: hasEntries ? "none" : `1px solid ${C.accent2}55`, borderRadius: 999,
+                  padding: hasEntries ? "8px 18px" : "9px 15px", fontSize: 12.5, fontWeight: 800,
+                  color: hasEntries ? C.accent2 : "#fff", cursor: "pointer", fontFamily: "inherit",
+                  boxShadow: hasEntries ? "none" : "0 8px 20px rgba(91,74,255,0.20)", whiteSpace: "nowrap" }}>
+                + {builderText(hasEntries ? "addAnotherEntry" : "addFirstEntry")}
               </button>
             </div>
           </div>
@@ -5937,11 +5977,18 @@ Awards: ${form.awards}`;
             )}
           </div>
           {!isMobile && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 3, color: C.text3, fontSize: 12 }}>
-              <span style={{ width: 8, height: 8, borderRadius: "50%", background: tpl.accent, flexShrink: 0 }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 5, color: C.text3, fontSize: 11.5 }}>
+              <span style={{ width: 7, height: 7, borderRadius: "50%", background: tpl.accent, flexShrink: 0 }} />
               <span>{tpl.name}</span>
               <span>·</span>
               <span>{completedChecklist}/{requiredChecklist.length} {bu.complete}</span>
+              <span aria-hidden style={{ width: 72, height: 4, overflow: "hidden", borderRadius: 999,
+                background: SECTION_TOKENS.progressTrack }}>
+                <span style={{ display: "block", width: `${(completedChecklist / requiredChecklist.length) * 100}%`,
+                  height: "100%", borderRadius: "inherit",
+                  background: `linear-gradient(90deg, ${C.accent}, ${C.accent2})`,
+                  transition: "width 220ms ease" }} />
+              </span>
             </div>
           )}
         </div>
@@ -11141,12 +11188,19 @@ const SECTION_TOKENS = {
   gap1: 8, gap2: 12, gap3: 16, gap4: 24,
   rowBg: "rgba(20,31,51,0.74)",
   expandedBg: "rgba(25,38,62,0.94)",
+  cardEdge: "rgba(148,163,184,0.065)",
+  cardEdgeActive: "rgba(129,140,248,0.18)",
+  rowShadow: "0 3px 12px rgba(0,0,0,0.08)",
   rowHoverBg: "rgba(37,54,85,0.82)",
   rowDivider: "rgba(148,163,184,0.055)",
   inputEdge: "rgba(148,163,184,0.10)",
   popoverEdge: "rgba(148,163,184,0.08)",
   expandedShadow: "0 14px 34px rgba(0,0,0,0.20)",
   softSurface: "rgba(19,32,54,0.72)",
+  emptySurface: "linear-gradient(135deg, rgba(91,74,255,0.075), rgba(59,130,246,0.045))",
+  emptyEdge: "rgba(129,140,248,0.20)",
+  iconHighlight: "rgba(255,255,255,0.06)",
+  progressTrack: "rgba(148,163,184,0.14)",
   iconBtnBg: "transparent",
   iconBtnRadius: 8,
   accent: C.accent,

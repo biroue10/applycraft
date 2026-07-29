@@ -81,6 +81,20 @@ for (const token of REQUIRED_AI_COACH_TOKENS) {
   }
 }
 
+const REQUIRED_SECTION_UX_TOKENS = [
+  'sectionEmptyTitle',
+  'sectionEmptyOptionalHint',
+  'sectionEmptyRequiredHint',
+  'addFirstEntry',
+  'addAnotherEntry',
+  'SECTION_TOKENS.progressTrack',
+];
+for (const token of REQUIRED_SECTION_UX_TOKENS) {
+  if (!code.includes(token)) {
+    failures.push({ name: `resume section UX: ${token}`, line: 0, count: 0, missing: true });
+  }
+}
+
 if (failures.length) {
   console.error("\n✖ builder-section guard failed:\n");
   for (const f of failures) {
