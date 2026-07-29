@@ -6,6 +6,66 @@ const KEY = "91a714f93cc24a8c95f1efe0d9e9a914";
 const KEY_LOCATION = `https://${HOST}/${KEY}.txt`;
 const ENDPOINT = "https://api.indexnow.org/indexnow";
 const SITEMAP_PATH = "public/sitemap.xml";
+const RETRYABLE_STATUS = new Set([408, 425, 429]);
+
+export class TransientIndexNowError extends Error {
+  constructor(message, options = {}) {
+    super(message, options);
+    this.name = "TransientIndexNowError";
+  }
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function fetchWithRetry(
+  url,
+  options = {},
+  {
+    attempts = 4,
+    timeoutMs = 15_000,
+    baseDelayMs = 1_000,
+    fetchImpl = fetch,
+    waitImpl = wait,
+  } = {},
+) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const response = await fetchImpl(url, { ...options, signal: controller.signal });
+      const retryable = RETRYABLE_STATUS.has(response.status) || response.status >= 500;
+      if (!retryable || attempt === attempts) {
+        if (retryable) {
+          throw new TransientIndexNowError(
+            `IndexNow service remained unavailable after ${attempts} attempts: HTTP ${response.status}`,
+          );
+        }
+        return response;
+      }
+      lastError = new TransientIndexNowError(`Temporary IndexNow response: HTTP ${response.status}`);
+    } catch (error) {
+      lastError =
+        error instanceof TransientIndexNowError
+          ? error
+          : new TransientIndexNowError(
+              `IndexNow network request failed: ${error instanceof Error ? error.message : String(error)}`,
+              { cause: error },
+            );
+      if (attempt === attempts) throw lastError;
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    await waitImpl(baseDelayMs * 2 ** (attempt - 1));
+  }
+
+  throw lastError;
+}
 
 function appendSummary(markdown) {
   if (!process.env.GITHUB_STEP_SUMMARY) return;
@@ -31,6 +91,7 @@ export function readRawSitemapUrls(sitemapPath = SITEMAP_PATH) {
 
 async function main() {
   const urlList = readSitemapUrls();
+  const bestEffort = process.argv.includes("--best-effort");
 
   if (urlList.length === 0) {
     throw new Error(`No canonical URLs found in ${SITEMAP_PATH}`);
@@ -42,25 +103,36 @@ async function main() {
     return;
   }
 
-  const keyResponse = await fetch(KEY_LOCATION);
+  const keyResponse = await fetchWithRetry(KEY_LOCATION);
   const keyBody = keyResponse.ok ? (await keyResponse.text()).trim() : "";
   if (!keyResponse.ok || keyBody !== KEY) {
     appendSummary(`### IndexNow key check failed\n\n- URL: ${KEY_LOCATION}\n- Status: ${keyResponse.status}\n- Body matched: ${keyBody === KEY}`);
     throw new Error(`IndexNow key file check failed at ${KEY_LOCATION}: HTTP ${keyResponse.status}`);
   }
 
-  const response = await fetch(ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-    },
-    body: JSON.stringify({
-      host: HOST,
-      key: KEY,
-      keyLocation: KEY_LOCATION,
-      urlList,
-    }),
-  });
+  let response;
+  try {
+    response = await fetchWithRetry(ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        host: HOST,
+        key: KEY,
+        keyLocation: KEY_LOCATION,
+        urlList,
+      }),
+    });
+  } catch (error) {
+    if (bestEffort && error instanceof TransientIndexNowError) {
+      const warning = `IndexNow is temporarily unreachable after retries; deployment can continue: ${error.message}`;
+      console.warn(`::warning::${warning}`);
+      appendSummary(`### IndexNow temporary outage\n\n${warning}\n\nThe sitemap remains available for normal crawler discovery.`);
+      return;
+    }
+    throw error;
+  }
 
   if (!response.ok) {
     const body = await response.text();

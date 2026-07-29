@@ -1,7 +1,13 @@
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { readRawSitemapUrls, readSitemapUrls } from "./submit-indexnow.mjs";
+import { fileURLToPath } from "node:url";
+import {
+  TransientIndexNowError,
+  fetchWithRetry,
+  readRawSitemapUrls,
+  readSitemapUrls,
+} from "./submit-indexnow.mjs";
 import { isIndexablePublicUrl } from "./seo-url-policy.mjs";
 
 const sampleUrls = [
@@ -47,7 +53,7 @@ assert(!isIndexablePublicUrl("https://applycraft.io/resume-builder/?starter=stud
 assert(!isIndexablePublicUrl("https://applycraft.io/r#abc123"), "hash URLs must be excluded");
 assert(!isIndexablePublicUrl("https://applycraft.io/ats-checker"), "slashless page URLs must be excluded");
 
-const realSitemapPath = join(new URL("..", import.meta.url).pathname, "public", "sitemap.xml");
+const realSitemapPath = join(fileURLToPath(new URL("..", import.meta.url)), "public", "sitemap.xml");
 const sitemapUrls = [...new Set(readRawSitemapUrls(realSitemapPath))].sort();
 const indexNowUrls = readSitemapUrls(realSitemapPath);
 const indexNowOnly = indexNowUrls.filter((url) => !sitemapUrls.includes(url));
@@ -55,5 +61,57 @@ const sitemapOnly = sitemapUrls.filter((url) => !indexNowUrls.includes(url));
 
 assert(indexNowOnly.length === 0, `IndexNow has URLs absent from sitemap:\n${indexNowOnly.join("\n")}`);
 assert(sitemapOnly.length === 0, `sitemap has URLs not submitted to IndexNow:\n${sitemapOnly.join("\n")}`);
+
+let networkAttempts = 0;
+const recoveredResponse = await fetchWithRetry(
+  "https://api.indexnow.org/indexnow",
+  {},
+  {
+    attempts: 3,
+    baseDelayMs: 0,
+    waitImpl: async () => {},
+    fetchImpl: async () => {
+      networkAttempts += 1;
+      if (networkAttempts < 3) throw new TypeError("fetch failed");
+      return new Response("", { status: 200 });
+    },
+  },
+);
+assert(recoveredResponse.ok, "transient network failure should recover");
+assert(networkAttempts === 3, `expected 3 network attempts, got ${networkAttempts}`);
+
+let permanentAttempts = 0;
+const permanentResponse = await fetchWithRetry(
+  "https://api.indexnow.org/indexnow",
+  {},
+  {
+    attempts: 4,
+    baseDelayMs: 0,
+    waitImpl: async () => {},
+    fetchImpl: async () => {
+      permanentAttempts += 1;
+      return new Response("bad request", { status: 400 });
+    },
+  },
+);
+assert(permanentResponse.status === 400, "permanent HTTP response should be returned to the caller");
+assert(permanentAttempts === 1, `HTTP 400 must not be retried; got ${permanentAttempts} attempts`);
+
+let unavailableError;
+try {
+  await fetchWithRetry(
+    "https://api.indexnow.org/indexnow",
+    {},
+    {
+      attempts: 2,
+      baseDelayMs: 0,
+      waitImpl: async () => {},
+      fetchImpl: async () => new Response("unavailable", { status: 503 }),
+    },
+  );
+} catch (error) {
+  unavailableError = error;
+}
+assert(unavailableError instanceof TransientIndexNowError, "HTTP 503 exhaustion must be classified as transient");
 
 console.log(`IndexNow tests passed (${submitted.length} clean URLs from ${sampleUrls.length} candidates; ${indexNowUrls.length} real sitemap URLs).`);

@@ -72,7 +72,8 @@ jobs:
           echo "### IndexNow key check failed" >> "$GITHUB_STEP_SUMMARY"
           echo "The key file did not return the expected value at $key_url." >> "$GITHUB_STEP_SUMMARY"
           exit 1
-      - run: npm run seo:indexnow
+      - name: Submit sitemap URLs to IndexNow
+        run: npm run seo:indexnow -- --best-effort
       - name: Purge Cloudflare cache
         run: |
           RESPONSE=$(curl -s -X POST \
