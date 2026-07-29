@@ -59,7 +59,10 @@ try {
   const sessionData = await verified.json();
   assert.match(sessionData.session, /^[a-f0-9]{64}$/);
   assert.equal(sessionData.account.email, "person@example.com");
-  assert.equal((await verify()).status, 401, "magic links must be one-time");
+  const retried = await verify();
+  assert.equal(retried.status, 200, "email scanners must not consume the recipient's login");
+  const retriedData = await retried.json();
+  assert.equal(retriedData.session, sessionData.session, "the safe retry window must reuse the same session");
 
   const account = await worker.fetch(new Request("https://applycraft.io/api/account", {
     headers: { Authorization: `Bearer ${sessionData.session}` },

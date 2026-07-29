@@ -1021,11 +1021,27 @@ async function handleAuth(request, env, url) {
     if (!/^[a-f0-9]{48}$/.test(loginToken)) return errorResponse("INVALID_TOKEN", "The sign-in link is invalid.", 401, cors.headers);
     const raw = await store.get(`login:${loginToken}`);
     if (!raw) return errorResponse("INVALID_OR_EXPIRED", "The sign-in link is invalid or expired.", 401, cors.headers);
-    await store.delete(`login:${loginToken}`);
     let login;
     try {
       login = JSON.parse(raw);
     } catch {
+      return errorResponse("INVALID_TOKEN", "The sign-in link is invalid.", 401, cors.headers);
+    }
+    // Email security scanners can render the destination before the recipient
+    // clicks it. Keep the successful exchange idempotent for a short window so
+    // that a scanner and the real browser receive the same durable session.
+    if (
+      typeof login?.verifiedSession === "string"
+      && /^[a-f0-9]{64}$/.test(login.verifiedSession)
+      && login.account?.email
+    ) {
+      return jsonResponse({
+        ok: true,
+        session: login.verifiedSession,
+        account: login.account,
+      }, 200, cors.headers);
+    }
+    if (!validAuthEmail(login?.email)) {
       return errorResponse("INVALID_TOKEN", "The sign-in link is invalid.", 401, cors.headers);
     }
     const accountKey = `account:${login.email}`;
@@ -1037,10 +1053,19 @@ async function handleAuth(request, env, url) {
     await store.put(accountKey, JSON.stringify(account));
     const session = secureToken(32);
     await store.put(`session:${session}`, login.email, { expirationTtl: 30 * 24 * 60 * 60 });
+    const publicAccount = {
+      email: account.email,
+      activePass: Boolean(account.activePass),
+      passExpires: account.passExpires || null,
+    };
+    await store.put(`login:${loginToken}`, JSON.stringify({
+      verifiedSession: session,
+      account: publicAccount,
+    }), { expirationTtl: 10 * 60 });
     return jsonResponse({
       ok: true,
       session,
-      account: { email: account.email, activePass: Boolean(account.activePass), passExpires: account.passExpires || null },
+      account: publicAccount,
     }, 200, cors.headers);
   }
 
