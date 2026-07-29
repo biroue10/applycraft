@@ -37,7 +37,10 @@ const ats = {
   "issues": "Problemas",
   "fixTitle": "Corrige estos problemas en el editor",
   "fixDesc": "ApplyCraft muestra tu puntuación ATS en vivo mientras escribes. Elige una plantilla, completa lo que falta y exporta un PDF o DOCX pulido — gratis, sin cuenta.",
-  "openBuilder": "Abrir en el editor de currículum →"
+  "openBuilder": "Abrir en el editor de currículum →",
+  "characters": "caracteres",
+  "aiUnavailable": "El asistente de IA no está disponible ahora. La puntuación ATS local no se ve afectada.",
+  "loadingPlan": "Preparando tu plan de mejora…"
 };
 
 export default ats;

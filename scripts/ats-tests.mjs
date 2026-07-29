@@ -7,18 +7,19 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { JSDOM } from "jsdom";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const { analyzeKeywords, detectLanguage } = await import(path.join(root, "src/ats/engine.js"));
+const moduleUrl = (...segments) => pathToFileURL(path.join(root, ...segments)).href;
+const { analyzeKeywords, detectLanguage } = await import(moduleUrl("src/ats/engine.js"));
 const { scoreFromIssues, scoreBand, READINESS_EXPLAINER, SCORE_WEIGHTS } =
-  await import(path.join(root, "src/ats/scoring.js"));
-const { extractDocxText } = await import(path.join(root, "src/ats/docxText.js"));
-const { textItemsToLines } = await import(path.join(root, "src/ats/pdfText.js"));
-const { default: atsEn } = await import(path.join(root, "src/i18n/atsResults/en.js"));
-const { default: atsFr } = await import(path.join(root, "src/i18n/atsResults/fr.js"));
-const { default: atsAr } = await import(path.join(root, "src/i18n/atsResults/ar.js"));
+  await import(moduleUrl("src/ats/scoring.js"));
+const { extractDocxText } = await import(moduleUrl("src/ats/docxText.js"));
+const { textItemsToLines } = await import(moduleUrl("src/ats/pdfText.js"));
+const { default: atsEn } = await import(moduleUrl("src/i18n/atsResults/en.js"));
+const { default: atsFr } = await import(moduleUrl("src/i18n/atsResults/fr.js"));
+const { default: atsAr } = await import(moduleUrl("src/i18n/atsResults/ar.js"));
 const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
 
 let failures = 0;

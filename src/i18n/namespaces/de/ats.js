@@ -37,7 +37,10 @@ const ats = {
   "issues": "Probleme",
   "fixTitle": "Behebe diese Probleme im Editor",
   "fixDesc": "ApplyCraft zeigt deinen ATS-Score live beim Tippen. Wähle eine Vorlage, fülle die Lücken und exportiere ein sauberes PDF oder DOCX — kostenlos, ohne Konto.",
-  "openBuilder": "Im Lebenslauf-Editor öffnen →"
+  "openBuilder": "Im Lebenslauf-Editor öffnen →",
+  "characters": "Zeichen",
+  "aiUnavailable": "Der KI-Assistent ist derzeit nicht verfügbar. Der lokale ATS-Score bleibt unverändert.",
+  "loadingPlan": "Verbesserungsplan wird vorbereitet…"
 };
 
 export default ats;

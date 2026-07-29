@@ -93,6 +93,30 @@ async function testWorkerUpstreamControls() {
   });
 }
 
+async function testAtsSuggestionContract() {
+  let upstreamBody;
+  const result = JSON.stringify({ summary: "Review", priorities: [], keywords: [], rewrites: [], phrases: [] });
+  await withMockFetch(async () => {
+    const response = await worker.fetch(request("/api/ai", {
+      body: JSON.stringify({
+        action: "ats-suggestions",
+        text: "RESUME:\nSupport analyst\n\nJOB DESCRIPTION:\nTroubleshooting",
+        language: "en",
+      }),
+    }), env());
+    assert.equal(response.status, 200);
+    assert.equal((await readJson(response)).result, result);
+    assert.equal(upstreamBody.max_tokens, 1100);
+    assert.match(upstreamBody.messages[0].content, /valid JSON object only/i);
+    assert.match(upstreamBody.messages[0].content, /Never invent/i);
+    assert.match(upstreamBody.messages[1].content, /"original" must be copied verbatim/i);
+    assert.match(upstreamBody.messages[1].content, /Do not promise an interview or ATS pass/i);
+  }, async (_url, init) => {
+    upstreamBody = JSON.parse(init.body);
+    return new Response(JSON.stringify({ choices: [{ message: { content: result } }] }), { headers: { "Content-Type": "application/json" } });
+  });
+}
+
 async function testGroqFallback() {
   const calls = [];
   await withMockFetch(async () => {
@@ -293,10 +317,18 @@ async function testStaticSinks() {
   assert.match(app, /sanitizeFilename/);
   assert.match(app, /validateResumeImport/);
   assert.match(app, /hasDangerousKey/);
+  assert.match(app, /AtsAiAssistant/);
+  assert.match(app, /applyAiRewrite/);
+  const assistant = await readFile(new URL("../src/components/EvidenceLibrary.jsx", import.meta.url), "utf8");
+  assert.match(assistant, /parseAtsAiPlan/);
+  assert.match(assistant, /JSON\.parse/);
+  assert.match(assistant, /originalNotFound/);
+  assert.match(assistant, /keywordStates/);
 }
 
 await testWorkerValidation();
 await testWorkerUpstreamControls();
+await testAtsSuggestionContract();
 await testGroqFallback();
 await testRateLimit();
 await testUpstreamFailures();

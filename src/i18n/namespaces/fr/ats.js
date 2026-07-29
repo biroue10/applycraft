@@ -42,7 +42,10 @@ const ats = {
   "pasteResumePh": "Collez ici votre CV complet...\n\nJean Dupont\njean@email.com | +33 6 00 00 00 00\n\nEXPÉRIENCE\nIngénieur senior — Acme (2021–présent)\n• Migration menée réduisant le temps de déploiement de 60 %\n\nCOMPÉTENCES\nPython, React, AWS",
   "pasteJdPh": "Collez ici l'offre d'emploi pour obtenir une analyse des mots-clés manquants.\n\nAvec elle, vous verrez :\n  • Les mots-clés correspondants ✓\n  • Ceux qui manquent ✗\n  • Votre taux de correspondance %\n\nSans elle, vous obtenez tout de même un score de préparation ATS complet.",
   "readinessTitle": "Score de préparation ATS ApplyCraft",
-  "howCalculated": "Comment ce score est-il calculé ?"
+  "howCalculated": "Comment ce score est-il calculé ?",
+  "characters": "caractères",
+  "aiUnavailable": "L’assistant IA est momentanément indisponible. Votre score ATS local reste inchangé ; réessayez bientôt.",
+  "loadingPlan": "Préparation de votre plan d’amélioration…"
 };
 
 export default ats;

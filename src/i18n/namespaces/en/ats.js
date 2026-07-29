@@ -42,7 +42,10 @@ const ats = {
   "pasteResumePh": "Paste your full resume here...\n\nJane Smith\njane@email.com | +1 555 000 0000\n\nEXPERIENCE\nSenior Engineer — Acme (2021–Present)\n• Led migration cutting deploy time 60%\n\nSKILLS\nPython, React, AWS",
   "pasteJdPh": "Paste the job description here to get a keyword gap analysis.\n\nWith it, you'll see:\n  • Which keywords you match ✓\n  • Which are missing ✗\n  • Your keyword match %\n\nWithout it, you still get a full ATS readiness score.",
   "readinessTitle": "ApplyCraft ATS Readiness Score",
-  "howCalculated": "How is this score calculated?"
+  "howCalculated": "How is this score calculated?",
+  "characters": "characters",
+  "aiUnavailable": "The AI helper is unavailable right now. Your local ATS score is unaffected; try again shortly.",
+  "loadingPlan": "Preparing your improvement plan…"
 };
 
 export default ats;

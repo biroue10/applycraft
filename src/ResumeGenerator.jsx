@@ -78,6 +78,7 @@ const ApplicationPackSection = React.lazy(() => import("./components/Application
 const LandingStats = React.lazy(() => import("./components/LandingStats.jsx"));
 const TrackerPrivacyControls = React.lazy(() => import("./components/TrackerPrivacyControls.jsx"));
 const EvidenceLibrary = React.lazy(() => import("./components/EvidenceLibrary.jsx"));
+const AtsAiAssistant = React.lazy(() => import("./components/EvidenceLibrary.jsx").then((module) => ({ default: module.AtsAiAssistant })));
 const TrackerFilters = React.lazy(() => import("./components/TrackerFilters.jsx"));
 const ATS_RESULT_LOADERS = {
   en: () => import("./i18n/atsResults/en.js"),
@@ -7775,7 +7776,8 @@ Awards: ${form.awards}`;
     const [localJd, setLocalJd] = useState(atsJd || "");
     const [result, setResult] = useState(atsResult);
     const [running, setRunning] = useState(false);
-    const [aiOut, setAiOut] = useState("");
+    const [aiPlan, setAiPlan] = useState(null);
+    const [aiError, setAiError] = useState("");
     const [aiBusy, setAiBusy] = useState(false);
     const lastAiRef = useRef(0);
     const fileRef = useRef(null);
@@ -7804,14 +7806,15 @@ Awards: ${form.awards}`;
       const now = Date.now();
       if (aiBusy || now - lastAiRef.current < 8000 || localText.trim().length < 40) return;
       lastAiRef.current = now;
-      setAiBusy(true); setAiOut("");
+      setAiBusy(true); setAiPlan(null); setAiError("");
       try {
         const payload = `RESUME:\n${localText.slice(0, 6000)}\n\nJOB DESCRIPTION:\n${(localJd || "").slice(0, 3500)}`;
         const text = await callAi("ats-suggestions", payload, selectedLang?.code || "en");
-        setAiOut(text);
+        const { parseAtsAiPlan } = await import("./components/EvidenceLibrary.jsx");
+        setAiPlan(parseAtsAiPlan(text));
         track(EVENTS.AI_TAILORING_USED, { surface: "ats" });
       } catch {
-        setAiOut("Could not reach the AI helper right now. Your local score is unaffected — try again in a moment.");
+        setAiError(ats.aiUnavailable);
       } finally { setAiBusy(false); }
     };
 
@@ -7847,11 +7850,25 @@ Awards: ${form.awards}`;
       setTimeout(() => setStatusMsg(""), 2500);
     };
 
+    const applyAiRewrite = (original, suggested) => {
+      if (!original || !suggested || !localText.includes(original)) return false;
+      setLocalText((current) => current.replace(original, suggested));
+      return true;
+    };
+
+    const applyAiKeywords = async (terms) => {
+      const { addConfirmedKeywords } = await import("./components/EvidenceLibrary.jsx");
+      setLocalText((current) => addConfirmedKeywords(current, terms));
+    };
+
     const band = result ? scoreBand(result.score) : null;
     const scoreColor = band ? band.color : C.accent2;
     const localizedBand = band ? atsResults?.scoreBands?.[band.code] : null;
     const scoreLabel = localizedBand?.label || band?.label || "";
     const scoreMeaning = localizedBand?.meaning || band?.meaning || ats.scoreDesc;
+    const potentialScore = result
+      ? Math.min(100, result.score + result.issues.reduce((total, issue) => total + issueCost(issue), 0))
+      : 0;
     const formatIssueText = (issue, field) => {
       const entry = atsResults?.issueText?.[issue.code] || {};
       const data = issue.data || {};
@@ -7942,6 +7959,7 @@ Awards: ${form.awards}`;
                 border: `1.5px solid ${C.border}`, borderRadius: 10, color: C.text1,
                 fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", fontSize: 13, lineHeight: 1.6,
                 padding: "12px 14px", outline: "none", fontWeight: 400 }} />
+            <div style={{ marginTop: 5, color: C.text3, fontSize: 11, textAlign: "end" }}>{localText.length.toLocaleString()} {ats.characters}</div>
           </div>
           <div>
             <div style={{ fontSize: 11.5, fontWeight: 700, color: C.text3, textTransform: "uppercase",
@@ -7952,6 +7970,7 @@ Awards: ${form.awards}`;
                 border: `1.5px solid ${C.border}`, borderRadius: 10, color: C.text1,
                 fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", fontSize: 13, lineHeight: 1.6,
                 padding: "12px 14px", outline: "none", fontWeight: 400 }} />
+            <div style={{ marginTop: 5, color: C.text3, fontSize: 11, textAlign: "end" }}>{localJd.length.toLocaleString()} {ats.characters}</div>
           </div>
         </div>
 
@@ -8061,12 +8080,19 @@ Awards: ${form.awards}`;
                 {aiBusy ? ats.thinking : `✨ ${ats.getAi}`}
               </button>
             </div>
-            {aiOut && (
-              <div style={{ marginTop: 16, padding: "14px 16px", background: C.surface, border: `1px solid ${C.border}`,
-                borderRadius: 10, color: C.text1, fontSize: 13, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
-                {aiOut}
-              </div>
-            )}
+            {aiError && <div role="alert" style={{ marginTop: 14, color: "#fbbf24", fontSize: 12.5 }}>{aiError}</div>}
+            {aiPlan && <React.Suspense fallback={<div style={{ marginTop: 14, color: C.text3 }}>{ats.loadingPlan}</div>}>
+              <AtsAiAssistant
+                plan={aiPlan}
+                locale={lang}
+                currentScore={result.score}
+                potentialScore={potentialScore}
+                onApplyRewrite={applyAiRewrite}
+                onApplyKeywords={applyAiKeywords}
+                onRecheck={check}
+                onOpenBuilder={importToBuilder}
+              />
+            </React.Suspense>}
           </div>
 
           {/* Issues */}
