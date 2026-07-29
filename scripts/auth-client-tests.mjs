@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 
 const values = new Map();
 globalThis.localStorage = {
@@ -38,6 +39,16 @@ assert.equal(verifyCalls, 1, "concurrent mounts must exchange a magic link only 
 assert.equal(first.email, "person@example.com");
 assert.equal(second.email, "person@example.com");
 assert.equal(new URL(currentUrl).searchParams.has("ac_login"), false);
+
+const resumeGeneratorSource = fs.readFileSync(
+  new URL("../src/ResumeGenerator.jsx", import.meta.url),
+  "utf8",
+);
+assert.doesNotMatch(
+  resumeGeneratorSource,
+  /setCurrentUser\s*\(\s*savedAccount\s*\)/,
+  "browser-state restoration must not overwrite the server-verified account",
+);
 assert.equal(JSON.parse(values.get("ac_session")), "b".repeat(64));
 
 console.log("Authentication client concurrency test passed.");

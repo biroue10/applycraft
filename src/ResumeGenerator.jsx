@@ -3028,7 +3028,10 @@ export default function ResumeGenerator() {
         setCurrentResumeId(savedDraft.documentId === "local" ? null : savedDraft.documentId || null);
         setDraftState("restored");
       }
-      setCurrentUser(savedAccount);
+      // Authentication is restored exclusively by the account bootstrap below.
+      // Setting the cached account in this deferred transition can race with a
+      // successful magic-link exchange and overwrite the verified user with the
+      // stale pre-login value (usually null).
       setTranslationUsage(readTranslationUsage(restoredLimit));
     });
   // Browser state is restored once, after the deterministic hydration render.
