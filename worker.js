@@ -3,6 +3,8 @@ const DEV_ALLOWED_ORIGINS = ["http://localhost:5173", "http://localhost:4173", "
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_VERSION = "2023-06-01";
 const MODEL = "claude-haiku-4-5";
+const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_MODEL = "llama-3.3-70b-versatile";
 const MAX_BODY_BYTES = 16 * 1024;
 const MAX_TRANSLATION_BODY_BYTES = 64 * 1024;
 const MAX_SHARE_BODY_BYTES = 128 * 1024;
@@ -1101,6 +1103,51 @@ function normalizeAnthropicText(data) {
     .slice(0, MAX_RESPONSE_CHARS);
 }
 
+function normalizeGroqText(data) {
+  const output = data?.choices?.[0]?.message?.content;
+  return typeof output === "string" ? output.trim().slice(0, MAX_RESPONSE_CHARS) : "";
+}
+
+async function callGroq(apiKey, aiRequest) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
+  try {
+    const upstream = await fetch(GROQ_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      signal: controller.signal,
+      body: JSON.stringify(aiRequest),
+    });
+    const contentType = upstream.headers.get("Content-Type") || "";
+    if (!contentType.toLowerCase().includes("application/json")) {
+      return { ok: false, status: upstream.status, code: "AI_BAD_UPSTREAM_RESPONSE" };
+    }
+    const text = await upstream.text();
+    if (text.length > MAX_RESPONSE_CHARS * 4) {
+      return { ok: false, status: upstream.status, code: "AI_BAD_UPSTREAM_RESPONSE" };
+    }
+    const data = JSON.parse(text);
+    if (!upstream.ok) {
+      return {
+        ok: false,
+        status: upstream.status,
+        code: upstream.status === 429 ? "AI_RATE_LIMITED" : "AI_REQUEST_FAILED",
+      };
+    }
+    const output = normalizeGroqText(data);
+    if (!output) return { ok: false, status: upstream.status, code: "AI_BAD_UPSTREAM_RESPONSE" };
+    return { ok: true, status: upstream.status, output };
+  } catch (err) {
+    if (err && err.name === "AbortError") return { ok: false, status: 504, code: "AI_TIMEOUT" };
+    return { ok: false, status: 502, code: "AI_REQUEST_FAILED" };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function callAnthropic(apiKey, aiRequest) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
@@ -1161,8 +1208,9 @@ async function handleAi(request, env) {
     });
   }
 
-  const apiKey = String(env.ANTHROPIC_API_KEY || "").trim();
-  if (!apiKey) {
+  const groqApiKey = String(env.GROQ_API_KEY || "").trim();
+  const anthropicApiKey = String(env.ANTHROPIC_API_KEY || "").trim();
+  if (!groqApiKey && !anthropicApiKey) {
     return errorResponse("AI_NOT_CONFIGURED", "AI is temporarily unavailable.", 503, cors.headers);
   }
 
@@ -1186,7 +1234,7 @@ async function handleAi(request, env) {
 
   const { actionName, action, text, language, context } = validation.value;
   const promptParts = action.buildPrompt({ text, language, context });
-  const aiRequest = {
+  const anthropicRequest = {
     model: MODEL,
     max_tokens: action.maxTokens,
     temperature: 0.2,
@@ -1195,12 +1243,34 @@ async function handleAi(request, env) {
   };
 
   const started = Date.now();
-  const upstream = await callAnthropic(apiKey, aiRequest);
+  let provider = groqApiKey ? "groq" : "anthropic";
+  let fallbackUsed = false;
+  let upstream;
+  if (groqApiKey) {
+    upstream = await callGroq(groqApiKey, {
+      model: String(env.GROQ_MODEL || GROQ_MODEL).trim() || GROQ_MODEL,
+      max_tokens: action.maxTokens,
+      temperature: 0.2,
+      messages: [
+        { role: "system", content: promptParts.system },
+        { role: "user", content: promptParts.prompt },
+      ],
+    });
+    if (!upstream.ok && anthropicApiKey) {
+      provider = "anthropic";
+      fallbackUsed = true;
+      upstream = await callAnthropic(anthropicApiKey, anthropicRequest);
+    }
+  } else {
+    upstream = await callAnthropic(anthropicApiKey, anthropicRequest);
+  }
   console.log(JSON.stringify({
     ts: new Date().toISOString(),
     action: actionName,
     status: upstream.status,
     ok: upstream.ok,
+    provider,
+    fallback_used: fallbackUsed,
     duration_ms: Date.now() - started,
     size_bucket: text.length < 1000 ? "small" : text.length < 4000 ? "medium" : "large",
   }));

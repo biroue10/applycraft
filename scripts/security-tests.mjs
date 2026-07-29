@@ -17,6 +17,7 @@ function request(path, init = {}) {
 
 function env() {
   return {
+    GROQ_API_KEY: " groq-test-key\n",
     ANTHROPIC_API_KEY: " test-key\n",
     ASSETS: { fetch: async () => new Response("<!doctype html><title>ok</title>", { headers: { "Content-Type": "text/html" } }) },
   };
@@ -66,7 +67,7 @@ async function testWorkerValidation() {
 
     response = await worker.fetch(request("/api/ai", { headers: { Origin: ORIGIN, "Content-Type": "application/json", "Content-Length": String(__securityTest.MAX_BODY_BYTES + 1) } }), env());
     assert.equal(response.status, 413);
-  }, async () => new Response(JSON.stringify({ content: [{ type: "text", text: "Improved bullet." }] }), { headers: { "Content-Type": "application/json" } }));
+  }, async () => new Response(JSON.stringify({ choices: [{ message: { content: "Improved bullet." } }] }), { headers: { "Content-Type": "application/json" } }));
 }
 
 async function testWorkerUpstreamControls() {
@@ -79,15 +80,41 @@ async function testWorkerUpstreamControls() {
     assert.equal((await readJson(response)).result, "Improved bullet.");
     assert.equal(response.headers.get("Cache-Control"), "no-store");
     assert.equal(response.headers.get("Access-Control-Allow-Origin"), ORIGIN);
-    assert.equal(upstreamBody.model, "claude-haiku-4-5");
+    assert.equal(upstreamBody.model, "llama-3.3-70b-versatile");
     assert.equal(upstreamBody.max_tokens, 150);
-    assert.equal(upstreamBody.messages.length, 1);
+    assert.equal(upstreamBody.messages.length, 2);
+    assert.equal(upstreamBody.messages[0].role, "system");
     assert.ok(!("tools" in upstreamBody));
     assert.ok(!("metadata" in upstreamBody));
   }, async (_url, init) => {
     upstreamBody = JSON.parse(init.body);
+    assert.equal(init.headers.Authorization, "Bearer groq-test-key");
+    return new Response(JSON.stringify({ choices: [{ message: { content: "Improved bullet." } }] }), { headers: { "Content-Type": "application/json" } });
+  });
+}
+
+async function testGroqFallback() {
+  const calls = [];
+  await withMockFetch(async () => {
+    const response = await worker.fetch(request("/api/ai"), env());
+    assert.equal(response.status, 200);
+    assert.equal((await readJson(response)).result, "Anthropic fallback.");
+    assert.deepEqual(calls, [
+      "https://api.groq.com/openai/v1/chat/completions",
+      "https://api.anthropic.com/v1/messages",
+    ]);
+  }, async (url, init) => {
+    calls.push(String(url));
+    if (String(url).includes("api.groq.com")) {
+      return new Response(JSON.stringify({ error: { message: "temporary" } }), {
+        status: 503,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
     assert.equal(init.headers["x-api-key"], "test-key");
-    return new Response(JSON.stringify({ content: [{ type: "text", text: "Improved bullet." }] }), { headers: { "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ content: [{ type: "text", text: "Anthropic fallback." }] }), {
+      headers: { "Content-Type": "application/json" },
+    });
   });
 }
 
@@ -99,24 +126,25 @@ async function testRateLimit() {
     }
     assert.equal(response.status, 429);
     assert.ok(Number(response.headers.get("Retry-After")) > 0);
-  }, async () => new Response(JSON.stringify({ content: [{ type: "text", text: "Improved bullet." }] }), { headers: { "Content-Type": "application/json" } }));
+  }, async () => new Response(JSON.stringify({ choices: [{ message: { content: "Improved bullet." } }] }), { headers: { "Content-Type": "application/json" } }));
 }
 
 async function testUpstreamFailures() {
+  const groqOnlyEnv = { ...env(), ANTHROPIC_API_KEY: "" };
   await withMockFetch(async () => {
-    let response = await worker.fetch(request("/api/ai"), env());
+    let response = await worker.fetch(request("/api/ai"), groqOnlyEnv);
     assert.equal(response.status, 502);
     assert.equal((await readJson(response)).error.code, "AI_BAD_UPSTREAM_RESPONSE");
   }, async () => new Response("not json", { headers: { "Content-Type": "text/plain" } }));
 
   await withMockFetch(async () => {
-    const response = await worker.fetch(request("/api/ai"), env());
+    const response = await worker.fetch(request("/api/ai"), groqOnlyEnv);
     assert.equal(response.status, 502);
     assert.equal((await readJson(response)).error.code, "AI_REQUEST_FAILED");
   }, async () => new Response(JSON.stringify({ error: { message: "provider detail" } }), { status: 500, headers: { "Content-Type": "application/json" } }));
 
   await withMockFetch(async () => {
-    const response = await worker.fetch(request("/api/ai"), env());
+    const response = await worker.fetch(request("/api/ai"), groqOnlyEnv);
     assert.equal(response.status, 504);
     assert.equal((await readJson(response)).error.code, "AI_TIMEOUT");
   }, async () => {
@@ -269,6 +297,7 @@ async function testStaticSinks() {
 
 await testWorkerValidation();
 await testWorkerUpstreamControls();
+await testGroqFallback();
 await testRateLimit();
 await testUpstreamFailures();
 await testTranslateDocumentEndpoint();
