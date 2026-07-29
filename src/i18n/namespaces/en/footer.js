@@ -1,5 +1,5 @@
 const footer = {
-  "brand": "ApplyCraft.io — Free resume & cover letter builder in English, French & Arabic. {tpl} templates, PDF/DOCX, no watermark, no signup",
+  "brand": "ApplyCraft.io — Free resume & cover letter builder in English, French & Arabic. {tpl} templates, PDF/DOCX, no watermark, secure sign-in",
   "tagline": "French, English, Arabic. No compromises.",
   "product": "Product",
   "company": "Company",
@@ -32,7 +32,7 @@ const footer = {
   "gdpr": "GDPR",
   "aiDisclosure": "AI Disclosure",
   "accessibility": "Accessibility",
-  "badge1": "No account required",
+  "badge1": "Secure email sign-in",
   "badge2": "Optional AI helpers",
   "badge3": "Browser-first editing",
   "brandHome": "ApplyCraft home",

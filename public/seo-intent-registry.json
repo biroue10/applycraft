@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-28T15:00:22.094Z",
+  "generatedAt": "2026-07-29T20:57:48.471Z",
   "pages": [
     {
       "route": "/about\\",
@@ -338,6 +338,18 @@
       "differentiationNote": "Serve the specific informational or product intent expressed by Linux System Administrator Resume: Skills and"
     },
     {
+      "route": "/blog\\multilingual-resume-template-design-study\\",
+      "locale": "en",
+      "primaryKeyword": "60 resume templates: multilingual design study",
+      "secondaryKeywords": [],
+      "searchIntent": "Serve the specific informational or product intent expressed by 60 Resume Templates: Multilingual Design Study",
+      "canonical": "https://applycraft.io/blog/multilingual-resume-template-design-study/",
+      "parentHub": "",
+      "primaryCta": "",
+      "overlappingPages": [],
+      "differentiationNote": "Serve the specific informational or product intent expressed by 60 Resume Templates: Multilingual Design Study"
+    },
+    {
       "route": "/blog\\resume-and-cover-letter-match\\",
       "locale": "en",
       "primaryKeyword": "resume and cover letter match guide",
@@ -616,14 +628,14 @@
     {
       "route": "/examples\\registered-nurse-resume\\",
       "locale": "en",
-      "primaryKeyword": "registered nurse resume example â€” free template",
+      "primaryKeyword": "registered nurse resume example",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by Registered Nurse Resume Example â€” Free Template",
+      "searchIntent": "Serve the specific informational or product intent expressed by Registered Nurse Resume Example",
       "canonical": "https://applycraft.io/examples/registered-nurse-resume/",
       "parentHub": "/resume-examples-by-role/",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by Registered Nurse Resume Example â€” Free Template"
+      "differentiationNote": "Serve the specific informational or product intent expressed by Registered Nurse Resume Example"
     },
     {
       "route": "/examples\\sales-representative-resume\\",
@@ -876,6 +888,18 @@
       "primaryCta": "",
       "overlappingPages": [],
       "differentiationNote": "Serve the specific informational or product intent expressed by 12 erreurs de CV à éviter absolument en 2026"
+    },
+    {
+      "route": "/fr\\blog\\etude-modeles-cv-multilingues\\",
+      "locale": "en",
+      "primaryKeyword": "étude de 60 modèles de cv multilingues",
+      "secondaryKeywords": [],
+      "searchIntent": "Serve the specific informational or product intent expressed by Étude de 60 modèles de CV multilingues",
+      "canonical": "https://applycraft.io/fr/blog/etude-modeles-cv-multilingues/",
+      "parentHub": "",
+      "primaryCta": "",
+      "overlappingPages": [],
+      "differentiationNote": "Serve the specific informational or product intent expressed by Étude de 60 modèles de CV multilingues"
     },
     {
       "route": "/fr\\blog\\exemple-cv-maroc\\",

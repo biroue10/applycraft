@@ -1,6 +1,6 @@
 import React, { Fragment, useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useLocation } from "react-router-dom";
-import { ACCOUNTS_ENABLED, PAYMENTS_ENABLED, ACTIVE_SEARCH_PASS } from "./config.js";
+import { ACCOUNTS_ENABLED, REQUIRE_RESUME_LOGIN, PAYMENTS_ENABLED, ACTIVE_SEARCH_PASS } from "./config.js";
 import * as accountSession from "./accountSession.js";
 import { scoreFromIssues, scoreBand, issueCost, READINESS_EXPLAINER } from "./ats/scoring.js";
 import { pdfSafe, containsNonLatin1 } from "./pdf/text.js";
@@ -2964,9 +2964,8 @@ export default function ResumeGenerator() {
   const [translationReview, setTranslationReview] = useState({ open: false, original: null, translated: null, fields: [], meta: null, warning: "" });
   const [translationDuplicate, setTranslationDuplicate] = useState({ open: false, existingId: "", target: null });
   const [photoUrl, setPhotoUrl] = useState(null);
-  const [authModal, setAuthModal] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState("login");
   const [currentUser, setCurrentUser] = useState(null);
+  const [accountReady, setAccountReady] = useState(!ACCOUNTS_ENABLED);
   // Optional account / sync / paid-pass UI state.
   const [saveProfileOpen, setSaveProfileOpen] = useState(false);
   const [upsell, setUpsell] = useState(null); // null | "sync" | "tailor"
@@ -3188,34 +3187,41 @@ export default function ResumeGenerator() {
     } catch {
       track(EVENTS.LANGUAGE_MIGRATION_FAILED);
     }
-    if (!ACCOUNTS_ENABLED) return;
+    if (!ACCOUNTS_ENABLED) {
+      setAccountReady(true);
+      return;
+    }
     let cancelled = false;
     (async () => {
-      // 1) Complete a magic-link sign-in if the URL carries a token.
-      const account = await import("./account.js");
-      const acct = await account.consumeLoginFromUrl();
-      if (acct && !cancelled) {
-        setCurrentUser(acct);
-        // Pull the cloud Master Profile if the pass is active.
-        if (accountSession.hasActivePass()) {
-          try {
-            const { master: cloud } = await account.pullMasterProfile();
-            if (cloud && !cancelled) setMaster(m => ({ ...m, ...cloud }));
-          } catch { /* no pass / nothing saved */ }
+      try {
+        // 1) Complete a magic-link sign-in if the URL carries a token.
+        const account = await import("./account.js");
+        const acct = await account.consumeLoginFromUrl();
+        if (acct && !cancelled) {
+          setCurrentUser(acct);
+          // Pull the cloud Master Profile if the pass is active.
+          if (accountSession.hasActivePass()) {
+            try {
+              const { master: cloud } = await account.pullMasterProfile();
+              if (cloud && !cancelled) setMaster(m => ({ ...m, ...cloud }));
+            } catch { /* no pass / nothing saved */ }
+          }
+        } else if (accountSession.getSession() && !cancelled) {
+          // 2) Only a server-verified session unlocks the builder.
+          const refreshed = await account.refreshAccount({ strict: true });
+          if (!cancelled) setCurrentUser(refreshed);
         }
-      } else if (accountSession.getSession() && !cancelled) {
-        // 2) Refresh pass status for an existing session.
-        const refreshed = await account.refreshAccount();
-        if (refreshed && !cancelled) setCurrentUser(refreshed);
-      }
-      // 3) Returning from a successful checkout.
-      if (typeof window !== "undefined" && new URL(window.location.href).searchParams.get("ac_checkout") === "success") {
-        track(EVENTS.CHECKOUT_COMPLETED);
-        const url = new URL(window.location.href);
-        url.searchParams.delete("ac_checkout");
-        window.history.replaceState({}, "", url.toString());
-        const refreshed = await account.refreshAccount();
-        if (refreshed && !cancelled) setCurrentUser(refreshed);
+        // 3) Returning from a successful checkout.
+        if (typeof window !== "undefined" && new URL(window.location.href).searchParams.get("ac_checkout") === "success") {
+          track(EVENTS.CHECKOUT_COMPLETED);
+          const url = new URL(window.location.href);
+          url.searchParams.delete("ac_checkout");
+          window.history.replaceState({}, "", url.toString());
+          const refreshed = await account.refreshAccount({ strict: true });
+          if (refreshed && !cancelled) setCurrentUser(refreshed);
+        }
+      } finally {
+        if (!cancelled) setAccountReady(true);
       }
     })();
     return () => { cancelled = true; };
@@ -9055,8 +9061,14 @@ Awards: ${form.awards}`;
     );
   })();
 
+  const resumeLoginRequired = REQUIRE_RESUME_LOGIN && navPage === "resume" && step === "form";
   let pageBody;
-  if (navPage === "resume") pageBody = step === "form" ? (formContent || mainContent) : mainContent;
+  if (resumeLoginRequired && (!accountReady || !currentUser)) {
+    pageBody = <BuilderLoginGate ready={accountReady} at={at} onSignIn={() => {
+      setSaveProfileOpen(true);
+    }} />;
+  }
+  else if (navPage === "resume") pageBody = step === "form" ? (formContent || mainContent) : mainContent;
   else if (navPage === "cover") pageBody = coverStep === "form" ? (coverFormContent || coverTemplatesContent) : coverTemplatesContent;
   else if (navPage === "master") pageBody = masterContent;
   else if (navPage === "tracker") pageBody = trackerContent;
@@ -9116,12 +9128,6 @@ Awards: ${form.awards}`;
           onMobileMenuToggle={setLandingMenuOpen}
           onNavigate={(item) => { setLandingMenuOpen(false); setAppView("app"); enterPrimaryTool(item); }}
         />
-        <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)} at={at}
-          onLogin={user => {
-            try { localStorage.setItem("ac_account", JSON.stringify(user)); } catch { /* noop */ }
-            setCurrentUser(user); setAuthModal(false);
-            if (pendingSaveRef.current) { pendingSaveRef.current = false; doSaveResume(); }
-          }} />
         {ACCOUNTS_ENABLED && <SaveProfileModal open={saveProfileOpen} onClose={() => setSaveProfileOpen(false)} at={at} rtl={rtl} C={C} lang={lang} />}
         {ACCOUNTS_ENABLED && <UpsellModal feature={upsell} onClose={() => setUpsell(null)} onGetPass={handleStartCheckout} at={at} rtl={rtl} C={C} />}
         <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} lang={lang} />
@@ -9943,12 +9949,6 @@ Awards: ${form.awards}`;
             </div>
           ) : null}
         </div>
-        <AuthModal open={authModal} initialTab={authModalTab} onClose={() => setAuthModal(false)} at={at}
-          onLogin={user => {
-            try { localStorage.setItem("ac_account", JSON.stringify(user)); } catch { /* noop */ }
-            setCurrentUser(user); setAuthModal(false);
-            if (pendingSaveRef.current) { pendingSaveRef.current = false; doSaveResume(); }
-          }} />
         {ACCOUNTS_ENABLED && <SaveProfileModal open={saveProfileOpen} onClose={() => setSaveProfileOpen(false)} at={at} rtl={rtl} C={C} lang={lang} />}
         {ACCOUNTS_ENABLED && <UpsellModal feature={upsell} onClose={() => setUpsell(null)} onGetPass={handleStartCheckout} at={at} rtl={rtl} C={C} />}
 
@@ -10392,6 +10392,39 @@ function FeedbackModal({ open, onClose, lang }) {
 // ── SaveProfileModal ──────────────────────────────────────────────────────
 // Optional, passwordless email capture for Master Profile sync. Never gates
 // the free builder; fully dismissable. Sends a magic link via the backend.
+function BuilderLoginGate({ ready, at, onSignIn }) {
+  return (
+    <main style={{ minHeight: "calc(100vh - 180px)", display: "grid", placeItems: "center", padding: "72px 20px" }}>
+      <section style={{ width: "min(100%, 620px)", textAlign: "center", padding: "clamp(30px,6vw,56px)",
+        border: `1px solid ${C.border}`, borderRadius: 24, background: C.surface,
+        boxShadow: "0 28px 90px rgba(37,33,120,.24)", position: "relative", overflow: "hidden" }}>
+        <div aria-hidden="true" style={{ position: "absolute", inset: "-45% 15% auto", height: 230,
+          background: C.grad, filter: "blur(85px)", opacity: .24 }} />
+        <div style={{ position: "relative" }}>
+          <div style={{ width: 58, height: 58, margin: "0 auto 20px", borderRadius: 18,
+            display: "grid", placeItems: "center", background: C.grad, color: "#fff",
+            boxShadow: "0 14px 36px rgba(75,63,255,.32)", fontSize: 26 }} aria-hidden="true">✦</div>
+          <h1 style={{ margin: "0 0 12px", color: C.text1, fontSize: "clamp(26px,4vw,38px)", lineHeight: 1.12 }}>
+            {at.builderLoginTitle}
+          </h1>
+          <p style={{ margin: "0 auto 26px", maxWidth: 500, color: C.text2, fontSize: 15, lineHeight: 1.7 }}>
+            {ready ? at.builderLoginDesc : at.checkingSession}
+          </p>
+          {ready && (
+            <button type="button" onClick={onSignIn}
+              style={{ minWidth: 220, border: 0, borderRadius: 11, padding: "13px 22px",
+                color: "#fff", background: C.grad, font: "700 15px inherit", cursor: "pointer",
+                boxShadow: "0 14px 34px rgba(75,63,255,.28)" }}>
+              {at.continueEmail}
+            </button>
+          )}
+          <p style={{ margin: "18px 0 0", color: C.text3, fontSize: 12.5 }}>{at.builderLoginPrivacy}</p>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function SaveProfileModal({ open, onClose, at, rtl, C, lang }) {
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(true);
@@ -10406,7 +10439,10 @@ function SaveProfileModal({ open, onClose, at, rtl, C, lang }) {
     if (!valid) { setErr("•"); return; }
     setStatus("sending");
     try {
-      const res = await (await import("./account.js")).requestMagicLink(email.trim(), { consent, lang });
+      const returnTo = typeof window === "undefined"
+        ? "/resume-builder/"
+        : `${window.location.pathname}${window.location.search}`;
+      const res = await (await import("./account.js")).requestMagicLink(email.trim(), { consent, lang, returnTo });
       if (res?.configured === false) { setStatus("soon"); return; }
       track(EVENTS.EMAIL_CAPTURED);
       setStatus("sent");
@@ -10445,7 +10481,7 @@ function SaveProfileModal({ open, onClose, at, rtl, C, lang }) {
                 fontFamily: "inherit", opacity: status === "sending" || !consent ? 0.55 : 1 }}>
               {status === "sending" ? at.sending : at.sendLink}
             </button>
-            {status === "error" && <div style={{ fontSize: 12.5, color: "#f87171", marginTop: 10 }}>{at.notConfigured}</div>}
+            {status === "error" && <div style={{ fontSize: 12.5, color: "#f87171", marginTop: 10 }}>{at.loginError}</div>}
           </form>
         )}
       </div>

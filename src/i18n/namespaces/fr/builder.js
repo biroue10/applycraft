@@ -154,7 +154,7 @@ const builder = {
   ,"aboutNav": "À propos"
   ,"soon": "Bientôt"
   ,"freeBadge": "100 % gratuit"
-  ,"freeBadgeBody": "Les modèles, les options de langue et les téléchargements sont disponibles sans compte."
+  ,"freeBadgeBody": "Les modèles, les options de langue et les téléchargements restent gratuits avec une connexion sécurisée par e-mail."
   ,"comingSoon": "Bientôt"
   ,"featureOnWay": "Cette fonctionnalité arrive bientôt."
   ,"stayTuned": "Restez informé :"

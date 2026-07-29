@@ -196,19 +196,19 @@ The repository includes [`.env.example`](.env.example). Copy it to `.env` for lo
 
 | Variable group | Purpose | Typical local value |
 | --- | --- | --- |
-| `VITE_ACCOUNTS_ENABLED` | Enables optional account UI | `false` |
+| `VITE_ACCOUNTS_ENABLED` | Legacy account UI switch; resume creation now uses verified passwordless sessions | `false` |
 | `VITE_PAYMENTS_ENABLED` | Enables optional payment UI | `false` |
 | `VITE_GA_ENABLED`, `VITE_CLARITY_ENABLED` | Enables optional analytics integrations | `false` |
 | `VITE_GA_MEASUREMENT_ID`, `VITE_CLARITY_PROJECT_ID` | Public analytics identifiers | blank |
 | `ANTHROPIC_API_KEY` | Server-side key for configured AI helpers | blank unless testing AI |
-| `RESEND_API_KEY`, `RESEND_FROM_EMAIL` | Optional transactional email | blank |
+| `RESEND_API_KEY`, `RESEND_FROM_EMAIL` | Required passwordless sign-in email delivery | blank locally |
 | `LEMON_SQUEEZY_*` | Optional checkout and webhook configuration | blank |
 | `APP_ORIGIN`, `ALLOWED_ORIGINS` | Production URL and Worker origin restrictions | local or production origin |
 
 > [!IMPORTANT]
 > Never expose server secrets through `VITE_*` variables. Vite variables are bundled into client-side code.
 
-Short-link storage is configured through the Cloudflare KV binding in [`wrangler.json`](wrangler.json). The Worker implementation lives in [`worker.js`](worker.js).
+Short-link and authentication storage use the Cloudflare KV binding in [`wrangler.json`](wrangler.json). Resume creation requires a server-verified session obtained through a one-time email link; public landing pages, templates, blog articles, and the ATS checker remain accessible without signing in. The Worker implementation lives in [`worker.js`](worker.js).
 
 ## Quality and testing
 

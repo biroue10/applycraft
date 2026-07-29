@@ -1,4 +1,4 @@
-const SESSION_KEY = "ac_session";
+export const SESSION_KEY = "ac_session";
 const ACCOUNT_KEY = "ac_account";
 export const CONSENT_KEY = "ac_consent_sync";
 

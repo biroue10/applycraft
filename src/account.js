@@ -14,7 +14,7 @@
 // backend or its env vars are absent — see functions/api/* for the stubs.
 // ──────────────────────────────────────────────────────────────────────────
 
-import { CONSENT_KEY, getAccount, getSession, hasActivePass, logout, readAccountValue as read, setAccount, writeAccountValue as write } from "./accountSession.js";
+import { CONSENT_KEY, SESSION_KEY, getAccount, getSession, hasActivePass, logout, readAccountValue as read, setAccount, writeAccountValue as write } from "./accountSession.js";
 export { getAccount, getSession, hasActivePass, logout } from "./accountSession.js";
 
 // ── Session + account (persisted locally so login survives refresh) ─────────
@@ -43,9 +43,9 @@ async function post(path, body) {
 
 // Step 1: request a sign-in / save link. Records explicit consent locally and
 // asks the server to email a magic link. Returns { ok, configured }.
-export async function requestMagicLink(email, { consent, lang = "en" } = {}) {
+export async function requestMagicLink(email, { consent, lang = "en", returnTo = "/resume-builder/" } = {}) {
   write(CONSENT_KEY, { granted: !!consent, at: new Date().toISOString() });
-  return post("/api/auth/request-link", { email, consent: !!consent, lang });
+  return post("/api/auth/request-link", { email, consent: !!consent, lang, returnTo });
 }
 
 // Step 2: called on app load if the URL carries ?ac_login=<token>. Exchanges
@@ -91,17 +91,21 @@ export async function pullMasterProfile() {
 }
 
 // Refresh the cached account (pass status) from the server.
-export async function refreshAccount() {
+export async function refreshAccount({ strict = false } = {}) {
   const s = getSession();
   if (!s) return null;
   try {
     const res = await fetch("/api/account", { headers: { ...authHeaders() } });
-    if (!res.ok) return getAccount();
+    if (!res.ok) {
+      if (strict) logout();
+      return strict ? null : getAccount();
+    }
     const data = await res.json().catch(() => ({}));
     if (data.account) setAccount(data.account);
     return data.account || getAccount();
   } catch {
-    return getAccount();
+    if (strict) logout();
+    return strict ? null : getAccount();
   }
 }
 

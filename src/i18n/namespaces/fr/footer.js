@@ -1,5 +1,5 @@
 const footer = {
-  "brand": "ApplyCraft.io — Créateur gratuit de CV et lettres en français, anglais et arabe. {tpl} modèles, PDF/DOCX, sans filigrane, sans inscription",
+  "brand": "ApplyCraft.io — Créateur gratuit de CV et lettres en français, anglais et arabe. {tpl} modèles, PDF/DOCX, sans filigrane, connexion sécurisée",
   "tagline": "Français, anglais, arabe. Sans compromis.",
   "product": "Produit",
   "company": "Entreprise",
@@ -32,7 +32,7 @@ const footer = {
   "gdpr": "RGPD",
   "aiDisclosure": "Divulgation IA",
   "accessibility": "Accessibilité",
-  "badge1": "Aucun compte requis",
+  "badge1": "Connexion sécurisée",
   "badge2": "Assistants IA facultatifs",
   "badge3": "Édition dans le navigateur",
   "brandHome": "Accueil ApplyCraft",

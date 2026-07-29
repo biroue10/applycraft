@@ -496,7 +496,7 @@ function corsFor(request, env) {
     headers: {
       "Access-Control-Allow-Origin": origin,
       "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": `Content-Type, X-Delete-Token, ${DEV_BYPASS_HEADER}`,
+      "Access-Control-Allow-Headers": `Authorization, Content-Type, X-Delete-Token, ${DEV_BYPASS_HEADER}`,
       "Access-Control-Max-Age": "600",
       "Vary": "Origin",
     },
@@ -892,6 +892,159 @@ async function handleTranslateDocument(request, env) {
   } catch {
     return jsonResponse({ ok: false, error: "translation_bad_response" }, 502, cors.headers);
   }
+}
+
+function authStore(env) {
+  return env.AC_KV || env.SHARES || null;
+}
+
+function secureToken(bytes = 24) {
+  const data = new Uint8Array(bytes);
+  crypto.getRandomValues(data);
+  return [...data].map((value) => value.toString(16).padStart(2, "0")).join("");
+}
+
+function validAuthEmail(value) {
+  return typeof value === "string"
+    && value.length <= 254
+    && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function safeAuthReturnTo(value) {
+  if (typeof value !== "string" || value.length > 600) return "/resume-builder/";
+  try {
+    const parsed = new URL(value, "https://applycraft.io");
+    if (parsed.origin !== "https://applycraft.io" || parsed.pathname !== "/resume-builder/") return "/resume-builder/";
+    parsed.searchParams.delete("ac_login");
+    return `${parsed.pathname}${parsed.search}`;
+  } catch {
+    return "/resume-builder/";
+  }
+}
+
+async function authAccountFromRequest(request, env) {
+  const store = authStore(env);
+  const authorization = request.headers.get("Authorization") || "";
+  if (!store || !authorization.startsWith("Bearer ")) return null;
+  const session = authorization.slice(7).trim();
+  if (!/^[a-f0-9]{64}$/.test(session)) return null;
+  const email = await store.get(`session:${session}`);
+  if (!email) return null;
+  const raw = await store.get(`account:${email}`);
+  if (!raw) return { email };
+  try {
+    const account = JSON.parse(raw);
+    return { email: account.email, activePass: Boolean(account.activePass), passExpires: account.passExpires || null };
+  } catch {
+    return null;
+  }
+}
+
+async function handleAuth(request, env, url) {
+  const cors = corsFor(request, env);
+  if (request.method === "OPTIONS") {
+    if (!cors.allowed) return new Response(null, { status: 403, headers: SECURITY_HEADERS });
+    return new Response(null, { status: 204, headers: { ...cors.headers, ...SECURITY_HEADERS } });
+  }
+  const store = authStore(env);
+  if (!store) return errorResponse("AUTH_STORAGE_UNAVAILABLE", "Sign-in is temporarily unavailable.", 503, cors.headers);
+
+  if (url.pathname === "/api/account" && request.method === "GET") {
+    const account = await authAccountFromRequest(request, env);
+    if (!account) return errorResponse("UNAUTHORIZED", "Your session is invalid or expired.", 401, cors.headers);
+    return jsonResponse({ ok: true, account }, 200, cors.headers);
+  }
+
+  if (request.method !== "POST") return errorResponse("METHOD_NOT_ALLOWED", "Method not allowed.", 405, cors.headers);
+  if (!cors.allowed) return errorResponse("FORBIDDEN_ORIGIN", "This origin is not allowed.", 403, cors.headers);
+  if (!(request.headers.get("Content-Type") || "").toLowerCase().startsWith("application/json")) {
+    return errorResponse("UNSUPPORTED_MEDIA_TYPE", "Content-Type must be application/json.", 415, cors.headers);
+  }
+  const rate = await checkRateLimitKV(env, request);
+  if (!rate.allowed) {
+    return errorResponse("RATE_LIMITED", "Too many requests. Please try again later.", 429, cors.headers, {
+      "Retry-After": String(Math.max(1, rate.retryAfter || 60)),
+    });
+  }
+  const limited = await readLimitedBody(request, 4096);
+  if (limited.tooLarge) return errorResponse("PAYLOAD_TOO_LARGE", "The request is too large.", 413, cors.headers);
+  let body;
+  try {
+    body = JSON.parse(limited.body);
+  } catch {
+    return errorResponse("MALFORMED_JSON", "The request body is not valid JSON.", 400, cors.headers);
+  }
+
+  if (url.pathname === "/api/auth/request-link") {
+    const email = String(body?.email || "").trim().toLowerCase();
+    if (!validAuthEmail(email)) return errorResponse("INVALID_EMAIL", "Enter a valid email address.", 400, cors.headers);
+    if (!env.RESEND_API_KEY) return errorResponse("EMAIL_NOT_CONFIGURED", "Sign-in email is not configured.", 503, cors.headers);
+    const loginToken = secureToken();
+    const returnTo = safeAuthReturnTo(body?.returnTo);
+    await store.put(`login:${loginToken}`, JSON.stringify({ email, consent: Boolean(body?.consent), returnTo }), {
+      expirationTtl: 30 * 60,
+    });
+    const origin = env.APP_ORIGIN || url.origin;
+    const link = new URL(returnTo, origin);
+    link.searchParams.set("ac_login", loginToken);
+    const language = ["en", "fr", "ar"].includes(body?.lang) ? body.lang : "en";
+    const subject = {
+      en: "Your secure ApplyCraft sign-in link",
+      fr: "Votre lien de connexion sécurisé ApplyCraft",
+      ar: "رابط تسجيل الدخول الآمن إلى ApplyCraft",
+    }[language];
+    let sent = false;
+    try {
+      const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: env.RESEND_FROM_EMAIL || env.MAIL_FROM || "ApplyCraft <hello@applycraft.io>",
+          to: email,
+          subject,
+          text: `${subject}\n\n${link.toString()}\n\nThis one-time link expires in 30 minutes. If you did not request it, ignore this email.`,
+        }),
+      });
+      sent = response.ok;
+    } catch {
+      sent = false;
+    }
+    if (!sent) {
+      await store.delete(`login:${loginToken}`);
+      return errorResponse("EMAIL_DELIVERY_FAILED", "The sign-in email could not be sent.", 502, cors.headers);
+    }
+    return jsonResponse({ ok: true, configured: true, sent: true }, 200, cors.headers);
+  }
+
+  if (url.pathname === "/api/auth/verify") {
+    const loginToken = String(body?.token || "");
+    if (!/^[a-f0-9]{48}$/.test(loginToken)) return errorResponse("INVALID_TOKEN", "The sign-in link is invalid.", 401, cors.headers);
+    const raw = await store.get(`login:${loginToken}`);
+    if (!raw) return errorResponse("INVALID_OR_EXPIRED", "The sign-in link is invalid or expired.", 401, cors.headers);
+    await store.delete(`login:${loginToken}`);
+    let login;
+    try {
+      login = JSON.parse(raw);
+    } catch {
+      return errorResponse("INVALID_TOKEN", "The sign-in link is invalid.", 401, cors.headers);
+    }
+    const accountKey = `account:${login.email}`;
+    let account = { email: login.email, activePass: false, passExpires: null, consent: Boolean(login.consent), createdAt: new Date().toISOString() };
+    const existing = await store.get(accountKey);
+    if (existing) {
+      try { account = { ...account, ...JSON.parse(existing), email: login.email }; } catch { /* replace malformed data */ }
+    }
+    await store.put(accountKey, JSON.stringify(account));
+    const session = secureToken(32);
+    await store.put(`session:${session}`, login.email, { expirationTtl: 30 * 24 * 60 * 60 });
+    return jsonResponse({
+      ok: true,
+      session,
+      account: { email: account.email, activePass: Boolean(account.activePass), passExpires: account.passExpires || null },
+    }, 200, cors.headers);
+  }
+
+  return errorResponse("NOT_FOUND", "Not found.", 404, cors.headers);
 }
 
 function shareStore(env) {
@@ -1516,6 +1669,7 @@ export default {
     if (url.pathname === "/api/interview/feedback") return handleInterviewFeedback(request, env);
     if (url.pathname === "/api/translate-document") return handleTranslateDocument(request, env);
     if (url.pathname === "/api/feedback") return handleFeedback(request, env);
+    if (url.pathname === "/api/account" || url.pathname.startsWith("/api/auth/")) return handleAuth(request, env, url);
     if (url.pathname === "/api/share" || url.pathname.startsWith("/api/share/")) return handleShare(request, env, url);
     if (request.method === "GET" || request.method === "HEAD") {
       if (url.pathname === "/cover-letter" || url.pathname === "/cover-letter/") {

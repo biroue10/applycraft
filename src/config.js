@@ -12,7 +12,8 @@ const env = (typeof import.meta !== "undefined" && import.meta.env) || {};
 
 // Master switches. When false, the matching UI entry points are hidden and
 // the app behaves exactly as the no-account, free-forever builder.
-export const ACCOUNTS_ENABLED = env.VITE_ACCOUNTS_ENABLED === "true";
+export const ACCOUNTS_ENABLED = true;
+export const REQUIRE_RESUME_LOGIN = true;
 export const PAYMENTS_ENABLED = env.VITE_PAYMENTS_ENABLED === "true";
 
 // Google Analytics 4 measurement ID. Not env-driven: it is baked into the

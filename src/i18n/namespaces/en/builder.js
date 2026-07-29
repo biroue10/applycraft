@@ -154,7 +154,7 @@ const builder = {
   ,"aboutNav": "About"
   ,"soon": "Soon"
   ,"freeBadge": "100% free"
-  ,"freeBadgeBody": "Templates, language options, and downloads are available without an account."
+  ,"freeBadgeBody": "Templates, language options, and downloads remain free with secure email sign-in."
   ,"comingSoon": "Coming soon"
   ,"featureOnWay": "This feature is on its way."
   ,"stayTuned": "Stay tuned:"
