@@ -37,7 +37,7 @@ export const COLORS = {
   success: "#4ADE80",
   warning: "#FBBF24",
 
-  grad: "linear-gradient(135deg,#9333EA 0%,#2563EB 100%)",
+  grad: "linear-gradient(135deg,#A855F7 0%,#7C3AED 44%,#2563EB 100%)",
 
   // Muted ink for the light (paper) surfaces of the resume previews. #9CA3AF,
   // the old value, measured 2.53:1 on white.

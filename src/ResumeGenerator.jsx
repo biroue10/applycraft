@@ -7910,7 +7910,12 @@ Awards: ${form.awards}`;
     };
 
     return (
-      <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
+      <div style={{
+        minHeight: isMobile ? "auto" : "calc(100vh - 32px)",
+        padding: isMobile ? "0 8px 28px" : "0 0 44px",
+        background: `radial-gradient(circle at 9% 8%,rgba(168,85,247,.20),transparent 34%),
+          radial-gradient(circle at 92% 24%,rgba(37,99,235,.17),transparent 30%)`,
+      }}>
         <section aria-labelledby="ats-checker-title" style={{ maxWidth: 960, margin: "0 auto", padding: isMobile ? "24px 4px 0" : "42px 28px 0" }}>
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999,
@@ -7919,7 +7924,7 @@ Awards: ${form.awards}`;
             letterSpacing: "1.4px", textTransform: "uppercase", marginBottom: 14 }}>
             {ats.freeTool}
           </div>
-          <h1 id="ats-checker-title" style={{ margin: "0 0 12px", color: C.text1,
+          <h1 id="ats-checker-title" className="ac-ats-title" style={{ margin: "0 0 12px", color: C.text1,
             fontSize: isMobile ? 30 : 40, lineHeight: 1.08, letterSpacing: "-0.8px", fontWeight: 900 }}>
             {ats.title}
           </h1>
@@ -7956,8 +7961,9 @@ Awards: ${form.awards}`;
             </div>
             <textarea value={localText} onChange={e => setLocalText(e.target.value)}
               placeholder={ats.pasteResumePh}
-              style={{ width: "100%", height: 240, resize: "vertical", background: C.elevated,
-                border: `1.5px solid ${C.border}`, borderRadius: 10, color: C.text1,
+              style={{ width: "100%", height: 240, resize: "vertical",
+                background: "linear-gradient(145deg,rgba(124,58,237,.10),rgba(19,32,54,.96) 42%,rgba(37,99,235,.07))",
+                border: "1.5px solid rgba(139,92,246,.34)", borderRadius: 10, color: C.text1,
                 fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", fontSize: 13, lineHeight: 1.6,
                 padding: "12px 14px", outline: "none", fontWeight: 400 }} />
             <div style={{ marginTop: 5, color: C.text3, fontSize: 11, textAlign: "end" }}>{localText.length.toLocaleString()} {ats.characters}</div>
@@ -7967,8 +7973,9 @@ Awards: ${form.awards}`;
               letterSpacing: "1px", marginBottom: 8 }}>{ats.jdLabel} <span style={{ fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— {ats.optional}</span></div>
             <textarea value={localJd} onChange={e => setLocalJd(e.target.value)}
               placeholder={ats.pasteJdPh}
-              style={{ width: "100%", height: 240, resize: "vertical", background: C.elevated,
-                border: `1.5px solid ${C.border}`, borderRadius: 10, color: C.text1,
+              style={{ width: "100%", height: 240, resize: "vertical",
+                background: "linear-gradient(145deg,rgba(124,58,237,.10),rgba(19,32,54,.96) 42%,rgba(37,99,235,.07))",
+                border: "1.5px solid rgba(139,92,246,.34)", borderRadius: 10, color: C.text1,
                 fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", fontSize: 13, lineHeight: 1.6,
                 padding: "12px 14px", outline: "none", fontWeight: 400 }} />
             <div style={{ marginTop: 5, color: C.text3, fontSize: 11, textAlign: "end" }}>{localJd.length.toLocaleString()} {ats.characters}</div>
@@ -7979,7 +7986,7 @@ Awards: ${form.awards}`;
           style={{ width: "100%", padding: "14px", background: C.grad, border: "none",
             borderRadius: 10, color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer",
             fontFamily: "inherit", opacity: (running || localText.trim().length < 40) ? 0.5 : 1,
-            marginBottom: 32 }}>
+            marginBottom: 32, boxShadow: "0 12px 34px rgba(124,58,237,.28),0 0 24px rgba(37,99,235,.16)" }}>
           {running ? ats.analysing : ats.checkBtn}
         </button>
 
@@ -11186,8 +11193,8 @@ function PageFooter({ t }) {
 const C = {
   ...COLORS,             // bg / sidebar / surface / elevated / border / text / accent / grad
   gradHov:  "linear-gradient(135deg,#7E22CE 0%,#1D4ED8 100%)",
-  glow:     "rgba(147,51,234,0.16)",  // purple glow
-  glowBlue: "rgba(37,99,235,0.12)",  // blue glow
+  glow:     "rgba(168,85,247,0.24)",  // purple glow
+  glowBlue: "rgba(37,99,235,0.20)",  // blue glow
   // success / warning / danger now come from ...COLORS (single source of truth).
   radiusSm: 6,
   radiusMd: 10,
