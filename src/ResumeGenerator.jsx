@@ -39,6 +39,7 @@ import { documentLabelsFor } from "./i18n/documentLabels.js";
 import { formatLetterDate, defaultCoverSignoff, COVER_SIGNOFFS, LETTER_LOCALE } from "./i18n/letterDefaults.js";
 import { buildInternalUrl, localizeRoute, localizedLanguageHref } from "./seo/localizedRoutes.js";
 import { jobContextQuery } from "./interview/context.js";
+import "./styles/trackerDashboard.css";
 
 const CustomResumeSectionUI = React.lazy(() => import("./components/CustomResumeSectionUI.jsx"));
 
@@ -8268,51 +8269,53 @@ Awards: ${form.awards}`;
   const trackerContent = (() => {
     const col = TRACKER_COLS.find(c => c.id === (trackerModal.card?.column || "saved"));
     const editCard = trackerModal.card;
+    const trackerStats = [
+      { label: tk.tracked, count: trackerCards.length, color: C.accent2 },
+      { label: tk.statApplied, count: trackerCards.filter(c => ["applied","interview","offer"].includes(c.column)).length, color: "#3B82F6" },
+      { label: tk.statInterviews, count: trackerCards.filter(c => c.column === "interview").length, color: "#F59E0B" },
+      { label: tk.statOffers, count: trackerCards.filter(c => c.column === "offer").length, color: "#10B981" },
+    ];
 
     return (
-      <div style={{ minHeight: isMobile ? "auto" : "calc(100vh - 32px)", padding: isMobile ? "0 8px 28px" : "0 0 44px" }}>
-        <section aria-labelledby="job-tracker-title" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "24px 4px 0" : "34px 28px 0" }}>
+      <div className="ac-tracker-page">
+        <section aria-labelledby="job-tracker-title" className="ac-tracker-shell">
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-          marginBottom: 24, gap: 12, flexWrap: "wrap" }}>
-          <div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999,
-              background: `${C.accent}12`, border: `1px solid ${C.accent}2E`,
-              color: C.accent2, padding: "5px 12px", fontSize: 11, fontWeight: 900,
-              letterSpacing: "1.4px", textTransform: "uppercase", marginBottom: 14 }}>
+        <div className="ac-tracker-hero">
+          <div className="ac-tracker-orb" />
+          <div className="ac-tracker-hero-copy">
+            <div className="ac-tracker-eyebrow">
               {tk.eyebrow}
             </div>
-            <h1 id="job-tracker-title" style={{ margin: 0, fontSize: isMobile ? 30 : 40, lineHeight: 1.08,
-              fontWeight: 900, color: C.text1, letterSpacing: "-0.8px" }}>{tk.title}</h1>
-            <p style={{ margin: "8px 0 0", fontSize: isMobile ? 14.5 : 16, color: C.text2, lineHeight: 1.6 }}>
+            <h1 id="job-tracker-title" className="ac-tracker-title">{tk.title}</h1>
+            <p className="ac-tracker-subtitle">
               {tk.sub}
             </p>
-            <p style={{ margin: "6px 0 0", fontSize: 13, color: C.text3 }}>
-              {trackerCards.length} {tk.tracked}
-            </p>
+            <button className="ac-tracker-primary" onClick={() => setTrackerModal({ open: true, card: { ...newCard("saved") } })}>
+              <span aria-hidden="true" className="ac-tracker-plus">+</span> {tk.addApp}
+            </button>
           </div>
-          {/* Stats chips */}
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {[
-              { label: tk.statApplied, count: trackerCards.filter(c => ["applied","interview","offer"].includes(c.column)).length, color: "#3B82F6" },
-              { label: tk.statInterviews, count: trackerCards.filter(c => c.column === "interview").length, color: "#F59E0B" },
-              { label: tk.statOffers, count: trackerCards.filter(c => c.column === "offer").length, color: "#10B981" },
-            ].map(s => (
-              <div key={s.label} style={{ background: `${s.color}18`, border: `1px solid ${s.color}30`,
-                borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 700, color: s.color }}>
-                {s.count} {s.label}
+          {/* Dashboard stats */}
+          <div className="ac-tracker-stats">
+            {trackerStats.map(s => (
+              <div className="ac-tracker-stat" key={s.label} style={{ "--tracker-color": s.color }}>
+                <div className="ac-tracker-stat-head">
+                  <span>{s.label}</span>
+                  <span className="ac-tracker-stat-icon" />
+                </div>
+                <div className="ac-tracker-stat-count">{s.count}</div>
               </div>
             ))}
           </div>
         </div>
 
-        <React.Suspense fallback={null}><TrackerPrivacyControls locale={lang} enabled={trackerStorageEnabled} setEnabled={setTrackerStorageEnabled} cards={trackerCards} replace={setTrackerCards} clear={deleteTrackerData} /></React.Suspense>
-        <React.Suspense fallback={null}><TrackerFilters locale={lang} value={trackerFilters} onChange={setTrackerFilters} cards={trackerCards} /></React.Suspense>
+        <div className="ac-tracker-controls">
+          <React.Suspense fallback={null}><TrackerPrivacyControls locale={lang} enabled={trackerStorageEnabled} setEnabled={setTrackerStorageEnabled} cards={trackerCards} replace={setTrackerCards} clear={deleteTrackerData} /></React.Suspense>
+          <React.Suspense fallback={null}><TrackerFilters locale={lang} value={trackerFilters} onChange={setTrackerFilters} cards={trackerCards} /></React.Suspense>
+        </div>
 
         {/* Kanban board */}
-        <div style={{ overflowX: "auto", margin: isMobile ? "0 -8px" : "0 -20px" }}>
-        <div style={{ display: "flex", gap: 14, padding: isMobile ? "0 8px 16px" : "0 20px 16px",
-          alignItems: "flex-start", minHeight: 400, minWidth: isMobile ? "max-content" : 0 }}>
+        <div className="ac-tracker-board">
+        <div className="ac-tracker-board-row">
           {TRACKER_COLS.map(tcol => {
             const cards = trackerCards.filter(c => c.column === tcol.id
               && (!trackerFilters.query || `${c.company} ${c.position}`.toLowerCase().includes(trackerFilters.query.toLowerCase()))
@@ -8330,28 +8333,19 @@ Awards: ${form.awards}`;
                   if (trackerDragId) moveCard(trackerDragId, tcol.id);
                   setTrackerDragId(null); setTrackerDragOver(null);
                 }}
-                style={{ flex: isMobile ? "0 0 220px" : "1 1 0", minWidth: isMobile ? undefined : 176,
-                  background: isDragTarget ? `${tcol.color}18` : C.surface,
-                  border: `1.5px solid ${isDragTarget ? tcol.color : C.border}`,
-                  borderRadius: 12, padding: "12px 10px", minHeight: 160,
-                  transition: "border-color 0.15s, background 0.15s" }}>
+                className={`ac-tracker-column${isDragTarget ? " is-drag-target" : ""}`}
+                style={{ "--tracker-color": tcol.color }}>
+                <div aria-hidden="true" className="ac-tracker-column-stripe" />
                 {/* Column header */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-                  marginBottom: 12 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 13 }}>{tcol.icon}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: tcol.color,
-                      textTransform: "uppercase", letterSpacing: "0.8px" }}>{tcol.label}</span>
+                <div className="ac-tracker-column-head">
+                  <div className="ac-tracker-column-title">
+                    <span>{tcol.icon}</span>
+                    <span style={{ color: tcol.color }}>{tcol.label}</span>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: C.text3,
-                      background: C.elevated, borderRadius: 999, padding: "1px 8px",
-                      border: `1px solid ${C.border}` }}>{cards.length}</span>
+                  <div className="ac-tracker-column-actions">
+                    <span className="ac-tracker-column-count">{cards.length}</span>
                     <button onClick={() => setTrackerModal({ open: true, card: { ...newCard(tcol.id) } })}
-                      style={{ background: "none", border: `1px solid ${C.border}`, borderRadius: 6,
-                        width: 22, height: 22, cursor: "pointer", color: C.text3, fontSize: 14,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        lineHeight: 1, padding: 0, fontFamily: "inherit" }}>+</button>
+                      className="ac-tracker-column-add">+</button>
                   </div>
                 </div>
 
@@ -8363,12 +8357,9 @@ Awards: ${form.awards}`;
                       onDragStart={() => setTrackerDragId(card.id)}
                       onDragEnd={() => { setTrackerDragId(null); setTrackerDragOver(null); }}
                       onClick={() => setTrackerModal({ open: true, card: { ...card } })}
-                      style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: 9,
-                        padding: "10px 12px", cursor: "grab", transition: "transform 0.1s, box-shadow 0.1s",
-                        opacity: trackerDragId === card.id ? 0.45 : 1,
-                        borderLeft: `3px solid ${tcol.color}` }}
-                      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 4px 16px #0006"; }}
-                      onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}>
+                      className="ac-tracker-card"
+                      style={{ "--tracker-color": tcol.color, opacity: trackerDragId === card.id ? 0.45 : 1 }}
+                    >
                       <div style={{ fontSize: 13, fontWeight: 700, color: C.text1, marginBottom: 3,
                         whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {card.company || <span style={{ color: C.text3 }}>{tk.companyPh}</span>}
@@ -8426,8 +8417,7 @@ Awards: ${form.awards}`;
 
         {/* Add first application CTA */}
         {trackerCards.length === 0 && (
-          <div style={{ textAlign: "center", marginTop: 32, padding: "28px 24px",
-            background: C.surface, border: `1px dashed ${C.border}`, borderRadius: 14 }}>
+          <div className="ac-tracker-empty">
             <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
             <div style={{ fontSize: 15, fontWeight: 700, color: C.text1, marginBottom: 8 }}>
               {tk.emptyTitle}
@@ -8435,9 +8425,8 @@ Awards: ${form.awards}`;
             <div style={{ fontSize: 13, color: C.text2, marginBottom: 20 }}>
               {tk.emptySub}
             </div>
-            <button onClick={() => setTrackerModal({ open: true, card: { ...newCard("saved") } })}
-              style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 8,
-                padding: "10px 24px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+            <button className="ac-tracker-primary ac-tracker-primary--empty"
+              onClick={() => setTrackerModal({ open: true, card: { ...newCard("saved") } })}>
               {tk.addFirst}
             </button>
           </div>
