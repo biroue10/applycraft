@@ -1746,7 +1746,7 @@ function EntryDescriptionEditor({ value, onChange, placeholder, rtl }) {
 
 // One structured entry: drag handle, two-tone label, visibility + delete, and
 // an expandable inline edit form driven by the section schema.
-function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand, onChange, onDelete, onToggleVisible, dnd, dropSide }) {
+function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand, onChange, onDelete, onToggleVisible, onOpenCoach, builderText, dnd, dropSide }) {
   const schema = ENTRY_SCHEMAS[sectionKey];
   const primary = (entry[schema.primary] || "").trim();
   const secondary = schema.secondary ? (entry[schema.secondary] || "").trim() : "";
@@ -1865,6 +1865,14 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
             <div>
               <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: C.text3, marginBottom: 4 }}>{labelFor("description")}</label>
               <EntryDescriptionEditor value={entry.description} onChange={(val) => onChange({ description: val })} rtl={rtl} />
+              {sectionKey === "experience" && onOpenCoach && (
+                <button type="button" onClick={() => onOpenCoach(entry)}
+                  style={{ marginTop: 8, padding: "7px 12px", background: `${C.accent}14`,
+                    border: "none", borderRadius: 8, color: C.accent2, fontSize: 12,
+                    fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                  {builderText((entry.description || "").trim() ? "coachImproveAction" : "coachGenerateAction")}
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -1874,7 +1882,7 @@ function EntryRow({ sectionKey, entry, index, eui, rtl, expanded, onToggleExpand
 }
 
 // Reusable section card. Drives every section from ENTRY_SCHEMAS — no per-section markup.
-function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, builderText = (key) => key, optional = false, collapsed, onToggleCollapse, onEditHeading, onRestoreDefault, onRemove, onAdd, onChangeEntry, onDeleteEntry, onToggleVisible, onReorder }) {
+function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, builderText = (key) => key, optional = false, collapsed, onToggleCollapse, onEditHeading, onRestoreDefault, onRemove, onAdd, onChangeEntry, onDeleteEntry, onToggleVisible, onOpenCoach, onReorder }) {
   const schema = ENTRY_SCHEMAS[sectionKey];
   const [expandedId, setExpandedId] = useState(null);
   const [editingHeading, setEditingHeading] = useState(false);
@@ -2015,6 +2023,8 @@ function SectionCard({ sectionKey, heading, defaultHeading, entries, eui, rtl, b
                   onChange={(ch) => onChangeEntry(entry.id, ch)}
                   onDelete={() => onDeleteEntry(entry.id)}
                   onToggleVisible={() => onToggleVisible(entry.id)}
+                  onOpenCoach={onOpenCoach}
+                  builderText={builderText}
                   dnd={dnd}
                   dropSide={over && over.index === i && dragFrom.current != null && dragFrom.current !== i ? over.side : null} />
               ))}
@@ -3190,6 +3200,8 @@ export default function ResumeGenerator() {
   const [coachOpen, setCoachOpen] = useState(false);
   const [comingSoonFeature, setComingSoonFeature] = useState(null);
   const [coachBullet, setCoachBullet] = useState("");
+  const [coachEntryId, setCoachEntryId] = useState("");
+  const [coachMode, setCoachMode] = useState("improve");
   const [coachBulletIdx, setCoachBulletIdx] = useState(0);
   const [coachAnswers, setCoachAnswers] = useState({});
   const [coachResult, setCoachResult] = useState("");
@@ -5396,6 +5408,7 @@ Awards: ${form.awards}`;
       onChangeEntry={(id, ch) => changeSectionEntry(key, id, ch)}
       onDeleteEntry={(id) => deleteSectionEntry(key, id)}
       onToggleVisible={(id) => toggleSectionEntryVisible(key, id)}
+      onOpenCoach={key === "experience" ? openEntryCoach : undefined}
       onReorder={(from, to) => reorderSectionEntry(key, from, to)}
     />
   );
@@ -5599,8 +5612,25 @@ Awards: ${form.awards}`;
   const openCoach = (idx = 0) => {
     const weak = weakBullets[idx];
     if (!weak) return;
+    const sourceEntry = (form.experienceEntries || []).find((entry) =>
+      (entry.description || "").split("\n").some((line) => line.trim() === weak.trim())
+    );
     setCoachBullet(weak);
+    setCoachEntryId(sourceEntry?.id || "");
+    setCoachMode("improve");
     setCoachBulletIdx(idx);
+    setCoachAnswers({});
+    setCoachResult("");
+    setCoachOpen(true);
+  };
+
+  const openEntryCoach = (entry) => {
+    const lines = (entry.description || "").split("\n").map((line) => line.trim()).filter(Boolean);
+    const source = lines.find((line) => isWeakBullet(line)) || lines[0] || builderText("coachStarterPrompt");
+    setCoachBullet(source);
+    setCoachEntryId(entry.id);
+    setCoachMode(lines.length > 0 ? "improve" : "generate");
+    setCoachBulletIdx(0);
     setCoachAnswers({});
     setCoachResult("");
     setCoachOpen(true);
@@ -5608,6 +5638,24 @@ Awards: ${form.awards}`;
 
   const applyCoachResult = () => {
     if (!coachResult) return;
+    if (coachEntryId) {
+      const sourceEntry = (form.experienceEntries || []).find((entry) => entry.id === coachEntryId);
+      if (sourceEntry) {
+        const current = sourceEntry.description || "";
+        const nextDescription = coachMode === "generate" || !current.trim()
+          ? coachResult
+          : current.split("\n").map((line) =>
+              line.trim() === coachBullet.trim() ? coachResult : line
+            ).join("\n");
+        changeSectionEntry("experience", coachEntryId, { description: nextDescription });
+        setCoachOpen(false);
+        setCoachEntryId("");
+        setCoachBullet("");
+        setCoachResult("");
+        setCoachAnswers({});
+        return;
+      }
+    }
     const updated = form.experience.split("\n").map(l =>
       l.trim() === coachBullet.trim() ? coachResult : l
     ).join("\n");
@@ -6351,7 +6399,7 @@ Awards: ${form.awards}`;
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                       <div style={{ fontSize: 12.5, fontWeight: 800, color: C.accent2,
                         textTransform: "uppercase", letterSpacing: "1px" }}>
-                        {builderText("coachImprove")}
+                        {builderText(coachMode === "generate" ? "coachGenerate" : "coachImprove")}
                       </div>
                       {weakBullets.length > 1 && (
                         <span style={{ fontSize: 10.5, color: C.text3 }}>

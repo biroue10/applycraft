@@ -68,6 +68,19 @@ for (const key of REQUIRED_SECTION_TITLE_KEYS) {
   }
 }
 
+const REQUIRED_AI_COACH_TOKENS = [
+  'onOpenCoach={onOpenCoach}',
+  'coachImproveAction',
+  'coachGenerateAction',
+  'coachMode === "generate"',
+  'changeSectionEntry("experience", coachEntryId',
+];
+for (const token of REQUIRED_AI_COACH_TOKENS) {
+  if (!code.includes(token)) {
+    failures.push({ name: `persistent experience AI action: ${token}`, line: 0, count: 0, missing: true });
+  }
+}
+
 if (failures.length) {
   console.error("\n✖ builder-section guard failed:\n");
   for (const f of failures) {
