@@ -12,7 +12,7 @@
 // tools does not tear down and recreate the navbar.
 export const PRIMARY_NAV_ITEMS = [
   { id: "resume", href: "/resume-builder/", labelKey: "resumeBuilder", activeRoutes: ["/resume-builder/", "/free-resume-builder/"] },
-  { id: "ats", href: "/ats-checker/", labelKey: "atsChecker", activeRoutes: ["/ats-checker/", "/ats-checker-fr/", "/ats-checker-ar/", "/ats-resume-builder/", "/resume-checker/"] },
+  { id: "ats", href: "/ats-checker/", labelKey: "atsChecker", alwaysLink: true, activeRoutes: ["/ats-checker/", "/ats-checker-fr/", "/ats-checker-ar/", "/ats-resume-builder/", "/resume-checker/"] },
   { id: "templates", href: "/resume/templates/", labelKey: "resumeTemplates", activeRoutes: ["/resume/templates/", "/examples/"] },
   { id: "cover", href: "/cover-letter-builder/", labelKey: "coverLetter", activeRoutes: ["/cover-letter-builder/", "/cover-letter/templates/"] },
   { id: "application-pack", href: "/application-pack/", labelKey: "applicationPack", activeRoutes: ["/application-pack/"] },

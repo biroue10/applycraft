@@ -30,7 +30,12 @@ for (const [route, expected] of Object.entries(matrix)) {
 assert.equal(activeNavIdForPath("/blog/"), "", "unrelated routes should not activate a product");
 assert.equal(normalizeNavPath("//fr//pricing?x=1#plans"), "/pricing/", "route normalization should remove locale, duplicate slashes, query and hash");
 assert.equal(new Set(PRIMARY_NAV_ITEMS.map((item) => item.id)).size, PRIMARY_NAV_ITEMS.length, "navigation IDs must be unique");
-assert.ok(PRIMARY_NAV_ITEMS.every((item) => !item.alwaysLink), "app navbar items must use client-side navigation to avoid a header flash");
+const atsNavItem = PRIMARY_NAV_ITEMS.find((item) => item.id === "ats");
+assert.equal(atsNavItem?.alwaysLink, true, "ATS navbar links must load the complete public checker page");
+assert.ok(
+  PRIMARY_NAV_ITEMS.filter((item) => item.id !== "ats").every((item) => !item.alwaysLink),
+  "other app navbar items should keep client-side navigation",
+);
 
 for (const [route, expected] of Object.entries(matrix)) {
   const html = headerHtml(route.startsWith("/fr/") ? "fr" : route.startsWith("/ar/") ? "ar" : "en", route);
