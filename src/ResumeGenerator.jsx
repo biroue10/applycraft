@@ -8498,20 +8498,20 @@ Awards: ${form.awards}`;
                     { k: "company",   label: tk.lblCompany,       ph: "e.g. Stripe" },
                     { k: "position",  label: tk.lblPosition,      ph: "e.g. Senior Engineer" },
                     { k: "location",  label: tk.lblLocation,      ph: "e.g. Toronto, ON" },
-                    { k: "applicationDate", label: tk.lblApplicationDate, ph: "YYYY-MM-DD" },
+                    { k: "applicationDate", label: tk.lblApplicationDate, type: "date" },
                     { k: "salary",    label: tk.lblSalary,  ph: "e.g. $120k–$140k" },
                     { k: "link",      label: tk.lblLink, ph: "https://..." },
                     { k: "recruiter", label: tk.lblRecruiter, ph: "Name · email · LinkedIn" },
                     { k: "resume",    label: tk.lblResume,     ph: "e.g. Atlas template — tech variant" },
                     { k: "coverLetter", label: tk.lblCover, ph: "e.g. Modern template" },
-                    { k: "interviewDate", label: tk.lblInterviewDate, ph: "e.g. 2026-07-15 at 14:00" },
-                    { k: "reminder",  label: tk.lblReminder, ph: "e.g. Follow up if no reply by July 10" },
-                  ].map(({ k, label, ph }) => (
+                    { k: "interviewDate", label: tk.lblInterviewDate, type: "datetime-local" },
+                    { k: "reminder",  label: tk.lblReminder, type: "date" },
+                  ].map(({ k, label, ph, type = "text" }) => (
                     <div key={k} style={{ marginBottom: 14 }}>
                       <label htmlFor={`tracker-${k}`} style={{ fontSize: 11.5, fontWeight: 600, color: C.text2,
                         display: "block", marginBottom: 5 }}>{label}</label>
-                      <input id={`tracker-${k}`} value={editCard[k] || ""} onChange={setField(k)}
-                        placeholder={ph} style={mInput}
+                      <input id={`tracker-${k}`} type={type} value={editCard[k] || ""} onChange={setField(k)}
+                        placeholder={ph} style={{ ...mInput, colorScheme: "dark" }}
                         onFocus={e => { e.target.style.borderColor = tcol.color; e.target.style.boxShadow = `0 0 0 3px ${tcol.color}22`; }}
                         onBlur={e => { e.target.style.borderColor = C.border; e.target.style.boxShadow = "none"; }} />
                     </div>
