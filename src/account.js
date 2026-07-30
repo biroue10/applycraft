@@ -114,6 +114,17 @@ export async function refreshAccount({ strict = false } = {}) {
   }
 }
 
+// Invalidate both the server-side session and the secure HttpOnly cookie.
+// Local cleanup still runs if the network is unavailable so stale account
+// details are never left visible in the interface.
+export async function signOut() {
+  try {
+    await post("/api/auth/logout", {});
+  } finally {
+    logout();
+  }
+}
+
 // Delete the server-side saved data for this account (mirrors local delete).
 export async function deleteSavedData() {
   const out = await post("/api/account/delete", {});

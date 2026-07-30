@@ -2983,8 +2983,6 @@ export default function ResumeGenerator() {
     resetAt: null,
   }));
   const [translationDevBypass, setTranslationDevBypass] = useState({ active: false, token: "", header: "" });
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const userMenuRef = useRef(null);
   const resumePrintRef = useRef(null);
   const coverPrintRef = useRef(null);
   const browserStateRestoredRef = useRef(false);
@@ -3169,12 +3167,6 @@ export default function ResumeGenerator() {
     document.documentElement.dir = direction;
     document.body?.setAttribute("dir", direction);
   }, [interfaceLanguage]);
-
-  useEffect(() => {
-    const close = (e) => { if (userMenuRef.current && !userMenuRef.current.contains(e.target)) setUserMenuOpen(false); };
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
-  }, []);
 
   // Analytics init + optional-account bootstrap (runs once in the browser).
   useEffect(() => {
@@ -4161,7 +4153,17 @@ export default function ResumeGenerator() {
     setTimeout(() => setStatusMsg(""), 3000);
   }, [at]);
 
-  const handleSignOut = useCallback(() => { accountSession.logout(); setCurrentUser(null); }, []);
+  const handleSignOut = useCallback(async () => {
+    try {
+      await (await import("./account.js")).signOut();
+    } catch {
+      // Local session state is cleared by the account module even if the
+      // network request fails.
+    } finally {
+      setCurrentUser(null);
+      setAppView("landing");
+    }
+  }, []);
 
   function validateEmail(val) {
     if (!val.trim()) return "";
@@ -5025,6 +5027,8 @@ Awards: ${form.awards}`;
         onLogoClick={() => setAppView("landing")}
         currentPath={location.pathname}
         onLanguageSelect={setSiteLanguage}
+        accountActionLabel={accountReady ? (currentUser ? at.signOut : at.loginTab) : null}
+        onAccountAction={currentUser ? handleSignOut : () => setSaveProfileOpen(true)}
         mobileMenuOpen={appHeaderMenuOpen}
         onMobileMenuToggle={setAppHeaderMenuOpen}
       />
@@ -9131,6 +9135,8 @@ Awards: ${form.awards}`;
           onCtaClick={() => startResume("nav_cta")}
           currentPath={location.pathname}
           onLanguageSelect={setSiteLanguage}
+          accountActionLabel={accountReady ? (currentUser ? at.signOut : at.loginTab) : null}
+          onAccountAction={currentUser ? handleSignOut : () => setSaveProfileOpen(true)}
           mobileMenuOpen={landingMenuOpen}
           onMobileMenuToggle={setLandingMenuOpen}
           onNavigate={(item) => { setLandingMenuOpen(false); setAppView("app"); enterPrimaryTool(item); }}
@@ -9917,45 +9923,6 @@ Awards: ${form.awards}`;
           ...(isFormView ? { flex: 1, display: "flex", flexDirection: "column", minHeight: 0 } :
             isFocusedToolView ? { maxWidth: "none", margin: 0 } : { maxWidth: 1320, margin: "0 auto" }) }}>
 
-        {/* Persistent account controls (desktop only). Interface language lives
-            exclusively in the global header; document language stays in the
-            document settings toolbar. */}
-        <div style={{ display: isMobile || isFormView || isFocusedToolView ? "none" : "flex", justifyContent: "flex-end", alignItems: "center",
-          marginBottom: 10, gap: 8, flexWrap: "wrap" }}>
-          {currentUser ? (
-            <div ref={userMenuRef} style={{ position: "relative" }}>
-              <button onClick={() => setUserMenuOpen(o => !o)}
-                style={{ display: "flex", alignItems: "center", gap: 7, padding: "6px 11px",
-                  background: C.surface, border: `1px solid ${C.border}`, borderRadius: 9,
-                  cursor: "pointer", fontFamily: "inherit", color: C.text1 }}>
-                <div style={{ width: 24, height: 24, borderRadius: "50%", background: C.grad,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 11, fontWeight: 800, color: "#fff", flexShrink: 0 }}>
-                  {(currentUser.name || currentUser.email || "?").charAt(0).toUpperCase()}
-                </div>
-                <span style={{ fontSize: 13, fontWeight: 600, maxWidth: 80, overflow: "hidden",
-                  textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{currentUser.name || currentUser.email}</span>
-                <span style={{ fontSize: 9, color: C.text3 }}>▾</span>
-              </button>
-              {userMenuOpen && (
-                <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, minWidth: 180,
-                  background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10,
-                  boxShadow: "0 12px 40px rgba(0,0,0,0.5)", overflow: "hidden", zIndex: 9999 }}>
-                  <div style={{ padding: "11px 14px", borderBottom: `1px solid ${C.border}` }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: C.text1 }}>{currentUser.name || currentUser.email}</div>
-                    <div style={{ fontSize: 11.5, color: C.text3, marginTop: 2 }}>{currentUser.email}</div>
-                  </div>
-                  <button onClick={() => { accountSession.logout(); setCurrentUser(null); setUserMenuOpen(false); }}
-                    style={{ display: "block", width: "100%", padding: "10px 14px", textAlign: "left",
-                      background: "none", border: "none", color: "#f87171", fontSize: 13,
-                      fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
-                    {at.signOut}
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : null}
-        </div>
         {ACCOUNTS_ENABLED && <SaveProfileModal open={saveProfileOpen} onClose={() => setSaveProfileOpen(false)} at={at} rtl={rtl} C={C} lang={lang} />}
         {ACCOUNTS_ENABLED && <UpsellModal feature={upsell} onClose={() => setUpsell(null)} onGetPass={handleStartCheckout} at={at} rtl={rtl} C={C} />}
 

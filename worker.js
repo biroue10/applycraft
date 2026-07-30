@@ -922,15 +922,19 @@ function safeAuthReturnTo(value) {
   }
 }
 
-async function authAccountFromRequest(request, env) {
-  const store = authStore(env);
+function authSessionFromRequest(request) {
   const authorization = request.headers.get("Authorization") || "";
   const cookieSession = (request.headers.get("Cookie") || "")
     .match(/(?:^|;\s*)ac_session=([a-f0-9]{64})(?:;|$)/)?.[1] || "";
-  if (!store) return null;
-  const session = authorization.startsWith("Bearer ")
+  return authorization.startsWith("Bearer ")
     ? authorization.slice(7).trim()
     : cookieSession;
+}
+
+async function authAccountFromRequest(request, env) {
+  const store = authStore(env);
+  const session = authSessionFromRequest(request);
+  if (!store) return null;
   if (!/^[a-f0-9]{64}$/.test(session)) return null;
   const email = await store.get(`session:${session}`);
   if (!email) return null;
@@ -1060,6 +1064,18 @@ async function handleAuth(request, env, url) {
     body = JSON.parse(limited.body);
   } catch {
     return errorResponse("MALFORMED_JSON", "The request body is not valid JSON.", 400, cors.headers);
+  }
+
+  if (url.pathname === "/api/auth/logout") {
+    const session = authSessionFromRequest(request);
+    if (/^[a-f0-9]{64}$/.test(session)) {
+      await store.delete(`session:${session}`);
+    }
+    return jsonResponse({ ok: true }, 200, {
+      ...cors.headers,
+      "Set-Cookie": "ac_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax",
+      "Cache-Control": "no-store",
+    });
   }
 
   if (url.pathname === "/api/auth/request-link") {

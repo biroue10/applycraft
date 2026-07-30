@@ -162,6 +162,8 @@ export function SiteHeader({
   onCtaClick,
   currentPath,
   onLanguageSelect,
+  accountActionLabel,
+  onAccountAction,
   keepLanguageOnMobile = true,
   mobileMenuOpen = false,
   onMobileMenuToggle,
@@ -325,6 +327,11 @@ export function SiteHeader({
         <div className={`ac-global-header__language${keepLanguageOnMobile ? " ac-keep-mobile" : ""}`}>
           <LanguageSwitcher lang={lang} currentPath={resolvedCurrentPath} onLanguageSelect={onLanguageSelect} />
         </div>
+        {accountActionLabel && onAccountAction && (
+          <button type="button" className="ac-nav-account" onClick={onAccountAction}>
+            {accountActionLabel}
+          </button>
+        )}
         <a className="ac-nav-cta" href={resolvedCtaHref} onClick={onCtaClick ? (event) => {
           if (shouldUseNativeNavigation(event)) return;
           event.preventDefault();
@@ -356,6 +363,14 @@ export function SiteHeader({
       </div>
       {menuOpen && (
         <nav ref={mobileMenuRef} id="m" aria-label={f.menu} className="ac-global-header__mobile-menu">
+          {accountActionLabel && onAccountAction && (
+            <button type="button" className="ac-mobile-menu-account" onClick={() => {
+              onAccountAction();
+              closeMobileMenu();
+            }}>
+              {accountActionLabel}
+            </button>
+          )}
           <a className="ac-mobile-menu-cta" href={resolvedCtaHref}
               onClick={onCtaClick ? (event) => {
                 if (shouldUseNativeNavigation(event)) return;

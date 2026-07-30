@@ -83,6 +83,19 @@ try {
   assert.equal(account.status, 200);
   assert.equal((await account.json()).account.email, "person@example.com");
 
+  const signedOut = await worker.fetch(new Request("https://applycraft.io/api/auth/logout", {
+    method: "POST",
+    headers: { ...headers, Cookie: `ac_session=${cookieSession}` },
+    body: JSON.stringify({}),
+  }), env);
+  assert.equal(signedOut.status, 200);
+  assert.match(signedOut.headers.get("Set-Cookie") || "", /^ac_session=;.*Max-Age=0/);
+  assert.equal(kv.values.has(`session:${cookieSession}`), false, "sign-out must invalidate the server session");
+  const accountAfterSignOut = await worker.fetch(new Request("https://applycraft.io/api/account", {
+    headers: { Cookie: `ac_session=${cookieSession}` },
+  }), env);
+  assert.equal(accountAfterSignOut.status, 401);
+
   const forged = await worker.fetch(new Request("https://applycraft.io/api/account", {
     headers: { Authorization: `Bearer ${"0".repeat(64)}` },
   }), env);
