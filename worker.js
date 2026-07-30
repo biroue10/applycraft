@@ -925,8 +925,12 @@ function safeAuthReturnTo(value) {
 async function authAccountFromRequest(request, env) {
   const store = authStore(env);
   const authorization = request.headers.get("Authorization") || "";
-  if (!store || !authorization.startsWith("Bearer ")) return null;
-  const session = authorization.slice(7).trim();
+  const cookieSession = (request.headers.get("Cookie") || "")
+    .match(/(?:^|;\s*)ac_session=([a-f0-9]{64})(?:;|$)/)?.[1] || "";
+  if (!store) return null;
+  const session = authorization.startsWith("Bearer ")
+    ? authorization.slice(7).trim()
+    : cookieSession;
   if (!/^[a-f0-9]{64}$/.test(session)) return null;
   const email = await store.get(`session:${session}`);
   if (!email) return null;
@@ -940,6 +944,64 @@ async function authAccountFromRequest(request, env) {
   }
 }
 
+async function exchangeAuthLoginToken(store, loginToken) {
+  if (!/^[a-f0-9]{48}$/.test(loginToken)) {
+    return { ok: false, status: 401, code: "INVALID_TOKEN", message: "The sign-in link is invalid." };
+  }
+  const raw = await store.get(`login:${loginToken}`);
+  if (!raw) {
+    return { ok: false, status: 401, code: "INVALID_OR_EXPIRED", message: "The sign-in link is invalid or expired." };
+  }
+  let login;
+  try {
+    login = JSON.parse(raw);
+  } catch {
+    return { ok: false, status: 401, code: "INVALID_TOKEN", message: "The sign-in link is invalid." };
+  }
+  if (
+    typeof login?.verifiedSession === "string"
+    && /^[a-f0-9]{64}$/.test(login.verifiedSession)
+    && login.account?.email
+  ) {
+    return {
+      ok: true,
+      session: login.verifiedSession,
+      account: login.account,
+      returnTo: safeAuthReturnTo(login.returnTo),
+    };
+  }
+  if (!validAuthEmail(login?.email)) {
+    return { ok: false, status: 401, code: "INVALID_TOKEN", message: "The sign-in link is invalid." };
+  }
+  const accountKey = `account:${login.email}`;
+  let account = {
+    email: login.email,
+    activePass: false,
+    passExpires: null,
+    consent: Boolean(login.consent),
+    createdAt: new Date().toISOString(),
+  };
+  const existing = await store.get(accountKey);
+  if (existing) {
+    try { account = { ...account, ...JSON.parse(existing), email: login.email }; } catch { /* replace malformed data */ }
+  }
+  await store.put(accountKey, JSON.stringify(account));
+  const session = secureToken(32);
+  await store.put(`session:${session}`, login.email, { expirationTtl: 30 * 24 * 60 * 60 });
+  const publicAccount = {
+    email: account.email,
+    activePass: Boolean(account.activePass),
+    passExpires: account.passExpires || null,
+  };
+  const returnTo = safeAuthReturnTo(login.returnTo);
+  await store.put(`login:${loginToken}`, JSON.stringify({
+    verifiedSession: session,
+    account: publicAccount,
+    returnTo,
+  }), { expirationTtl: 10 * 60 });
+  return { ok: true, session, account: publicAccount, returnTo };
+}
+
 async function handleAuth(request, env, url) {
   const cors = corsFor(request, env);
   if (request.method === "OPTIONS") {
@@ -948,6 +1010,31 @@ async function handleAuth(request, env, url) {
   }
   const store = authStore(env);
   if (!store) return errorResponse("AUTH_STORAGE_UNAVAILABLE", "Sign-in is temporarily unavailable.", 503, cors.headers);
+
+  if (url.pathname === "/api/auth/callback" && request.method === "GET") {
+    const exchange = await exchangeAuthLoginToken(store, String(url.searchParams.get("token") || ""));
+    if (!exchange.ok) {
+      const destination = new URL("/resume-builder/", url.origin);
+      destination.searchParams.set("auth_error", exchange.code.toLowerCase());
+      return new Response(null, {
+        status: 302,
+        headers: {
+          ...SECURITY_HEADERS,
+          Location: destination.toString(),
+          "Cache-Control": "no-store",
+        },
+      });
+    }
+    return new Response(null, {
+      status: 302,
+      headers: {
+        ...SECURITY_HEADERS,
+        Location: new URL(exchange.returnTo || "/resume-builder/", url.origin).toString(),
+        "Set-Cookie": `ac_session=${exchange.session}; Path=/; Max-Age=${30 * 24 * 60 * 60}; HttpOnly; Secure; SameSite=Lax`,
+        "Cache-Control": "no-store",
+      },
+    });
+  }
 
   if (url.pathname === "/api/account" && request.method === "GET") {
     const account = await authAccountFromRequest(request, env);
@@ -985,8 +1072,8 @@ async function handleAuth(request, env, url) {
       expirationTtl: 30 * 60,
     });
     const origin = env.APP_ORIGIN || url.origin;
-    const link = new URL(returnTo, origin);
-    link.searchParams.set("ac_login", loginToken);
+    const link = new URL("/api/auth/callback", origin);
+    link.searchParams.set("token", loginToken);
     const language = ["en", "fr", "ar"].includes(body?.lang) ? body.lang : "en";
     const subject = {
       en: "Your secure ApplyCraft sign-in link",
@@ -1018,54 +1105,12 @@ async function handleAuth(request, env, url) {
 
   if (url.pathname === "/api/auth/verify") {
     const loginToken = String(body?.token || "");
-    if (!/^[a-f0-9]{48}$/.test(loginToken)) return errorResponse("INVALID_TOKEN", "The sign-in link is invalid.", 401, cors.headers);
-    const raw = await store.get(`login:${loginToken}`);
-    if (!raw) return errorResponse("INVALID_OR_EXPIRED", "The sign-in link is invalid or expired.", 401, cors.headers);
-    let login;
-    try {
-      login = JSON.parse(raw);
-    } catch {
-      return errorResponse("INVALID_TOKEN", "The sign-in link is invalid.", 401, cors.headers);
-    }
-    // Email security scanners can render the destination before the recipient
-    // clicks it. Keep the successful exchange idempotent for a short window so
-    // that a scanner and the real browser receive the same durable session.
-    if (
-      typeof login?.verifiedSession === "string"
-      && /^[a-f0-9]{64}$/.test(login.verifiedSession)
-      && login.account?.email
-    ) {
-      return jsonResponse({
-        ok: true,
-        session: login.verifiedSession,
-        account: login.account,
-      }, 200, cors.headers);
-    }
-    if (!validAuthEmail(login?.email)) {
-      return errorResponse("INVALID_TOKEN", "The sign-in link is invalid.", 401, cors.headers);
-    }
-    const accountKey = `account:${login.email}`;
-    let account = { email: login.email, activePass: false, passExpires: null, consent: Boolean(login.consent), createdAt: new Date().toISOString() };
-    const existing = await store.get(accountKey);
-    if (existing) {
-      try { account = { ...account, ...JSON.parse(existing), email: login.email }; } catch { /* replace malformed data */ }
-    }
-    await store.put(accountKey, JSON.stringify(account));
-    const session = secureToken(32);
-    await store.put(`session:${session}`, login.email, { expirationTtl: 30 * 24 * 60 * 60 });
-    const publicAccount = {
-      email: account.email,
-      activePass: Boolean(account.activePass),
-      passExpires: account.passExpires || null,
-    };
-    await store.put(`login:${loginToken}`, JSON.stringify({
-      verifiedSession: session,
-      account: publicAccount,
-    }), { expirationTtl: 10 * 60 });
+    const exchange = await exchangeAuthLoginToken(store, loginToken);
+    if (!exchange.ok) return errorResponse(exchange.code, exchange.message, exchange.status, cors.headers);
     return jsonResponse({
       ok: true,
-      session,
-      account: publicAccount,
+      session: exchange.session,
+      account: exchange.account,
     }, 200, cors.headers);
   }
 

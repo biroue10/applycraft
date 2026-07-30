@@ -99,7 +99,6 @@ export async function pullMasterProfile() {
 // Refresh the cached account (pass status) from the server.
 export async function refreshAccount({ strict = false } = {}) {
   const s = getSession();
-  if (!s) return null;
   try {
     const res = await fetch("/api/account", { headers: { ...authHeaders() } });
     if (!res.ok) {

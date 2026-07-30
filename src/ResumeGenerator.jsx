@@ -3209,8 +3209,9 @@ export default function ResumeGenerator() {
               if (cloud && !cancelled) setMaster(m => ({ ...m, ...cloud }));
             } catch { /* no pass / nothing saved */ }
           }
-        } else if (accountSession.getSession() && !cancelled) {
-          // 2) Only a server-verified session unlocks the builder.
+        } else if (!cancelled) {
+          // 2) Restore either a legacy local session or the secure HttpOnly
+          // cookie created by the server-side magic-link callback.
           const refreshed = await account.refreshAccount({ strict: true });
           if (!cancelled) setCurrentUser(refreshed);
         }
