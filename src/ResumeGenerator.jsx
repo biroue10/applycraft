@@ -4986,11 +4986,14 @@ Awards: ${form.awards}`;
   // Client-side equivalent of following a nav item's href: the SPA renders the
   // tool in place instead of loading its route.
   const enterPrimaryTool = (item) => {
-    setNavPage(item.id);
     if (item.id === "resume") {
-      if (!tpl && recommendedTemplate) setTpl(recommendedTemplate);
-      setStep("form");
+      // The navbar is a public product entry point. Starting the editor is a
+      // separate authenticated flow initiated by a CTA and completed through
+      // the secure link sent by email.
+      setAppView("landing");
+      return;
     }
+    setNavPage(item.id);
     if (item.id === "cover") {
       if (!coverTpl) {
         setCoverTpl(COVER_TEMPLATES.find((template) => template.id === "modern")

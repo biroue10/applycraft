@@ -11,7 +11,9 @@
 // the React application, SiteHeader intercepts normal clicks so moving between
 // tools does not tear down and recreate the navbar.
 export const PRIMARY_NAV_ITEMS = [
-  { id: "resume", href: "/resume-builder/", labelKey: "resumeBuilder", activeRoutes: ["/resume-builder/", "/free-resume-builder/"] },
+  // "Resume Builder" is the public product entry point. The editor itself
+  // remains on /resume-builder/ and is unlocked by the emailed magic link.
+  { id: "resume", href: "/", labelKey: "resumeBuilder", activeRoutes: ["/resume-builder/", "/free-resume-builder/"] },
   { id: "ats", href: "/ats-checker/", labelKey: "atsChecker", alwaysLink: true, activeRoutes: ["/ats-checker/", "/ats-checker-fr/", "/ats-checker-ar/", "/ats-resume-builder/", "/resume-checker/"] },
   { id: "templates", href: "/resume/templates/", labelKey: "resumeTemplates", activeRoutes: ["/resume/templates/", "/examples/"] },
   { id: "cover", href: "/cover-letter-builder/", labelKey: "coverLetter", activeRoutes: ["/cover-letter-builder/", "/cover-letter/templates/"] },

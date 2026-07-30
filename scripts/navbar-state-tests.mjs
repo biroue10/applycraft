@@ -31,6 +31,8 @@ assert.equal(activeNavIdForPath("/blog/"), "", "unrelated routes should not acti
 assert.equal(normalizeNavPath("//fr//pricing?x=1#plans"), "/pricing/", "route normalization should remove locale, duplicate slashes, query and hash");
 assert.equal(new Set(PRIMARY_NAV_ITEMS.map((item) => item.id)).size, PRIMARY_NAV_ITEMS.length, "navigation IDs must be unique");
 const atsNavItem = PRIMARY_NAV_ITEMS.find((item) => item.id === "ats");
+const resumeNavItem = PRIMARY_NAV_ITEMS.find((item) => item.id === "resume");
+assert.equal(resumeNavItem?.href, "/", "Resume Builder navbar item must lead to the public homepage");
 assert.equal(atsNavItem?.alwaysLink, true, "ATS navbar links must load the complete public checker page");
 assert.ok(
   PRIMARY_NAV_ITEMS.filter((item) => item.id !== "ats").every((item) => !item.alwaysLink),
