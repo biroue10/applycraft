@@ -25,6 +25,10 @@ assert.match(app, /startResume\("hero_primary"\)/, "hero CTA should use the fast
 assert.match(templateRegistry, /RECOMMENDED_TEMPLATE_ID = "modern"/, "resume flow should preselect a recommended template");
 assert.match(builder, /Use template/, "template selector should expose a clear use action");
 assert.match(builder, /Recommended/, "template selector should call out the default");
+assert.match(app, /ACCOUNTS_ENABLED && !currentUser[\s\S]*setSaveProfileReturnTo\(routeWithParam\("\/resume-builder\/"/,
+  "choosing a template while signed out should open authentication with the selected template as destination");
+assert.match(app, /maxWidth: 1480/, "template gallery should give resume previews more horizontal space");
+assert.match(app, /minmax\(min\(100%, 390px\), 1fr\)/, "template cards should remain large in the responsive gallery");
 assert.match(app, /mobileResumeMode/, "mobile edit and preview modes should be explicit");
 assert.match(builder, /Draft saved on this device/, "editor should accurately describe local draft autosave");
 assert.match(app, /clearApplyCraftLocalData/, "app should clear old sensitive document storage keys");

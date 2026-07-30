@@ -2968,6 +2968,7 @@ export default function ResumeGenerator() {
   const [accountReady, setAccountReady] = useState(!ACCOUNTS_ENABLED);
   // Optional account / sync / paid-pass UI state.
   const [saveProfileOpen, setSaveProfileOpen] = useState(false);
+  const [saveProfileReturnTo, setSaveProfileReturnTo] = useState("");
   const [upsell, setUpsell] = useState(null); // null | "sync" | "tailor"
   const [syncStatus, setSyncStatus] = useState("");
   const [aiTailoring, setAiTailoring] = useState(false);
@@ -3988,6 +3989,13 @@ export default function ResumeGenerator() {
   }, [lang]);
 
   const startWithTemplate = useCallback((template, source = "template") => {
+    if (ACCOUNTS_ENABLED && !currentUser) {
+      setTpl(template);
+      setSaveProfileReturnTo(routeWithParam("/resume-builder/", lang, "template", template.id));
+      setSaveProfileOpen(true);
+      track(EVENTS.TEMPLATE_SELECTED, { template: template.id, source });
+      return;
+    }
     setTpl(template);
     setForm(emptyResumeForm);
     setCurrentResumeId(null);
@@ -3997,7 +4005,7 @@ export default function ResumeGenerator() {
     setMobileResumeMode("edit");
     trackUxEvent("resume_editor_started", { source, template: template.id });
     track(EVENTS.TEMPLATE_SELECTED, { template: template.id });
-  }, [emptyResumeForm]);
+  }, [currentUser, emptyResumeForm, lang]);
 
   const applyTemplateOnly = useCallback((template, source = "template_switch") => {
     if (!template) return;
@@ -5089,7 +5097,7 @@ Awards: ${form.awards}`;
         </section>
       )}
 
-      <section aria-labelledby="template-gallery-title" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "0 4px" : "0 28px" }}>
+      <section aria-labelledby="template-gallery-title" style={{ maxWidth: 1480, margin: "0 auto", padding: isMobile ? "0 4px" : "0 28px" }}>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "minmax(0, 0.92fr) minmax(300px, 0.48fr)",
           gap: isMobile ? 22 : 42, alignItems: "end", marginBottom: isMobile ? 22 : 30 }}>
           <div>
@@ -5235,8 +5243,9 @@ Awards: ${form.awards}`;
             </button>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, minmax(0, 1fr))",
-            gap: isMobile ? 28 : 42, alignItems: "start" }}>
+          <div style={{ display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(min(100%, 390px), 1fr))",
+            gap: isMobile ? 28 : 34, alignItems: "start" }}>
             {visibleTemplates.map((tp) => {
               const meta = getTemplateMeta(tp);
               const recommended = tp.id === RECOMMENDED_TEMPLATE_ID;
@@ -9141,7 +9150,9 @@ Awards: ${form.awards}`;
           onMobileMenuToggle={setLandingMenuOpen}
           onNavigate={(item) => { setLandingMenuOpen(false); setAppView("app"); enterPrimaryTool(item); }}
         />
-        {ACCOUNTS_ENABLED && <SaveProfileModal open={saveProfileOpen} onClose={() => setSaveProfileOpen(false)} at={at} rtl={rtl} C={C} lang={lang} />}
+        {ACCOUNTS_ENABLED && <SaveProfileModal open={saveProfileOpen}
+          onClose={() => { setSaveProfileOpen(false); setSaveProfileReturnTo(""); }}
+          returnTo={saveProfileReturnTo} at={at} rtl={rtl} C={C} lang={lang} />}
         {ACCOUNTS_ENABLED && <UpsellModal feature={upsell} onClose={() => setUpsell(null)} onGetPass={handleStartCheckout} at={at} rtl={rtl} C={C} />}
         <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} lang={lang} />
         <UploadResumeModal
@@ -9923,7 +9934,9 @@ Awards: ${form.awards}`;
           ...(isFormView ? { flex: 1, display: "flex", flexDirection: "column", minHeight: 0 } :
             isFocusedToolView ? { maxWidth: "none", margin: 0 } : { maxWidth: 1320, margin: "0 auto" }) }}>
 
-        {ACCOUNTS_ENABLED && <SaveProfileModal open={saveProfileOpen} onClose={() => setSaveProfileOpen(false)} at={at} rtl={rtl} C={C} lang={lang} />}
+        {ACCOUNTS_ENABLED && <SaveProfileModal open={saveProfileOpen}
+          onClose={() => { setSaveProfileOpen(false); setSaveProfileReturnTo(""); }}
+          returnTo={saveProfileReturnTo} at={at} rtl={rtl} C={C} lang={lang} />}
         {ACCOUNTS_ENABLED && <UpsellModal feature={upsell} onClose={() => setUpsell(null)} onGetPass={handleStartCheckout} at={at} rtl={rtl} C={C} />}
 
         {/* Subscription upsell — shown when the free resume limit is reached */}
@@ -10399,7 +10412,7 @@ function BuilderLoginGate({ ready, at, onSignIn }) {
   );
 }
 
-function SaveProfileModal({ open, onClose, at, rtl, C, lang }) {
+function SaveProfileModal({ open, onClose, returnTo = "", at, rtl, C, lang }) {
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(true);
   const [status, setStatus] = useState(""); // "" | "sending" | "sent" | "soon" | "error"
@@ -10413,10 +10426,10 @@ function SaveProfileModal({ open, onClose, at, rtl, C, lang }) {
     if (!valid) { setErr("•"); return; }
     setStatus("sending");
     try {
-      const returnTo = typeof window === "undefined"
+      const destination = returnTo || (typeof window === "undefined"
         ? "/resume-builder/"
-        : `${window.location.pathname}${window.location.search}`;
-      const res = await (await import("./account.js")).requestMagicLink(email.trim(), { consent, lang, returnTo });
+        : `${window.location.pathname}${window.location.search}`);
+      const res = await (await import("./account.js")).requestMagicLink(email.trim(), { consent, lang, returnTo: destination });
       if (res?.configured === false) { setStatus("soon"); return; }
       track(EVENTS.EMAIL_CAPTURED);
       setStatus("sent");
