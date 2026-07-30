@@ -25,6 +25,12 @@ assert.match(app, /startResume\("hero_primary"\)/, "hero CTA should use the fast
 assert.match(templateRegistry, /RECOMMENDED_TEMPLATE_ID = "modern"/, "resume flow should preselect a recommended template");
 assert.match(builder, /Use template/, "template selector should expose a clear use action");
 assert.match(builder, /Recommended/, "template selector should call out the default");
+assert.match(app, /const \[tplFilter, setTplFilter\] = useState\("all"\)/,
+  "template gallery should select the All filter by default");
+assert.match(app, /Math\.max\(0, 24 - currentItemCount\)/,
+  "template thumbnails should use dense one-page demo content");
+assert.match(app, /no real builder\/export data is/,
+  "thumbnail enrichment must remain isolated from real resume data");
 assert.match(app, /ACCOUNTS_ENABLED && !currentUser[\s\S]*setSaveProfileReturnTo\(routeWithParam\("\/resume-builder\/"/,
   "choosing a template while signed out should open authentication with the selected template as destination");
 assert.match(app, /maxWidth: 1480/, "template gallery should give resume previews more horizontal space");

@@ -814,7 +814,32 @@ const THUMB_SAMPLE_LANG = {
 
 function localizedThumbSample(template, locale) {
   const ids = Object.keys(THUMB_SAMPLE_LANG).filter((id) => THUMB_SAMPLE_LANG[id] === locale);
-  return THUMB_SAMPLES[ids[TEMPLATES.indexOf(template) % 3]];
+  const sampleIndex = TEMPLATES.indexOf(template) % ids.length;
+  const sample = THUMB_SAMPLES[ids[sampleIndex]];
+  if (!sample?.result) return { rtl: locale === "ar", result: SAMPLE_RESUME };
+
+  // Gallery previews should look like complete, realistic one-page resumes.
+  // Reuse locale-matched demo achievements so no real builder/export data is
+  // altered and no extra translation payload is added to the initial bundle.
+  const currentItemCount = sample.result.sections.reduce(
+    (total, section) => total + (section.items?.length || 0),
+    0,
+  );
+  const missingItemCount = Math.max(0, 24 - currentItemCount);
+  if (!missingItemCount) return sample;
+  const supplemental = THUMB_SAMPLES[ids[(sampleIndex + 1) % ids.length]]?.result
+    ?.sections?.find((section) => section.items?.length > 3)?.items || [];
+
+  return {
+    ...sample,
+    result: {
+      ...sample.result,
+      sections: sample.result.sections.map((section, index) => index ? section : {
+        ...section,
+        items: [...section.items, ...supplemental.slice(0, missingItemCount)],
+      }),
+    },
+  };
 }
 
 // ── Sample data used in template thumbnail previews ───────────────
@@ -2885,7 +2910,7 @@ export default function ResumeGenerator() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sideSearch, setSideSearch] = useState("");
   const [tplSearch, setTplSearch] = useState("");
-  const [tplFilter, setTplFilter] = useState(initialTemplateCountry === "all" ? "recommended" : "all");
+  const [tplFilter, setTplFilter] = useState("all");
   const [tplCountry, setTplCountry] = useState(initialTemplateCountry);
   const [templateFiltersOpen, setTemplateFiltersOpen] = useState(false);
   const [templatePreview, setTemplatePreview] = useState(null);
