@@ -1080,6 +1080,82 @@ async function handleAuth(request, env, url) {
       fr: "Votre lien de connexion sécurisé ApplyCraft",
       ar: "رابط تسجيل الدخول الآمن إلى ApplyCraft",
     }[language];
+    const emailCopy = {
+      en: {
+        eyebrow: "SECURE SIGN-IN",
+        title: "Your resume is ready when you are",
+        intro: "Use the secure button below to sign in to ApplyCraft and continue building your resume.",
+        action: "Sign in to ApplyCraft",
+        expiry: "This private link expires in 30 minutes and can only be used for this sign-in.",
+        fallback: "Button not working? Copy and paste this secure link into your browser:",
+        ignore: "If you did not request this email, you can safely ignore it.",
+      },
+      fr: {
+        eyebrow: "CONNEXION S&Eacute;CURIS&Eacute;E",
+        title: "Votre CV vous attend",
+        intro: "Utilisez le bouton s&eacute;curis&eacute; ci-dessous pour vous connecter &agrave; ApplyCraft et poursuivre la cr&eacute;ation de votre CV.",
+        action: "Se connecter &agrave; ApplyCraft",
+        expiry: "Ce lien priv&eacute; expire dans 30 minutes et ne sert qu'&agrave; cette connexion.",
+        fallback: "Le bouton ne fonctionne pas ? Copiez ce lien s&eacute;curis&eacute; dans votre navigateur&nbsp;:",
+        ignore: "Si vous n'&ecirc;tes pas &agrave; l'origine de cette demande, vous pouvez ignorer cet e-mail.",
+      },
+      ar: {
+        eyebrow: "&#1578;&#1587;&#1580;&#1610;&#1604; &#1583;&#1582;&#1608;&#1604; &#1570;&#1605;&#1606;",
+        title: "&#1587;&#1610;&#1585;&#1578;&#1603; &#1575;&#1604;&#1584;&#1575;&#1578;&#1610;&#1577; &#1576;&#1575;&#1606;&#1578;&#1592;&#1575;&#1585;&#1603;",
+        intro: "&#1575;&#1587;&#1578;&#1582;&#1583;&#1605; &#1575;&#1604;&#1586;&#1585; &#1575;&#1604;&#1570;&#1605;&#1606; &#1571;&#1583;&#1606;&#1575;&#1607; &#1604;&#1604;&#1583;&#1582;&#1608;&#1604; &#1573;&#1604;&#1609; ApplyCraft &#1608;&#1605;&#1578;&#1575;&#1576;&#1593;&#1577; &#1573;&#1606;&#1588;&#1575;&#1569; &#1587;&#1610;&#1585;&#1578;&#1603; &#1575;&#1604;&#1584;&#1575;&#1578;&#1610;&#1577;.",
+        action: "&#1575;&#1604;&#1583;&#1582;&#1608;&#1604; &#1573;&#1604;&#1609; ApplyCraft",
+        expiry: "&#1578;&#1606;&#1578;&#1607;&#1610; &#1589;&#1604;&#1575;&#1581;&#1610;&#1577; &#1607;&#1584;&#1575; &#1575;&#1604;&#1585;&#1575;&#1576;&#1591; &#1575;&#1604;&#1582;&#1575;&#1589; &#1576;&#1593;&#1583; 30 &#1583;&#1602;&#1610;&#1602;&#1577;.",
+        fallback: "&#1575;&#1604;&#1586;&#1585; &#1604;&#1575; &#1610;&#1593;&#1605;&#1604;&#1567; &#1575;&#1606;&#1587;&#1582; &#1575;&#1604;&#1585;&#1575;&#1576;&#1591; &#1575;&#1604;&#1570;&#1605;&#1606; &#1601;&#1610; &#1575;&#1604;&#1605;&#1578;&#1589;&#1601;&#1581;:",
+        ignore: "&#1573;&#1584;&#1575; &#1604;&#1605; &#1578;&#1591;&#1604;&#1576; &#1607;&#1584;&#1575; &#1575;&#1604;&#1576;&#1585;&#1610;&#1583;&#1548; &#1610;&#1605;&#1603;&#1606;&#1603; &#1578;&#1580;&#1575;&#1607;&#1604;&#1607; &#1576;&#1571;&#1605;&#1575;&#1606;.",
+      },
+    }[language];
+    const emailDirection = language === "ar" ? "rtl" : "ltr";
+    const loginUrl = link.toString();
+    const emailHtml = `<!doctype html>
+<html lang="${language}" dir="${emailDirection}">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#070a13;color:#eef2ff;font-family:Arial,Helvetica,sans-serif;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${emailCopy.intro}</div>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#070a13;">
+    <tr><td align="center" style="padding:36px 16px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;">
+        <tr><td style="padding:0 8px 20px;">
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr>
+            <td style="padding-right:10px;"><img src="https://applycraft.io/android-chrome-192x192.png" width="40" height="40" alt="ApplyCraft" style="display:block;border:0;border-radius:10px;"></td>
+            <td style="font-size:21px;font-weight:800;color:#f8fafc;">Apply<span style="color:#5570ff;">Craft</span></td>
+          </tr></table>
+        </td></tr>
+        <tr><td style="padding:1px;border-radius:22px;background:#7c3aed;background-image:linear-gradient(135deg,#a43cff,#356dff);">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-radius:21px;background:#10182b;">
+            <tr><td style="padding:42px 42px 16px;text-align:${language === "ar" ? "right" : "left"};">
+              <div style="display:inline-block;padding:7px 12px;border-radius:999px;background:#242052;color:#b8a6ff;font-size:11px;font-weight:800;letter-spacing:1.5px;">${emailCopy.eyebrow}</div>
+              <h1 style="margin:20px 0 12px;color:#ffffff;font-size:30px;line-height:1.18;">${emailCopy.title}</h1>
+              <p style="margin:0;color:#b8c3da;font-size:16px;line-height:1.65;">${emailCopy.intro}</p>
+            </td></tr>
+            <tr><td align="center" style="padding:18px 42px 24px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0"><tr>
+                <td style="border-radius:11px;background:#5b63f6;background-image:linear-gradient(135deg,#a43cff,#356dff);">
+                  <a href="${loginUrl}" style="display:inline-block;padding:16px 30px;color:#ffffff;text-decoration:none;font-size:16px;font-weight:800;border-radius:11px;">${emailCopy.action} &rarr;</a>
+                </td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:0 42px 40px;text-align:${language === "ar" ? "right" : "left"};">
+              <div style="padding:16px 18px;border:1px solid #283651;border-radius:12px;background:#0b1221;color:#9cabc6;font-size:13px;line-height:1.55;">
+                &#128274;&nbsp; ${emailCopy.expiry}
+              </div>
+              <p style="margin:22px 0 8px;color:#8190ad;font-size:12px;line-height:1.5;">${emailCopy.fallback}</p>
+              <a href="${loginUrl}" style="color:#8296ff;font-size:12px;line-height:1.5;word-break:break-all;">${loginUrl}</a>
+            </td></tr>
+          </table>
+        </td></tr>
+        <tr><td style="padding:22px 12px;text-align:center;color:#697792;font-size:12px;line-height:1.6;">
+          ${emailCopy.ignore}<br>&copy; 2026 ApplyCraft &middot; applycraft.io
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
     let sent = false;
     try {
       const response = await fetch("https://api.resend.com/emails", {
@@ -1089,7 +1165,8 @@ async function handleAuth(request, env, url) {
           from: env.RESEND_FROM_EMAIL || env.MAIL_FROM || "ApplyCraft <hello@applycraft.io>",
           to: email,
           subject,
-          text: `${subject}\n\n${link.toString()}\n\nThis one-time link expires in 30 minutes. If you did not request it, ignore this email.`,
+          text: `${subject}\n\n${loginUrl}\n\nThis one-time link expires in 30 minutes. If you did not request it, ignore this email.`,
+          html: emailHtml,
         }),
       });
       sent = response.ok;

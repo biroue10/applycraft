@@ -21,10 +21,12 @@ const env = {
 };
 const originalFetch = globalThis.fetch;
 let emailedLink = "";
+let emailedHtml = "";
 globalThis.fetch = async (url, init) => {
   if (String(url) === "https://api.resend.com/emails") {
     const body = JSON.parse(init.body);
     emailedLink = body.text.match(/https:\/\/applycraft\.io\/api\/auth\/callback\?[^\s]+/)?.[0] || "";
+    emailedHtml = body.html || "";
     return new Response(JSON.stringify({ id: "email-test" }), { status: 200 });
   }
   return originalFetch(url, init);
@@ -46,6 +48,10 @@ try {
   assert.equal(requested.status, 200);
   assert.equal((await requested.json()).sent, true);
   assert.match(emailedLink, /^https:\/\/applycraft\.io\/api\/auth\/callback\?/);
+  assert.match(emailedHtml, /Apply<span style="color:#5570ff;">Craft<\/span>/);
+  assert.match(emailedHtml, /Sign in to ApplyCraft/);
+  assert.match(emailedHtml, /android-chrome-192x192\.png/);
+  assert.ok(emailedHtml.includes(emailedLink), "HTML email must contain the secure callback link");
   const loginToken = new URL(emailedLink).searchParams.get("token");
   assert.match(loginToken, /^[a-f0-9]{48}$/);
 
