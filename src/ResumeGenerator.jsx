@@ -5013,8 +5013,16 @@ Awards: ${form.awards}`;
     ].filter(Boolean).join(" ").toLowerCase().includes(q);
   };
 
-  const visibleTemplates = TEMPLATES
-    .filter(filterTemplates);
+  const matchingTemplates = TEMPLATES.filter(filterTemplates);
+  const showUniqueLayouts = tplFilter === "all" && tplCountry === "all" && !tplSearch.trim();
+  const visibleLayoutIds = new Set();
+  const visibleTemplates = matchingTemplates.filter((template) => {
+    if (!showUniqueLayouts) return true;
+    const layoutId = template.variant || template.id;
+    if (visibleLayoutIds.has(layoutId)) return false;
+    visibleLayoutIds.add(layoutId);
+    return true;
+  });
 
   const isTemplateGalleryView = navPage === "resume" && step === "templates";
 
@@ -11613,15 +11621,15 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
 
   return (
     <div ref={frameRef} aria-label={`${template.name} ${type} template preview`}
-      style={{ position: "relative", aspectRatio: "210 / 297", background: "transparent",
-        borderRadius: 0, border: 0, boxShadow: "none", overflow: "visible" }}>
+      style={{ position: "relative", aspectRatio: "210 / 297", background: "#fff",
+        borderRadius: 6, border: "1px solid rgba(148,163,184,0.24)",
+        boxShadow: "0 18px 40px rgba(0,0,0,0.22)", overflow: "hidden" }}>
       <div
         style={{ width: DOCUMENT_PREVIEW_WIDTH, height: DOCUMENT_PREVIEW_PAGE_HEIGHT,
           position: "absolute", left: fit.left, top: fit.top,
           transform: `scale(${fit.scale})`, transformOrigin: "top left",
           pointerEvents: "none", userSelect: "none", background: "#fff",
-          borderRadius: 6, border: "1px solid rgba(148,163,184,0.24)",
-          boxShadow: "0 18px 40px rgba(0,0,0,0.22)", overflow: "hidden" }}>
+          overflow: "hidden" }}>
         <div ref={contentRef} style={{ width: "100%", minHeight: "100%" }}>
           <LinkifyLinksProvider enabled={false}>
             {type === "cover" ? (

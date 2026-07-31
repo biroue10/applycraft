@@ -31,6 +31,10 @@ assert.match(app, /Math\.max\(0, 24 - currentItemCount\)/,
   "template thumbnails should use dense one-page demo content");
 assert.match(app, /no real builder\/export data is/,
   "thumbnail enrichment must remain isolated from real resume data");
+assert.match(app, /const layoutId = template\.variant \|\| template\.id/,
+  "the default All view should collapse visually duplicate template variants");
+assert.match(app, /aspectRatio: "210 \/ 297", background: "#fff"[\s\S]*overflow: "hidden"/,
+  "template thumbnail frames should remain white and clip document overflow");
 assert.match(app, /ACCOUNTS_ENABLED && !currentUser[\s\S]*setSaveProfileReturnTo\(routeWithParam\("\/resume-builder\/"/,
   "choosing a template while signed out should open authentication with the selected template as destination");
 assert.match(app, /maxWidth: 1480/, "template gallery should give resume previews more horizontal space");
