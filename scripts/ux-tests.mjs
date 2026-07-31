@@ -27,9 +27,9 @@ assert.match(builder, /Use template/, "template selector should expose a clear u
 assert.match(builder, /Recommended/, "template selector should call out the default");
 assert.match(app, /const \[tplFilter, setTplFilter\] = useState\("all"\)/,
   "template gallery should select the All filter by default");
-assert.match(app, /Math\.max\(0, 24 - currentItemCount\)/,
+assert.match(app, /const targetItemCount = 30/,
   "template thumbnails should use dense one-page demo content");
-assert.match(app, /no real builder\/export data is/,
+assert.match(app, /no real builder\/export data[\s\S]*is altered/,
   "thumbnail enrichment must remain isolated from real resume data");
 assert.match(app, /const layoutId = template\.variant \|\| template\.id/,
   "the default All view should collapse visually duplicate template variants");
@@ -67,5 +67,8 @@ assert.match(entryFr, /J’occupe actuellement ce poste/, "French current-role l
 assert.match(entryAr, /ما زلت أعمل هنا حاليًا/, "Arabic current-role label missing");
 assert.match(starterContent, /isCurrent: true/, "starter data should use isCurrent for ongoing jobs");
 assert.doesNotMatch(starterContent, /endDate: "(?:Present|Présent|الحاضر|حتى الآن)"/, "starter endDate fields should not store localized present labels");
+
+assert.match(app, /usedHeadings\.has\(section\.heading\)/, "template previews should add useful rubrics without duplicating headings");
+assert.match(app, /slice\(0, targetItemCount - itemCount\)/, "template preview content should be capped to one page");
 
 console.log("UX tests passed.");

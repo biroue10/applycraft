@@ -819,25 +819,50 @@ function localizedThumbSample(template, locale) {
   if (!sample?.result) return { rtl: locale === "ar", result: SAMPLE_RESUME };
 
   // Gallery previews should look like complete, realistic one-page resumes.
-  // Reuse locale-matched demo achievements so no real builder/export data is
-  // altered and no extra translation payload is added to the initial bundle.
-  const currentItemCount = sample.result.sections.reduce(
-    (total, section) => total + (section.items?.length || 0),
-    0,
-  );
-  const missingItemCount = Math.max(0, 24 - currentItemCount);
-  if (!missingItemCount) return sample;
-  const supplemental = THUMB_SAMPLES[ids[(sampleIndex + 1) % ids.length]]?.result
-    ?.sections?.find((section) => section.items?.length > 3)?.items || [];
+  // Reuse unique, locale-matched demo sections so no real builder/export data
+  // is altered and the page gains useful rubrics instead of stretched text.
+  const targetItemCount = 30;
+  const sections = sample.result.sections.map((section) => ({
+    ...section,
+    items: [...(section.items || [])],
+  }));
+  const usedHeadings = new Set(sections.map((section) => section.heading));
+  const usedItems = new Set(sections.flatMap((section) => section.items));
+  let itemCount = usedItems.size;
+
+  ids.forEach((id, offset) => {
+    if (!offset || itemCount >= targetItemCount) return;
+    const donor = THUMB_SAMPLES[ids[(sampleIndex + offset) % ids.length]]?.result;
+    donor?.sections?.forEach((section) => {
+      if (usedHeadings.has(section.heading) || itemCount >= targetItemCount) return;
+      const items = (section.items || [])
+        .filter((item) => !usedItems.has(item))
+        .slice(0, targetItemCount - itemCount);
+      if (!items.length) return;
+      sections.push({ ...section, items });
+      usedHeadings.add(section.heading);
+      items.forEach((item) => usedItems.add(item));
+      itemCount += items.length;
+    });
+  });
+
+  const supplementalItems = ids.flatMap((id, offset) => (
+    THUMB_SAMPLES[ids[(sampleIndex + offset) % ids.length]]?.result?.sections
+      ?.flatMap((section) => section.items || []) || []
+  )).filter((item) => !usedItems.has(item));
+
+  for (const item of supplementalItems) {
+    if (itemCount >= targetItemCount) break;
+    sections[0].items.push(item);
+    usedItems.add(item);
+    itemCount += 1;
+  }
 
   return {
     ...sample,
     result: {
       ...sample.result,
-      sections: sample.result.sections.map((section, index) => index ? section : {
-        ...section,
-        items: [...section.items, ...supplemental.slice(0, missingItemCount)],
-      }),
+      sections,
     },
   };
 }
