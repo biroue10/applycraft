@@ -33,7 +33,7 @@ export const FOOTER_LINK_SECTIONS = [
     links: [
       { href: "/about/", labelKey: "about" },
       { href: "/contact/", labelKey: "contact" },
-      { href: "https://github.com/biroue10", labelKey: "github", external: true },
+      // Public support is handled through the contact page.
     ],
   },
   {

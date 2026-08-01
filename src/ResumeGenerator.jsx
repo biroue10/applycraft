@@ -1041,7 +1041,7 @@ const SAMPLE_COVER_BY_LANG = {
 const AUTHOR = {
   name: "Biroue Digital Ltd",
   email: "hello@applycraft.io",
-  github: "https://github.com/biroue10",
+  github: "",
   linkedin: "", // paste your LinkedIn URL here, e.g. "https://linkedin.com/in/yourname"
 };
 
@@ -4039,6 +4039,9 @@ export default function ResumeGenerator() {
   }, [lang]);
 
   const startWithTemplate = useCallback((template, source = "template") => {
+    // Session restoration is intentionally silent. Ignore the very short
+    // transition instead of opening a sign-in dialog that immediately closes.
+    if (ACCOUNTS_ENABLED && !accountReady) return;
     if (ACCOUNTS_ENABLED && !currentUser) {
       setTpl(template);
       setSaveProfileReturnTo(routeWithParam("/resume-builder/", lang, "template", template.id));
@@ -4055,7 +4058,7 @@ export default function ResumeGenerator() {
     setMobileResumeMode("edit");
     trackUxEvent("resume_editor_started", { source, template: template.id });
     track(EVENTS.TEMPLATE_SELECTED, { template: template.id });
-  }, [currentUser, emptyResumeForm, lang]);
+  }, [accountReady, currentUser, emptyResumeForm, lang]);
 
   const applyTemplateOnly = useCallback((template, source = "template_switch") => {
     if (!template) return;
@@ -9225,7 +9228,7 @@ Awards: ${form.awards}`;
           onMobileMenuToggle={setLandingMenuOpen}
           onNavigate={(item) => { setLandingMenuOpen(false); setAppView("app"); enterPrimaryTool(item); }}
         />
-        {ACCOUNTS_ENABLED && <SaveProfileModal open={saveProfileOpen}
+        {ACCOUNTS_ENABLED && <SaveProfileModal open={accountReady && saveProfileOpen}
           onClose={() => { setSaveProfileOpen(false); setSaveProfileReturnTo(""); }}
           returnTo={saveProfileReturnTo} at={at} rtl={rtl} C={C} lang={lang} />}
         {ACCOUNTS_ENABLED && <UpsellModal feature={upsell} onClose={() => setUpsell(null)} onGetPass={handleStartCheckout} at={at} rtl={rtl} C={C} />}
@@ -10009,7 +10012,7 @@ Awards: ${form.awards}`;
           ...(isFormView ? { flex: 1, display: "flex", flexDirection: "column", minHeight: 0 } :
             isFocusedToolView ? { maxWidth: "none", margin: 0 } : { maxWidth: 1320, margin: "0 auto" }) }}>
 
-        {ACCOUNTS_ENABLED && <SaveProfileModal open={saveProfileOpen}
+        {ACCOUNTS_ENABLED && <SaveProfileModal open={accountReady && saveProfileOpen}
           onClose={() => { setSaveProfileOpen(false); setSaveProfileReturnTo(""); }}
           returnTo={saveProfileReturnTo} at={at} rtl={rtl} C={C} lang={lang} />}
         {ACCOUNTS_ENABLED && <UpsellModal feature={upsell} onClose={() => setUpsell(null)} onGetPass={handleStartCheckout} at={at} rtl={rtl} C={C} />}
@@ -10457,18 +10460,8 @@ function FeedbackModal({ open, onClose, lang }) {
 function BuilderLoginGate({ ready, at, onSignIn }) {
   if (!ready) {
     return (
-      <main style={{ minHeight: "calc(100vh - 180px)", display: "grid", placeItems: "center", padding: "72px 20px" }}>
-        <section role="status" aria-live="polite" aria-busy="true"
-          style={{ width: "min(100%, 420px)", textAlign: "center", padding: "34px 28px",
-            border: `1px solid ${C.border}`, borderRadius: 20, background: C.surface,
-            boxShadow: "0 24px 70px rgba(37,33,120,.18)" }}>
-          <div aria-hidden="true" style={{ width: 48, height: 48, margin: "0 auto 18px", borderRadius: 15,
-            display: "grid", placeItems: "center", background: C.grad, color: "#fff",
-            boxShadow: "0 12px 30px rgba(75,63,255,.28)", fontSize: 22 }}>✓</div>
-          <h1 style={{ margin: 0, color: C.text2, fontSize: 17, lineHeight: 1.5 }}>
-            {at.checkingSession}
-          </h1>
-        </section>
+      <main aria-busy="true" style={{ minHeight: "calc(100vh - 180px)" }}>
+        <h1 className="sr-only">{at.builderLoginTitle}</h1>
       </main>
     );
   }

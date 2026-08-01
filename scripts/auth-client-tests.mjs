@@ -64,6 +64,21 @@ assert.doesNotMatch(
   /REQUIRE_RESUME_LOGIN\s*&&\s*navPage\s*===\s*["']resume["']\s*&&\s*step\s*===\s*["']form["']/,
   "authentication must not be limited to the editor while leaving the template gallery public",
 );
+assert.match(
+  resumeGeneratorSource,
+  /if\s*\(!ready\)\s*\{[\s\S]{0,500}<main\s+aria-busy=["']true["'][\s\S]{0,500}<h1\s+className=["']sr-only["']/,
+  "session restoration must keep an accessible H1 without showing a transient overlay",
+);
+assert.doesNotMatch(
+  resumeGeneratorSource,
+  /if\s*\(!ready\)\s*\{[\s\S]{0,900}\{at\.checkingSession\}/,
+  "session restoration must not flash a visible checking-session message",
+);
+assert.equal(
+  [...resumeGeneratorSource.matchAll(/<SaveProfileModal\s+open=\{accountReady\s*&&\s*saveProfileOpen\}/g)].length,
+  2,
+  "sign-in dialogs must remain hidden until session restoration is complete",
+);
 assert.equal(JSON.parse(values.get("ac_session")), "b".repeat(64));
 
 console.log("Authentication client concurrency test passed.");
