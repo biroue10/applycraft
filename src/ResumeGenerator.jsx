@@ -10464,9 +10464,9 @@ function BuilderLoginGate({ ready, at, onSignIn }) {
           <div aria-hidden="true" style={{ width: 48, height: 48, margin: "0 auto 18px", borderRadius: 15,
             display: "grid", placeItems: "center", background: C.grad, color: "#fff",
             boxShadow: "0 12px 30px rgba(75,63,255,.28)", fontSize: 22 }}>✓</div>
-          <p style={{ margin: 0, color: C.text2, fontSize: 15, lineHeight: 1.7 }}>
+          <h1 style={{ margin: 0, color: C.text2, fontSize: 17, lineHeight: 1.5 }}>
             {at.checkingSession}
-          </p>
+          </h1>
         </section>
       </main>
     );
