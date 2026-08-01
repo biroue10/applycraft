@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import { activeNavIdForPath, normalizeNavPath, PRIMARY_NAV_ITEMS } from "../src/nav/navItems.js";
 import { headerHtml } from "./shared-header.mjs";
+
+const resumeGeneratorSource = await readFile(new URL("../src/ResumeGenerator.jsx", import.meta.url), "utf8");
 
 const matrix = {
   "/resume-builder/": "resume",
@@ -37,6 +40,11 @@ assert.equal(atsNavItem?.alwaysLink, true, "ATS navbar links must load the compl
 assert.ok(
   PRIMARY_NAV_ITEMS.filter((item) => item.id !== "ats").every((item) => !item.alwaysLink),
   "other app navbar items should keep client-side navigation",
+);
+assert.match(
+  resumeGeneratorSource,
+  /item\.id === ["']templates["'][\s\S]*?setNavPage\(["']resume["']\)[\s\S]*?setStep\(["']templates["']\)/,
+  "an intercepted Resume Templates click must open the resume gallery instead of a standalone Coming Soon page",
 );
 
 for (const [route, expected] of Object.entries(matrix)) {

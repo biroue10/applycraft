@@ -5061,6 +5061,17 @@ Awards: ${form.awards}`;
       setAppView("landing");
       return;
     }
+    if (item.id === "templates") {
+      // The navbar calls this handler with the navigation item's public id.
+      // The template gallery is not an independent `navPage`: internally it
+      // is the templates step of the resume tool. Keeping those two concepts
+      // aligned prevents an intercepted SPA click from falling through to the
+      // generic ComingSoon page while a full reload renders the gallery.
+      setNavPage("resume");
+      setStep("templates");
+      setAppView("app");
+      return;
+    }
     setNavPage(item.id);
     if (item.id === "cover") {
       if (!coverTpl) {
