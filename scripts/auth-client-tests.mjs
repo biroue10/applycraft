@@ -49,6 +49,16 @@ assert.doesNotMatch(
   /setCurrentUser\s*\(\s*savedAccount\s*\)/,
   "browser-state restoration must not overwrite the server-verified account",
 );
+assert.match(
+  resumeGeneratorSource,
+  /REQUIRE_RESUME_LOGIN\s*&&\s*appView\s*===\s*["']app["']\s*&&\s*navPage\s*===\s*["']resume["']/,
+  "the complete resume workspace, including template previews, must require a verified session",
+);
+assert.doesNotMatch(
+  resumeGeneratorSource,
+  /REQUIRE_RESUME_LOGIN\s*&&\s*navPage\s*===\s*["']resume["']\s*&&\s*step\s*===\s*["']form["']/,
+  "authentication must not be limited to the editor while leaving the template gallery public",
+);
 assert.equal(JSON.parse(values.get("ac_session")), "b".repeat(64));
 
 console.log("Authentication client concurrency test passed.");

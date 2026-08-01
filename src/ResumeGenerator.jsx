@@ -9150,7 +9150,12 @@ Awards: ${form.awards}`;
     );
   })();
 
-  const resumeLoginRequired = REQUIRE_RESUME_LOGIN && navPage === "resume" && step === "form";
+  // Both the gallery and the editor belong to the authenticated resume
+  // workspace. The marketing homepage remains public (`appView === landing`),
+  // but no template preview is rendered until the server-backed session has
+  // been restored. This also avoids briefly exposing the gallery while the
+  // account check is still in progress.
+  const resumeLoginRequired = REQUIRE_RESUME_LOGIN && appView === "app" && navPage === "resume";
   let pageBody;
   if (resumeLoginRequired && (!accountReady || !currentUser)) {
     pageBody = <BuilderLoginGate ready={accountReady} at={at} onSignIn={() => {
