@@ -10454,6 +10454,23 @@ function FeedbackModal({ open, onClose, lang }) {
 // Optional, passwordless email capture for Master Profile sync. Never gates
 // the free builder; fully dismissable. Sends a magic link via the backend.
 function BuilderLoginGate({ ready, at, onSignIn }) {
+  if (!ready) {
+    return (
+      <main style={{ minHeight: "calc(100vh - 180px)", display: "grid", placeItems: "center", padding: "72px 20px" }}>
+        <section role="status" aria-live="polite" aria-busy="true"
+          style={{ width: "min(100%, 420px)", textAlign: "center", padding: "34px 28px",
+            border: `1px solid ${C.border}`, borderRadius: 20, background: C.surface,
+            boxShadow: "0 24px 70px rgba(37,33,120,.18)" }}>
+          <div aria-hidden="true" style={{ width: 48, height: 48, margin: "0 auto 18px", borderRadius: 15,
+            display: "grid", placeItems: "center", background: C.grad, color: "#fff",
+            boxShadow: "0 12px 30px rgba(75,63,255,.28)", fontSize: 22 }}>✓</div>
+          <p style={{ margin: 0, color: C.text2, fontSize: 15, lineHeight: 1.7 }}>
+            {at.checkingSession}
+          </p>
+        </section>
+      </main>
+    );
+  }
   return (
     <main style={{ minHeight: "calc(100vh - 180px)", display: "grid", placeItems: "center", padding: "72px 20px" }}>
       <section style={{ width: "min(100%, 620px)", textAlign: "center", padding: "clamp(30px,6vw,56px)",
