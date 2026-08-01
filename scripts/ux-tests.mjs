@@ -35,6 +35,12 @@ assert.match(app, /const layoutId = template\.variant \|\| template\.id/,
   "the default All view should collapse visually duplicate template variants");
 assert.match(app, /aspectRatio: "210 \/ 297", background: "#fff"[\s\S]*overflow: "hidden"/,
   "template thumbnail frames should remain white and clip document overflow");
+assert.match(app, /frameHeight \/ contentHeight/,
+  "template thumbnails should fit the complete measured document height");
+assert.match(app, /height: fit\.documentHeight/,
+  "template thumbnails should size their scaled canvas to the measured content height");
+assert.match(app, /<span className="sr-only">[\s\S]*fit\.pageCount/,
+  "multi-page metadata should stay accessible without covering the resume preview");
 assert.match(app, /ACCOUNTS_ENABLED && !currentUser[\s\S]*setSaveProfileReturnTo\(routeWithParam\("\/resume-builder\/"/,
   "choosing a template while signed out should open authentication with the selected template as destination");
 assert.match(app, /maxWidth: 1480/, "template gallery should give resume previews more horizontal space");

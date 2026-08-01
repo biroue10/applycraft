@@ -11592,6 +11592,7 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
     scale: isMobile ? 0.28 : 0.38,
     left: 0,
     top: 0,
+    documentHeight: DOCUMENT_PREVIEW_PAGE_HEIGHT,
     pageCount: 1,
   });
 
@@ -11612,10 +11613,15 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
         const frameHeight = frameRect.height || (frameWidth * DOCUMENT_PREVIEW_PAGE_HEIGHT / DOCUMENT_PREVIEW_WIDTH);
         if (!frameWidth) return;
 
-        const rawScale = Math.min(frameWidth / DOCUMENT_PREVIEW_WIDTH, frameHeight / DOCUMENT_PREVIEW_PAGE_HEIGHT);
+        // Gallery samples may contain more than one page of useful detail.
+        // Fit their measured height instead of clipping everything after page one.
+        const contentHeight = Math.max(
+          DOCUMENT_PREVIEW_PAGE_HEIGHT,
+          content.scrollHeight || DOCUMENT_PREVIEW_PAGE_HEIGHT,
+        );
+        const rawScale = Math.min(frameWidth / DOCUMENT_PREVIEW_WIDTH, frameHeight / contentHeight);
         const scale = rawScale > 0 && Number.isFinite(rawScale) ? rawScale : (isMobile ? 0.28 : 0.38);
         const scaledWidth = DOCUMENT_PREVIEW_WIDTH * scale;
-        const contentHeight = content.scrollHeight || DOCUMENT_PREVIEW_PAGE_HEIGHT;
         const pageCount = contentHeight > DOCUMENT_PREVIEW_PAGE_HEIGHT + 12
           ? Math.ceil(contentHeight / DOCUMENT_PREVIEW_PAGE_HEIGHT)
           : 1;
@@ -11623,12 +11629,14 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
           scale,
           left: Math.max(0, (frameWidth - scaledWidth) / 2),
           top: 0,
+          documentHeight: contentHeight,
           pageCount,
         };
         setFit((prev) => (
           Math.abs(prev.scale - next.scale) < 0.001 &&
           Math.abs(prev.left - next.left) < 0.5 &&
           Math.abs(prev.top - next.top) < 0.5 &&
+          Math.abs(prev.documentHeight - next.documentHeight) < 1 &&
           prev.pageCount === next.pageCount
             ? prev
             : next
@@ -11677,7 +11685,7 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
         borderRadius: 6, border: "1px solid rgba(148,163,184,0.24)",
         boxShadow: "0 18px 40px rgba(0,0,0,0.22)", overflow: "hidden" }}>
       <div
-        style={{ width: DOCUMENT_PREVIEW_WIDTH, height: DOCUMENT_PREVIEW_PAGE_HEIGHT,
+        style={{ width: DOCUMENT_PREVIEW_WIDTH, height: fit.documentHeight,
           position: "absolute", left: fit.left, top: fit.top,
           transform: `scale(${fit.scale})`, transformOrigin: "top left",
           pointerEvents: "none", userSelect: "none", background: "#fff",
@@ -11698,10 +11706,7 @@ function DocumentThumbnailPreview({ type = "resume", template, isMobile, rtl = f
         </div>
       </div>
       {fit.pageCount > 1 && (
-        <span style={{ position: "absolute", right: 8, bottom: 8, zIndex: 1,
-          background: "rgba(15,23,42,0.82)", color: "#fff", border: "1px solid rgba(255,255,255,0.24)",
-          borderRadius: 999, padding: "4px 8px", fontSize: 10.5, fontWeight: 900,
-          boxShadow: "0 8px 20px rgba(15,23,42,0.18)" }}>
+        <span className="sr-only">
           {fit.pageCount} pages
         </span>
       )}
