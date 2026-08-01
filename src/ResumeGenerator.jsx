@@ -9155,9 +9155,10 @@ Awards: ${form.awards}`;
   // but no template preview is rendered until the server-backed session has
   // been restored. This also avoids briefly exposing the gallery while the
   // account check is still in progress.
-  const resumeLoginRequired = REQUIRE_RESUME_LOGIN && appView === "app" && navPage === "resume";
+  const loginProtectedWorkspace = ["resume", "cover", "tracker"].includes(navPage);
+  const workspaceLoginRequired = REQUIRE_RESUME_LOGIN && appView === "app" && loginProtectedWorkspace;
   let pageBody;
-  if (resumeLoginRequired && (!accountReady || !currentUser)) {
+  if (workspaceLoginRequired && (!accountReady || !currentUser)) {
     pageBody = <BuilderLoginGate ready={accountReady} at={at} onSignIn={() => {
       setSaveProfileOpen(true);
     }} />;

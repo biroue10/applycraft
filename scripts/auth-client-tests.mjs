@@ -51,8 +51,13 @@ assert.doesNotMatch(
 );
 assert.match(
   resumeGeneratorSource,
-  /REQUIRE_RESUME_LOGIN\s*&&\s*appView\s*===\s*["']app["']\s*&&\s*navPage\s*===\s*["']resume["']/,
-  "the complete resume workspace, including template previews, must require a verified session",
+  /\["resume",\s*"cover",\s*"tracker"\]\.includes\(navPage\)/,
+  "resume, cover-letter, and job-tracker workspaces must all be protected",
+);
+assert.match(
+  resumeGeneratorSource,
+  /REQUIRE_RESUME_LOGIN\s*&&\s*appView\s*===\s*["']app["']\s*&&\s*loginProtectedWorkspace/,
+  "protected workspaces must require a verified session without gating public landing pages",
 );
 assert.doesNotMatch(
   resumeGeneratorSource,
