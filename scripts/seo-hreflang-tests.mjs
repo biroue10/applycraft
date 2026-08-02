@@ -13,6 +13,7 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { canonicalFor, hreflangFor } from "../src/seo/alternates.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = path.join(root, "dist");
@@ -21,6 +22,18 @@ const VALID_LANG = new Set(["en", "fr", "ar", "es", "de", "x-default"]);
 
 let failures = 0;
 const fail = (m) => { failures++; console.error("  FAIL " + m); };
+
+const canonicalCases = [
+  ["/resume-builder/?ui=fr&template=modern", "https://applycraft.io/resume-builder/"],
+  ["/resume/templates?ui=fr#modern", "https://applycraft.io/resume/templates/"],
+  ["/fr/?utm_source=gsc", "https://applycraft.io/fr/"],
+];
+for (const [input, expected] of canonicalCases) {
+  if (canonicalFor(input) !== expected) fail(`${input}: canonical should be ${expected}`);
+}
+if (hreflangFor("/resume/templates?ui=fr#modern").length !== 4) {
+  fail("query/hash variants should retain the resume-template hreflang cluster");
+}
 
 if (!existsSync(DIST)) { console.error("dist/ not found — run `npm run build` first."); process.exit(1); }
 

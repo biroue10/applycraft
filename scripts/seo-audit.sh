@@ -233,7 +233,7 @@ const EXPECTED_IMPORTANT_TITLES = new Map([
   ["/fr/creer-cv-canadien/", "Créateur de CV canadien | ApplyCraft"],
   ["/fr/creer-cv-gratuit/", "Créer un CV gratuit | ApplyCraft"],
   ["/fr/interview-prep/", "Préparation entretien IA | ApplyCraft"],
-  ["/free-resume-builder/", "Free Resume Builder — No Sign-Up, PDF & DOCX | ApplyCraft"],
+  ["/free-resume-builder/", "Free Resume Builder: PDF & DOCX Export | ApplyCraft"],
   ["/resume-in-french/", "French CV Format: Free Example and Template | ApplyCraft"],
   ["/student-resume-builder/", "Student Resume Builder | ApplyCraft"],
 ]);

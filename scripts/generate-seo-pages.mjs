@@ -157,11 +157,11 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
   }
   const uiText = {
     en: {
-      trust: ["Browser-first editing", "No sign-up needed", "Free to use", "PDF & DOCX export"],
+      trust: ["Browser-first editing", "Secure email sign-in", "Free to use", "PDF & DOCX export"],
       preview: isCoverLetterPage ? "Cover letter example — edit it in one click" : "Resume example — edit it in one click",
     },
     fr: {
-      trust: ["Édition dans le navigateur", "Sans inscription", "Gratuit", "Export PDF et DOCX"],
+      trust: ["Édition dans le navigateur", "Connexion sécurisée", "Gratuit", "Export PDF et DOCX"],
       preview: isCoverLetterPage ? "Exemple de lettre de motivation — modifiez-le en un clic" : "Exemple de CV — modifiez-le en un clic",
     },
     ar: {
@@ -169,7 +169,7 @@ function page({ slug, title, description, eyebrow, h1, sub, keywords, resumeCard
       preview: isCoverLetterPage ? "مثال خطاب تقديم — عدّله بنقرة واحدة" : "مثال سيرة ذاتية — عدّله بنقرة واحدة",
     },
   }[lang] || {
-    trust: ["Browser-first editing", "No sign-up needed", "Free to use", "PDF & DOCX export"],
+    trust: ["Browser-first editing", "Secure email sign-in", "Free to use", "PDF & DOCX export"],
     preview: isCoverLetterPage ? "Cover letter example — edit it in one click" : "Resume example — edit it in one click",
   };
   const secondaryHref = templateHref || (isCoverLetterPage ? "/cover-letter/templates/" : "/resume/templates/");
@@ -274,7 +274,7 @@ ${nav(lang, isCoverLetterPage ? "/cover-letter/templates/" : genericBuilderUrl)}
   ${faqHtml(faqs, lang)}
 
   <div class="page">
-    ${ctaStrip(features.ctaHeading || "Ready to land your next job?", features.ctaSub || "Create a professional resume in minutes — free, no sign-up required.", starterUrl, ctaLabels.start)}
+    ${ctaStrip(features.ctaHeading || "Ready to land your next job?", features.ctaSub || "Create a professional resume in minutes with secure passwordless access.", starterUrl, ctaLabels.start)}
   </div>
 </main>
 ${footerHtml(lang)}
@@ -369,15 +369,15 @@ const PAGES = [
   {
     slug: "free-resume-builder",
     canonicalPath: "/free-resume-builder/",
-    title: "Free Resume Builder — No Sign-Up, PDF & DOCX | ApplyCraft",
-    description: "Build a professional resume free with no sign-up, watermark, hidden fee, or download paywall. Choose a template and export PDF or DOCX.",
+    title: "Free Resume Builder: PDF & DOCX Export | ApplyCraft",
+    description: "Build an ATS-friendly resume with secure email access, professional templates, live preview, and free PDF or DOCX export without a watermark.",
     eyebrow: "Free Builder",
-    h1: "Free Resume Builder — No Sign-Up, No Hidden Fees",
-    sub: "Build your resume without an account, hidden fees, watermarks, or download paywalls. Create a polished document and download it as PDF or DOCX in minutes.",
+    h1: "Free Resume Builder for PDF and DOCX",
+    sub: "Build your resume with a secure one-time email link, no hidden fees, watermarks, or download paywalls. Download a polished PDF or DOCX in minutes.",
     alternates: FREE_BUILDER_ALTERNATES,
     ogAlternateLocales: ["fr_FR", "ar_MA"],
     socialImage: `${SITE}/og/free-resume-builder.png`,
-    keywords: "free resume builder, resume builder no sign up, free cv maker, free resume download, no watermark resume builder",
+    keywords: "free resume builder, ATS resume builder, free cv maker, PDF resume, DOCX resume, no watermark resume builder",
     seoContent: `<h2>How to build a free resume that recruiters can scan</h2>
       <p>Choose a simple reverse-chronological layout, match the job title, and turn responsibilities into results. Use familiar section headings such as Experience, Education, and Skills so both recruiters and applicant tracking systems can understand the document.</p>
       <h3>A practical five-step workflow</h3>
@@ -402,13 +402,13 @@ const PAGES = [
       edu: [{ degree: "B.A. Communications", school: "NYU", date: "2014 – 2018" }],
     }),
     features: {
-      heading: "Genuinely free — no sign-up, no hidden fees",
-      intro: "ApplyCraft keeps the core resume-building workflow available without an account, credit card, watermark, hidden fee, or paid download tier.",
+      heading: "Genuinely free — secure access, no hidden fees",
+      intro: "ApplyCraft protects the builder with a secure one-time email link while keeping the core workflow free of passwords, credit cards, watermarks, hidden fees, and paid download tiers.",
       ctaHeading: "Start your free resume now",
       ctaSub: "No credit card. No account. No watermark. Download as PDF or DOCX in minutes.",
       items: [
         { icon: "🚫", title: "No Watermarks", body: "Your downloaded resume has no ApplyCraft branding, so the document is ready to send to employers." },
-        { icon: "🔓", title: "No Account Needed", body: "Skip the sign-up form. Open the builder, fill in your details, and download. That's it." },
+        { icon: "🔓", title: "Secure Passwordless Access", body: "Use a one-time email link to open the builder. No password or credit card is required." },
         { icon: "💰", title: "No Paywalls", body: "The core builder, templates, language options, and downloads are available without a Pro plan." },
         { icon: "📦", title: "Unlimited Downloads", body: "Download as many versions as you want. Tailor your resume for different roles at no cost." },
         { icon: "🎯", title: "ATS-Conscious Designs", body: "Templates use clear headings, readable typography, and text-based layouts to improve parsing compatibility." },
@@ -471,7 +471,7 @@ const PAGES = [
     slug: "cover-letter-builder",
     canonicalPath: "/cover-letter-builder/",
     title: "Free Cover Letter Builder | ApplyCraft",
-    description: "Write a compelling cover letter with 18 professional styles. Personalise for any role, download as PDF or DOCX. Free, no sign-up.",
+    description: "Write a compelling cover letter with 18 professional styles. Personalise any role and export PDF or DOCX with secure passwordless access.",
     eyebrow: "Cover Letter Builder",
     h1: "Free Cover Letter Builder",
     sub: "18 professionally designed cover letter styles. Personalise your letter for any role in minutes and download as PDF or DOCX — completely free.",
@@ -628,14 +628,14 @@ const PAGES = [
       heading: "Pourquoi utiliser ApplyCraft pour votre CV en français ?",
       intro: "ApplyCraft prend en charge le français nativement : libellés de sections, mise en page et export PDF — tout est adapté au marché de l'emploi francophone.",
       ctaHeading: "Créez votre CV en français maintenant",
-      ctaSub: "Gratuit, sans inscription, avec une interface et des libellés complets en français, anglais et arabe.",
+      ctaSub: "Gratuit, avec connexion sécurisée par e-mail et une interface complète en français, anglais et arabe.",
       items: [
         { icon: "🇫🇷", title: "Interface en français", body: "L'interface, les libellés de sections (Expérience, Formation, Compétences) et les suggestions sont entièrement en français." },
         { icon: "📋", title: "Formats adaptés au marché français", body: "Nos modèles respectent les conventions du CV français : pas de photo obligatoire, format chronologique inversé, longueur d'une page." },
         { icon: "🤖", title: "IA de rédaction en français", body: "L'IA d'ApplyCraft rédige et améliore votre CV directement en français — des formulations percutantes et professionnelles." },
         { icon: "📄", title: "Export PDF et DOCX", body: "Téléchargez votre CV en PDF pour l'envoyer ou en DOCX pour continuer à l'éditer dans Word ou LibreOffice." },
         { icon: "🌍", title: "Idéal pour les candidatures internationales", body: "Rédigez votre CV en français pour le marché français, puis basculez en anglais pour les entreprises internationales." },
-        { icon: "⚡", title: "Rapide et gratuit", body: "Créez un CV professionnel en 10 minutes, sans inscription et sans frais cachés." },
+        { icon: "⚡", title: "Rapide et gratuit", body: "Créez un CV professionnel en 10 minutes avec un lien de connexion sécurisé et sans frais cachés." },
       ],
     },
     faqs: [
@@ -751,7 +751,7 @@ const PAGES = [
       heading: "What makes a Canadian resume different?",
       intro: "Canadian employers have specific expectations for resume format that differ from US, UK, and international norms. Here's what you need to know.",
       ctaHeading: "Build your Canadian resume now",
-      ctaSub: "ATS-optimised templates tailored to Canadian employers. Free, no sign-up.",
+      ctaSub: "ATS-optimised templates tailored to Canadian employers, with free passwordless access.",
       items: [
         { icon: "🚫", title: "No Photo Required", body: "Unlike many European and Asian countries, Canadian resumes do not include a photo. Adding one can actually hurt your application." },
         { icon: "📅", title: "No Age or Marital Status", body: "Canadian human rights law prohibits discrimination based on age, sex, or marital status. Do not include these on your resume." },
@@ -778,7 +778,7 @@ const PAGES = [
     ogLocale: "fr_FR",
     ogAlternateLocales: ["en_US"],
     title: "Créateur de CV canadien | ApplyCraft",
-    description: "Créez un CV au format canadien en français ou en anglais: sans photo, orienté réalisations, adapté au Québec et au Canada anglophone. Gratuit, sans inscription.",
+    description: "Créez un CV canadien en français ou en anglais : sans photo, orienté réalisations, adapté au Québec et au Canada anglophone.",
     eyebrow: "CV canadien",
     h1: "Créateur de CV canadien pour candidater depuis le Maroc",
     sub: "Préparez un CV adapté aux recruteurs canadiens: pas de photo, pas d'âge, une structure claire, des réalisations chiffrées et des modèles pensés pour le Québec comme pour le Canada anglophone.",
@@ -805,7 +805,7 @@ const PAGES = [
       heading: "Ce qui change dans un CV canadien",
       intro: "Un CV destiné au Canada n'est pas une simple traduction d'un CV marocain ou européen. Les recruteurs attendent un document plus neutre, plus direct et centré sur les résultats.",
       ctaHeading: "Créer votre CV canadien maintenant",
-      ctaSub: "Modèles Canada, export PDF/DOCX gratuit, sans inscription et sans filigrane.",
+      ctaSub: "Modèles Canada, export PDF/DOCX gratuit, connexion sécurisée et aucun filigrane.",
       items: [
         { icon: "🚫", title: "Pas de photo ni d'informations personnelles sensibles", body: "Évitez la photo, l'âge, la situation familiale, la nationalité et le numéro d'identité. Au Canada, ces informations ne doivent pas influencer le recrutement." },
         { icon: "📍", title: "Ville et province, pas d'adresse complète", body: "Indiquez une localisation simple comme Montréal, QC ou Toronto, ON. Une adresse complète est rarement nécessaire et peut sembler datée." },
@@ -1079,7 +1079,7 @@ const EXAMPLES = [
     description: "Free Help Desk Analyst resume example with ATS-friendly formatting. Highlights ticketing systems, SLA metrics, and technical skills. Edit and download free.",
     eyebrow: "Resume Example",
     h1: "Help Desk Analyst Resume Example",
-    sub: "A complete, ATS-optimised Help Desk Analyst resume example. Edit every section and export as PDF or DOCX — free, no sign-up required.",
+    sub: "A complete, ATS-optimised Help Desk Analyst resume example. Edit every section and export PDF or DOCX with secure passwordless access.",
     keywords: "help desk analyst resume example, help desk resume sample, IT help desk cv, service desk analyst resume",
     resumeCard: rcGeneric({
       name: "Sophia Williams", title: "Help Desk Analyst | ITIL Foundation | Microsoft 365",
@@ -1340,7 +1340,7 @@ const EXAMPLES = [
       heading: "Canadian resume format — key rules",
       intro: "The Canadian resume format follows specific conventions that differ from UK CVs and US resumes. Here's a quick reference.",
       ctaHeading: "Build your Canadian resume free",
-      ctaSub: "Templates tailored to Canadian employer expectations. No sign-up required.",
+      ctaSub: "Templates tailored to Canadian employer expectations with secure passwordless access.",
       items: [
         { icon: "📸", title: "No Photo", body: "Never include a photo on a Canadian resume. Canadian human rights law prohibits hiring decisions based on physical appearance." },
         { icon: "🚫", title: "No Age, Race, or Marital Status", body: "These are protected characteristics. Do not include date of birth, SIN, ethnicity, or marital status." },
@@ -1361,7 +1361,7 @@ const EXAMPLES = [
     slug: "uk-cv-format",
     canonicalPath: "/examples/uk-cv-format/",
     title: "UK CV Format — Example & Template | ApplyCraft",
-    description: "Download a professional UK CV example. Reverse-chronological, 2-page format with personal statement. ATS-friendly British CV template. Free, no sign-up.",
+    description: "Use a professional UK CV example with a reverse-chronological, two-page format and personal statement. ATS-friendly and free to customise.",
     eyebrow: "UK CV Example",
     h1: "UK CV Format — Example & Template",
     sub: "A complete British CV example following UK employer expectations: personal statement, reverse-chronological experience, references available on request, and tailored language.",
@@ -1406,7 +1406,7 @@ const EXAMPLES = [
     description: "Free software engineer resume example with an ATS-friendly layout, quantified impact, and a modern tech stack. Edit every line and download as PDF or DOCX.",
     eyebrow: "Resume Example",
     h1: "Software Engineer Resume Example",
-    sub: "A professionally written, ATS-optimised software engineer resume example with quantified achievements and a clear tech stack. Edit and download free — no sign-up.",
+    sub: "A professionally written, ATS-optimised software engineer resume example with quantified achievements and a clear tech stack. Edit and download free.",
     keywords: "software engineer resume example, software developer resume sample, programmer resume template, full stack engineer cv example",
     resumeCard: rcGeneric({
       name: "Marcus Chen", title: "Senior Software Engineer",
@@ -1583,7 +1583,7 @@ const EXAMPLES = [
     description: "Free data analyst resume example with SQL, Python, BI tools, and quantified business impact in an ATS-friendly layout. Edit and download as PDF or DOCX.",
     eyebrow: "Resume Example",
     h1: "Data Analyst Resume Example",
-    sub: "An ATS-optimised data analyst resume example with SQL, visualisation tools, and measurable insights. Edit every section and download free — no sign-up.",
+    sub: "An ATS-optimised data analyst resume example with SQL, visualisation tools, and measurable insights. Edit every section and download free.",
     keywords: "data analyst resume example, data analytics resume sample, SQL analyst resume template, business analyst cv example",
     resumeCard: rcGeneric({
       name: "Priya Sharma", title: "Data Analyst",
@@ -1625,7 +1625,7 @@ const EXAMPLES = [
     description: "Free sales representative resume example with quota attainment, CRM skills, and quantified revenue in an ATS-friendly layout. Edit and download as PDF or DOCX.",
     eyebrow: "Resume Example",
     h1: "Sales Representative Resume Example",
-    sub: "An ATS-optimised sales representative resume example built around quota attainment and revenue growth. Edit every line and download free — no sign-up.",
+    sub: "An ATS-optimised sales representative resume example built around quota attainment and revenue growth. Edit every line and download free.",
     keywords: "sales representative resume example, sales resume sample, account executive resume template, B2B sales cv example",
     resumeCard: rcGeneric({
       name: "James Carter", title: "Sales Representative | B2B SaaS",
@@ -1709,7 +1709,7 @@ const EXAMPLES = [
     description: "Customize a free teacher resume template with classroom achievement examples, skills and ATS-conscious formatting. Export your resume as PDF or DOCX.",
     eyebrow: "Resume Example",
     h1: "Teacher Resume Example",
-    sub: "An ATS-optimised teacher resume example with licensure, grade levels, and measurable student outcomes. Edit every section and download free — no sign-up.",
+    sub: "An ATS-optimised teacher resume example with licensure, grade levels, and measurable student outcomes. Edit every section and download free.",
     keywords: "teacher resume template free, free teacher resume template, teacher resume example, teaching resume sample, educator cv example",
     seoContent: `<h2>How to write a teacher resume that shows classroom impact</h2>
       <p>A strong teacher resume connects instructional methods to student outcomes. Include grade levels, subjects, class sizes, curriculum responsibilities, assessment results, inclusion practices, and the learning platforms you used.</p>

@@ -71,7 +71,7 @@ const ROUTE_META = {
   },
   "/resume-builder": {
     title: "Resume Builder — Start a Free Editable Resume | ApplyCraft",
-    description: "Open the ApplyCraft resume builder with a blank resume or starter example, edit in your browser, and export PDF or DOCX without an account.",
+    description: "Open the ApplyCraft resume builder after secure passwordless email sign-in, edit in your browser, and export your resume as PDF or DOCX.",
     image: "https://applycraft.io/og/home.png",
     imageAlt: "ApplyCraft resume builder editor preview",
     locale: "en_US",
@@ -120,11 +120,11 @@ const ROUTE_FAQS = {
   "/": [
     {
       question: "Is ApplyCraft really free?",
-      answer: "Yes. The core builder, templates, language options, previews, and PDF or DOCX downloads are available without a paid tier, account, or credit card.",
+      answer: "Yes. The core builder, templates, language options, previews, and PDF or DOCX downloads are available without a paid tier or credit card. Secure passwordless email sign-in protects access to the workspace.",
     },
     {
       question: "Do you store or sell my data?",
-      answer: "ApplyCraft does not require an account profile to build a resume. Standard editing and export are browser-first; optional AI helpers may process the text you choose to submit.",
+      answer: "Your draft remains browser-first on your device. Passwordless email authentication controls access to the workspace; optional AI helpers process only the text you choose to submit.",
     },
     {
       question: "Are the templates ATS-compatible?",
@@ -140,17 +140,17 @@ const ROUTE_FAQS = {
     },
     {
       question: "Do I need to create an account?",
-      answer: "No. There is no sign-up, no login, no email address required. Open the app and start building immediately.",
+      answer: "You sign in with a secure one-time link sent to your email. There is no password to create or remember, and no credit card is required.",
     },
   ],
   "/fr/": [
     {
       question: "ApplyCraft est-il vraiment gratuit ?",
-      answer: "Oui. L'éditeur, les modèles, les options de langue, les aperçus et les téléchargements PDF ou DOCX sont disponibles sans offre payante, compte ni carte bancaire.",
+      answer: "Oui. L'éditeur, les modèles, les options de langue, les aperçus et les téléchargements PDF ou DOCX sont disponibles sans offre payante ni carte bancaire. Une connexion sécurisée par lien envoyé par e-mail protège l'accès à l'espace de travail.",
     },
     {
       question: "Stockez-vous ou vendez-vous mes données ?",
-      answer: "ApplyCraft n'exige pas de compte pour créer un CV. L'édition et l'export standards se font dans le navigateur ; les assistants IA facultatifs peuvent traiter le texte que vous choisissez de soumettre.",
+      answer: "Votre brouillon reste d'abord stocké dans votre navigateur. L'authentification sans mot de passe contrôle l'accès à l'espace de travail ; les assistants IA facultatifs traitent uniquement le texte que vous choisissez de soumettre.",
     },
     {
       question: "Les modèles sont-ils compatibles ATS ?",
@@ -166,17 +166,17 @@ const ROUTE_FAQS = {
     },
     {
       question: "Dois-je créer un compte ?",
-      answer: "Non. Aucune inscription, aucune connexion, aucune adresse e-mail requise. Ouvrez l'application et commencez immédiatement.",
+      answer: "Vous vous connectez avec un lien sécurisé à usage unique envoyé par e-mail. Aucun mot de passe n'est à créer ou mémoriser, et aucune carte bancaire n'est requise.",
     },
   ],
   "/ar/": [
     {
       question: "هل ApplyCraft مجاني حقاً؟",
-      answer: "نعم. المحرر الأساسي والقوالب وخيارات اللغة والمعاينات وتنزيلات PDF أو DOCX متاحة دون مستوى مدفوع أو حساب أو بطاقة ائتمان.",
+      answer: "نعم. المحرر الأساسي والقوالب وخيارات اللغة والمعاينات وتنزيلات PDF أو DOCX متاحة دون اشتراك مدفوع أو بطاقة ائتمان. يحمي رابط تسجيل دخول آمن يُرسل بالبريد الإلكتروني مساحة العمل.",
     },
     {
       question: "هل تخزّنون بياناتي أو تبيعونها؟",
-      answer: "لا يتطلب ApplyCraft حساباً لإنشاء سيرة ذاتية. التحرير والتصدير القياسيان يجريان في المتصفح؛ وقد يعالج مساعدو الذكاء الاصطناعي والترجمة الاختياريون النص الذي تختار إرساله.",
+      answer: "تبقى مسودة سيرتك محفوظة أساساً في متصفحك. يضبط تسجيل الدخول الآمن بلا كلمة مرور الوصول إلى مساحة العمل، ولا تعالج أدوات الذكاء الاصطناعي الاختيارية إلا النص الذي تختار إرساله.",
     },
     {
       question: "هل القوالب متوافقة مع ATS؟",
@@ -192,7 +192,7 @@ const ROUTE_FAQS = {
     },
     {
       question: "هل أحتاج إلى إنشاء حساب؟",
-      answer: "لا. لا تسجيل ولا تسجيل دخول ولا حاجة لبريد إلكتروني. افتح التطبيق وابدأ فوراً.",
+      answer: "تسجّل الدخول عبر رابط آمن صالح لمرة واحدة يُرسل إلى بريدك الإلكتروني. لا حاجة لإنشاء كلمة مرور أو حفظها، ولا تُطلب بطاقة ائتمان.",
     },
   ],
 };

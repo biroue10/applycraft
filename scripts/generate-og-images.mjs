@@ -1,8 +1,10 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
 const ROOT = new URL("../public/og/", import.meta.url);
+const ROOT_PATH = fileURLToPath(ROOT);
 const LOGO_PATH = new URL("../public/assets/brand/applycraft-logo-navbar.png", import.meta.url);
 mkdirSync(ROOT, { recursive: true });
 const logoDataUrl = `data:image/png;base64,${readFileSync(LOGO_PATH).toString("base64")}`;
@@ -13,9 +15,9 @@ const images = [
   ["home-ar", "ApplyCraft", "منشئ سيرة ذاتية وخطاب تقديم", "سريع ومتوافق مع ATS"],
   ["blog", "ApplyCraft Blog", "Resume writing guides", "ATS, templates, and job search tips"],
   ["pricing", "Free forever core builder", "Optional 7-day pass", "Never a subscription"],
-  ["free-resume-builder", "Free Resume Builder", "No sign-up. No hidden fees.", "PDF & DOCX downloads"],
-  ["free-resume-builder-fr", "Créer un CV gratuit", "Sans inscription ni frais cachés", "Export PDF et DOCX"],
-  ["free-resume-builder-ar", "منشئ سيرة ذاتية مجاني", "بدون تسجيل أو رسوم مخفية", "تنزيل PDF و DOCX"],
+  ["free-resume-builder", "Free Resume Builder", "ATS-friendly. No hidden fees.", "PDF & DOCX downloads"],
+  ["free-resume-builder-fr", "Créer un CV gratuit", "Connexion sécurisée, sans frais cachés", "Export PDF et DOCX"],
+  ["free-resume-builder-ar", "منشئ سيرة ذاتية مجاني", "دخول آمن بدون رسوم مخفية", "تنزيل PDF و DOCX"],
   ["canadian-resume-builder", "Canadian Resume Builder", "Format & templates for Canada", "No photo. ATS-friendly."],
   ["student-resume-builder", "Student Resume Builder", "First job & internship templates", "No experience needed"],
   ["ats-checker", "ATS Checker", "Scan and improve your resume", "Keyword and formatting guidance"],
@@ -52,17 +54,17 @@ function svg([id, eyebrow, title, subtitle]) {
 
 for (const image of images) {
   const id = image[0];
-  const svgPath = join(ROOT.pathname, `${id}.svg`);
+  const svgPath = join(ROOT_PATH, `${id}.svg`);
   writeFileSync(svgPath, svg(image), "utf8");
 }
 
-const svgFiles = readdirSync(ROOT.pathname)
+const svgFiles = readdirSync(ROOT_PATH)
   .filter((file) => file.endsWith(".svg"))
   .sort();
 
 for (const file of svgFiles) {
-  const svgPath = join(ROOT.pathname, file);
-  const pngPath = join(ROOT.pathname, file.replace(/\.svg$/, ".png"));
+  const svgPath = join(ROOT_PATH, file);
+  const pngPath = join(ROOT_PATH, file.replace(/\.svg$/, ".png"));
 
   try {
     await sharp(svgPath, { density: 150 })
