@@ -1,10 +1,12 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { footerHtml } from "./shared-footer.mjs";
 import { buildResumeStarterUrl } from "../src/data/resumeStarters/index.js";
 import { localizeRoute } from "../src/seo/localizedRoutes.js";
 
 const ROOT = new URL("../public/", import.meta.url);
+const ROOT_PATH = fileURLToPath(ROOT);
 const SITE = "https://applycraft.io";
 
 const HOME_ALTERNATES = [
@@ -279,7 +281,7 @@ const pages = [
     ],
     faqTitle: "الأسئلة الشائعة",
     faqs: [
-      { q: "هل منشئ السيرة الذاتية مجاني فعلاً؟", a: "نعم. المسار الأساسي والقوالب والمعاينة وتنزيل PDF أو DOCX متاحة بدون حساب أو بطاقة بنكية." },
+      { q: "هل منشئ السيرة الذاتية مجاني فعلاً؟", a: "نعم. المسار الأساسي والقوالب والمعاينة وتنزيل PDF أو DOCX متاحة عبر رابط دخول آمن بالبريد الإلكتروني، ومن دون كلمة مرور أو بطاقة بنكية." },
       { q: "هل توجد رسوم مخفية؟", a: "لا. لا يحجب ApplyCraft تنزيل السيرة الذاتية الأساسية خلف دفع مخفي." },
       { q: "هل يحتوي الملف على علامة مائية؟", a: "لا. ملفات PDF و DOCX التي يتم تنزيلها لا تحتوي على علامة ApplyCraft." },
     ],
@@ -287,8 +289,8 @@ const pages = [
 ];
 
 for (const config of pages.filter((item) => item.path !== "/fr/" && item.path !== "/ar/")) {
-  const file = join(ROOT.pathname, config.out);
-  mkdirSync(file.slice(0, file.lastIndexOf("/")), { recursive: true });
+  const file = join(ROOT_PATH, config.out);
+  mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, page(config), "utf8");
   console.log(`✓ Generated public/${config.out}`);
 }

@@ -96,15 +96,17 @@ export const ALTERNATES = {
 // Self-canonical for any SPA route. Root stays "/"; the public resume builder
 // route uses the site-wide trailing-slash convention.
 export function canonicalFor(path) {
-  if (!path || path === "/") return `${ORIGIN}/`;
-  if (path === "/fr" || path === "/fr/") return `${ORIGIN}/fr/`;
-  if (path === "/ar" || path === "/ar/") return `${ORIGIN}/ar/`;
-  if (path === "/resume-builder" || path === "/resume-builder/") return `${ORIGIN}/resume-builder/`;
-  const normalized = path.endsWith("/") ? path : `${path}/`;
+  const cleanPath = String(path || "/").split(/[?#]/, 1)[0] || "/";
+  if (cleanPath === "/") return `${ORIGIN}/`;
+  if (cleanPath === "/fr" || cleanPath === "/fr/") return `${ORIGIN}/fr/`;
+  if (cleanPath === "/ar" || cleanPath === "/ar/") return `${ORIGIN}/ar/`;
+  if (cleanPath === "/resume-builder" || cleanPath === "/resume-builder/") return `${ORIGIN}/resume-builder/`;
+  const normalized = cleanPath.endsWith("/") ? cleanPath : `${cleanPath}/`;
   return ORIGIN + normalized;
 }
 
 // hreflang alternates for a route, or [] when it has no translated equivalents.
 export function hreflangFor(path) {
-  return ALTERNATES[path] || [];
+  const cleanPath = String(path || "/").split(/[?#]/, 1)[0] || "/";
+  return ALTERNATES[cleanPath] || [];
 }

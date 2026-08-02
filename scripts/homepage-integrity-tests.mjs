@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import { localizeRoute } from "../src/seo/localizedRoutes.js";
 
-const root = new URL("../dist/", import.meta.url).pathname;
+const root = fileURLToPath(new URL("../dist/", import.meta.url));
 const pages = [
   { file: "index.html", lang: "en", dir: null },
   { file: "fr/index.html", lang: "fr", dir: null },
   { file: "ar/index.html", lang: "ar", dir: "rtl" },
 ];
 const requiredLinks = [
-  "/resume-builder/", "/cover-letter-builder/", "/ats-checker/",
+  "/resume-builder/", "/cover-letter/templates/", "/ats-checker/",
   "/job-tracker/", "/interview-prep/", "/pricing/", "/examples/",
 ];
 const failures = [];
