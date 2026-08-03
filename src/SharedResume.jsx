@@ -408,4 +408,3 @@ export default function SharedResume() {
     </AppShell>
   );
 }
-
