@@ -80,4 +80,3 @@ assert.match(
 assert.match(app, /ctx\.fillStyle = "#ffffff"/, "visual PDF page slices should keep blank space white");
 
 console.log("Free export tests passed.");
-
