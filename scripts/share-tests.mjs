@@ -175,6 +175,16 @@ assert.ok(sharedSource.includes("html2canvas"), "shared PDF download should capt
 assert.ok(sharedSource.includes("className=\"ac-shared-download\""), "shared viewer should render a localized download button");
 assert.ok(/pdf\.save\(/.test(sharedSource), "shared PDF download should save the generated file");
 assert.ok(sharedSource.includes("pagePixelHeight"), "shared PDF export should calculate the selected paper height");
+assert.match(
+  sharedSource,
+  /innerDisplay === "flex" \|\| innerDisplay === "grid"/,
+  "shared PDF export must not stretch a colored block header into a full page",
+);
+assert.match(
+  sharedSource,
+  /context\.fillStyle = "#ffffff"/,
+  "shared PDF page slices should keep blank space white",
+);
 assert.ok(
   /minHeight:\s*`\$\{pagePixelHeight\}px`/.test(sharedSource),
   "shared PDF export should fill the complete paper height",

@@ -72,4 +72,11 @@ for (const pattern of forbiddenCopy) {
   assert.doesNotMatch(cover, pattern, `forbidden export-gating copy found: ${pattern}`);
 }
 
+assert.match(
+  app,
+  /innerDisplay === "flex" \|\| innerDisplay === "grid"/,
+  "visual PDF export must not stretch a colored block header into a full page",
+);
+assert.match(app, /ctx\.fillStyle = "#ffffff"/, "visual PDF page slices should keep blank space white");
+
 console.log("Free export tests passed.");

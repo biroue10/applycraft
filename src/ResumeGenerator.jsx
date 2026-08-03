@@ -3167,7 +3167,8 @@ export default function ResumeGenerator() {
     clone.setAttribute("lang", docLang || "en");
     clone.setAttribute("dir", direction);
     const inner = clone.firstElementChild;
-    if (inner) {
+    const innerDisplay = inner?.style?.display;
+    if (inner && (innerDisplay === "flex" || innerDisplay === "grid")) {
       inner.style.minHeight = `${pagePixelHeight}px`;
       inner.style.height = "auto";
       inner.style.alignItems = "stretch";
@@ -3195,6 +3196,8 @@ export default function ResumeGenerator() {
         pageCanvas.height = currentSliceHeight;
         const ctx = pageCanvas.getContext("2d");
         if (!ctx) throw new Error("canvas");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
         ctx.drawImage(canvas, 0, y, canvas.width, currentSliceHeight, 0, 0, canvas.width, currentSliceHeight);
         const imgData = pageCanvas.toDataURL("image/png");
         const imgHeight = pageWidth * (currentSliceHeight / canvas.width);
