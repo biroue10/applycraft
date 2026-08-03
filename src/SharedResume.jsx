@@ -245,7 +245,8 @@ async function downloadSharedPdf(node, doc) {
     direction: rtl ? "rtl" : "ltr",
   });
   const inner = clone.firstElementChild;
-  if (inner) {
+  const innerDisplay = inner?.style?.display;
+  if (inner && (innerDisplay === "flex" || innerDisplay === "grid")) {
     inner.style.minHeight = `${pagePixelHeight}px`;
     inner.style.height = "auto";
     inner.style.alignItems = "stretch";
@@ -275,6 +276,8 @@ async function downloadSharedPdf(node, doc) {
       pageCanvas.height = currentSliceHeight;
       const context = pageCanvas.getContext("2d");
       if (!context) throw new Error("canvas");
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
       context.drawImage(canvas, 0, y, canvas.width, currentSliceHeight, 0, 0, canvas.width, currentSliceHeight);
       if (pageIndex > 0) pdf.addPage();
       pdf.addImage(
@@ -405,3 +408,4 @@ export default function SharedResume() {
     </AppShell>
   );
 }
+
