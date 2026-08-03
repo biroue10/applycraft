@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-29T22:42:45.913Z",
+  "generatedAt": "2026-08-03T13:19:11.152Z",
   "pages": [
     {
       "route": "/about\\",
@@ -290,6 +290,18 @@
       "differentiationNote": "Serve the specific informational or product intent expressed by How ApplyCraft Works: Resume to Interview"
     },
     {
+      "route": "/blog\\how-to-answer-job-application-questions\\",
+      "locale": "en",
+      "primaryKeyword": "job application questions: 20 answers",
+      "secondaryKeywords": [],
+      "searchIntent": "Serve the specific informational or product intent expressed by Job Application Questions: 20 Answers",
+      "canonical": "https://applycraft.io/blog/how-to-answer-job-application-questions/",
+      "parentHub": "",
+      "primaryCta": "",
+      "overlappingPages": [],
+      "differentiationNote": "Serve the specific informational or product intent expressed by Job Application Questions: 20 Answers"
+    },
+    {
       "route": "/blog\\how-to-write-an-ats-friendly-resume\\",
       "locale": "en",
       "primaryKeyword": "how to write an ats-friendly resume",
@@ -376,14 +388,26 @@
     {
       "route": "/blog\\student-resume-no-experience\\",
       "locale": "en",
-      "primaryKeyword": "student resume with no experience: examples",
+      "primaryKeyword": "student resume without experience: 15 examples",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by Student Resume With No Experience: Examples",
+      "searchIntent": "Serve the specific informational or product intent expressed by Student Resume Without Experience: 15 Examples",
       "canonical": "https://applycraft.io/blog/student-resume-no-experience/",
       "parentHub": "",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by Student Resume With No Experience: Examples"
+      "differentiationNote": "Serve the specific informational or product intent expressed by Student Resume Without Experience: 15 Examples"
+    },
+    {
+      "route": "/blog\\student-resume-summary-examples\\",
+      "locale": "en",
+      "primaryKeyword": "25 resume summary examples for students with",
+      "secondaryKeywords": [],
+      "searchIntent": "Serve the specific informational or product intent expressed by 25 Resume Summary Examples for Students With",
+      "canonical": "https://applycraft.io/blog/student-resume-summary-examples/",
+      "parentHub": "/resume-examples-by-role/",
+      "primaryCta": "",
+      "overlappingPages": [],
+      "differentiationNote": "Serve the specific informational or product intent expressed by 25 Resume Summary Examples for Students With"
     },
     {
       "route": "/blog\\tailor-resume-to-job-description-ats-keywords\\",
@@ -400,14 +424,14 @@
     {
       "route": "/blog\\teacher-resume-skills-achievements\\",
       "locale": "en",
-      "primaryKeyword": "teacher resume skills and achievements: 25",
+      "primaryKeyword": "teacher resume skills: 30 examples and",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by Teacher Resume Skills and Achievements: 25",
+      "searchIntent": "Serve the specific informational or product intent expressed by Teacher Resume Skills: 30 Examples and",
       "canonical": "https://applycraft.io/blog/teacher-resume-skills-achievements/",
       "parentHub": "",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by Teacher Resume Skills and Achievements: 25"
+      "differentiationNote": "Serve the specific informational or product intent expressed by Teacher Resume Skills: 30 Examples and"
     },
     {
       "route": "/canadian-resume-builder\\",
@@ -556,14 +580,14 @@
     {
       "route": "/examples\\french-cv-example\\",
       "locale": "en",
-      "primaryKeyword": "french cv example â€” modã¨le de cv franã§ais",
+      "primaryKeyword": "french cv example: free template",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by French CV Example â€” ModÃ¨le de CV FranÃ§ais",
+      "searchIntent": "Serve the specific informational or product intent expressed by French CV Example: Free Template",
       "canonical": "https://applycraft.io/examples/french-cv-example/",
       "parentHub": "/resume-examples-by-role/",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by French CV Example â€” ModÃ¨le de CV FranÃ§ais"
+      "differentiationNote": "Serve the specific informational or product intent expressed by French CV Example: Free Template"
     },
     {
       "route": "/examples\\help-desk-analyst-resume\\",
@@ -760,14 +784,14 @@
     {
       "route": "/fr\\blog\\cv-administrateur-systeme-linux\\",
       "locale": "en",
-      "primaryKeyword": "cv administrateur système linux : compétences",
+      "primaryKeyword": "cv administrateur syst├¿me linux :",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by CV administrateur système Linux : compétences",
+      "searchIntent": "Serve the specific informational or product intent expressed by CV administrateur syst├¿me Linux :",
       "canonical": "https://applycraft.io/fr/blog/cv-administrateur-systeme-linux/",
       "parentHub": "",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by CV administrateur système Linux : compétences"
+      "differentiationNote": "Serve the specific informational or product intent expressed by CV administrateur syst├¿me Linux :"
     },
     {
       "route": "/fr\\blog\\cv-canadien-maroc\\",
@@ -784,62 +808,62 @@
     {
       "route": "/fr\\blog\\cv-comptable-missions-realisations\\",
       "locale": "en",
-      "primaryKeyword": "cv comptable : missions et réalisations",
+      "primaryKeyword": "cv comptable : missions et r├®alisations",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by CV comptable : missions et réalisations",
+      "searchIntent": "Serve the specific informational or product intent expressed by CV comptable : missions et r├®alisations",
       "canonical": "https://applycraft.io/fr/blog/cv-comptable-missions-realisations/",
       "parentHub": "",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by CV comptable : missions et réalisations"
+      "differentiationNote": "Serve the specific informational or product intent expressed by CV comptable : missions et r├®alisations"
     },
     {
       "route": "/fr\\blog\\cv-enseignant-competences-realisations\\",
       "locale": "en",
-      "primaryKeyword": "cv d’enseignant : compétences et exemples de",
+      "primaryKeyword": "cv dôçöenseignant : comp├®tences et exemples",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by CV d’enseignant : compétences et exemples de",
+      "searchIntent": "Serve the specific informational or product intent expressed by CV dÔÇÖenseignant : comp├®tences et exemples",
       "canonical": "https://applycraft.io/fr/blog/cv-enseignant-competences-realisations/",
       "parentHub": "",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by CV d’enseignant : compétences et exemples de"
+      "differentiationNote": "Serve the specific informational or product intent expressed by CV dÔÇÖenseignant : comp├®tences et exemples"
     },
     {
       "route": "/fr\\blog\\cv-etudiant-sans-experience-exemples\\",
       "locale": "en",
-      "primaryKeyword": "cv étudiant sans expérience : exemples et",
+      "primaryKeyword": "cv ├®tudiant sans exp├®rience : exemples et",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by CV étudiant sans expérience : exemples et",
+      "searchIntent": "Serve the specific informational or product intent expressed by CV ├®tudiant sans exp├®rience : exemples et",
       "canonical": "https://applycraft.io/fr/blog/cv-etudiant-sans-experience-exemples/",
       "parentHub": "",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by CV étudiant sans expérience : exemples et"
+      "differentiationNote": "Serve the specific informational or product intent expressed by CV ├®tudiant sans exp├®rience : exemples et"
     },
     {
       "route": "/fr\\blog\\cv-francais-candidat-etranger\\",
       "locale": "en",
-      "primaryKeyword": "comment rédiger un cv en français comme",
+      "primaryKeyword": "comment r├®diger un cv en fran├ºais comme",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by Comment rédiger un CV en français comme",
+      "searchIntent": "Serve the specific informational or product intent expressed by Comment r├®diger un CV en fran├ºais comme",
       "canonical": "https://applycraft.io/fr/blog/cv-francais-candidat-etranger/",
       "parentHub": "",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by Comment rédiger un CV en français comme"
+      "differentiationNote": "Serve the specific informational or product intent expressed by Comment r├®diger un CV en fran├ºais comme"
     },
     {
       "route": "/fr\\blog\\cv-gratuit-sans-inscription\\",
       "locale": "en",
-      "primaryKeyword": "cv gratuit sans inscription : créer et",
+      "primaryKeyword": "cv gratuit en ligne : cr├®er et t├®l├®charger",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by CV gratuit sans inscription : créer et",
+      "searchIntent": "Serve the specific informational or product intent expressed by CV gratuit en ligne : cr├®er et t├®l├®charger",
       "canonical": "https://applycraft.io/fr/blog/cv-gratuit-sans-inscription/",
       "parentHub": "",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by CV gratuit sans inscription : créer et"
+      "differentiationNote": "Serve the specific informational or product intent expressed by CV gratuit en ligne : cr├®er et t├®l├®charger"
     },
     {
       "route": "/fr\\blog\\cv-lettre-motivation-correspondance-candidature\\",
@@ -914,6 +938,18 @@
       "differentiationNote": "Serve the specific informational or product intent expressed by Exemple CV Maroc 2026 : modèle gratuit"
     },
     {
+      "route": "/fr\\blog\\exemples-profil-cv-etudiant-sans-experience\\",
+      "locale": "en",
+      "primaryKeyword": "25 exemples de profil pour un cv ├®tudiant",
+      "secondaryKeywords": [],
+      "searchIntent": "Serve the specific informational or product intent expressed by 25 exemples de profil pour un CV ├®tudiant",
+      "canonical": "https://applycraft.io/fr/blog/exemples-profil-cv-etudiant-sans-experience/",
+      "parentHub": "",
+      "primaryCta": "",
+      "overlappingPages": [],
+      "differentiationNote": "Serve the specific informational or product intent expressed by 25 exemples de profil pour un CV ├®tudiant"
+    },
+    {
       "route": "/fr\\blog\\",
       "locale": "en",
       "primaryKeyword": "blog",
@@ -972,6 +1008,18 @@
       "primaryCta": "",
       "overlappingPages": [],
       "differentiationNote": "Serve the specific informational or product intent expressed by Questions d'entretien d'embauche : 10 classiques et réponses"
+    },
+    {
+      "route": "/fr\\blog\\repondre-questions-candidature-emploi\\",
+      "locale": "en",
+      "primaryKeyword": "questions de candidature : 20 réponses",
+      "secondaryKeywords": [],
+      "searchIntent": "Serve the specific informational or product intent expressed by Questions de candidature : 20 réponses",
+      "canonical": "https://applycraft.io/fr/blog/repondre-questions-candidature-emploi/",
+      "parentHub": "",
+      "primaryCta": "",
+      "overlappingPages": [],
+      "differentiationNote": "Serve the specific informational or product intent expressed by Questions de candidature : 20 réponses"
     },
     {
       "route": "/fr\\blog\\verificateur-ats-gratuit-ce-quil-verifie-et-ce-quil-ne-voit-pas\\",
@@ -1096,14 +1144,14 @@
     {
       "route": "/free-resume-builder\\",
       "locale": "en",
-      "primaryKeyword": "free resume builder — no sign-up, pdf & docx",
+      "primaryKeyword": "free resume builder: pdf & docx export",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by Free Resume Builder — No Sign-Up, PDF & DOCX",
+      "searchIntent": "Serve the specific informational or product intent expressed by Free Resume Builder: PDF & DOCX Export",
       "canonical": "https://applycraft.io/free-resume-builder/",
       "parentHub": "",
       "primaryCta": "",
       "overlappingPages": [],
-      "differentiationNote": "Serve the specific informational or product intent expressed by Free Resume Builder — No Sign-Up, PDF & DOCX"
+      "differentiationNote": "Serve the specific informational or product intent expressed by Free Resume Builder: PDF & DOCX Export"
     },
     {
       "route": "/gdpr\\",

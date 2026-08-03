@@ -13,33 +13,34 @@ const articles = [
     locale: "en", slug: "linux-system-administrator-resume-skills-ats",
     title: "Linux System Administrator Resume: Skills and ATS Keywords",
     description: "Build a Linux system administrator resume with the right skills, measurable bullet points, certifications and truthful ATS keywords.",
-    category: "Linux Careers", lead: "A Linux resume should prove that you can keep systems reliable, secure, observable and repeatable—not merely list commands you have used.",
+    category: "Linux Careers", lead: "A Linux resume should prove that you can keep systems reliable, secure, observable and repeatableÔÇönot merely list commands you have used.",
     primary: "/linux-system-administrator-resume/", cta: "Open the Linux system administrator resume example",
     sections: [
       ["Start with the evidence employers screen for", "State your environment before your tool list: distributions, server count, cloud footprint, availability target, user base and support model. This context tells a recruiter whether your experience matches the scale of the vacancy.", ["Linux distributions and versions you administered", "Number of production servers, clusters or regions", "Availability, incident response and recovery objectives", "Automation coverage and hours of manual work removed"]],
       ["Organize technical skills for both ATS and people", "Group related skills instead of publishing an unfiltered keyword wall. Mirror terminology from the vacancy only when it accurately describes your experience.", ["Linux: RHEL, Ubuntu, Debian, systemd, package management", "Automation: Bash, Python, Ansible, Terraform", "Cloud and containers: AWS, Azure, Docker, Kubernetes", "Security and reliability: IAM, SELinux, patching, backups, Prometheus"]],
-      ["Turn responsibilities into achievement bullets", "Use action + scope + technical method + result. For example: “Automated patching for 180 Linux servers with Ansible, cutting maintenance effort by 65% while sustaining 99.95% availability.” Keep every metric defensible in an interview.", ["Weak: Responsible for Linux servers", "Better: Administered 240 RHEL and Ubuntu systems across production and staging", "Strongest: Add the improvement in uptime, recovery time, deployment time or security posture"]],
+      ["Turn responsibilities into achievement bullets", "Use action + scope + technical method + result. For example: ÔÇ£Automated patching for 180 Linux servers with Ansible, cutting maintenance effort by 65% while sustaining 99.95% availability.ÔÇØ Keep every metric defensible in an interview.", ["Weak: Responsible for Linux servers", "Better: Administered 240 RHEL and Ubuntu systems across production and staging", "Strongest: Add the improvement in uptime, recovery time, deployment time or security posture"]],
       ["Choose keywords without gaming the ATS", "Prioritize repeated hard skills, certifications and responsibilities from the job description. Do not add Kubernetes, Terraform or a certification simply because it appears in the posting. A truthful near-match is safer than a fabricated exact match."]
     ],
     faqs: [["How long should a Linux administrator resume be?", "Use one page early in your career and up to two pages when you have substantial relevant infrastructure experience."], ["Should I include a GitHub profile?", "Yes, when it contains sanitized scripts, playbooks or infrastructure examples that do not expose employer secrets."], ["Which certifications matter?", "RHCSA, RHCE, LFCS, Linux+ and relevant cloud certifications can strengthen a resume when the target role values them."]]
   },
   {
     locale: "en", slug: "teacher-resume-skills-achievements",
-    title: "Teacher Resume Skills and Achievements: 25 Examples",
-    description: "Choose teacher resume skills and write measurable classroom achievements with examples for experienced and first-time educators.",
-    category: "Education", lead: "A teacher resume becomes credible when it connects instructional choices to student progress, inclusion, engagement and classroom operations.",
+    title: "Teacher Resume Skills: 30 Examples and Achievements",
+    description: "Choose from 30 teacher resume skills and measurable achievement examples for new, primary, secondary and special education teachers.",
+    category: "Education", lead: "A strong teacher resume does more than list classroom duties. It connects your teaching skills to student progress, inclusion, engagement and a well-run learning environment.",
+    updatedAt: "2026-08-03", readMinutes: 16,
+    directAnswer: "The best teacher resume skills combine instruction, classroom management, assessment, inclusion, communication and education technology. Select 8 to 12 skills that match the vacancy, then prove the most important ones with a measurable classroom achievement.",
     primary: "/examples/teacher-resume/", cta: "Use the free teacher resume example",
     sections: [
-      ["Skills schools actually look for", "Lead with licensure, grade bands and subjects, then show instructional and collaboration skills relevant to the vacancy.", ["Curriculum planning and differentiated instruction", "Classroom management and safeguarding", "Assessment, progress monitoring and data use", "IEP support, family communication and multidisciplinary collaboration", "Google Classroom, Canvas, Seesaw or the platforms named by the school"]],
-      ["Achievement examples to adapt truthfully", "Your bullets should describe your contribution without claiming that one teacher caused every result.", ["Raised reading benchmark attainment from 68% to 84% through weekly small-group instruction", "Designed a project-based science unit for 120 learners and increased completion by 18%", "Coordinated learning plans with families and specialists for 14 students", "Reduced missing assignments by introducing a weekly progress dashboard"]],
-      ["25 teacher skills to select from", "Choose only skills that match your practice and the vacancy.", ["Lesson planning", "Differentiated instruction", "Classroom management", "Formative assessment", "Progress monitoring", "Curriculum alignment", "IEP support", "Safeguarding", "Family communication", "Student engagement", "Inclusive education", "Behaviour support", "Literacy instruction", "Numeracy instruction", "Educational technology", "Learning management systems", "Remote teaching", "Project-based learning", "Mentoring", "Co-teaching", "Department collaboration", "Data-informed instruction", "Conflict resolution", "Exam preparation", "Professional development"]],
-      ["What a first-time teacher can show", "Student teaching, practicum placements, tutoring, coaching and youth programs all provide evidence. Include class size, lesson scope, feedback from mentors and learning resources you created."],
-      ["ATS terms for teaching vacancies", "Use the exact grade, subject, curriculum and certification terminology from the role when it applies to you. Keep section headings conventional so district systems can identify education, certification and experience."],
-      ["Final teacher resume checklist", "Confirm that licensure, grade levels and subjects are easy to find; results protect student privacy; every tool was used in practice; and the file remains readable when copied as plain text."]
+      ["30 teacher resume skills schools look for", "Use this list as a menu, not a keyword dump. Choose skills you have actually used and prioritize the language in the job description.", ["Instruction: curriculum planning, lesson planning, differentiated instruction, project-based learning, literacy instruction, numeracy instruction", "Classroom: classroom management, safeguarding, restorative practices, student engagement, behavior support, learning routines", "Assessment: formative assessment, summative assessment, progress monitoring, data-informed instruction, feedback, rubric design", "Inclusion: IEP implementation, accommodations, universal design for learning, English learner support, special education collaboration, culturally responsive teaching", "Collaboration: family communication, parent conferences, multidisciplinary teamwork, mentoring, conflict resolution, curriculum coordination"]],
+      ["Teacher achievement examples with measurable results", "Adapt these examples to your own evidence. Never invent a percentage, class size or outcome you could not explain in an interview.", ["Raised reading benchmark attainment from 68% to 84% through twice-weekly small-group instruction", "Designed a project-based science unit for 120 learners and increased assignment completion by 18%", "Reduced missing assignments by 27% after introducing a weekly progress dashboard", "Coordinated IEP accommodations with families and specialists for 14 students", "Improved average unit assessment scores by 11 points using targeted reteaching", "Created 36 standards-aligned lesson plans adopted by three colleagues", "Mentored four trainee teachers and delivered six classroom-management workshops", "Secured $4,500 in grants for laboratory equipment", "Led an after-school tutoring program serving 42 students", "Cut preparation time by five hours weekly through a shared resource library"]],
+      ["Teacher resume examples by role", "A primary teacher can highlight literacy, routines and family communication; a secondary teacher should foreground subject expertise and assessment; a special education teacher should show accommodations, IEP collaboration and student independence.", ["New teacher: practicum scope, lesson design, mentor feedback and tutoring", "Primary teacher: phonics, foundational numeracy, positive routines and parent communication", "Secondary teacher: subject curriculum, examination preparation, laboratory or project work", "Special education teacher: IEP implementation, assistive technology and behavior support"]],
+      ["Copyable teacher resume summary template", "[Licensed/certified] [subject or grade] teacher with [X years / practicum experience] supporting [learner group]. Skilled in [two vacancy-relevant skills], with evidence of [measurable result]. Seeking to contribute [specific value] at [school type]."],
+      ["What a first-time teacher can show", "Student teaching, practicum placements, tutoring, coaching and youth programs all provide evidence. Include grade level, class size, lesson scope, mentor feedback and resources you created."],
+      ["Make the resume ATS-friendly", "Use conventional headings such as Teaching Experience, Education, Certifications and Skills. Include exact grade, subject, curriculum and license terms only when they apply to you."]
     ],
-    faqs: [["Should teachers include student results?", "Yes, use aggregate and non-identifying results and explain your contribution."], ["Is a two-page teacher resume acceptable?", "Yes for experienced educators with relevant leadership and professional development; new teachers usually benefit from one page."], ["Should I list every classroom tool?", "List tools used in practice and prioritize those requested by the school."]],
-    readMinutes: 14,
-    related: [["Teacher resume example", "/examples/teacher-resume/"], ["ATS resume checker", "/ats-checker/"], ["Resume templates", "/resume/templates/"]]
+    related: [["Teacher resume example", "/examples/teacher-resume/"], ["Free ATS resume checker", "/ats-checker/"], ["Resume templates", "/resume/templates/"], ["Student resume with no experience", "/blog/student-resume-no-experience/"]],
+    faqs: [["What are the best skills to put on a teacher resume?", "Choose instructional, classroom-management, assessment, inclusion, communication and technology skills that match the vacancy."], ["How many skills should a teacher resume include?", "Eight to twelve targeted skills are usually easier to scan than a generic list."], ["Should teachers include student results?", "Yes, use aggregate and non-identifying results and explain your contribution."], ["Is a two-page teacher resume acceptable?", "Yes for experienced educators; new teachers usually benefit from one page."], ["What should a first-year teacher put on a resume?", "Include student teaching, practicums, tutoring, certifications, grade levels, class sizes and resources you created."], ["Should I list every classroom tool?", "No. List tools you have used and prioritize those requested by the school."]]
   },
   {
     locale: "en", slug: "accountant-resume-skills-achievements",
@@ -48,7 +49,7 @@ const articles = [
     category: "Accounting", lead: "Accounting employers screen for accuracy, standards, systems and trust. Your resume should make each of those qualities visible through evidence.",
     primary: "/examples/accountant-resume/", cta: "Customize the accountant resume example",
     sections: [
-      ["Build a precise accountant summary", "Name your level, accounting environment, strongest systems and one relevant result. Avoid unsupported claims such as “detail-oriented expert.”"],
+      ["Build a precise accountant summary", "Name your level, accounting environment, strongest systems and one relevant result. Avoid unsupported claims such as ÔÇ£detail-oriented expert.ÔÇØ"],
       ["Skills and keywords to organize", "Separate standards, processes and software so recruiters can scan them quickly.", ["GAAP, IFRS, SOX and internal controls", "Month-end close, reconciliations, AP/AR and financial reporting", "QuickBooks, SAP, Oracle, NetSuite, Xero and advanced Excel", "Audit support, tax preparation and variance analysis"]],
       ["Achievement examples", "Use money, time, volume, accuracy and audit outcomes where appropriate.", ["Reduced month-end close from nine to five days by standardizing reconciliations", "Identified $310K in annual savings through vendor and accrual review", "Prepared reporting for a $90M business unit with no material audit findings", "Automated a recurring Excel report and saved 12 hours each month"]],
       ["Tailor the resume by accounting role", "A staff accountant should emphasize close and reconciliations; an AP specialist should show invoice volume and controls; a senior accountant should demonstrate ownership, review and process improvement."]
@@ -59,33 +60,35 @@ const articles = [
     locale: "en", slug: "it-support-resume-skills-ats-keywords",
     title: "IT Support Resume: Skills, Bullet Points and ATS Keywords",
     description: "Create an IT support resume with technical skills, ticket and SLA metrics, certifications, bullet examples and accurate ATS keywords.",
-    category: "IT Careers", lead: "An IT support resume should demonstrate troubleshooting depth, service quality and communication—not just a list of hardware and software.",
+    category: "IT Careers", lead: "An IT support resume should demonstrate troubleshooting depth, service quality and communicationÔÇönot just a list of hardware and software.",
     primary: "/examples/it-support-technician-resume/", cta: "Open the IT support technician resume example",
     sections: [
       ["Show the support environment", "State the support tier, user population, ticket volume, channels, operating systems and service targets you handled."],
       ["Technical skills to prioritize", "Group tools by function and keep only skills you can discuss.", ["Active Directory, Entra ID and Microsoft 365", "Windows, macOS, Linux and mobile device support", "ServiceNow, Jira Service Management, Zendesk or Freshservice", "TCP/IP, DNS, DHCP, VPN and endpoint security", "Remote support, imaging, Intune, SCCM and asset management"]],
-      ["Bullet-point examples", "Combine issue, action and result.", ["Resolved 35–45 weekly tickets while maintaining 96% SLA compliance", "Improved first-contact resolution from 62% to 78% by publishing 24 knowledge articles", "Reduced laptop provisioning from two days to four hours with standardized Intune profiles"]],
+      ["Bullet-point examples", "Combine issue, action and result.", ["Resolved 35ÔÇô45 weekly tickets while maintaining 96% SLA compliance", "Improved first-contact resolution from 62% to 78% by publishing 24 knowledge articles", "Reduced laptop provisioning from two days to four hours with standardized Intune profiles"]],
       ["ATS keywords and certifications", "Use terminology from the role such as L1, L2, ITIL, Microsoft 365 or CompTIA only when it matches your background. Certifications support evidence; they do not replace hands-on examples."]
     ],
     faqs: [["How do I write an IT support resume without experience?", "Use labs, certifications, volunteer support and projects, and describe the problems you solved."], ["Should I list ticket metrics?", "Yes, when available: ticket volume, resolution rate, SLA compliance and satisfaction make service quality concrete."], ["What format is safest?", "A clear one-column structure with standard headings is generally easy for ATS software to parse."]]
   },
   {
     locale: "en", slug: "student-resume-no-experience",
-    title: "Student Resume With No Experience: Examples and Template",
-    description: "Build a student resume without formal experience using coursework, projects, volunteering, skills and honest achievement examples.",
-    category: "Students", lead: "No formal job history does not mean no evidence. A student resume can prove initiative, reliability and practical skills through projects, coursework and community work.",
+    title: "Student Resume Without Experience: 15 Examples",
+    description: "Create a student resume with no experience using 15 summary examples, projects, coursework, volunteering, skills and a copyable template.",
+    category: "Students", lead: "No formal job history does not mean you have nothing to offer. Your studies, projects, volunteering and responsibilities can prove the same skills employers want to see.",
+    updatedAt: "2026-08-03", readMinutes: 17,
+    directAnswer: "A student resume with no experience should lead with a targeted summary and education, then use projects, relevant coursework, volunteering, activities and skills as evidence. Keep it to one page, describe what you did, and add a result, scale or tool whenever it is truthful.",
     primary: "/student-resume-builder/", cta: "Build a student resume free",
     sections: [
-      ["Choose evidence before choosing sections", "List projects, coursework, clubs, volunteering, caregiving, sport, freelance tasks and informal work. Select the evidence most relevant to the target role."],
-      ["A practical section order", "Lead with contact information and a target-specific summary, followed by education, relevant projects, skills and experience or activities.", ["Education with relevant modules", "Two or three projects with outcomes", "Skills demonstrated by evidence", "Volunteer, club or part-time responsibilities"]],
-      ["Turn school activities into bullets", "Describe the situation, your action and the result.", ["Coordinated a five-person project team and delivered the presentation two days early", "Analyzed 2,000 survey responses in Excel and summarized three actionable findings", "Managed weekly communications for a 120-member student association"]],
-      ["Write a focused student summary", "Use three compact elements: your current course or status, the role you want, and one proof of a relevant strength. Replace generic claims such as hard-working with evidence from a project, activity or responsibility."],
-      ["Avoid common beginner mistakes", "Do not fill space with generic adjectives, unrelated course lists or fabricated employment. Keep the document focused on the role and usually to one page."],
-      ["Final one-page checklist", "Before applying, confirm that the target role is named, every skill is supported by evidence, dates use one format, verbs are specific, links work, and the PDF still parses as selectable text."]
+      ["Best resume format for a student with no experience", "Use a simple layout that an ATS can parse and put your strongest evidence near the top.", ["Name, professional email, city and relevant portfolio or LinkedIn link", "Two- or three-line target-specific summary", "Education with expected graduation date and relevant coursework", "Two or three projects with actions, tools and outcomes", "Volunteering, clubs, sports, caregiving, freelance or informal work", "A short skills section supported by evidence"]],
+      ["15 student resume summary examples", "Use these as patterns and replace every detail with your own.", ["Business student with Excel and market-research project experience seeking a summer operations internship", "Computer science student who built three responsive web projects using JavaScript and React", "High school student with strong attendance, peer-tutoring experience and weekend volunteer service", "Biology undergraduate experienced in laboratory documentation, data entry and safe sample handling", "Marketing student who grew a club newsletter audience by 28%", "Engineering student with CAD coursework and a five-person design project", "Economics student who analyzed 2,000 survey responses and presented three recommendations", "Education student with 120 hours of classroom observation and tutoring", "Hospitality student recognized for reliable event support and guest communication", "Accounting student skilled in Excel, reconciliations and a simulated close project", "Graphic design student with a six-project portfolio", "Psychology student trained in research ethics, literature reviews and SPSS", "International student fluent in English and French with cross-cultural teamwork experience", "Career-starting graduate combining customer service volunteering with Google Workspace skills", "Student athlete balancing 15 weekly training hours with coursework and team leadership"]],
+      ["Turn projects, coursework and activities into experience", "Describe the challenge, your action, the tool or skill used and the outcome.", ["Coordinated a five-person capstone team and delivered the presentation two days early", "Analyzed 2,000 survey responses in Excel and summarized three findings", "Built a responsive portfolio and improved Lighthouse accessibility from 82 to 98", "Managed weekly communications for a 120-member student association", "Tutored six students in algebra and prepared personalized practice materials", "Organized a food drive that collected 480 items from 70 donors"]],
+      ["Skills to include on a first resume", "Prioritize skills in the vacancy that your projects or activities demonstrate.", ["Digital: Excel, Google Workspace, Canva, coding or role-specific software", "Communication: presentations, writing, customer service and languages", "Organization: scheduling, documentation, event support and deadlines", "Analysis: research, data cleaning, problem solving and reporting", "Teamwork: collaboration, peer support, leadership and conflict resolution"]],
+      ["Complete student resume example", "Maya Chen ÔÇö Business Administration student | Toronto, ON. Summary: Second-year business student with Excel analysis, event coordination and customer-facing volunteer experience seeking a summer operations internship. Education: BBA, expected 2028; coursework in statistics, accounting and operations. Project: analyzed 2,000 survey responses and presented three recommendations. Volunteer Experience: coordinated weekly check-in for 35 food-bank clients. Skills: Excel, Google Slides, data entry, English and French."],
+      ["High school vs. university student resumes", "A high school resume can emphasize attendance, coursework, clubs, sports and volunteering. A university resume should prioritize degree-specific projects, relevant modules, research, societies, internships and technical tools."],
+      ["Avoid common beginner mistakes", "Do not use generic adjectives, unrelated course lists, sensitive personal details or fabricated work. Use a professional email, check dates and spelling, and export a clean PDF."]
     ],
-    faqs: [["What should a student put in a resume summary?", "Name the course or target, one or two relevant strengths and the type of opportunity sought."], ["Can school projects count as experience?", "Yes. Label them accurately as projects and explain your contribution and result."], ["Should a student resume be one page?", "Usually yes, unless substantial directly relevant experience justifies more."]],
-    readMinutes: 15,
-    related: [["25 student resume summary examples", "/blog/student-resume-summary-examples/"], ["Student resume builder", "/student-resume-builder/"], ["Resume templates", "/resume/templates/"]]
+    related: [["Free student resume builder", "/student-resume-builder/"], ["Entry-level resume example", "/examples/entry-level-resume/"], ["Resume templates", "/resume/templates/"], ["Free ATS resume checker", "/ats-checker/"], ["ATS-friendly resume guide", "/blog/how-to-write-an-ats-friendly-resume/"]],
+    faqs: [["What should a student put on a resume with no experience?", "Use education, coursework, projects, volunteering, clubs, sports, caregiving, informal work and supported skills."], ["What should a student put in a resume summary?", "Name your current course or stage, relevant strengths, one piece of evidence and the opportunity you want."], ["Can school projects count as experience?", "Yes. Label them as projects and explain your contribution, tools and result."], ["What skills look good on a student resume?", "Choose job-relevant digital, communication, organization, analysis and teamwork skills you can prove."], ["Should a student resume be one page?", "Usually yes, unless substantial directly relevant experience justifies more."], ["Do I need references on a student resume?", "Usually not. Provide references later if an employer requests them."]]
   },
   {
     locale: "en", slug: "student-resume-summary-examples",
@@ -124,108 +127,108 @@ const articles = [
   },
   {
     locale: "fr", slug: "cv-francais-candidat-etranger",
-    title: "Comment rédiger un CV en français comme candidat étranger",
-    description: "Adaptez votre CV au marché francophone : vocabulaire, diplômes, expériences étrangères, format, exemples et conseils ATS.",
-    category: "CV en français", lead: "Un bon CV en français ne consiste pas à traduire chaque mot. Il faut rendre votre parcours compréhensible, conserver les faits et adapter les conventions au marché ciblé.",
-    primary: "/examples/french-cv-example/", cta: "Consulter l’exemple de CV en français",
+    title: "Comment r├®diger un CV en fran├ºais comme candidat ├®tranger",
+    description: "Adaptez votre CV au march├® francophone : vocabulaire, dipl├┤mes, exp├®riences ├®trang├¿res, format, exemples et conseils ATS.",
+    category: "CV en fran├ºais", lead: "Un bon CV en fran├ºais ne consiste pas ├á traduire chaque mot. Il faut rendre votre parcours compr├®hensible, conserver les faits et adapter les conventions au march├® cibl├®.",
+    primary: "/examples/french-cv-example/", cta: "Consulter lÔÇÖexemple de CV en fran├ºais",
     sections: [
-      ["Clarifier les intitulés sans modifier la réalité", "Conservez l’intitulé officiel lorsque cela compte, puis ajoutez entre parenthèses un équivalent français compréhensible. Expliquez brièvement une entreprise inconnue par son secteur, sa taille ou son marché."],
-      ["Présenter les diplômes étrangers", "Indiquez le nom original du diplôme, l’établissement, le pays et, si elle est officielle, l’équivalence obtenue. N’inventez jamais une équivalence française."],
-      ["Choisir un vocabulaire professionnel naturel", "Employez des verbes d’action et des résultats précis.", ["Piloté, coordonné, analysé, déployé, réduit, augmenté", "Volume de clients, budget, délais, qualité ou économies", "Technologies et certifications demandées dans l’offre"]],
-      ["Adapter le format au pays visé", "La France, la Belgique, la Suisse, le Québec et les marchés francophones africains n’ont pas toujours les mêmes usages. Vérifiez notamment la photo, la longueur, les informations personnelles et la langue demandée."],
-      ["Relire la version finale", "Vérifiez les accents, les dates, les espaces, la cohérence des temps et les mots-clés exacts de l’offre. Une relecture humaine reste utile même après un contrôle automatisé."]
+      ["Clarifier les intitul├®s sans modifier la r├®alit├®", "Conservez lÔÇÖintitul├® officiel lorsque cela compte, puis ajoutez entre parenth├¿ses un ├®quivalent fran├ºais compr├®hensible. Expliquez bri├¿vement une entreprise inconnue par son secteur, sa taille ou son march├®."],
+      ["Pr├®senter les dipl├┤mes ├®trangers", "Indiquez le nom original du dipl├┤me, lÔÇÖ├®tablissement, le pays et, si elle est officielle, lÔÇÖ├®quivalence obtenue. NÔÇÖinventez jamais une ├®quivalence fran├ºaise."],
+      ["Choisir un vocabulaire professionnel naturel", "Employez des verbes dÔÇÖaction et des r├®sultats pr├®cis.", ["Pilot├®, coordonn├®, analys├®, d├®ploy├®, r├®duit, augment├®", "Volume de clients, budget, d├®lais, qualit├® ou ├®conomies", "Technologies et certifications demand├®es dans lÔÇÖoffre"]],
+      ["Adapter le format au pays vis├®", "La France, la Belgique, la Suisse, le Qu├®bec et les march├®s francophones africains nÔÇÖont pas toujours les m├¬mes usages. V├®rifiez notamment la photo, la longueur, les informations personnelles et la langue demand├®e."],
+      ["Relire la version finale", "V├®rifiez les accents, les dates, les espaces, la coh├®rence des temps et les mots-cl├®s exacts de lÔÇÖoffre. Une relecture humaine reste utile m├¬me apr├¿s un contr├┤le automatis├®."]
     ],
-    faqs: [["Faut-il traduire le nom de son diplôme ?", "Non. Gardez le nom officiel et ajoutez une explication ou une équivalence uniquement si elle est reconnue."], ["Un CV français doit-il contenir une photo ?", "Cela dépend du marché et du poste. Elle n’est généralement pas obligatoire."], ["Peut-on conserver les noms de logiciels en anglais ?", "Oui. Les noms de produits, technologies et certifications ne doivent pas être traduits."]]
+    faqs: [["Faut-il traduire le nom de son dipl├┤me ?", "Non. Gardez le nom officiel et ajoutez une explication ou une ├®quivalence uniquement si elle est reconnue."], ["Un CV fran├ºais doit-il contenir une photo ?", "Cela d├®pend du march├® et du poste. Elle nÔÇÖest g├®n├®ralement pas obligatoire."], ["Peut-on conserver les noms de logiciels en anglais ?", "Oui. Les noms de produits, technologies et certifications ne doivent pas ├¬tre traduits."]]
   },
   {
     locale: "fr", slug: "cv-gratuit-sans-inscription",
-    title: "CV gratuit en ligne : créer et télécharger sans payer",
-    description: "Découvrez comment créer un CV gratuit en ligne, vérifier les limites du service et télécharger un PDF ou DOCX sans frais cachés.",
-    category: "Créateur de CV", lead: "« Gratuit » peut désigner un simple aperçu gratuit, un essai limité ou un téléchargement réellement gratuit. Vérifiez les conditions avant de saisir toutes vos données.",
-    primary: "/fr/creer-cv-gratuit/", cta: "Créer un CV gratuitement",
+    title: "CV gratuit en ligne : cr├®er et t├®l├®charger sans payer",
+    description: "D├®couvrez comment cr├®er un CV gratuit en ligne, v├®rifier les limites du service et t├®l├®charger un PDF ou DOCX sans frais cach├®s.",
+    category: "Cr├®ateur de CV", lead: "┬½ Gratuit ┬╗ peut d├®signer un simple aper├ºu gratuit, un essai limit├® ou un t├®l├®chargement r├®ellement gratuit. V├®rifiez les conditions avant de saisir toutes vos donn├®es.",
+    primary: "/fr/creer-cv-gratuit/", cta: "Cr├®er un CV gratuitement",
     sections: [
-      ["Les cinq vérifications à faire", "Avant de commencer, contrôlez ce qui est inclus.", ["Téléchargement PDF réellement gratuit", "Absence de filigrane", "Compte obligatoire ou non", "Modèles et couleurs accessibles sans paiement", "Conservation et suppression des données"]],
-      ["Créer le contenu avant la mise en page", "Préparez l’intitulé visé, les coordonnées, les expériences, la formation, les compétences et trois à cinq réalisations chiffrées. Vous pourrez alors comparer les modèles sans perdre le fond."],
-      ["Télécharger et contrôler le fichier", "Ouvrez le PDF téléchargé, vérifiez les liens, les sauts de page, les caractères accentués et le nom du fichier. Importez ensuite le texte dans un vérificateur ATS pour détecter les problèmes évidents."],
-      ["Protéger ses données", "Évitez les informations sensibles inutiles. Un service sans compte peut stocker le brouillon dans le navigateur; un lien court facultatif peut nécessiter une copie temporaire côté serveur. Lisez la politique de confidentialité du service utilisé."]
+      ["Les cinq v├®rifications ├á faire", "Avant de commencer, contr├┤lez ce qui est inclus.", ["T├®l├®chargement PDF r├®ellement gratuit", "Absence de filigrane", "Compte obligatoire ou non", "Mod├¿les et couleurs accessibles sans paiement", "Conservation et suppression des donn├®es"]],
+      ["Cr├®er le contenu avant la mise en page", "Pr├®parez lÔÇÖintitul├® vis├®, les coordonn├®es, les exp├®riences, la formation, les comp├®tences et trois ├á cinq r├®alisations chiffr├®es. Vous pourrez alors comparer les mod├¿les sans perdre le fond."],
+      ["T├®l├®charger et contr├┤ler le fichier", "Ouvrez le PDF t├®l├®charg├®, v├®rifiez les liens, les sauts de page, les caract├¿res accentu├®s et le nom du fichier. Importez ensuite le texte dans un v├®rificateur ATS pour d├®tecter les probl├¿mes ├®vidents."],
+      ["Prot├®ger ses donn├®es", "├ëvitez les informations sensibles inutiles. Un service sans compte peut stocker le brouillon dans le navigateur; un lien court facultatif peut n├®cessiter une copie temporaire c├┤t├® serveur. Lisez la politique de confidentialit├® du service utilis├®."]
     ],
-    faqs: [["Peut-on créer un CV sans mot de passe ?", "Oui. ApplyCraft utilise un lien de connexion unique envoyé par e-mail : aucun mot de passe n'est nécessaire."], ["Un PDF gratuit contient-il forcément un filigrane ?", "Non. Vérifiez la politique du service avant de commencer."], ["Faut-il créer un compte pour utiliser ApplyCraft ?", "Un lien sécurisé envoyé par e-mail est requis pour accéder au créateur. Aucun mot de passe ni carte bancaire n'est demandé."]]
+    faqs: [["Peut-on cr├®er un CV sans mot de passe ?", "Oui. ApplyCraft utilise un lien de connexion unique envoy├® par e-mail : aucun mot de passe n'est n├®cessaire."], ["Un PDF gratuit contient-il forc├®ment un filigrane ?", "Non. V├®rifiez la politique du service avant de commencer."], ["Faut-il cr├®er un compte pour utiliser ApplyCraft ?", "Un lien s├®curis├® envoy├® par e-mail est requis pour acc├®der au cr├®ateur. Aucun mot de passe ni carte bancaire n'est demand├®."]]
   },
   {
     locale: "fr", slug: "cv-enseignant-competences-realisations",
-    title: "CV d’enseignant : compétences et exemples de réalisations",
-    description: "Rédigez un CV d’enseignant avec compétences pédagogiques, résultats mesurables, outils numériques et exemples adaptés aux débutants.",
-    category: "Éducation", lead: "Le CV d’un enseignant doit présenter les niveaux, les matières et les certifications, puis montrer l’effet concret des méthodes pédagogiques.",
-    primary: "/examples/teacher-resume/", cta: "Voir le modèle de CV enseignant",
+    title: "CV dÔÇÖenseignant : comp├®tences et exemples de r├®alisations",
+    description: "R├®digez un CV dÔÇÖenseignant avec comp├®tences p├®dagogiques, r├®sultats mesurables, outils num├®riques et exemples adapt├®s aux d├®butants.",
+    category: "├ëducation", lead: "Le CV dÔÇÖun enseignant doit pr├®senter les niveaux, les mati├¿res et les certifications, puis montrer lÔÇÖeffet concret des m├®thodes p├®dagogiques.",
+    primary: "/examples/teacher-resume/", cta: "Voir le mod├¿le de CV enseignant",
     sections: [
-      ["Compétences à sélectionner", "Privilégiez celles qui correspondent au poste.", ["Conception de séquences et différenciation pédagogique", "Gestion de classe et inclusion", "Évaluation et suivi de la progression", "Communication avec les familles", "Google Classroom, Moodle, Canvas ou outils demandés"]],
-      ["Exemples de réalisations", "Utilisez uniquement des données agrégées et vérifiables.", ["Fait progresser le taux de maîtrise en lecture de 68 % à 84 %", "Conçu un projet scientifique suivi par 120 élèves avec 18 % de travaux rendus supplémentaires", "Coordonné les plans d’accompagnement de 14 élèves avec les familles et spécialistes"]],
-      ["CV d’un enseignant débutant", "Décrivez les stages, remplacements, cours particuliers, animations et projets universitaires. Précisez le niveau, le nombre d’élèves et les supports créés."],
-      ["Compatibilité ATS", "Placez clairement diplômes, certifications, matières, niveaux et expériences sous des titres standards. Reprenez les termes de l’annonce seulement lorsqu’ils correspondent à votre parcours."]
+      ["Comp├®tences ├á s├®lectionner", "Privil├®giez celles qui correspondent au poste.", ["Conception de s├®quences et diff├®renciation p├®dagogique", "Gestion de classe et inclusion", "├ëvaluation et suivi de la progression", "Communication avec les familles", "Google Classroom, Moodle, Canvas ou outils demand├®s"]],
+      ["Exemples de r├®alisations", "Utilisez uniquement des donn├®es agr├®g├®es et v├®rifiables.", ["Fait progresser le taux de ma├«trise en lecture de 68 % ├á 84 %", "Con├ºu un projet scientifique suivi par 120 ├®l├¿ves avec 18 % de travaux rendus suppl├®mentaires", "Coordonn├® les plans dÔÇÖaccompagnement de 14 ├®l├¿ves avec les familles et sp├®cialistes"]],
+      ["CV dÔÇÖun enseignant d├®butant", "D├®crivez les stages, remplacements, cours particuliers, animations et projets universitaires. Pr├®cisez le niveau, le nombre dÔÇÖ├®l├¿ves et les supports cr├®├®s."],
+      ["Compatibilit├® ATS", "Placez clairement dipl├┤mes, certifications, mati├¿res, niveaux et exp├®riences sous des titres standards. Reprenez les termes de lÔÇÖannonce seulement lorsquÔÇÖils correspondent ├á votre parcours."]
     ],
-    faqs: [["Le CV enseignant peut-il faire deux pages ?", "Oui pour un profil expérimenté; une page suffit souvent en début de carrière."], ["Faut-il indiquer les résultats des élèves ?", "Oui sous forme agrégée, sans donnée permettant d’identifier un élève."], ["Où placer les certifications ?", "Près de l’en-tête ou dans une section clairement visible."]]
+    faqs: [["Le CV enseignant peut-il faire deux pages ?", "Oui pour un profil exp├®riment├®; une page suffit souvent en d├®but de carri├¿re."], ["Faut-il indiquer les r├®sultats des ├®l├¿ves ?", "Oui sous forme agr├®g├®e, sans donn├®e permettant dÔÇÖidentifier un ├®l├¿ve."], ["O├╣ placer les certifications ?", "Pr├¿s de lÔÇÖen-t├¬te ou dans une section clairement visible."]]
   },
   {
     locale: "fr", slug: "cv-administrateur-systeme-linux",
-    title: "CV administrateur système Linux : compétences et missions",
-    description: "Structurez un CV d’administrateur Linux avec compétences, automatisation, sécurité, disponibilité et exemples de missions chiffrées.",
-    category: "Carrières IT", lead: "Le recruteur doit comprendre la taille de votre infrastructure, vos responsabilités et les améliorations obtenues grâce à vos actions.",
-    primary: "/linux-system-administrator-resume/", cta: "Ouvrir l’exemple de CV administrateur Linux",
+    title: "CV administrateur syst├¿me Linux : comp├®tences et missions",
+    description: "Structurez un CV dÔÇÖadministrateur Linux avec comp├®tences, automatisation, s├®curit├®, disponibilit├® et exemples de missions chiffr├®es.",
+    category: "Carri├¿res IT", lead: "Le recruteur doit comprendre la taille de votre infrastructure, vos responsabilit├®s et les am├®liorations obtenues gr├óce ├á vos actions.",
+    primary: "/linux-system-administrator-resume/", cta: "Ouvrir lÔÇÖexemple de CV administrateur Linux",
     sections: [
-      ["Donner le contexte technique", "Indiquez les distributions, le nombre de serveurs, les environnements, le cloud, les utilisateurs et les exigences de disponibilité."],
-      ["Regrouper les compétences", "Organisez-les par familles.", ["Linux : RHEL, Ubuntu, Debian, systemd", "Automatisation : Bash, Python, Ansible, Terraform", "Cloud et conteneurs : AWS, Azure, Docker, Kubernetes", "Sécurité et fiabilité : IAM, SELinux, supervision, sauvegardes"]],
-      ["Rédiger des missions chiffrées", "Exemple : « Automatisé les correctifs mensuels de 180 serveurs avec Ansible, réduisant le temps de maintenance de 65 % tout en maintenant 99,95 % de disponibilité. »"],
-      ["Adapter les mots-clés", "Reprenez les technologies demandées uniquement si vous les maîtrisez réellement. Les métriques et les exemples concrets ont davantage de valeur qu’une longue liste de mots-clés."]
+      ["Donner le contexte technique", "Indiquez les distributions, le nombre de serveurs, les environnements, le cloud, les utilisateurs et les exigences de disponibilit├®."],
+      ["Regrouper les comp├®tences", "Organisez-les par familles.", ["Linux : RHEL, Ubuntu, Debian, systemd", "Automatisation : Bash, Python, Ansible, Terraform", "Cloud et conteneurs : AWS, Azure, Docker, Kubernetes", "S├®curit├® et fiabilit├® : IAM, SELinux, supervision, sauvegardes"]],
+      ["R├®diger des missions chiffr├®es", "Exemple : ┬½ Automatis├® les correctifs mensuels de 180 serveurs avec Ansible, r├®duisant le temps de maintenance de 65 % tout en maintenant 99,95 % de disponibilit├®. ┬╗"],
+      ["Adapter les mots-cl├®s", "Reprenez les technologies demand├®es uniquement si vous les ma├«trisez r├®ellement. Les m├®triques et les exemples concrets ont davantage de valeur quÔÇÖune longue liste de mots-cl├®s."]
     ],
-    faqs: [["Quelles certifications citer ?", "RHCSA, RHCE, LFCS, Linux+ et les certifications cloud pertinentes."], ["Faut-il ajouter GitHub ?", "Oui si les dépôts montrent des scripts ou playbooks nettoyés de toute donnée confidentielle."], ["Une page suffit-elle ?", "Oui en début de carrière; deux pages sont acceptables pour un profil expérimenté."]]
+    faqs: [["Quelles certifications citer ?", "RHCSA, RHCE, LFCS, Linux+ et les certifications cloud pertinentes."], ["Faut-il ajouter GitHub ?", "Oui si les d├®p├┤ts montrent des scripts ou playbooks nettoy├®s de toute donn├®e confidentielle."], ["Une page suffit-elle ?", "Oui en d├®but de carri├¿re; deux pages sont acceptables pour un profil exp├®riment├®."]]
   },
   {
     locale: "fr", slug: "cv-comptable-missions-realisations",
-    title: "CV comptable : missions et réalisations chiffrées",
-    description: "Améliorez votre CV comptable avec logiciels, normes, missions et exemples de réalisations mesurables pour chaque niveau.",
-    category: "Comptabilité", lead: "Un CV comptable convaincant associe rigueur, outils, normes et résultats observables plutôt que de répéter une fiche de poste.",
-    primary: "/examples/accountant-resume/", cta: "Voir l’exemple de CV comptable",
+    title: "CV comptable : missions et r├®alisations chiffr├®es",
+    description: "Am├®liorez votre CV comptable avec logiciels, normes, missions et exemples de r├®alisations mesurables pour chaque niveau.",
+    category: "Comptabilit├®", lead: "Un CV comptable convaincant associe rigueur, outils, normes et r├®sultats observables plut├┤t que de r├®p├®ter une fiche de poste.",
+    primary: "/examples/accountant-resume/", cta: "Voir lÔÇÖexemple de CV comptable",
     sections: [
-      ["Compétences à rendre visibles", "Classez les normes, processus et logiciels.", ["IFRS, normes locales, contrôle interne", "Clôture, rapprochements, AP/AR et reporting", "SAP, Oracle, Sage, QuickBooks et Excel avancé", "Audit, fiscalité et analyse des écarts"]],
-      ["Transformer les missions en réalisations", "Ajoutez une portée et un résultat.", ["Réduit la clôture mensuelle de neuf à cinq jours", "Identifié 310 000 € d’économies annuelles après revue des fournisseurs", "Automatisé un reporting et économisé 12 heures par mois", "Préparé trois audits sans anomalie significative"]],
-      ["Adapter selon le poste", "Un comptable junior mettra l’accent sur la fiabilité et les volumes; un senior montrera la supervision, les contrôles et l’amélioration des processus."],
-      ["Vérifier les mots-clés", "Conservez les appellations exactes des logiciels et normes. N’ajoutez aucune certification non obtenue."]
+      ["Comp├®tences ├á rendre visibles", "Classez les normes, processus et logiciels.", ["IFRS, normes locales, contr├┤le interne", "Cl├┤ture, rapprochements, AP/AR et reporting", "SAP, Oracle, Sage, QuickBooks et Excel avanc├®", "Audit, fiscalit├® et analyse des ├®carts"]],
+      ["Transformer les missions en r├®alisations", "Ajoutez une port├®e et un r├®sultat.", ["R├®duit la cl├┤ture mensuelle de neuf ├á cinq jours", "Identifi├® 310 000 Ôé¼ dÔÇÖ├®conomies annuelles apr├¿s revue des fournisseurs", "Automatis├® un reporting et ├®conomis├® 12 heures par mois", "Pr├®par├® trois audits sans anomalie significative"]],
+      ["Adapter selon le poste", "Un comptable junior mettra lÔÇÖaccent sur la fiabilit├® et les volumes; un senior montrera la supervision, les contr├┤les et lÔÇÖam├®lioration des processus."],
+      ["V├®rifier les mots-cl├®s", "Conservez les appellations exactes des logiciels et normes. NÔÇÖajoutez aucune certification non obtenue."]
     ],
-    faqs: [["Quels chiffres utiliser ?", "Délais de clôture, volumes, budgets, économies, réduction d’erreurs et résultats d’audit."], ["Faut-il être expert-comptable ?", "Non. Mentionnez clairement les certifications ou études réellement obtenues ou en cours."], ["Quelle longueur choisir ?", "Une page pour de nombreux profils juniors; jusqu’à deux pages pour une expérience senior pertinente."]]
+    faqs: [["Quels chiffres utiliser ?", "D├®lais de cl├┤ture, volumes, budgets, ├®conomies, r├®duction dÔÇÖerreurs et r├®sultats dÔÇÖaudit."], ["Faut-il ├¬tre expert-comptable ?", "Non. Mentionnez clairement les certifications ou ├®tudes r├®ellement obtenues ou en cours."], ["Quelle longueur choisir ?", "Une page pour de nombreux profils juniors; jusquÔÇÖ├á deux pages pour une exp├®rience senior pertinente."]]
   },
   {
     locale: "fr", slug: "cv-etudiant-sans-experience-exemples",
-    title: "CV étudiant sans expérience : exemples et modèle gratuit",
-    description: "Créez un CV étudiant sans expérience professionnelle avec projets, études, bénévolat, compétences et exemples de formulations.",
-    category: "Étudiants", lead: "Les projets, études, activités et responsabilités personnelles peuvent prouver vos compétences si vous les présentez avec précision et honnêteté.",
-    primary: "/fr/creer-cv-etudiant/", cta: "Créer un CV étudiant",
+    title: "CV ├®tudiant sans exp├®rience : exemples et mod├¿le gratuit",
+    description: "Cr├®ez un CV ├®tudiant sans exp├®rience professionnelle avec projets, ├®tudes, b├®n├®volat, comp├®tences et exemples de formulations.",
+    category: "├ëtudiants", lead: "Les projets, ├®tudes, activit├®s et responsabilit├®s personnelles peuvent prouver vos comp├®tences si vous les pr├®sentez avec pr├®cision et honn├¬tet├®.",
+    primary: "/fr/creer-cv-etudiant/", cta: "Cr├®er un CV ├®tudiant",
     sections: [
-      ["Faire l’inventaire des preuves", "Notez les projets scolaires, associations, bénévolat, sport, tutorat, responsabilités familiales et petits travaux. Gardez ce qui sert le poste visé."],
-      ["Choisir un ordre simple", "Présentez les coordonnées, un objectif ciblé, la formation, les projets, les compétences puis les expériences et activités."],
-      ["Exemples de formulations", "Décrivez votre action et son résultat.", ["Coordonné un groupe de cinq étudiants et livré le projet deux jours avant l’échéance", "Analysé 2 000 réponses dans Excel et présenté trois recommandations", "Géré la communication hebdomadaire d’une association de 120 membres"]],
-      ["Éviter le remplissage", "Supprimez les qualités génériques sans preuve, les cours sans rapport et toute expérience inventée. Une page ciblée est généralement suffisante."]
+      ["Faire lÔÇÖinventaire des preuves", "Notez les projets scolaires, associations, b├®n├®volat, sport, tutorat, responsabilit├®s familiales et petits travaux. Gardez ce qui sert le poste vis├®."],
+      ["Choisir un ordre simple", "Pr├®sentez les coordonn├®es, un objectif cibl├®, la formation, les projets, les comp├®tences puis les exp├®riences et activit├®s."],
+      ["Exemples de formulations", "D├®crivez votre action et son r├®sultat.", ["Coordonn├® un groupe de cinq ├®tudiants et livr├® le projet deux jours avant lÔÇÖ├®ch├®ance", "Analys├® 2 000 r├®ponses dans Excel et pr├®sent├® trois recommandations", "G├®r├® la communication hebdomadaire dÔÇÖune association de 120 membres"]],
+      ["├ëviter le remplissage", "Supprimez les qualit├®s g├®n├®riques sans preuve, les cours sans rapport et toute exp├®rience invent├®e. Une page cibl├®e est g├®n├®ralement suffisante."]
     ],
-    faqs: [["Les projets scolaires comptent-ils ?", "Oui, s’ils sont présentés comme projets et si votre contribution est claire."], ["Que mettre dans l’accroche ?", "Votre formation, l’objectif recherché et une ou deux forces pertinentes."], ["Le CV doit-il faire une page ?", "Oui dans la majorité des cas pour un étudiant."]]
+    faqs: [["Les projets scolaires comptent-ils ?", "Oui, sÔÇÖils sont pr├®sent├®s comme projets et si votre contribution est claire."], ["Que mettre dans lÔÇÖaccroche ?", "Votre formation, lÔÇÖobjectif recherch├® et une ou deux forces pertinentes."], ["Le CV doit-il faire une page ?", "Oui dans la majorit├® des cas pour un ├®tudiant."]]
   },
   {
     locale: "fr", slug: "exemples-profil-cv-etudiant-sans-experience",
-    title: "25 exemples de profil pour un CV étudiant sans expérience",
-    description: "Adaptez 25 exemples d’accroche de CV étudiant pour un stage, un premier emploi, une alternance ou un job étudiant sans inventer d’expérience.",
-    category: "Étudiants", publishedAt: "2026-08-01", readMinutes: 14,
-    lead: "Une bonne accroche relie rapidement votre formation, votre objectif et une preuve concrète de vos compétences.",
-    primary: "/fr/creer-cv-etudiant/", cta: "Créer votre CV étudiant",
+    title: "25 exemples de profil pour un CV ├®tudiant sans exp├®rience",
+    description: "Adaptez 25 exemples dÔÇÖaccroche de CV ├®tudiant pour un stage, un premier emploi, une alternance ou un job ├®tudiant sans inventer dÔÇÖexp├®rience.",
+    category: "├ëtudiants", publishedAt: "2026-08-01", readMinutes: 14,
+    lead: "Une bonne accroche relie rapidement votre formation, votre objectif et une preuve concr├¿te de vos comp├®tences.",
+    primary: "/fr/creer-cv-etudiant/", cta: "Cr├®er votre CV ├®tudiant",
     sections: [
-      ["Une formule simple en quatre éléments", "Indiquez votre situation actuelle, le poste visé, la compétence la plus utile et une preuve. Adaptez chaque exemple à votre parcours et à l’offre."],
-      ["Exemples pour lycéens et premiers jobs", "Utilisez uniquement les activités réellement menées.", ["Lycéen sérieux recherchant un poste en vente, avec expérience de l’accueil lors d’événements scolaires", "Étudiante bilingue visant un poste de service client après des séances régulières de tutorat", "Lycéen organisé recherchant un emploi administratif, à l’aise avec Excel grâce à des projets scolaires", "Étudiant sportif visant un emploi à temps partiel, habitué à concilier entraînements et délais", "Jeune candidat recherchant un poste en restauration, reconnu pour sa ponctualité et son calme en équipe"]],
-      ["Exemples pour stages et alternances", "Mettez en avant la formation, les outils et le résultat d’un projet pertinent.", ["Étudiant en informatique recherchant un stage après la création et le test de trois applications React", "Étudiante en commerce avec expérience d’Excel et d’analyse issue d’une étude de 1 200 réponses", "Étudiant en génie mécanique visant une alternance, avec pratique de la CAO en projet d’équipe", "Étudiante en communication recherchant un stage après la planification d’une campagne associative", "Étudiant en finance visant un stage d’analyste, avec projets en valorisation et modélisation Excel"]],
-      ["Exemples pour jeunes diplômés", "Reliez le diplôme à un besoin concret du poste.", ["Jeune diplômé en marketing visant un poste de coordinateur, avec portfolio en contenu et analyse d’audience", "Diplômée en psychologie recherchant un poste d’assistante de recherche après nettoyage de données d’enquête", "Diplômé en informatique visant le support IT, formé au diagnostic Windows et réseau", "Jeune diplômée en éducation avec 80 heures de stage supervisé en classe", "Diplômé en data visant un premier poste après un projet SQL et tableau de bord"]],
-      ["Exemples fondés sur le bénévolat et les projets", "Une preuve informelle reste utile si son contexte est présenté honnêtement.", ["Coordinateur bénévole visant un poste administratif après la planification de 24 volontaires", "Trésorière associative recherchant un stage comptable après suivi d’un budget mensuel", "Mentor étudiant visant un poste orienté relations humaines après accompagnement de 12 étudiants", "Étudiante freelance visant un stage créatif après livraison de cinq projets clients", "Bénévole communautaire recherchant un poste d’accueil avec pratique du français et de l’anglais"]],
-      ["Cinq versions très courtes", "Ces accroches conviennent lorsque le reste du CV fournit déjà les détails.", ["Étudiant en économie visant un stage d’analyste avec pratique de la recherche et d’Excel", "Jeune diplômée visant la relation client avec communication bilingue et résolution structurée de problèmes", "Étudiant en cybersécurité visant un stage après des laboratoires Linux et réseau", "Étudiante en sciences environnementales avec expérience de terrain et rédaction de rapports", "Étudiant recherchant un job de week-end, ponctuel et habitué au travail d’équipe"]],
-      ["Personnaliser l’accroche en cinq minutes", "Repérez l’intitulé, deux compétences répétées et le résultat attendu. Conservez seulement les affirmations prouvées dans le CV."],
-      ["Erreurs à éviter", "N’écrivez pas un objectif centré uniquement sur vos besoins, une liste d’adjectifs, une expérience inventée ou un paragraphe de plus de quatre lignes."]
+      ["Une formule simple en quatre ├®l├®ments", "Indiquez votre situation actuelle, le poste vis├®, la comp├®tence la plus utile et une preuve. Adaptez chaque exemple ├á votre parcours et ├á lÔÇÖoffre."],
+      ["Exemples pour lyc├®ens et premiers jobs", "Utilisez uniquement les activit├®s r├®ellement men├®es.", ["Lyc├®en s├®rieux recherchant un poste en vente, avec exp├®rience de lÔÇÖaccueil lors dÔÇÖ├®v├®nements scolaires", "├ëtudiante bilingue visant un poste de service client apr├¿s des s├®ances r├®guli├¿res de tutorat", "Lyc├®en organis├® recherchant un emploi administratif, ├á lÔÇÖaise avec Excel gr├óce ├á des projets scolaires", "├ëtudiant sportif visant un emploi ├á temps partiel, habitu├® ├á concilier entra├«nements et d├®lais", "Jeune candidat recherchant un poste en restauration, reconnu pour sa ponctualit├® et son calme en ├®quipe"]],
+      ["Exemples pour stages et alternances", "Mettez en avant la formation, les outils et le r├®sultat dÔÇÖun projet pertinent.", ["├ëtudiant en informatique recherchant un stage apr├¿s la cr├®ation et le test de trois applications React", "├ëtudiante en commerce avec exp├®rience dÔÇÖExcel et dÔÇÖanalyse issue dÔÇÖune ├®tude de 1 200 r├®ponses", "├ëtudiant en g├®nie m├®canique visant une alternance, avec pratique de la CAO en projet dÔÇÖ├®quipe", "├ëtudiante en communication recherchant un stage apr├¿s la planification dÔÇÖune campagne associative", "├ëtudiant en finance visant un stage dÔÇÖanalyste, avec projets en valorisation et mod├®lisation Excel"]],
+      ["Exemples pour jeunes dipl├┤m├®s", "Reliez le dipl├┤me ├á un besoin concret du poste.", ["Jeune dipl├┤m├® en marketing visant un poste de coordinateur, avec portfolio en contenu et analyse dÔÇÖaudience", "Dipl├┤m├®e en psychologie recherchant un poste dÔÇÖassistante de recherche apr├¿s nettoyage de donn├®es dÔÇÖenqu├¬te", "Dipl├┤m├® en informatique visant le support IT, form├® au diagnostic Windows et r├®seau", "Jeune dipl├┤m├®e en ├®ducation avec 80 heures de stage supervis├® en classe", "Dipl├┤m├® en data visant un premier poste apr├¿s un projet SQL et tableau de bord"]],
+      ["Exemples fond├®s sur le b├®n├®volat et les projets", "Une preuve informelle reste utile si son contexte est pr├®sent├® honn├¬tement.", ["Coordinateur b├®n├®vole visant un poste administratif apr├¿s la planification de 24 volontaires", "Tr├®sori├¿re associative recherchant un stage comptable apr├¿s suivi dÔÇÖun budget mensuel", "Mentor ├®tudiant visant un poste orient├® relations humaines apr├¿s accompagnement de 12 ├®tudiants", "├ëtudiante freelance visant un stage cr├®atif apr├¿s livraison de cinq projets clients", "B├®n├®vole communautaire recherchant un poste dÔÇÖaccueil avec pratique du fran├ºais et de lÔÇÖanglais"]],
+      ["Cinq versions tr├¿s courtes", "Ces accroches conviennent lorsque le reste du CV fournit d├®j├á les d├®tails.", ["├ëtudiant en ├®conomie visant un stage dÔÇÖanalyste avec pratique de la recherche et dÔÇÖExcel", "Jeune dipl├┤m├®e visant la relation client avec communication bilingue et r├®solution structur├®e de probl├¿mes", "├ëtudiant en cybers├®curit├® visant un stage apr├¿s des laboratoires Linux et r├®seau", "├ëtudiante en sciences environnementales avec exp├®rience de terrain et r├®daction de rapports", "├ëtudiant recherchant un job de week-end, ponctuel et habitu├® au travail dÔÇÖ├®quipe"]],
+      ["Personnaliser lÔÇÖaccroche en cinq minutes", "Rep├®rez lÔÇÖintitul├®, deux comp├®tences r├®p├®t├®es et le r├®sultat attendu. Conservez seulement les affirmations prouv├®es dans le CV."],
+      ["Erreurs ├á ├®viter", "NÔÇÖ├®crivez pas un objectif centr├® uniquement sur vos besoins, une liste dÔÇÖadjectifs, une exp├®rience invent├®e ou un paragraphe de plus de quatre lignes."]
     ],
-    faqs: [["Une accroche est-elle obligatoire ?", "Non, mais elle aide lorsque votre objectif et vos preuves doivent être clarifiés rapidement."], ["Faut-il dire que l’on n’a aucune expérience ?", "Non. Présentez honnêtement vos projets, études, activités et responsabilités."], ["Peut-on mentionner ses notes ?", "Oui lorsqu’elles sont bonnes et pertinentes."], ["Faut-il changer l’accroche à chaque candidature ?", "Adaptez-la pour chaque famille de postes et chaque besoin distinct."]],
-    related: [["Guide complet du CV étudiant", "/fr/blog/cv-etudiant-sans-experience-exemples/"], ["Créateur de CV étudiant", "/fr/creer-cv-etudiant/"], ["Vérificateur ATS", "/ats-checker-fr/"]]
+    faqs: [["Une accroche est-elle obligatoire ?", "Non, mais elle aide lorsque votre objectif et vos preuves doivent ├¬tre clarifi├®s rapidement."], ["Faut-il dire que lÔÇÖon nÔÇÖa aucune exp├®rience ?", "Non. Pr├®sentez honn├¬tement vos projets, ├®tudes, activit├®s et responsabilit├®s."], ["Peut-on mentionner ses notes ?", "Oui lorsquÔÇÖelles sont bonnes et pertinentes."], ["Faut-il changer lÔÇÖaccroche ├á chaque candidature ?", "Adaptez-la pour chaque famille de postes et chaque besoin distinct."]],
+    related: [["Guide complet du CV ├®tudiant", "/fr/blog/cv-etudiant-sans-experience-exemples/"], ["Cr├®ateur de CV ├®tudiant", "/fr/creer-cv-etudiant/"], ["V├®rificateur ATS", "/ats-checker-fr/"]]
   }
 ];
 
@@ -262,8 +265,8 @@ function articleHtml(article) {
   const relatedBody = article.related?.length
     ? `<h2>${article.locale === "fr" ? "Ressources utiles" : "Related resources"}</h2><ul>${article.related.map(([label, href]) => `<li><a href="${href}">${esc(label)}</a></li>`).join("")}</ul>`
     : "";
-  const back = article.locale === "fr" ? "← Tous les articles" : "← All articles";
-  const faqHeading = article.locale === "fr" ? "Questions fréquentes" : "Frequently asked questions";
+  const back = article.locale === "fr" ? "ÔåÉ Tous les articles" : "ÔåÉ All articles";
+  const faqHeading = article.locale === "fr" ? "Questions fr├®quentes" : "Frequently asked questions";
   const read = article.locale === "fr" ? `${readMinutes} min de lecture` : `${readMinutes} min read`;
   const hreflang = other
     ? `<link rel="alternate" hreflang="${otherLocale}" href="${SITE}${other}"/>`
@@ -291,11 +294,11 @@ function articleHtml(article) {
 ${headerHtml(article.locale, route)}
 <main id="main-content" tabindex="-1"><article class="prose">
 <a class="back" href="${article.locale === "fr" ? "/fr/blog/" : "/blog/"}">${back}</a>
-<div class="post-meta"><span class="tag">${esc(article.category)}</span><span>${publishedAt}</span><span>· ${read}</span></div>
+<div class="post-meta"><span class="tag">${esc(article.category)}</span><span>${publishedAt}</span><span>┬À ${read}</span></div>
 <h1>${esc(article.title)}</h1><p class="lead">${esc(article.lead)}</p>
 ${body}
 <h2>${faqHeading}</h2>${faqBody}${relatedBody}
-<div class="cta"><a href="${article.primary}">${esc(article.cta)} →</a></div>
+<div class="cta"><a href="${article.primary}">${esc(article.cta)} ÔåÆ</a></div>
 </article></main>${footerHtml(article.locale)}</body></html>`;
 }
 
@@ -304,5 +307,5 @@ for (const article of articles) {
   const directory = join(ROOT, "public", relative);
   mkdirSync(directory, { recursive: true });
   writeFileSync(join(directory, "index.html"), articleHtml(article), "utf8");
-  console.log(`✓ ${routeFor(article)}`);
+  console.log(`Ô£ô ${routeFor(article)}`);
 }
