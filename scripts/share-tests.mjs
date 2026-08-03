@@ -216,4 +216,3 @@ assert.ok(enStatusSource.includes("Create private offline link"), "share UI shou
 assert.ok(generatorSource.includes("createShortShareLink"), "default share menu should call the storage-backed short-link API");
 
 console.log("share tests passed");
-
