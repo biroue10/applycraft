@@ -19,3 +19,4 @@ public/interface-locale-bootstrap.js
 
 # Local Cloudflare Functions secrets
 .dev.vars
+.audit/

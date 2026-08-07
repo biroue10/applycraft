@@ -1,0 +1,12 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { canonicalFor } from "../src/seo/alternates.js";
+import { isIndexablePublicUrl } from "./seo-url-policy.mjs";
+for (const route of ["/job-tracker","/resume-builder","/resume/templates"]) assert.ok(canonicalFor(route).endsWith(`${route}/`), `${route}: trailing slash canonical`);
+for (const value of ["https://applycraft.io/resume-builder/?ui=fr&docLang=fr","https://applycraft.io/resume-builder/?template=elegant","https://applycraft.io/resume/templates/?country=canada"]) assert.equal(isIndexablePublicUrl(value), false, `${value}: query URL excluded`);
+const sitemap = readFileSync("public/sitemap.xml","utf8");
+assert.doesNotMatch(sitemap, /[?](ui|docLang|template|country)=/);
+assert.doesNotMatch(sitemap, /<loc>https:\/\/applycraft\.io\/(job-tracker|resume-builder|resume\/templates)<\/loc>/);
+const worker = readFileSync("worker.js","utf8");
+for (const route of ["/job-tracker/","/resume-builder/","/resume/templates/"]) assert.ok(worker.includes(route), `${route}: worker canonical asset map`);
+console.log("URL normalization tests passed: clean slash canonicals, query exclusion and worker route handling are intact.");

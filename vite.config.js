@@ -46,8 +46,8 @@ const ROUTE_META = {
     alternateLocales: ["en_US", "fr_FR"],
   },
   "/resume/templates": {
-    title: "Resume Template Gallery — Choose an ATS-Friendly Style | ApplyCraft",
-    description: "Browse ApplyCraft resume templates, choose an ATS-friendly style, preview your document, and export as PDF or DOCX.",
+    title: "60 Free Resume Templates for PDF & DOCX | ApplyCraft",
+    description: "Browse 60 resume templates for different roles, languages and experience levels. Customize a readable layout online and export to PDF or DOCX.",
     image: "https://applycraft.io/og/home.png",
     imageAlt: "ApplyCraft resume template gallery preview",
     locale: "en_US",
