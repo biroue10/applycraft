@@ -22,10 +22,6 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - name: Resolve non-breaking audit updates in lockfile for inspection
-        run: |
-          npm audit fix --package-lock-only || true
-          git diff -- package-lock.json
       - run: npm run audit:high
       - run: npm run seo:og
       - run: npm run seo:pages
