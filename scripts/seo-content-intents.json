@@ -1,5 +1,75 @@
 [
   {
+    "page": "Homepage",
+    "route": "/",
+    "locale": "en",
+    "primaryKeyword": "ApplyCraft resume builder",
+    "primaryIntent": "Discover the complete ApplyCraft resume, cover-letter and job-application workflow"
+  },
+  {
+    "page": "French homepage",
+    "route": "/fr/",
+    "locale": "fr",
+    "primaryKeyword": "créateur de CV ApplyCraft",
+    "primaryIntent": "Découvrir les outils ApplyCraft de CV et de candidature en français"
+  },
+  {
+    "page": "Resume templates",
+    "route": "/resume/templates/",
+    "locale": "en",
+    "primaryKeyword": "resume templates",
+    "primaryIntent": "Browse and choose a resume template before customizing it"
+  },
+  {
+    "page": "Free resume builder",
+    "route": "/free-resume-builder/",
+    "locale": "en",
+    "primaryKeyword": "free resume builder",
+    "primaryIntent": "Create a resume for free without confusing the page with the broader ApplyCraft homepage"
+  },
+  {
+    "page": "Teacher resume skills and achievements",
+    "route": "/blog/teacher-resume-skills-achievements/",
+    "locale": "en",
+    "primaryKeyword": "teacher resume skills",
+    "primaryIntent": "Learn which teaching skills belong on a resume and how to support them with evidence and achievement bullets"
+  },
+  {
+    "page": "Teacher resume example",
+    "route": "/examples/teacher-resume/",
+    "locale": "en",
+    "primaryKeyword": "teacher resume example",
+    "primaryIntent": "See and customize a complete teacher resume example without competing with the teacher-skills guide"
+  },
+  {
+    "page": "Student resume summary examples",
+    "route": "/blog/student-resume-summary-examples/",
+    "locale": "en",
+    "primaryKeyword": "student resume summary",
+    "primaryIntent": "Write the summary or profile section of a student resume using concise evidence-based examples"
+  },
+  {
+    "page": "Student resume with no experience",
+    "route": "/blog/student-resume-no-experience/",
+    "locale": "en",
+    "primaryKeyword": "student resume no experience",
+    "primaryIntent": "Build a complete student resume when the candidate has no formal work history"
+  },
+  {
+    "page": "Student resume builder",
+    "route": "/student-resume-builder/",
+    "locale": "en",
+    "primaryKeyword": "student resume builder",
+    "primaryIntent": "Use the student-focused resume-building product"
+  },
+  {
+    "page": "CV Maroc example",
+    "route": "/fr/blog/exemple-cv-maroc/",
+    "locale": "fr",
+    "primaryKeyword": "exemple CV Maroc",
+    "primaryIntent": "Comprendre la structure d'un CV pour le Maroc et consulter un exemple complet sans créer une page concurrente"
+  },
+  {
     "page": "Canadian resume example",
     "route": "/examples/canadian-resume-format/",
     "primaryIntent": "See and edit a complete example"
