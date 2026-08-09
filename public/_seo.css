@@ -271,3 +271,4 @@ button.footer-legal-link{background:none;border:0;padding:0;font:inherit;cursor:
   .ac-global-header__menu-button,.ac-language-trigger{min-width:44px;min-height:44px}
   .ac-global-header__mobile-menu>.ac-nav-link{min-height:44px;display:flex;align-items:center}
 }
+.post-meta time,.meta time,.article-meta time{color:inherit}.post-meta,.meta,.article-meta{flex-wrap:wrap}.editorial-date{white-space:normal}

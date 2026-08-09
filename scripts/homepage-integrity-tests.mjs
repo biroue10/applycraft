@@ -11,7 +11,7 @@ const pages = [
   { file: "ar/index.html", lang: "ar", dir: "rtl" },
 ];
 const requiredLinks = [
-  "/resume-builder/", "/cover-letter/templates/", "/ats-checker/",
+  "/resume-builder/", "/cover-letter-builder/", "/ats-checker/",
   "/job-tracker/", "/interview-prep/", "/pricing/", "/examples/",
 ];
 const failures = [];

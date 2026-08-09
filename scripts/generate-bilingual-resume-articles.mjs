@@ -3,10 +3,10 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { headerHtml } from "./shared-header.mjs";
 import { footerHtml } from "./shared-footer.mjs";
+import { articleForRoute, editorialDateMarkup } from "./article-dates.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SITE = "https://applycraft.io";
-const DATE = "2026-07-27";
 const IMAGE = "/blog/cv-francais-arabe-rtl.webp";
 
 const articles = [
@@ -76,6 +76,7 @@ const esc = (value) => String(value)
 
 function articleHtml(article) {
   const canonical = `${SITE}${article.route}`;
+  const dates = articleForRoute(article.route);
   const alternateLocale = article.locale === "fr" ? "en" : "fr";
   const home = article.locale === "fr" ? "/fr/" : "/";
   const blog = article.locale === "fr" ? "/fr/blog/" : "/blog/";
@@ -89,7 +90,7 @@ function articleHtml(article) {
   const articleSchema = {
     "@context": "https://schema.org", "@type": "Article",
     headline: article.title, description: article.description,
-    image: `${SITE}${IMAGE}`, datePublished: DATE, dateModified: DATE,
+    image: `${SITE}${IMAGE}`, datePublished: dates.datePublished, ...(dates.dateModified ? { dateModified: dates.dateModified } : {}),
     inLanguage: article.locale,
     author: { "@type": "Person", name: "Isaac Biroue", url: `${SITE}/about/` },
     publisher: { "@type": "Organization", name: "ApplyCraft", url: `${SITE}/` },
@@ -113,7 +114,7 @@ function articleHtml(article) {
 <meta property="og:title" content="${esc(article.title)}"><meta property="og:description" content="${esc(article.description)}">
 <meta property="og:url" content="${canonical}"><meta property="og:image" content="${SITE}${IMAGE}">
 <meta property="og:image:width" content="1599"><meta property="og:image:height" content="900">
-<meta property="article:published_time" content="${DATE}T00:00:00+00:00">
+<meta property="article:published_time" content="${dates.datePublished}T00:00:00Z">${dates.dateModified ? `<meta property="article:modified_time" content="${dates.dateModified}T00:00:00Z">` : ""}
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${esc(article.title)}">
 <meta name="twitter:description" content="${esc(article.description)}"><meta name="twitter:image" content="${SITE}${IMAGE}">
 <link rel="icon" href="/favicon.ico?v=2"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
@@ -124,7 +125,7 @@ function articleHtml(article) {
 <style>.prose{max-width:780px;margin:auto;padding:48px 24px 100px}.back{display:inline-block;margin-bottom:28px;color:#818cf8;font-weight:700;text-decoration:none}.meta{display:flex;gap:10px;flex-wrap:wrap;color:#8b9eb8;font-size:12px;text-transform:uppercase;letter-spacing:1px}.tag{padding:3px 10px;border-radius:999px;background:#1e293b;color:#a5b4fc}.prose h1{font-size:clamp(30px,5vw,46px);line-height:1.12;color:#eef2ff}.lead{font-size:18px!important}.prose figure{margin:30px 0 44px}.prose img{display:block;width:100%;height:auto;border:1px solid #253753;border-radius:14px}.prose figcaption{margin-top:8px;color:#8b9eb8;font-size:12px}.prose h2{margin:44px 0 12px;color:#e4ebf5;font-size:24px}.prose h3{margin:28px 0 8px;color:#c0cadb}.prose p,.prose li{color:#94a3b8;font-size:15.5px;line-height:1.85}.prose a{color:#a5b4fc}.cta{margin-top:48px;padding:24px;border:1px solid #253753;border-radius:14px;background:#101827}.cta a{font-weight:800}@media(max-width:680px){.prose{padding:38px 18px 80px}}</style>
 <script src="/consent.js" defer></script></head><body>${headerHtml(article.locale, article.route)}
 <main id="main-content" tabindex="-1"><article class="prose"><a class="back" href="${blog}">${article.back}</a>
-<div class="meta"><span class="tag">${esc(article.category)}</span><span>${DATE}</span><span>· 12 ${article.locale === "fr" ? "min de lecture" : "min read"}</span></div>
+<div class="meta"><span class="tag">${esc(article.category)}</span>${editorialDateMarkup(dates)}</div>
 <h1>${esc(article.title)}</h1><p class="lead">${esc(article.lead)}</p>
 <figure><img src="${IMAGE}" width="1599" height="900" alt="${esc(article.imageAlt)}" decoding="async"><figcaption>${esc(article.imageAlt)}</figcaption></figure>
 ${body}<h2>${article.faqHeading}</h2>${faqBody}

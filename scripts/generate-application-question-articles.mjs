@@ -3,10 +3,10 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { headerHtml } from "./shared-header.mjs";
 import { footerHtml } from "./shared-footer.mjs";
+import { articleForRoute, editorialDateMarkup } from "./article-dates.mjs";
 
 const ROOT = process.env.APPLYCRAFT_OUTPUT_ROOT || fileURLToPath(new URL("..", import.meta.url));
 const SITE = "https://applycraft.io";
-const DATE = "2026-07-31";
 
 const articles = [
   {
@@ -292,11 +292,12 @@ const esc = (value) => String(value)
 
 function jsonLd(article) {
   const canonical = `${SITE}${article.route}`;
+  const dates = articleForRoute(article.route);
   const faq = article.faqs.map(([name, text]) => ({
     "@type": "Question", name, acceptedAnswer: { "@type": "Answer", text }
   }));
   return [
-    { "@context": "https://schema.org", "@type": "Article", headline: article.title, description: article.description, datePublished: DATE, dateModified: DATE, inLanguage: article.locale, author: { "@type": "Person", name: "Isaac Biroue", url: `${SITE}/about/` }, publisher: { "@type": "Organization", name: "ApplyCraft", url: `${SITE}/`, logo: { "@type": "ImageObject", url: `${SITE}/assets/brand/applycraft-logo-navbar.png` } }, image: `${SITE}/og/blog.png`, mainEntityOfPage: canonical },
+    { "@context": "https://schema.org", "@type": "Article", headline: article.title, description: article.description, datePublished: dates.datePublished, ...(dates.dateModified ? { dateModified: dates.dateModified } : {}), inLanguage: article.locale, author: { "@type": "Person", name: "Isaac Biroue", url: `${SITE}/about/` }, publisher: { "@type": "Organization", name: "ApplyCraft", url: `${SITE}/`, logo: { "@type": "ImageObject", url: `${SITE}/assets/brand/applycraft-logo-navbar.png` } }, image: `${SITE}/og/blog.png`, mainEntityOfPage: canonical },
     { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq },
     { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
       { "@type": "ListItem", position: 1, name: article.locale === "fr" ? "Accueil" : "Home", item: article.locale === "fr" ? `${SITE}/fr/` : `${SITE}/` },
@@ -308,6 +309,7 @@ function jsonLd(article) {
 
 function render(article) {
   const canonical = `${SITE}${article.route}`;
+  const dates = articleForRoute(article.route);
   const alternateLocale = article.locale === "fr" ? "en" : "fr";
   const metaLocale = article.locale === "fr" ? "fr_FR" : "en_US";
   const otherMetaLocale = article.locale === "fr" ? "en_US" : "fr_FR";
@@ -334,8 +336,8 @@ function render(article) {
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
 <meta property="og:image:alt" content="${esc(article.title)}"/>
-<meta property="article:published_time" content="${DATE}T00:00:00+00:00"/>
-<meta property="article:modified_time" content="${DATE}T00:00:00+00:00"/>
+<meta property="article:published_time" content="${dates.datePublished}T00:00:00Z"/>
+${dates.dateModified ? `<meta property="article:modified_time" content="${dates.dateModified}T00:00:00Z"/>` : ""}
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="${esc(article.title)}"/>
 <meta name="twitter:description" content="${esc(article.description)}"/>
@@ -356,7 +358,7 @@ ${jsonLd(article)}
 ${headerHtml(article.locale, article.route)}
 <main id="main-content" tabindex="-1"><article class="prose">
 <a href="${article.locale === "fr" ? "/fr/blog/" : "/blog/"}" class="back">${article.back}</a>
-<div class="post-meta"><span class="tag">${esc(article.category)}</span><span>${DATE}</span><span>· ${article.read}</span></div>
+<div class="post-meta"><span class="tag">${esc(article.category)}</span>${editorialDateMarkup(dates)}</div>
 <h1>${esc(article.title)}</h1>
 <p class="lead">${esc(article.lead)}</p>
 <div class="callout"><p><strong>${esc(article.quickTitle)}</strong><br/>${esc(article.quick)}</p></div>

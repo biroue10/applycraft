@@ -3,10 +3,10 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { headerHtml } from "./shared-header.mjs";
 import { footerHtml } from "./shared-footer.mjs";
+import { articleForRoute, editorialDateMarkup } from "./article-dates.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SITE = "https://applycraft.io";
-const DATE = "2026-07-26";
 
 const articles = [
   {
@@ -94,7 +94,7 @@ const articles = [
     locale: "en", slug: "student-resume-summary-examples",
     title: "25 Resume Summary Examples for Students With No Experience",
     description: "Use 25 adaptable student resume summary examples for internships, first jobs, university roles and career starts without inventing experience.",
-    category: "Students", publishedAt: "2026-08-01", readMinutes: 14,
+    category: "Students", readMinutes: 14,
     lead: "A strong student summary does not hide limited experience. It quickly connects your studies, target role, relevant evidence and practical strengths.",
     primary: "/student-resume-builder/", cta: "Build your student resume",
     sections: [
@@ -214,7 +214,7 @@ const articles = [
     locale: "fr", slug: "exemples-profil-cv-etudiant-sans-experience",
     title: "25 exemples de profil pour un CV ├®tudiant sans exp├®rience",
     description: "Adaptez 25 exemples dÔÇÖaccroche de CV ├®tudiant pour un stage, un premier emploi, une alternance ou un job ├®tudiant sans inventer dÔÇÖexp├®rience.",
-    category: "├ëtudiants", publishedAt: "2026-08-01", readMinutes: 14,
+    category: "├ëtudiants", readMinutes: 14,
     lead: "Une bonne accroche relie rapidement votre formation, votre objectif et une preuve concr├¿te de vos comp├®tences.",
     primary: "/fr/creer-cv-etudiant/", cta: "Cr├®er votre CV ├®tudiant",
     sections: [
@@ -257,7 +257,8 @@ function articleHtml(article) {
   const other = pairs.get(article.slug);
   const otherLocale = article.locale === "fr" ? "en" : "fr";
   const faq = article.faqs.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } }));
-  const publishedAt = article.publishedAt || DATE;
+  const dates = articleForRoute(route);
+  const datePublished = dates.datePublished;
   const readMinutes = article.readMinutes || 10;
   const body = article.sections.map(([heading, text, bullets]) => `<h2>${esc(heading)}</h2>
     <p>${esc(text)}</p>${bullets ? `<ul>${bullets.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>` : ""}`).join("\n");
@@ -282,11 +283,11 @@ function articleHtml(article) {
 <meta property="og:type" content="article"/><meta property="og:site_name" content="ApplyCraft"/>
 <meta property="og:title" content="${esc(article.title)}"/><meta property="og:description" content="${esc(article.description)}"/>
 <meta property="og:url" content="${canonical}"/><meta property="og:image" content="${SITE}/og/blog.png"/>
-<meta property="article:published_time" content="${publishedAt}T00:00:00+00:00"/><meta property="article:modified_time" content="${publishedAt}T00:00:00+00:00"/>
+<meta property="article:published_time" content="${datePublished}T00:00:00Z"/>${dates.dateModified ? `<meta property="article:modified_time" content="${dates.dateModified}T00:00:00Z"/>` : ""}
 <meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="${esc(article.title)}"/>
 <meta name="twitter:description" content="${esc(article.description)}"/><meta name="twitter:image" content="${SITE}/og/blog.png"/>
 <link rel="icon" href="/favicon.ico?v=2" sizes="any"/><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2"/><link rel="manifest" href="/site.webmanifest?v=2"/><link rel="stylesheet" href="/_seo.css"/>
-<script type="application/ld+json">${JSON.stringify({ "@context":"https://schema.org", "@type":"Article", headline:article.title, description:article.description, image:`${SITE}/og/blog.png`, datePublished:publishedAt, dateModified:publishedAt, inLanguage:article.locale, author:{"@type":"Person",name:"Isaac Biroue",url:`${SITE}/about/`}, publisher:{"@type":"Organization",name:"ApplyCraft",url:`${SITE}/`}, mainEntityOfPage:canonical })}</script>
+<script type="application/ld+json">${JSON.stringify({ "@context":"https://schema.org", "@type":"Article", headline:article.title, description:article.description, image:`${SITE}/og/blog.png`, datePublished, ...(dates.dateModified ? { dateModified: dates.dateModified } : {}), inLanguage:article.locale, author:{"@type":"Person",name:"Isaac Biroue",url:`${SITE}/about/`}, publisher:{"@type":"Organization",name:"ApplyCraft",url:`${SITE}/`}, mainEntityOfPage:canonical })}</script>
 <script type="application/ld+json">${JSON.stringify({ "@context":"https://schema.org", "@type":"FAQPage", mainEntity:faq })}</script>
 <script type="application/ld+json">${JSON.stringify({ "@context":"https://schema.org", "@type":"BreadcrumbList", itemListElement:[{"@type":"ListItem",position:1,name:article.locale === "fr" ? "Accueil" : "Home",item:`${SITE}${article.locale === "fr" ? "/fr/" : "/"}`},{"@type":"ListItem",position:2,name:"Blog",item:`${SITE}${article.locale === "fr" ? "/fr/blog/" : "/blog/"}`},{"@type":"ListItem",position:3,name:article.title,item:canonical}] })}</script>
 <style>.prose{max-width:760px;margin:0 auto;padding:48px 24px 100px}.prose .back{display:inline-block;font-size:13px;font-weight:700;color:#818cf8;text-decoration:none;margin-bottom:28px}.post-meta{font-size:12px;color:#8b9eb8;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap}.tag{background:#1e293b;color:#818cf8;border-radius:999px;padding:3px 10px}.prose h1{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:-1px;margin:0 0 20px;line-height:1.15;color:#eef2ff}.lead{font-size:17px!important;margin-bottom:38px!important}.prose h2{font-size:23px;color:#e4ebf5;margin:44px 0 14px}.prose h3{font-size:17px;color:#c0cadb;margin:28px 0 8px}.prose p,.prose li{font-size:15px;color:#94a3b8;line-height:1.85}.prose ul{padding-left:22px}.prose a{color:#818cf8}.cta{margin-top:46px;padding:24px;border:1px solid #253753;border-radius:14px;background:#101827}.cta a{font-weight:800}@media(max-width:680px){.prose{padding:38px 18px 80px}}</style>
@@ -294,7 +295,7 @@ function articleHtml(article) {
 ${headerHtml(article.locale, route)}
 <main id="main-content" tabindex="-1"><article class="prose">
 <a class="back" href="${article.locale === "fr" ? "/fr/blog/" : "/blog/"}">${back}</a>
-<div class="post-meta"><span class="tag">${esc(article.category)}</span><span>${publishedAt}</span><span>┬À ${read}</span></div>
+<div class="post-meta"><span class="tag">${esc(article.category)}</span>${editorialDateMarkup(dates)}</div>
 <h1>${esc(article.title)}</h1><p class="lead">${esc(article.lead)}</p>
 ${body}
 <h2>${faqHeading}</h2>${faqBody}${relatedBody}

@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const TODAY = "2026-08-07";
 const log = (message) => console.log(`[gsc-top10] ${message}`);
 
 function filePath(relativePath) {
@@ -238,8 +237,7 @@ function patchArticle(relativePath, { title, description, h1, direct, extra, sch
   html = setMetaProperty(html, "og:title", schemaHeadline || title);
   html = setMetaProperty(html, "og:description", description);
   html = setFirstH1(html, h1);
-  html = setMetaProperty(html, "article:modified_time", `${TODAY}T00:00:00Z`);
-  html = updateBlogPostingSchema(html, { headline: h1, description, dateModified: TODAY });
+  html = updateBlogPostingSchema(html, { headline: h1, description });
   html = addStyles(html);
   html = insertAfterLead(html, direct.match(/data-gsc-seo="[^"]+"/)[0], direct);
   html = insertBeforeFaqOrMainEnd(html, extra.match(/data-gsc-seo="[^"]+"/)[0], extra);
