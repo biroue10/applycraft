@@ -28,6 +28,7 @@
     "test:gallery": "node scripts/gallery-tests.mjs",
     "test:seo:hreflang": "node scripts/seo-hreflang-tests.mjs",
     "test:seo-top10": "node scripts/seo-top10-opportunities.mjs",
+    "audit:internal-links": "node scripts/internal-link-audit.mjs",
     "test:sitemap": "node scripts/sitemap-tests.mjs",
     "test:indexnow": "node scripts/indexnow-tests.mjs",
     "test:robots": "node scripts/robots-tests.mjs",

@@ -10,7 +10,7 @@ const widths = process.env.RESPONSIVE_WIDTHS
 const heights = new Map([
   [1920, 1080], [1600, 900], [1440, 900], [1366, 768], [1280, 720],
   [1180, 820], [1024, 768], [912, 1368], [768, 1024], [430, 932],
-  [390, 844], [360, 800], [320, 568],
+  [390, 844], [375, 812], [360, 800], [320, 568],
 ]);
 const paths = process.env.RESPONSIVE_PATHS?.split(",") || ["/", "/fr/", "/ar/"];
 const screenshotDir = process.env.RESPONSIVE_SCREENSHOTS;

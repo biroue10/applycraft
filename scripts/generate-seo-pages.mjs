@@ -1735,7 +1735,7 @@ const EXAMPLES = [
     }),
     features: {
       heading: "How to write a teacher resume",
-      intro: "Teaching resumes are screened for certification, grade levels, and subjects first — then for evidence that your students actually learned and grew.",
+      intro: "Teaching resumes are screened for certification, grade levels, and subjects first — then for evidence that students learned and grew. Use the companion guide to choose <a href=\"/blog/teacher-resume-skills-achievements/\">skills to include on a teacher resume</a> and turn them into specific achievement bullets; this page remains the complete resume example.",
       ctaHeading: "Use this teacher template free",
       ctaSub: "Edit your certifications and experience, then download as PDF or DOCX.",
       items: [

@@ -12,7 +12,7 @@ const hubs = [
   ]},
   { slug: "ats-resume-resources", title: "ATS Resume Resources", description: "Understand ATS-conscious formatting, keyword evidence, file choices and what automated checkers can and cannot tell you.", intro: "An ATS review can identify readability and matching issues, but it does not guarantee an outcome or reproduce every employer system. Use these resources to make truthful qualifications easier to extract and verify.", groups: [
     ["Check and build", [["ATS checker", "/ats-checker/"], ["ATS resume builder", "/ats-resume-builder/"], ["Resume builder", "/resume-builder/"]]],
-    ["Learn the limits", [["How to write an ATS-friendly resume", "/blog/how-to-write-an-ats-friendly-resume/"], ["What a free ATS checker checks and misses", "/blog/free-ats-resume-checker-what-it-checks-and-misses/"], ["Canadian ATS checklist", "/blog/canadian-resume-format-checklist/"]]],
+    ["Learn the limits", [["How to write an ATS-friendly resume", "/blog/how-to-write-an-ats-friendly-resume/"], ["What a free ATS checker checks and misses", "/blog/free-ats-resume-checker-what-it-checks-and-misses/"], ["Teacher skills and achievement evidence", "/blog/teacher-resume-skills-achievements/"], ["Canadian ATS checklist", "/blog/canadian-resume-format-checklist/"]]],
   ]},
   { slug: "job-application-workflow", title: "Job Application Workflow", description: "Connect job requirements, document versions, follow-ups and interview preparation in one clear workflow.", intro: "A strong application is more than a single resume. Keep the role context, exact resume and cover-letter versions, ATS review, follow-up and interview preparation connected while retaining control of what is stored.", groups: [
     ["Create and review", [["Application Pack", "/application-pack/"], ["Master Profile", "/master-profile"], ["Resume builder", "/resume-builder/"], ["Cover-letter builder", "/cover-letter-builder/"], ["ATS checker", "/ats-checker/"]]],
@@ -20,6 +20,7 @@ const hubs = [
   ]},
   { slug: "resume-examples-by-role", title: "Resume Examples by Role", description: "Role-specific resume examples with practical evidence and skills for common career paths.", intro: "Use role examples as a structure reference, then replace every detail with your own truthful experience. The strongest version reflects the target posting and shows evidence rather than copying generic responsibilities.", groups: [
     ["Technology and data", [["IT support technician", "/examples/it-support-technician-resume/"], ["Data analyst", "/examples/data-analyst-resume/"], ["Linux system administrator", "/linux-system-administrator-resume/"]]],
+    ["Education and early career", [["Teacher resume example", "/examples/teacher-resume/"], ["Teacher resume skills", "/blog/teacher-resume-skills-achievements/"], ["Student resume summary examples", "/blog/student-resume-summary-examples/"], ["Student resume with no experience", "/blog/student-resume-no-experience/"]]],
     ["Business and service", [["Project manager", "/examples/project-manager-resume/"], ["Customer service", "/examples/customer-service-resume/"], ["Administrative assistant", "/examples/administrative-assistant-resume/"], ["All examples", "/examples/"]]],
   ]},
 ];

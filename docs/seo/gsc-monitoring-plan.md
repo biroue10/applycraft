@@ -1,76 +1,26 @@
-# Search Console monitoring plan
+# GSC Top-10 monitoring plan
 
-Implementation date: 2026-08-07
+Baseline date: August 7, 2026. The August 9 report contains data only through August 7, so it is primarily a pre-optimization baseline. No immediate ranking conclusion is valid.
 
-The goal of this SEO pass is to strengthen pages already earning impressions, not to claim immediate ranking gains. Google needs time to recrawl and reevaluate the changed pages.
+Evaluation checkpoints: August 14, August 21, and September 4, 2026. At each checkpoint compare clicks, impressions, CTR, average position, page performance, and query performance for:
 
-## Priority queries
+- `teacher resume skills` and `/blog/teacher-resume-skills-achievements/`
+- `student resume summary` and `/blog/student-resume-summary-examples/`
+- `student resume no experience` and `/blog/student-resume-no-experience/`
+- `/`, `/fr/`, `/resume/templates/`, `/fr/blog/exemple-cv-maroc/`, and `/free-resume-builder/`
 
-| Cluster | Query |
-| --- | --- |
-| Teacher | `teacher resume skills` |
-| Teacher | `teacher skills resume` |
-| Teacher | `skills for teacher resume` |
-| Student summary | `student resume summary` |
-| Student summary | `student resume summary examples` |
-| Student no experience | `student resume no experience` |
-| Student no experience | `resume for students with no experience` |
-| Brand | `applycraft` |
+| Query or page | August 7 baseline position |
+|---|---:|
+| `teacher resume skills` | 18.97 |
+| `teacher skills resume` | 22.86 |
+| `student resume summary` | 18.37 |
+| `summary examples for students` | 9.57 |
+| `student resume no experience` | 21.13 |
+| `resume for students with no experience` | 21.21 |
+| Homepage `/` | 9.99 |
+| French homepage `/fr/` | 6.3 |
+| Resume Templates `/resume/templates/` | 11.6 |
+| CV Maroc | 16.51 |
+| CV canadien Maroc | 4.73 |
 
-## Priority pages
-
-- `/`
-- `/fr/`
-- `/resume/templates/`
-- `/free-resume-builder/`
-- `/blog/teacher-resume-skills-achievements/`
-- `/blog/student-resume-summary-examples/`
-- `/blog/student-resume-no-experience/`
-- `/fr/blog/exemple-cv-maroc/`
-
-## Review cadence
-
-Compare the same metrics after approximately:
-
-- 7 days
-- 14 days
-- 28 days
-
-For each query/page record:
-
-- impressions
-- clicks
-- CTR
-- average position
-- device split where useful
-- country split where useful
-
-## Interpretation rules
-
-- Do not treat daily volatility as a failure.
-- Avoid another major title/H1 rewrite before enough recrawl data exists unless there is a confirmed technical bug.
-- Low CTR at positions 20–50 is not by itself evidence that the snippet is failing.
-- Prioritize movement from positions 10–30 toward the Top 10 before expanding into many unrelated topics.
-- Keep the teacher skills page distinct from the complete teacher example.
-- Keep the student summary page distinct from the complete no-experience guide.
-- Preserve `/fr/` and the homepage unless new evidence supports a material change.
-
-## Baseline from the 2026-08-07 export
-
-Approximate site-wide baseline used for this pass:
-
-- 4,120 impressions
-- 11 clicks
-- CTR about 0.27%
-- weighted average position about 40.6
-
-Notable opportunities observed before implementation:
-
-- `teacher resume skills`: average position about 18.9
-- `student resume summary`: average position about 17.8
-- homepage: average position about 10.1
-- `/resume/templates/`: average position about 11.6
-- `/fr/`: average position about 6.4
-- `/fr/blog/exemple-cv-maroc/`: average position about 16.9
-
-These figures are a historical baseline, not a promise of future rankings.
+Use page-and-query pairs, not site-wide averages alone. Record meaningful changes but do not treat daily volatility as failure. Do not rewrite the homepage, French homepage, teacher title/H1, or student title/H1 again without fresh evidence and enough recrawl time. Check cannibalization by comparing queries across the teacher example/skills pair and student summary/no-experience pair.
