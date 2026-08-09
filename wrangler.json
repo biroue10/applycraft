@@ -14,7 +14,8 @@
   },
   "kv_namespaces": [
     {
-      "binding": "SHARES"
+      "binding": "SHARES",
+      "id": "879decdea60c468a8fe248377d14d0cd"
     }
   ]
 }
