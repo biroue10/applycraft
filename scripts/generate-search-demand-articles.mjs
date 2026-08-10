@@ -128,6 +128,7 @@ const articles = [
   {
     locale: "fr", slug: "cv-francais-candidat-etranger",
     title: "Comment rédiger un CV en français comme candidat étranger",
+    seoTitle: "Rédiger un CV français comme candidat étranger",
     description: "Adaptez votre CV au marché francophone : vocabulaire, diplômes, expériences étrangères, format, exemples et conseils ATS.",
     category: "CV en français", lead: "Un bon CV en français ne consiste pas à traduire chaque mot. Il faut rendre votre parcours compréhensible, conserver les faits et adapter les conventions au marché ciblé.",
     primary: "/examples/french-cv-example/", cta: "Consulter l’exemple de CV en français",
@@ -157,6 +158,7 @@ const articles = [
   {
     locale: "fr", slug: "cv-enseignant-competences-realisations",
     title: "CV d’enseignant : compétences et exemples de réalisations",
+    seoTitle: "CV enseignant : compétences et réalisations",
     description: "Rédigez un CV d’enseignant avec compétences pédagogiques, résultats mesurables, outils numériques et exemples adaptés aux débutants.",
     category: "Éducation", lead: "Le CV d’un enseignant doit présenter les niveaux, les matières et les certifications, puis montrer l’effet concret des méthodes pédagogiques.",
     primary: "/examples/teacher-resume/", cta: "Voir le modèle de CV enseignant",
@@ -199,6 +201,7 @@ const articles = [
   {
     locale: "fr", slug: "cv-etudiant-sans-experience-exemples",
     title: "CV étudiant sans expérience : exemples et modèle gratuit",
+    seoTitle: "CV étudiant sans expérience : exemples",
     description: "Créez un CV étudiant sans expérience professionnelle avec projets, études, bénévolat, compétences et exemples de formulations.",
     category: "Étudiants", lead: "Les projets, études, activités et responsabilités personnelles peuvent prouver vos compétences si vous les présentez avec précision et honnêteté.",
     primary: "/fr/creer-cv-etudiant/", cta: "Créer un CV étudiant",
@@ -213,6 +216,7 @@ const articles = [
   {
     locale: "fr", slug: "exemples-profil-cv-etudiant-sans-experience",
     title: "25 exemples de profil pour un CV étudiant sans expérience",
+    seoTitle: "25 profils de CV étudiant sans expérience",
     description: "Adaptez 25 exemples d’accroche de CV étudiant pour un stage, un premier emploi, une alternance ou un job étudiant sans inventer d’expérience.",
     category: "Étudiants", readMinutes: 14,
     lead: "Une bonne accroche relie rapidement votre formation, votre objectif et une preuve concrète de vos compétences.",
@@ -251,9 +255,11 @@ const routeFor = (article) => `${article.locale === "fr" ? "/fr" : ""}/blog/${ar
 function articleHtml(article) {
   const route = routeFor(article);
   const canonical = `${SITE}${route}`;
-  const titleBase = article.title.length > 47
-    ? article.title.slice(0, 47).replace(/\s+\S*$/, "")
-    : article.title;
+  const titleBase = article.seoTitle || (
+    article.title.length > 47
+      ? article.title.slice(0, 47).replace(/\s+\S*$/, "")
+      : article.title
+  );
   const other = pairs.get(article.slug);
   const otherLocale = article.locale === "fr" ? "en" : "fr";
   const faq = article.faqs.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } }));
@@ -308,5 +314,5 @@ for (const article of articles) {
   const directory = join(ROOT, "public", relative);
   mkdirSync(directory, { recursive: true });
   writeFileSync(join(directory, "index.html"), articleHtml(article), "utf8");
-  console.log(`Ô£ô ${routeFor(article)}`);
+  console.log(`✓ ${routeFor(article)}`);
 }
