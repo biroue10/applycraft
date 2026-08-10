@@ -19,6 +19,7 @@ export const INDEXABLE_APP_PATHS = [
 export const REDIRECTED_CANONICAL_PATHS = new Map([
   ["/app/ats-checker/", "/ats-checker/"],
   ["/cover-letter/builder/", "/cover-letter-builder/"],
+  ["/resume/builder/", "/resume-builder/"],
 ]);
 
 const PRIVATE_PREFIXES = [

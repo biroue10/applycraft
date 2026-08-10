@@ -46,7 +46,7 @@ const ROUTE_META = {
     alternateLocales: ["en_US", "fr_FR"],
   },
   "/resume/templates": {
-    title: "Resume Template Gallery — Choose an ATS-Friendly Style | ApplyCraft",
+    title: "60 ATS-Friendly Resume Templates | ApplyCraft",
     description: "Browse ApplyCraft resume templates, choose an ATS-friendly style, preview your document, and export as PDF or DOCX.",
     image: "https://applycraft.io/og/home.png",
     imageAlt: "ApplyCraft resume template gallery preview",
@@ -115,6 +115,16 @@ const ROUTE_META = {
     alternateLocales: ["en_US", "fr_FR"],
   },
 };
+
+// Product workspaces are useful application screens, not organic-search
+// landing pages. Keep them crawlable so search engines can observe noindex;
+// do not add these paths to robots.txt.
+const NOINDEX_ROUTES = new Set([
+  "/master-profile",
+  "/email-signature",
+  "/personal-website",
+  "/r",
+]);
 
 const ROUTE_FAQS = {
   "/": [
@@ -320,11 +330,16 @@ export default defineConfig({
         );
       }
 
-      // Per-route canonical + hreflang (genuine clusters only) + noindex for the
-      // user-shared viewer. Build-time only — no client JS.
+      // Per-route canonical + hreflang (genuine clusters only) + explicit
+      // application-route indexability. Build-time only — no client JS.
       const meta = ROUTE_META[path] || {};
       const tags = [`<link rel="canonical" href="${canonicalFor(path)}" />`];
-      if (path === "/r" || path.startsWith("/r/")) tags.push(`<meta name="robots" content="noindex,follow" />`);
+      if (NOINDEX_ROUTES.has(path) || path.startsWith("/r/")) {
+        html = html.replace(
+          /<meta name="robots" content="[^"]*"\s*\/?>/,
+          `<meta name="robots" content="noindex, follow" />`,
+        );
+      }
       for (const a of hreflangFor(path)) {
         tags.push(`<link rel="alternate" hreflang="${a.hreflang}" href="${a.href}" />`);
       }

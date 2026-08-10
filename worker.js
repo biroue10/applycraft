@@ -57,6 +57,8 @@ const LEGACY_PUBLIC_REDIRECTS = new Map([
   ["/app/ats-checker/", "/ats-checker/"],
   ["/cover-letter/builder", "/cover-letter-builder/"],
   ["/cover-letter/builder/", "/cover-letter-builder/"],
+  ["/resume/builder", "/resume-builder/"],
+  ["/resume/builder/", "/resume-builder/"],
 ]);
 
 const ACTIONS = {
@@ -931,9 +933,17 @@ function authSessionFromRequest(request) {
     : cookieSession;
 }
 
-async function authAccountFromRequest(request, env) {
+function authCredentialsFromRequest(request) {
+  const authorization = request.headers.get("Authorization") || "";
+  const cookie = request.headers.get("Cookie") || "";
+  return {
+    session: authSessionFromRequest(request),
+    supplied: Boolean(authorization.trim() || /(?:^|;\s*)ac_session=/.test(cookie)),
+  };
+}
+
+async function authAccountFromRequest(request, env, session = authSessionFromRequest(request)) {
   const store = authStore(env);
-  const session = authSessionFromRequest(request);
   if (!store) return null;
   if (!/^[a-f0-9]{64}$/.test(session)) return null;
   const email = await store.get(`session:${session}`);
@@ -1041,7 +1051,9 @@ async function handleAuth(request, env, url) {
   }
 
   if (url.pathname === "/api/account" && request.method === "GET") {
-    const account = await authAccountFromRequest(request, env);
+    const credentials = authCredentialsFromRequest(request);
+    if (!credentials.supplied) return jsonResponse({ ok: true, account: null }, 200, cors.headers);
+    const account = await authAccountFromRequest(request, env, credentials.session);
     if (!account) return errorResponse("UNAUTHORIZED", "Your session is invalid or expired.", 401, cors.headers);
     return jsonResponse({ ok: true, account }, 200, cors.headers);
   }
@@ -1599,9 +1611,10 @@ async function handleAi(request, env) {
   return jsonResponse({ result: upstream.output }, 200, cors.headers);
 }
 
-function withSecurityHeaders(response) {
+function withSecurityHeaders(response, extraHeaders = {}) {
   const headers = new Headers(response.headers);
   for (const [key, value] of Object.entries(SECURITY_HEADERS)) headers.set(key, value);
+  for (const [key, value] of Object.entries(extraHeaders)) headers.set(key, value);
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
@@ -1863,7 +1876,7 @@ export default {
       const shareId = url.pathname.slice("/r/".length);
       return new Response(null, {
         status: 302,
-        headers: { Location: `/r/?s=${shareId}`, ...SECURITY_HEADERS },
+        headers: { Location: `/r/?s=${shareId}`, "X-Robots-Tag": "noindex, follow", ...SECURITY_HEADERS },
       });
     }
     const assetResponse = await env.ASSETS.fetch(request);
@@ -1877,7 +1890,10 @@ export default {
         headers,
       }));
     }
-    return withSecurityHeaders(assetResponse);
+    const sharedResumeHeaders = url.pathname === "/r/" || url.pathname.startsWith("/r/")
+      ? { "X-Robots-Tag": "noindex, follow" }
+      : {};
+    return withSecurityHeaders(assetResponse, sharedResumeHeaders);
   },
 };
 

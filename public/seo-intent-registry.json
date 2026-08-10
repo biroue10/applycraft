@@ -1050,15 +1050,15 @@
       "routeId": "fr-blog",
       "route": "/fr/blog/",
       "locale": "fr",
-      "primaryKeyword": "blog",
+      "primaryKeyword": "conseils cv et candidature",
       "secondaryKeywords": [],
-      "searchIntent": "Serve the specific informational or product intent expressed by Blog",
+      "searchIntent": "Serve the specific informational or product intent expressed by Conseils CV et candidature",
       "canonical": "https://applycraft.io/fr/blog/",
       "parentCluster": "",
       "preferredInternalAnchors": [],
       "relatedPages": [],
       "competingPages": [],
-      "differentiation": "Serve the specific informational or product intent expressed by Blog",
+      "differentiation": "Serve the specific informational or product intent expressed by Conseils CV et candidature",
       "primaryCta": ""
     },
     {

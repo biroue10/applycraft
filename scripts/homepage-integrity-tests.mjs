@@ -30,7 +30,7 @@ for (const page of pages) {
   requireMatch(/class="ac-hero-preview"/i.test(html), "missing real resume preview");
   requireMatch(/id="interactive-demo-title"/i.test(html), "missing interactive demo introduction");
   requireMatch(/id="why-applycraft-title"/i.test(html), "missing product-benefits section");
-  requireMatch((html.match(/<h2\b/gi) || []).length >= 9, "fewer than nine major homepage sections");
+  requireMatch((html.match(/<h2\b/gi) || []).length === 8, "expected eight genuine marketing H2 sections");
   requireMatch((html.match(/<footer\b/gi) || []).length >= 1, "missing footer");
   requireMatch(/>60<\/div>[\s\S]{0,300}Templates/i.test(html) || page.lang !== "en" && />60<\/div>/.test(html),
     "missing official 60-template count");

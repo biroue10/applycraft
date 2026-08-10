@@ -2400,8 +2400,8 @@ function HeroResumePreview({ isMobile, lang = "en" }) {
                 </svg>
               </div>
               <div style={{ minWidth: 0 }}>
-                <h2 style={{ margin: 0, fontSize: compact ? 20 : 23, lineHeight: 1.1, color: "#fff",
-                  letterSpacing: "0", fontWeight: 800 }}>{sample.name}</h2>
+                <div style={{ margin: 0, fontSize: compact ? 20 : 23, lineHeight: 1.1, color: "#fff",
+                  letterSpacing: "0", fontWeight: 800 }}>{sample.name}</div>
                 <p style={{ margin: "4px 0 8px", fontSize: compact ? 11.5 : 12.5,
                   color: "rgba(255,255,255,0.88)", fontWeight: 700 }}>{sample.title}</p>
                 <InlineList items={sample.contact}
@@ -2501,11 +2501,11 @@ function HeroResumePreview({ isMobile, lang = "en" }) {
 
 function ResumeMiniSection({ accent, title, children }) {
   return (
-    <section style={{ marginBottom: 13 }}>
-      <h3 style={{ margin: "0 0 7px", color: accent, fontSize: 9.5, lineHeight: 1,
-        letterSpacing: "1px", textTransform: "uppercase", fontWeight: 900 }}>{title}</h3>
+    <div style={{ marginBottom: 13 }}>
+      <div style={{ margin: "0 0 7px", color: accent, fontSize: 9.5, lineHeight: 1,
+        letterSpacing: "1px", textTransform: "uppercase", fontWeight: 900 }}>{title}</div>
       <div style={{ color: "#526174", fontSize: 10.8, lineHeight: 1.55 }}>{children}</div>
-    </section>
+    </div>
   );
 }
 
