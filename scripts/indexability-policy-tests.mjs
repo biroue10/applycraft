@@ -9,6 +9,8 @@ const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const DIST = join(ROOT, "dist");
 const sitemap = readFileSync(join(ROOT, "public/sitemap.xml"), "utf8");
 const robots = readFileSync(join(ROOT, "public/robots.txt"), "utf8");
+const staticRedirects = readFileSync(join(ROOT, "public/_redirects"), "utf8");
+const staticHeaders = readFileSync(join(ROOT, "public/_headers"), "utf8");
 
 function assetFile(pathname) {
   if (pathname === "/") return join(DIST, "index.html");
@@ -31,12 +33,28 @@ const redirects = new Map([
   ["/cover-letter/builder/", "/cover-letter-builder/"],
   ["/resume/builder/", "/resume-builder/"],
 ]);
+// These calls exercise Worker-level routing only. Cloudflare Static Assets can
+// satisfy an uploaded asset before invoking the Worker, so the matching static
+// policies are asserted separately below.
 for (const [source, target] of redirects) {
   const response = await worker.fetch(new Request(`https://applycraft.io${source}?ui=fr`), env);
   assert.equal(response.status, 301, `${source} must be a permanent one-hop redirect`);
   assert.equal(response.headers.get("Location"), `${target}?ui=fr`, `${source} must preserve query parameters`);
   assert.ok(!sitemap.includes(`<loc>https://applycraft.io${source}</loc>`), `${source} must remain outside the sitemap`);
 }
+
+for (const rule of [
+  "/resume/builder /resume-builder/ 301",
+  "/resume/builder/ /resume-builder/ 301",
+]) {
+  assert.ok(staticRedirects.split(/\r?\n/).includes(rule), `public/_redirects must contain: ${rule}`);
+}
+
+assert.match(
+  staticHeaders,
+  /^\/r\/\r?\n[ \t]+X-Robots-Tag:\s*noindex, follow\s*$/m,
+  "public/_headers must protect the asset-served /r/ route",
+);
 
 for (const route of ["/master-profile/", "/email-signature/", "/personal-website/", "/r/"]) {
   const response = await worker.fetch(new Request(`https://applycraft.io${route}`), env);
@@ -62,4 +80,4 @@ for (const route of ["/master-profile/", "/email-signature/", "/personal-website
   assert.doesNotMatch(robots, new RegExp(`Disallow:\\s*${route.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "i"), `${route} must stay crawlable so noindex can be observed`);
 }
 
-console.log("Production-equivalent indexability policy passed.");
+console.log("Worker routing and Static Assets indexability policies passed.");
