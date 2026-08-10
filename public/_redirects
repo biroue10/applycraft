@@ -6,10 +6,13 @@
 # worker.js (TRAILING_SLASH_HTML_ASSETS): the canonical slash URL is served 200
 # and the no-slash form 301s to it. Do NOT re-add `<route> <route>/ 301` rules
 # here — combined with Workers Assets html_handling they create a redirect loop.
+# /resume/builder/ is a retired alias, not a canonical application route.
 /app/ats-checker /ats-checker/ 301
 /app/ats-checker/ /ats-checker/ 301
 /cover-letter/builder /cover-letter-builder/ 301
 /cover-letter/builder/ /cover-letter-builder/ 301
+/resume/builder /resume-builder/ 301
+/resume/builder/ /resume-builder/ 301
 /cover-letter /cover-letter-builder/ 301
 /cover-letter/ /cover-letter-builder/ 301
 /linux-administrator-resume /examples/linux-administrator-resume/ 301

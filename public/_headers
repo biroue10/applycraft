@@ -63,6 +63,10 @@
 /
   Cache-Control: public, max-age=0, must-revalidate
 
+# Shared resume viewer — may be served directly by Static Assets without the Worker.
+/r/
+  X-Robots-Tag: noindex, follow
+
 # Security headers applied to all responses.
 /*
   Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://static.cloudflareinsights.com https://*.clarity.ms; style-src 'self' 'unsafe-inline'; style-src-attr 'unsafe-inline'; img-src 'self' data: blob: https://www.google-analytics.com https://*.google-analytics.com https://*.clarity.ms https://c.bing.com; font-src 'self' data:; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://cloudflareinsights.com https://*.clarity.ms https://c.bing.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests
