@@ -137,7 +137,7 @@ for (const appPath of INDEXABLE_APP_PATHS) {
   if (!sitemapSet.has(loc)) fail(`indexable app route missing from sitemap: ${loc}`);
 }
 
-for (const redirected of ["/app/ats-checker/", "/cover-letter/builder/", "/email-signature/"]) {
+for (const redirected of ["/app/ats-checker/", "/cover-letter/builder/", "/resume/builder/", "/email-signature/"]) {
   const loc = `${SITE}${redirected}`;
   if (sitemapSet.has(loc)) fail(`internal or redirected route must not be in sitemap: ${loc}`);
 }

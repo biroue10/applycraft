@@ -106,8 +106,15 @@ export async function refreshAccount({ strict = false } = {}) {
       return strict ? null : getAccount();
     }
     const data = await res.json().catch(() => ({}));
-    if (data.account) setAccount(data.account);
-    return data.account || getAccount();
+    if (data.account) {
+      setAccount(data.account);
+      return data.account;
+    }
+    if (Object.prototype.hasOwnProperty.call(data, "account") && data.account === null) {
+      if (strict) logout();
+      return strict ? null : getAccount();
+    }
+    return getAccount();
   } catch {
     if (strict) logout();
     return strict ? null : getAccount();

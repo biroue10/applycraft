@@ -109,6 +109,7 @@ const viewerResponse = await worker.fetch(new Request(`https://applycraft.io/r/$
 });
 assert.equal(viewerResponse.status, 302, "previous path-style short links should redirect to the static viewer route");
 assert.equal(viewerResponse.headers.get("Location"), `/r/?s=${createdShare.shareId}`, "path-style links should preserve their share ID");
+assert.equal(viewerResponse.headers.get("X-Robots-Tag"), "noindex, follow", "shared-resume redirects must remain non-indexable");
 
 const cover = roundTrip({
   v: 2,

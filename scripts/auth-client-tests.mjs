@@ -29,7 +29,7 @@ globalThis.fetch = async (url, init) => {
   }), { status: 200, headers: { "Content-Type": "application/json" } });
 };
 
-const { consumeLoginFromUrl } = await import("../src/account.js");
+const { consumeLoginFromUrl, refreshAccount } = await import("../src/account.js");
 const [first, second] = await Promise.all([
   consumeLoginFromUrl(),
   consumeLoginFromUrl(),
@@ -80,5 +80,27 @@ assert.equal(
   "sign-in dialogs must remain hidden until session restoration is complete",
 );
 assert.equal(JSON.parse(values.get("ac_session")), "b".repeat(64));
+
+values.set("ac_account", JSON.stringify({ email: "stale@example.com", activePass: true }));
+values.delete("ac_session");
+globalThis.fetch = async (url) => {
+  assert.equal(url, "/api/account");
+  return new Response(JSON.stringify({ ok: true, account: null }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+};
+assert.equal(await refreshAccount({ strict: true }), null);
+assert.equal(values.has("ac_account"), false, "strict anonymous refresh must clear stale local account state");
+
+values.set("ac_account", JSON.stringify({ email: "expired@example.com", activePass: true }));
+values.set("ac_session", JSON.stringify("c".repeat(64)));
+globalThis.fetch = async () => new Response(JSON.stringify({ error: "UNAUTHORIZED" }), {
+  status: 401,
+  headers: { "Content-Type": "application/json" },
+});
+assert.equal(await refreshAccount({ strict: true }), null);
+assert.equal(values.has("ac_account"), false, "invalid explicit session must clear stale account state");
+assert.equal(values.has("ac_session"), false, "invalid explicit session must clear stale session state");
 
 console.log("Authentication client concurrency test passed.");

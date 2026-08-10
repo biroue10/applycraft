@@ -34,6 +34,10 @@ globalThis.fetch = async (url, init) => {
 
 try {
   const headers = { Origin: "https://applycraft.io", "Content-Type": "application/json" };
+  const anonymous = await worker.fetch(new Request("https://applycraft.io/api/account"), env);
+  assert.equal(anonymous.status, 200, "a visitor with no credentials must not generate an expected 401");
+  assert.deepEqual(await anonymous.json(), { ok: true, account: null });
+
   const request = new Request("https://applycraft.io/api/auth/request-link", {
     method: "POST",
     headers,
@@ -100,6 +104,11 @@ try {
     headers: { Authorization: `Bearer ${"0".repeat(64)}` },
   }), env);
   assert.equal(forged.status, 401);
+
+  const malformedCookie = await worker.fetch(new Request("https://applycraft.io/api/account", {
+    headers: { Cookie: "ac_session=not-a-valid-session" },
+  }), env);
+  assert.equal(malformedCookie.status, 401, "explicit malformed credentials must not be treated as anonymous");
 
   const external = await worker.fetch(new Request("https://applycraft.io/api/auth/request-link", {
     method: "POST",
