@@ -48,22 +48,36 @@ test.describe("Resume flow", () => {
     if (await name.count()) { await name.fill("Jane Doe"); await expect(name).toHaveValue("Jane Doe"); }
   });
 
-  test("builder toolbar panels are mutually exclusive", async ({ page }) => {
+  test("empty resume opens export menu and toolbar panels are mutually exclusive", async ({ page }) => {
     const ignoreKnownHydration = (message) => /Minified React error #(418|423|425)\b/.test(message);
     const errors = [];
     page.on("pageerror", (e) => {
       const text = String(e);
       if (!ignoreKnownHydration(text)) errors.push(text);
     });
+    await page.route("**/api/account", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ account: { email: "browser-test@example.invalid", activePass: false } }),
+    }));
 
     await page.goto("/resume-builder?template=modern");
     const exportButton = page.getByRole("button", { name: /^Export$/ }).first();
     const customizeButton = page.getByRole("button", { name: /^Customize$/ }).first();
     const moreButton = page.getByRole("button", { name: /more options/i }).first();
 
+    // Opening the format picker must never depend on resume content. The format
+    // actions themselves own the empty-resume validation and user feedback.
+    await expect(exportButton).toHaveAttribute("type", "button");
     await exportButton.click();
     await expect(exportButton).toHaveAttribute("aria-expanded", "true");
     await expect(page.getByText("Export your resume")).toBeVisible();
+    await expect(page.getByRole("menuitem", { name: /PDF/ })).toBeVisible();
+    await expect(page.getByRole("menuitem", { name: /DOCX/ })).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(exportButton).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByText("Export your resume")).toHaveCount(0);
 
     await customizeButton.click();
     await expect(exportButton).toHaveAttribute("aria-expanded", "false");
@@ -80,11 +94,11 @@ test.describe("Resume flow", () => {
     await expect(exportButton).toHaveAttribute("aria-expanded", "false");
     await expect(moreButton).toHaveAttribute("aria-expanded", "true");
     await expect(page.getByText("Export your resume")).toHaveCount(0);
-    await expect(page.getByText("Keep for this session")).toBeVisible();
+    await expect(page.getByText("Start a new resume")).toBeVisible();
 
     await moreButton.click();
     await expect(moreButton).toHaveAttribute("aria-expanded", "false");
-    await expect(page.getByText("Keep for this session")).toHaveCount(0);
+    await expect(page.getByText("Start a new resume")).toHaveCount(0);
 
     await exportButton.click();
     await page.mouse.click(12, 520);
