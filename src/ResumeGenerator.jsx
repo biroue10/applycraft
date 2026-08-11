@@ -6190,7 +6190,7 @@ Awards: ${form.awards}`;
             </button>
           )}
           <div style={{ position: "relative" }}>
-            <button onClick={() => toggleToolbarPanel("e")} disabled={!!exporting}
+            <button type="button" onClick={() => toggleToolbarPanel("e")} disabled={!!exporting}
               aria-haspopup="menu" aria-expanded={activeToolbarPanel === "e"} aria-controls="p-e"
               style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 9, minHeight: 38,
                 padding: "0 16px", fontSize: 13, fontWeight: 900, cursor: exporting ? "not-allowed" : "pointer",
