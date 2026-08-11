@@ -123,51 +123,75 @@ function updateRegistryEntry(source, slug, title, description) {
 
 const teacherDirect = `<section class="gsc-answer" data-gsc-seo="teacher-direct-answer">
 <h2>What skills should a teacher put on a resume?</h2>
-<p>A strong teacher resume usually combines classroom management, lesson planning, differentiated instruction, assessment, curriculum knowledge, communication, collaboration and educational technology. The strongest version does not stop at a list: it connects each skill to evidence from your real teaching, placements, projects or student-support work. Tailor that evidence to the responsibilities and terminology in the job posting.</p>
+<p>Prioritize lesson planning, classroom management, differentiated instruction, student assessment, curriculum knowledge, communication, inclusion and educational technology. Add only the skills that match your real experience and the vacancy. Then prove the most important ones in your summary and experience with the teaching context, method and observable result.</p>
+<p><strong>Useful starting selection:</strong> lesson planning · classroom management · formative assessment · differentiated instruction · curriculum development · family engagement · educational technology · collaboration.</p>
+<nav class="gsc-jump-links" aria-label="Teacher resume skills guide"><strong>In this guide:</strong> <a href="#best-teacher-skills">best skills</a> · <a href="#teacher-contexts">skills by teaching context</a> · <a href="#new-teacher-skills">new teachers</a> · <a href="#achievement-examples">achievement examples</a> · <a href="#teacher-resume-resources">next steps</a></nav>
 </section>`;
 
 const teacherEvidence = `<section class="gsc-evidence" data-gsc-seo="teacher-skills-evidence">
-<h2>Teacher resume skills and how to prove them</h2>
-<p>Use this table as a drafting guide. The bullets are illustrative, so replace details with evidence that is true for your own experience.</p>
-<div class="gsc-table-wrap"><table class="gsc-table">
-<caption>Teacher skills, evidence and example resume bullets</caption>
-<thead><tr><th scope="col">Skill</th><th scope="col">Evidence to include</th><th scope="col">Example resume bullet</th><th scope="col">Best section</th></tr></thead>
-<tbody>
-<tr><td>Classroom management</td><td>Routines, behaviour support, group size, learning environment</td><td>Used structured classroom routines and differentiated activities to support a class of 28 students.</td><td>Experience</td></tr>
-<tr><td>Lesson planning</td><td>Curriculum objectives, units, sequencing, adaptations</td><td>Designed weekly lessons aligned with curriculum objectives and adapted activities for different learning needs.</td><td>Experience</td></tr>
-<tr><td>Differentiated instruction</td><td>Scaffolds, grouping, accommodations, varied learning needs</td><td>Adapted reading activities with small-group instruction and scaffolded materials for mixed proficiency levels.</td><td>Experience</td></tr>
-<tr><td>Curriculum development</td><td>Units, resources, standards alignment, cross-curricular planning</td><td>Co-developed a term unit linking writing, research and presentation skills across three assessed projects.</td><td>Experience / Projects</td></tr>
-<tr><td>Student assessment</td><td>Formative checks, rubrics, feedback, progress tracking</td><td>Used weekly formative assessments to identify learning gaps and adjust follow-up instruction.</td><td>Experience</td></tr>
-<tr><td>Educational technology</td><td>LMS tools, digital assessment, virtual learning, accessibility</td><td>Built reusable digital lesson resources and quizzes to support in-class and remote learning.</td><td>Experience / Skills</td></tr>
-<tr><td>Parent communication</td><td>Progress updates, conferences, difficult conversations, follow-up</td><td>Maintained clear family communication through scheduled progress updates and documented follow-up.</td><td>Experience</td></tr>
-<tr><td>Collaboration</td><td>Co-planning, multidisciplinary teams, teaching assistants</td><td>Co-planned lessons with grade-level colleagues and coordinated classroom support with teaching assistants.</td><td>Experience</td></tr>
-<tr><td>Special education support</td><td>Accommodations, individual plans, specialist collaboration</td><td>Applied documented accommodations and collaborated with support staff to improve access to classroom tasks.</td><td>Experience</td></tr>
-<tr><td>Data-informed instruction</td><td>Assessment trends, intervention groups, reteaching decisions</td><td>Reviewed assessment results to form targeted support groups and plan reteaching activities.</td><td>Experience</td></tr>
-<tr><td>Student engagement</td><td>Discussion, project-based learning, participation strategies</td><td>Used structured discussion and project-based activities to increase participation across mixed-ability groups.</td><td>Experience</td></tr>
-<tr><td>Mentoring and leadership</td><td>New-teacher support, clubs, committees, curriculum leadership</td><td>Mentored a trainee teacher through lesson planning, observation feedback and classroom routines.</td><td>Leadership / Experience</td></tr>
-</tbody></table></div>
+<h2 id="best-teacher-skills">Best teacher resume skills and what they show</h2>
+<p>Use these categories as a decision guide, not a list to copy in full. The right mix depends on the grade level, subject, learner needs and responsibilities in the posting.</p>
+<div class="gsc-example-grid">
+<article class="gsc-example-card"><h3>Instruction and lesson planning</h3><p>Show how you sequence learning objectives, select teaching methods and prepare resources for a specific subject or grade level.</p></article>
+<article class="gsc-example-card"><h3>Classroom routines and behaviour support</h3><p>Name the routines, restorative practices, behaviour supports or transition strategies you used to protect a safe learning environment.</p></article>
+<article class="gsc-example-card"><h3>Student assessment</h3><p>Include formative checks, rubric design, feedback, progress monitoring and how assessment evidence changed your next lesson.</p></article>
+<article class="gsc-example-card"><h3>Differentiated instruction</h3><p>Describe grouping, scaffolds, extension tasks or adapted materials used for learners with different readiness levels and needs.</p></article>
+<article class="gsc-example-card"><h3>Curriculum development</h3><p>Identify the standards, programme or subject framework you translated into units, resources and assessments.</p></article>
+<article class="gsc-example-card"><h3>Educational technology</h3><p>List relevant learning platforms, digital assessment tools or accessibility features and explain how they supported teaching.</p></article>
+<article class="gsc-example-card"><h3>Communication</h3><p>Demonstrate clear explanations, feedback, reporting and professional communication with students, families and colleagues.</p></article>
+<article class="gsc-example-card"><h3>Parent and family engagement</h3><p>Show how you shared progress, prepared conferences, handled difficult conversations or improved participation in school activities.</p></article>
+<article class="gsc-example-card"><h3>Inclusion and accessibility</h3><p>Reference accommodations, accessible materials, individual learning plans or collaboration with specialists where these were part of your role.</p></article>
+<article class="gsc-example-card"><h3>Student welfare and safeguarding</h3><p>Where the vacancy uses safeguarding terminology, mention relevant training and experience following reporting, supervision and student-welfare procedures without disclosing confidential cases.</p></article>
+<article class="gsc-example-card"><h3>Collaboration</h3><p>Give evidence of co-planning, moderation, multidisciplinary teamwork or effective coordination with teaching assistants.</p></article>
+<article class="gsc-example-card"><h3>Leadership and mentoring</h3><p>Show responsibility for a subject, programme, committee, club, trainee teacher or shared professional-development activity.</p></article>
+<article class="gsc-example-card"><h3>Data-informed instruction</h3><p>Explain how you reviewed assessment or attendance patterns and used them to plan intervention, grouping or reteaching.</p></article>
+<article class="gsc-example-card"><h3>Conflict resolution</h3><p>Describe a calm, policy-aligned approach to restoring communication and resolving recurring classroom or team issues.</p></article>
+<article class="gsc-example-card"><h3>Time management</h3><p>Prove this through coordinated planning, timely feedback, reporting cycles or efficient resource systems rather than listing the phrase alone.</p></article>
+</div>
 </section>
 <section class="gsc-role-examples" data-gsc-seo="teacher-role-examples">
-<h2>Teacher achievement examples by role</h2>
+<h2 id="teacher-contexts">Teacher skills by teaching context</h2>
+<p>Different teaching roles require different evidence. Keep the core skills that fit the vacancy, then make the context visible. Titles also vary by education system: use the wording in the local posting when it truthfully describes your role.</p>
 <div class="gsc-example-grid">
-<article class="gsc-example-card"><h3>Elementary teacher</h3><p>Planned literacy and numeracy lessons for a mixed-ability class and used small-group follow-up based on weekly assessment evidence.</p></article>
-<article class="gsc-example-card"><h3>High-school teacher</h3><p>Designed standards-aligned units with clear assessment criteria and provided targeted feedback before major assignments.</p></article>
-<article class="gsc-example-card"><h3>New teacher</h3><p>Completed supervised teaching placements covering lesson planning, classroom routines, assessment and family communication.</p></article>
-<article class="gsc-example-card"><h3>Substitute teacher</h3><p>Maintained classroom routines across multiple year groups while adapting quickly to teacher plans and school procedures.</p></article>
-<article class="gsc-example-card"><h3>Special education teacher</h3><p>Coordinated classroom accommodations with support staff and adapted tasks to documented learner needs.</p></article>
-<article class="gsc-example-card"><h3>ESL teacher</h3><p>Used scaffolded speaking, reading and vocabulary activities for learners at different proficiency levels.</p></article>
-<article class="gsc-example-card"><h3>Online teacher</h3><p>Structured synchronous lessons with digital checks for understanding and clear asynchronous follow-up activities.</p></article>
-<article class="gsc-example-card"><h3>Teaching assistant</h3><p>Supported individual and small-group activities, documented observations and reinforced teacher-led classroom routines.</p></article>
-<article class="gsc-example-card"><h3>Department lead</h3><p>Coordinated shared planning, moderation and resource development while supporting colleagues with curriculum implementation.</p></article>
+<article class="gsc-example-card"><h3>Elementary or primary teacher</h3><p>Prioritize foundational literacy or numeracy, predictable routines, multisensory activities, progress monitoring and family communication. Example: “Used weekly reading checks to form flexible groups and plan targeted phonics follow-up.”</p></article>
+<article class="gsc-example-card"><h3>Secondary or high-school teacher</h3><p>Lead with subject expertise, curriculum sequencing, examination or project preparation, disciplinary literacy and actionable feedback. Mention laboratory safety or specialist equipment when relevant.</p></article>
+<article class="gsc-example-card"><h3>Special education or SEN teacher</h3><p>Use the locally accurate title—such as special education or special educational needs (SEN)—and focus on documented accommodations, individual plans, assistive technology, progress records and multidisciplinary collaboration. Protect student confidentiality.</p></article>
+<article class="gsc-example-card"><h3>ESL, EFL or multilingual learner teacher</h3><p>These terms describe different settings and learner groups, so do not swap them casually. Use the term that matches your role, then name proficiency levels, language objectives, scaffolds and formative language assessment.</p></article>
+<article class="gsc-example-card"><h3>Substitute teacher</h3><p>Emphasize rapid adaptation, continuity of instruction, classroom routines, accurate handover notes and consistent application of school procedures across different groups.</p></article>
+<article class="gsc-example-card"><h3>New teacher with limited experience</h3><p>Use supervised placements, lesson observations, curriculum projects and tutoring to prove planning, reflection and learner support. Label each context honestly.</p></article>
 </div></section>
-<section class="gsc-resources" data-gsc-seo="teacher-resources"><h2>Put the evidence into context</h2><ul>
-<li>See a <a href="/examples/teacher-resume/">complete teacher resume example</a>.</li>
-<li><a href="/resume/templates/">Browse resume templates</a> before choosing a layout.</li>
-<li><a href="/resume-builder/">Build your teacher resume</a> with your own evidence.</li>
-<li><a href="/ats-checker/">Check ATS readability</a> against the role you are targeting.</li>
-<li><a href="/interview-prep/">Prepare for a teaching interview</a> after tailoring the application.</li>
-<li>Create a matching <a href="/cover-letter-builder/">cover letter</a>.</li>
-</ul></section>`;
+<section class="gsc-evidence" data-gsc-seo="teacher-new-experience">
+<h2 id="new-teacher-skills">How to show teaching skills with limited experience</h2>
+<p>Paid classroom ownership is not the only valid source of evidence. Student teaching, practicums, tutoring, volunteer teaching, youth programmes and curriculum projects can demonstrate relevant skills when the label and scope are accurate.</p>
+<ul>
+<li><strong>Student teaching or practicum:</strong> state the grade, subject, placement length and teaching responsibilities you completed under supervision.</li>
+<li><strong>Tutoring:</strong> explain the learner group, topic, materials you prepared and how you monitored understanding.</li>
+<li><strong>Curriculum projects:</strong> describe the standards, unit plan, assessment or accessible resource you created, even if it was not deployed in a paid role.</li>
+<li><strong>Certifications and educational technology:</strong> name current credentials and tools you have genuinely practised, not software you have only heard of.</li>
+<li><strong>Transferable experience:</strong> coaching, facilitation, youth work and customer-facing roles can support communication and organization, but should not be presented as classroom teaching.</li>
+</ul>
+<p>If your broader challenge is building a first resume, the guide to a <a href="/blog/student-resume-no-experience/">resume with limited formal experience</a> offers additional ways to find truthful evidence.</p>
+</section>
+<section class="gsc-evidence" data-gsc-seo="teacher-achievement-examples">
+<h2 id="achievement-examples">Teacher achievement examples without invented numbers</h2>
+<p>These examples demonstrate structure, not claims to copy. Replace the context, method and result with facts you can verify. A useful outcome does not need a percentage.</p>
+<div class="gsc-example-grid">
+<article class="gsc-example-card"><h3>Classroom management</h3><p><strong>Weak:</strong> Good classroom management skills.</p><p><strong>Improved:</strong> Introduced consistent classroom routines and restorative behaviour practices, reducing repeated disruptions and increasing usable lesson time.</p></article>
+<article class="gsc-example-card"><h3>Assessment and feedback</h3><p>Used exit tickets and weekly work reviews to identify common misconceptions, then planned small-group reteaching before the next unit.</p></article>
+<article class="gsc-example-card"><h3>Family engagement</h3><p>Introduced scheduled progress updates and accessible conference notes, helping families participate more consistently in follow-up plans.</p></article>
+<article class="gsc-example-card"><h3>Curriculum adoption</h3><p>Co-developed standards-aligned unit resources and supported colleagues during implementation through shared planning and moderation.</p></article>
+<article class="gsc-example-card"><h3>Grading workflow</h3><p>Created a common rubric and feedback bank that shortened grading turnaround while preserving individualized next steps.</p></article>
+<article class="gsc-example-card"><h3>Student participation</h3><p>Added structured discussion roles and multiple response formats, increasing participation among learners who rarely contributed in whole-class discussion.</p></article>
+<article class="gsc-example-card"><h3>Attendance support</h3><p>Reviewed attendance patterns with the support team and coordinated timely family follow-up for students with repeated absences.</p></article>
+<article class="gsc-example-card"><h3>Teacher mentoring</h3><p>Mentored a new colleague through co-planning, lesson observation and feedback focused on routines and checks for understanding.</p></article>
+</div>
+</section>
+<section class="gsc-resources" data-gsc-seo="teacher-resources"><h2 id="teacher-resume-resources">Use the skills in a complete teacher resume</h2><p>Once you have selected and evidenced the right skills:</p><ul>
+<li>See how they fit into a <a href="/examples/teacher-resume/">complete teacher resume example</a>.</li>
+<li><a href="/resume-builder/">Create your teacher resume</a> using your own experience and evidence.</li>
+<li>Choose from exactly <a href="/resume/templates/">60 resume templates</a> with a layout suited to your content.</li>
+<li>Use the <a href="/ats-checker/">ATS checker</a> to review structure and job-description alignment; its feedback does not predict hiring decisions.</li>
+</ul><p>For a repeatable vacancy review, follow the guide to <a href="/blog/tailor-resume-to-job-description-ats-keywords/">tailoring a resume to a job description</a>.</p></section>`;
 
 const studentSummaryDirect = `<section class="gsc-answer" data-gsc-seo="student-summary-direct-answer">
 <h2>What is a good resume summary for a student?</h2>
@@ -229,13 +253,17 @@ const studentNoExperienceExtra = `<section class="gsc-complete-example" data-gsc
 <li>Organize applications with the <a href="/job-tracker/">Job Tracker</a> and practise with <a href="/interview-prep/">Interview Prep</a>.</li>
 </ul></section>`;
 
-function patchArticle(relativePath, { title, description, h1, direct, extra, schemaHeadline }) {
+function patchArticle(relativePath, { title, description, h1, direct, extra, schemaHeadline, syncTwitter = false }) {
   const before = readRequired(relativePath);
   let html = before;
   html = setTitle(html, `${title} | ApplyCraft`);
   html = setMetaName(html, "description", description);
   html = setMetaProperty(html, "og:title", schemaHeadline || title);
   html = setMetaProperty(html, "og:description", description);
+  if (syncTwitter) {
+    html = setMetaName(html, "twitter:title", schemaHeadline || title);
+    html = setMetaName(html, "twitter:description", description);
+  }
   html = setFirstH1(html, h1);
   html = updateBlogPostingSchema(html, { headline: h1, description });
   html = addStyles(html);
@@ -245,12 +273,13 @@ function patchArticle(relativePath, { title, description, h1, direct, extra, sch
 }
 
 patchArticle("public/blog/teacher-resume-skills-achievements/index.html", {
-  title: "Teacher Resume Skills & Achievements",
-  description: "Learn the best teacher resume skills, how to prove them with evidence, and achievement examples for new, primary, secondary and special education teachers.",
-  h1: "Teacher Resume Skills and Achievements: Examples That Show Your Impact",
+  title: "Teacher Resume Skills: Examples & Achievements",
+  description: "Choose teacher resume skills, learn how to present them with evidence, and adapt achievement examples to your experience and teaching context.",
+  h1: "Teacher Resume Skills: How to List Them With Examples",
   direct: teacherDirect,
   extra: teacherEvidence,
-  schemaHeadline: "Teacher Resume Skills and Achievement Examples",
+  schemaHeadline: "Teacher Resume Skills: How to List Them With Examples",
+  syncTwitter: true,
 });
 
 patchArticle("public/blog/student-resume-summary-examples/index.html", {
@@ -305,7 +334,7 @@ const registryPath = "scripts/blog-articles.mjs";
 {
   const before = readRequired(registryPath);
   let source = before;
-  source = updateRegistryEntry(source, "teacher-resume-skills-achievements", "Teacher Resume Skills & Achievements", "Learn the best teacher resume skills, how to prove them with evidence, and achievement examples for new, primary, secondary and special education teachers.");
+  source = updateRegistryEntry(source, "teacher-resume-skills-achievements", "Teacher Resume Skills: Examples & Achievements", "Choose teacher resume skills, learn how to present them with evidence, and adapt achievement examples to your experience and teaching context.");
   source = updateRegistryEntry(source, "student-resume-summary-examples", "Student Resume Summary Examples", "See 25 student resume summary examples and learn a simple formula using projects, education, volunteering and transferable skills.");
   source = updateRegistryEntry(source, "student-resume-no-experience", "Student Resume With No Experience", "Create a strong student resume without work experience using education, projects, volunteering, transferable skills and practical examples.");
   writeIfChanged(registryPath, before, source);
