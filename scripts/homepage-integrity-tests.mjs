@@ -27,7 +27,8 @@ for (const page of pages) {
   if (page.dir) requireMatch(new RegExp(`<html[^>]*dir="${page.dir}"`, "i").test(html), `missing dir=${page.dir}`);
   requireMatch(/<main[^>]+id="main-content"/i.test(html), "missing main landmark");
   requireMatch(/class="ac-hero-grid"/i.test(html), "missing full hero layout");
-  requireMatch(/class="ac-hero-preview"/i.test(html), "missing real resume preview");
+  requireMatch(/class="ac-hero-preview ac-resume-scanner"/i.test(html), "missing animated resume scanner");
+  requireMatch(/prefers-reduced-motion:reduce/i.test(html), "resume scanner lacks reduced-motion fallback");
   requireMatch(/id="interactive-demo-title"/i.test(html), "missing interactive demo introduction");
   requireMatch(/id="why-applycraft-title"/i.test(html), "missing product-benefits section");
   requireMatch((html.match(/<h2\b/gi) || []).length === 8, "expected eight genuine marketing H2 sections");

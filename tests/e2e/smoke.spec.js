@@ -33,6 +33,39 @@ test.describe("Homepage & navigation", () => {
       expect(overflow, `horizontal overflow at ${w}px`).toBeLessThanOrEqual(1);
     }
   });
+
+  test("hero resume scanner is synchronized and respects reduced motion", async ({ page }) => {
+    const ignoreKnownHydration = (message) => /Minified React error #(418|423|425)\b/.test(message);
+    const errors = [];
+    page.on("console", (message) => {
+      const text = message.text();
+      if (message.type() === "error" && !ignoreKnownHydration(text)) errors.push(text);
+    });
+    page.on("pageerror", (error) => {
+      const text = String(error);
+      if (!ignoreKnownHydration(text)) errors.push(text);
+    });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    const scanner = page.locator(".ac-resume-scanner");
+    await expect(scanner).toBeVisible();
+    await expect(scanner.locator("h1,h2,h3")).toHaveCount(0);
+    const beam = scanner.locator(".ac-scan-beam");
+    const reveal = scanner.locator(".ac-scan-content.is-structured");
+    await page.waitForTimeout(3500);
+    const progress = await Promise.all([
+      beam.evaluate((element) => element.getBoundingClientRect().top - element.parentElement.getBoundingClientRect().top),
+      reveal.evaluate((element) => getComputedStyle(element).clipPath),
+    ]);
+    expect(progress[0]).toBeGreaterThan(120);
+    expect(progress[1]).not.toContain("100%");
+
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await expect(reveal).toHaveCSS("animation-name", "none");
+    await expect(scanner.locator(".ac-scan-orbit")).toHaveCSS("animation-name", "none");
+    await expect(scanner.locator(".ac-scan-note").first()).toHaveCSS("opacity", "1");
+    expect(errors, errors.join("\n")).toHaveLength(0);
+  });
 });
 
 test.describe("Resume flow", () => {

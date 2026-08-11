@@ -17,6 +17,7 @@ const landing = {
   "statFormats": "Export formats",
   "statDownloads": "Free downloads",
   "productOverview": "Product overview",
+  "scanner": { "aria": "Illustration of a professional resume being scanned and organized into an ATS-friendly structure", "notes": ["Experience detected", "Skills structured", "Education recognized", "ATS-friendly structure", "Profile ready"] },
   "mockup": { "initials": "AM", "name": "Amina Mansouri", "title": "Product Designer", "experience": "Experience", "role": "Senior Product Designer", "date": "2022 — Present", "achievement": "Led accessible product experiences and improved customer outcomes across international markets.", "skills": "Skills", "skillItems": ["Research", "Design systems", "Strategy"], "ats": "ATS-ready" },
   "comingSoonBody": "This feature is not yet available. We're working on it and it will be ready soon.",
   "gotIt": "Got it",

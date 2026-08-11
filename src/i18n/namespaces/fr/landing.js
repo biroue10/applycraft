@@ -17,6 +17,7 @@ const landing = {
   "statFormats": "Formats d'export",
   "statDownloads": "Téléchargements gratuits",
   "productOverview": "Aperçu du produit",
+  "scanner": { "aria": "Illustration d’un CV professionnel analysé et organisé dans une structure adaptée aux ATS", "notes": ["Expérience détectée", "Compétences structurées", "Formation reconnue", "Structure adaptée aux ATS", "Profil prêt"] },
   "mockup": { "initials": "AM", "name": "Amina Mansouri", "title": "Product Designer", "experience": "Expérience", "role": "Senior Product Designer", "date": "2022 — Aujourd’hui", "achievement": "Conception d’expériences accessibles et amélioration des résultats clients sur les marchés internationaux.", "skills": "Compétences", "skillItems": ["Recherche", "Systèmes de design", "Stratégie"], "ats": "Compatible ATS" },
   "comingSoonBody": "Cette fonctionnalité n'est pas encore disponible. Nous y travaillons et elle sera bientôt prête.",
   "gotIt": "Compris",

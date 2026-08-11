@@ -56,7 +56,7 @@ const SAMPLE_PLACEHOLDERS = new Set([
 // Landing-page demo components that render illustrative sample résumé CONTENT
 // (fake names, bullet points, education). Their strings are sample data, not
 // app chrome, so they are out of scope for interface translation.
-const SKIP_COMPONENTS = new Set(["HeroResumePreview", "DemoEditor", "ResumeLivePreview"]);
+const SKIP_COMPONENTS = new Set(["DemoEditor", "ResumeLivePreview"]);
 
 // Literals matching these patterns are ignored (not human sentences).
 const IGNORE_PATTERNS = [

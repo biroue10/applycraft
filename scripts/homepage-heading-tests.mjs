@@ -6,9 +6,9 @@ import { fileURLToPath } from "node:url";
 
 const DIST = fileURLToPath(new URL("../dist/", import.meta.url));
 const pages = [
-  { locale: "en", file: "index.html", sampleName: "Maya Bennett", labels: ["Profile", "Skills", "Education", "Certification", "Experience", "Projects"] },
-  { locale: "fr", file: "fr/index.html", sampleName: "Maya Bennett", labels: ["Profil", "Compétences", "Formation", "Certification", "Expérience", "Projets"] },
-  { locale: "ar", file: "ar/index.html", sampleName: "مايا بنعلي", labels: ["الملخص", "المهارات", "التعليم", "الشهادات", "الخبرة", "المشاريع"] },
+  { locale: "en", file: "index.html", sampleName: "CY Applicant", labels: ["Profile", "Skills", "Education", "Experience"] },
+  { locale: "fr", file: "fr/index.html", sampleName: "CY Applicant", labels: ["Profile", "Skills", "Education", "Experience"] },
+  { locale: "ar", file: "ar/index.html", sampleName: "CY Applicant", labels: ["Profile", "Skills", "Education", "Experience"] },
 ];
 
 function headingText(html) {
