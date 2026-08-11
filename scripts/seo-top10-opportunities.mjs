@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { JSDOM } from "jsdom";
 
 await import("./apply-gsc-top10-seo.mjs");
 
@@ -23,6 +24,7 @@ function expectIndexable(html, label) {
 }
 
 const teacher = read("public/blog/teacher-resume-skills-achievements/index.html");
+const teacherDocument = new JSDOM(teacher).window.document;
 expectContains(teacher, "<title>Teacher Resume Skills: Examples & Achievements | ApplyCraft</title>", "teacher title");
 expectContains(teacher, "Teacher Resume Skills: How to List Them With Examples", "teacher H1");
 expectContains(teacher, 'data-gsc-seo="teacher-direct-answer"', "teacher direct answer");
@@ -39,15 +41,15 @@ expectContains(teacher, 'href="/resume/templates/"', "teacher templates link");
 expectContains(teacher, 'href="/ats-checker/"', "teacher ATS checker link");
 expectCanonical(teacher, "https://applycraft.io/blog/teacher-resume-skills-achievements/", "teacher");
 expectIndexable(teacher, "teacher");
-assert.equal((teacher.match(/<h1(?:\s[^>]*)?>/gi) || []).length, 1, "teacher must have one H1");
+assert.equal(teacherDocument.querySelectorAll("h1").length, 1, "teacher must have one H1");
 assert.ok(!teacher.includes("60+"), "teacher must not claim 60+ templates");
 assert.ok(!/guarante(?:e|ed|es)[^<]{0,40}(?:ATS|interview|job|hire)/i.test(teacher), "teacher must not promise an ATS or hiring outcome");
 assert.ok(!/href=["'][^"']*(?:ui|docLang|template|country)=/i.test(teacher), "teacher internal links must not contain presentation parameters");
-const teacherHeadings = [...teacher.matchAll(/<h([1-3])(?:\s[^>]*)?>([\s\S]*?)<\/h\1>/gi)]
-  .map((match) => match[2].replace(/<[^>]+>/g, "").trim().toLowerCase());
+const teacherHeadings = [...teacherDocument.querySelectorAll("h1, h2, h3")]
+  .map((heading) => heading.textContent.trim().toLowerCase());
 assert.equal(new Set(teacherHeadings).size, teacherHeadings.length, "teacher must not contain duplicate H1-H3 headings");
-const teacherSchemas = [...teacher.matchAll(/<script\s+type=["']application\/ld\+json["']>([\s\S]*?)<\/script>/gi)]
-  .map((match) => JSON.parse(match[1]));
+const teacherSchemas = [...teacherDocument.querySelectorAll('script[type="application/ld+json"]')]
+  .map((script) => JSON.parse(script.textContent));
 const teacherArticle = teacherSchemas.find((schema) => [schema["@type"]].flat().some((type) => ["Article", "BlogPosting"].includes(type)));
 assert.ok(teacherArticle, "teacher Article schema missing");
 assert.equal(teacherArticle.datePublished, "2026-07-26", "teacher publication date must remain unchanged");
