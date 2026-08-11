@@ -1,11 +1,26 @@
 # No catch-all SPA fallback; unknown URLs fall through to /404.html (no soft-404s).
 #
-# Trailing-slash handling for the prerendered flat-`<route>.html` builds
-# (/resume-builder/, /resume/templates/, /cover-letter/templates/, /job-tracker/,
-# /master-profile/, /email-signature/, /personal-website/, /r/) is done in
-# worker.js (TRAILING_SLASH_HTML_ASSETS): the canonical slash URL is served 200
-# and the no-slash form 301s to it. Do NOT re-add `<route> <route>/ 301` rules
-# here — combined with Workers Assets html_handling they create a redirect loop.
+# Permanent, exact-match slash normalization must live in Static Assets because
+# existing HTML assets can be served before worker.js. Queries are preserved by
+# Cloudflare when the destination does not declare its own query string.
+/resume-builder /resume-builder/ 301
+/resume/templates /resume/templates/ 301
+/cover-letter/templates /cover-letter/templates/ 301
+/job-tracker /job-tracker/ 301
+/master-profile /master-profile/ 301
+/email-signature /email-signature/ 301
+/personal-website /personal-website/ 301
+/r /r/ 301
+/cover-letter-builder /cover-letter-builder/ 301
+/ats-checker /ats-checker/ 301
+/interview-prep /interview-prep/ 301
+/fr/interview-prep /fr/interview-prep/ 301
+/ar/interview-prep /ar/interview-prep/ 301
+/fr/modeles-cv /fr/modeles-cv/ 301
+/ar/resume-templates /ar/resume-templates/ 301
+/application-pack /application-pack/ 301
+/fr/application-pack /fr/application-pack/ 301
+/ar/application-pack /ar/application-pack/ 301
 # /resume/builder/ is a retired alias, not a canonical application route.
 /app/ats-checker /ats-checker/ 301
 /app/ats-checker/ /ats-checker/ 301

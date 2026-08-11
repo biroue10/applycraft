@@ -46,6 +46,16 @@ const TRAILING_SLASH_HTML_ASSETS = new Map([
   ["/email-signature/", "/email-signature.html"],
   ["/personal-website/", "/personal-website.html"],
   ["/r/", "/r.html"],
+  ["/cover-letter-builder/", "/cover-letter-builder/index.html"],
+  ["/ats-checker/", "/ats-checker/index.html"],
+  ["/interview-prep/", "/interview-prep/index.html"],
+  ["/fr/interview-prep/", "/fr/interview-prep/index.html"],
+  ["/ar/interview-prep/", "/ar/interview-prep/index.html"],
+  ["/fr/modeles-cv/", "/fr/modeles-cv/index.html"],
+  ["/ar/resume-templates/", "/ar/resume-templates/index.html"],
+  ["/application-pack/", "/application-pack/index.html"],
+  ["/fr/application-pack/", "/fr/application-pack/index.html"],
+  ["/ar/application-pack/", "/ar/application-pack/index.html"],
 ]);
 
 // Retired public aliases should resolve in one hop to the indexable URL. Keeping
