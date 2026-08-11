@@ -27,6 +27,8 @@ const canonicalCases = [
   ["/resume-builder/?ui=fr&template=modern", "https://applycraft.io/resume-builder/"],
   ["/resume/templates?ui=fr#modern", "https://applycraft.io/resume/templates/"],
   ["/fr/?utm_source=gsc", "https://applycraft.io/fr/"],
+  ["/fr/modeles-cv/?country=canada", "https://applycraft.io/fr/modeles-cv/"],
+  ["/ar/resume-templates/?country=canada", "https://applycraft.io/ar/resume-templates/"],
 ];
 for (const [input, expected] of canonicalCases) {
   if (canonicalFor(input) !== expected) fail(`${input}: canonical should be ${expected}`);

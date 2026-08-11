@@ -45,6 +45,7 @@ export const ROUTE_CAPABILITIES = Object.freeze({
   "/cover-letter-builder/": Object.freeze({ supportsInterfaceLanguage: true, supportsDocumentLanguage: true, allowedParams: Object.freeze(["template"]) }),
   "/cover-letter/templates/": Object.freeze({ supportsInterfaceLanguage: true, supportsDocumentLanguage: true, allowedParams: Object.freeze(["template"]) }),
   "/job-tracker/": Object.freeze({ supportsInterfaceLanguage: true, supportsDocumentLanguage: false, allowedParams: Object.freeze([]) }),
+  "/master-profile/": Object.freeze({ supportsInterfaceLanguage: true, supportsDocumentLanguage: true, allowedParams: Object.freeze([]) }),
   "/interview-prep/": Object.freeze({ supportsInterfaceLanguage: false, supportsDocumentLanguage: false, allowedParams: Object.freeze(["jobTitle", "company", "applicationLanguage"]) }),
 });
 

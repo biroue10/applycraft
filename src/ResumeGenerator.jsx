@@ -3127,6 +3127,12 @@ export default function ResumeGenerator() {
     if (currentPath !== target) {
       window.history.pushState({}, "", target);
     }
+    // Locale-aware gallery navigation replaces parameterized discovery URLs
+    // with a clean /fr/ or /ar/ route. Keep rendered SEO URLs aligned with the
+    // visible route while excluding all functional state parameters.
+    const canonical = `https://applycraft.io${target.split(/[?#]/, 1)[0]}`;
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", canonical);
+    document.querySelector('meta[property="og:url"]')?.setAttribute("content", canonical);
   }, [appView, navPage, step, coverStep, lang, docLang]);
 
   useEffect(() => {

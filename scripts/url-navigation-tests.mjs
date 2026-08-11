@@ -51,6 +51,11 @@ assert.equal(
 );
 assert.equal(normalizeInternalUrl("/pricing/?ui=xx&docLang=<script>"), "/pricing/", "unsupported values are rejected");
 assert.equal(normalizeInternalUrl("/pricing/?utm_source=newsletter"), "/pricing/?utm_source=newsletter", "safe current-page attribution is not discarded");
+assert.equal(
+  normalizeInternalUrl("/master-profile/?ui=ar&docLang=ar&test=1"),
+  "/master-profile/?ui=ar&docLang=ar&test=1",
+  "localized Master Profile links preserve useful language state and safe unknown parameters",
+);
 assert.throws(() => buildInternalUrl("https://evil.example/ats-checker/"), /same-origin/, "external origins are rejected");
 assert.throws(() => buildInternalUrl("javascript:alert(1)"), /same-origin/, "unsafe protocols are rejected");
 
