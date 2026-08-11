@@ -23,15 +23,36 @@ function expectIndexable(html, label) {
 }
 
 const teacher = read("public/blog/teacher-resume-skills-achievements/index.html");
-expectContains(teacher, "<title>Teacher Resume Skills &amp; Achievements | ApplyCraft</title>".replace("&amp;", "&"), "teacher title");
-expectContains(teacher, "Teacher Resume Skills and Achievements: Examples That Show Your Impact", "teacher H1");
+expectContains(teacher, "<title>Teacher Resume Skills: Examples & Achievements | ApplyCraft</title>", "teacher title");
+expectContains(teacher, "Teacher Resume Skills: How to List Them With Examples", "teacher H1");
 expectContains(teacher, 'data-gsc-seo="teacher-direct-answer"', "teacher direct answer");
 expectContains(teacher, 'data-gsc-seo="teacher-skills-evidence"', "teacher evidence table");
 expectContains(teacher, 'data-gsc-seo="teacher-role-examples"', "teacher role examples");
+expectContains(teacher, 'data-gsc-seo="teacher-new-experience"', "teacher limited-experience guidance");
+expectContains(teacher, 'data-gsc-seo="teacher-achievement-examples"', "teacher achievement examples");
+expectContains(teacher, 'id="best-teacher-skills"', "teacher skills jump target");
+expectContains(teacher, 'id="teacher-contexts"', "teacher contexts jump target");
+expectContains(teacher, 'id="achievement-examples"', "teacher achievements jump target");
 expectContains(teacher, 'href="/examples/teacher-resume/"', "teacher example link");
-expectContains(teacher, 'href="/interview-prep/"', "teacher interview link");
+expectContains(teacher, 'href="/resume-builder/"', "teacher builder link");
+expectContains(teacher, 'href="/resume/templates/"', "teacher templates link");
+expectContains(teacher, 'href="/ats-checker/"', "teacher ATS checker link");
 expectCanonical(teacher, "https://applycraft.io/blog/teacher-resume-skills-achievements/", "teacher");
 expectIndexable(teacher, "teacher");
+assert.equal((teacher.match(/<h1(?:\s[^>]*)?>/gi) || []).length, 1, "teacher must have one H1");
+assert.ok(!teacher.includes("60+"), "teacher must not claim 60+ templates");
+assert.ok(!/guarante(?:e|ed|es)[^<]{0,40}(?:ATS|interview|job|hire)/i.test(teacher), "teacher must not promise an ATS or hiring outcome");
+assert.ok(!/href=["'][^"']*(?:ui|docLang|template|country)=/i.test(teacher), "teacher internal links must not contain presentation parameters");
+const teacherHeadings = [...teacher.matchAll(/<h([1-3])(?:\s[^>]*)?>([\s\S]*?)<\/h\1>/gi)]
+  .map((match) => match[2].replace(/<[^>]+>/g, "").trim().toLowerCase());
+assert.equal(new Set(teacherHeadings).size, teacherHeadings.length, "teacher must not contain duplicate H1-H3 headings");
+const teacherSchemas = [...teacher.matchAll(/<script\s+type=["']application\/ld\+json["']>([\s\S]*?)<\/script>/gi)]
+  .map((match) => JSON.parse(match[1]));
+const teacherArticle = teacherSchemas.find((schema) => [schema["@type"]].flat().some((type) => ["Article", "BlogPosting"].includes(type)));
+assert.ok(teacherArticle, "teacher Article schema missing");
+assert.equal(teacherArticle.datePublished, "2026-07-26", "teacher publication date must remain unchanged");
+assert.equal(teacherArticle.dateModified, "2026-08-11", "teacher modification date must match the substantive update");
+assert.equal(teacherArticle.mainEntityOfPage, "https://applycraft.io/blog/teacher-resume-skills-achievements/", "teacher schema canonical mismatch");
 assert.ok(!teacher.includes("Teacher Resume Skills and Achievements That Stand | ApplyCraft"), "teacher title must not use the old truncation");
 
 const teacherExample = read("public/examples/teacher-resume/index.html");

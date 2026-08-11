@@ -7,7 +7,7 @@ import { isValidEditorialDate, publishedArticles } from "./article-dates.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const PRIORITY = new Map([
-  ["/blog/teacher-resume-skills-achievements/", ["2026-07-26", "2026-08-07"]],
+  ["/blog/teacher-resume-skills-achievements/", ["2026-07-26", "2026-08-11"]],
   ["/blog/student-resume-summary-examples/", ["2026-08-01", "2026-08-07"]],
   ["/blog/student-resume-no-experience/", ["2026-07-26", "2026-08-07"]],
   ["/fr/blog/exemple-cv-maroc/", ["2026-07-05", "2026-08-07"]],
@@ -58,8 +58,8 @@ for (const [route, [datePublished, dateModified]] of PRIORITY) {
   const article = publishedArticles.find((entry) => entry.route === route);
   assert.ok(article, `${route}: priority registry entry`);
   assert.equal(article.datePublished, datePublished, `${route}: factual publication date`);
-  assert.equal(article.dateModified, dateModified, `${route}: factual August 7 revision`);
-  assert.ok(article.datePublished <= "2026-08-09" && article.dateModified <= "2026-08-09", `${route}: no future date`);
+  assert.equal(article.dateModified, dateModified, `${route}: factual editorial revision`);
+  assert.ok(article.datePublished <= "2026-08-11" && article.dateModified <= "2026-08-11", `${route}: no future date`);
 }
 
 const freshnessScripts = [
