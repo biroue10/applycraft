@@ -21,6 +21,11 @@ export const PAYMENTS_ENABLED = env.VITE_PAYMENTS_ENABLED === "true";
 // build-time override would silently disagree with the static asset.
 export const GA_MEASUREMENT_ID = "G-V4RE1M2Q52";
 
+// Impact's public affiliate-tracking tag. This is intentionally a single
+// constant because scripts/generate-consent-asset.mjs is the sole site-wide
+// loader, and it must never be added to individual routes or components.
+export const IMPACT_AFFILIATE_TAG_URL = "https://utt.impactcdn.com/P-A7607934-979a-4ead-843a-d7d27241d7e71.js";
+
 export const ANALYTICS = {
   // Gates whether the app emits events at all. Loading of gtag.js is decided
   // separately by visitor consent — see public/consent.js.
