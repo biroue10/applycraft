@@ -89,7 +89,7 @@ test("cookie consent follows interface language with localized legal links and R
   assert.equal(consentFr.title, "Préférences de cookies");
   assert.equal(consentAr.title, "تفضيلات ملفات تعريف الارتباط");
   for (const dictionary of [consentEn, consentFr, consentAr]) {
-    for (const key of ["body", "accept", "reject", "manage", "save", "essential", "analytics", "privacyLink", "cookiePolicyLink"]) {
+    for (const key of ["body", "accept", "reject", "manage", "save", "essential", "analytics", "marketing", "privacyLink", "cookiePolicyLink"]) {
       assert.equal(typeof dictionary[key], "string", `consent.${key} missing`);
     }
   }
