@@ -4,13 +4,14 @@
 // Consumed by scripts/generate-consent-asset.mjs.
 const consent = {
   "title": "Cookie preferences",
-  "body": "We use essential cookies to keep ApplyCraft working and optional analytics cookies to improve the product. You can accept, reject, or manage your preferences.",
+  "body": "We use essential cookies to keep ApplyCraft working, optional analytics cookies to improve the product, and optional marketing cookies for affiliate measurement. You can accept, reject, or manage your preferences.",
   "accept": "Accept all",
   "reject": "Reject optional",
   "manage": "Manage preferences",
   "save": "Save preferences",
   "essential": "Essential cookies",
   "analytics": "Analytics cookies",
+  "marketing": "Marketing and affiliate measurement cookies",
   "alwaysOn": "Always on",
   "privacyLink": "Privacy Policy",
   "cookiePolicyLink": "Cookie Policy",
