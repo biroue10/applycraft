@@ -86,7 +86,8 @@
     "test:article-dates": "node scripts/article-date-tests.mjs",
     "test:workflow-guides": "node scripts/workflow-guide-tests.mjs",
     "test:application-workspace": "node scripts/application-workspace-tests.mjs",
-    "test:encoding": "node scripts/mojibake-tests.mjs"
+    "test:encoding": "node scripts/mojibake-tests.mjs",
+    "test:online-courses-article": "node scripts/online-courses-article-tests.mjs"
   },
   "dependencies": {
     "@microsoft/clarity": "^1.0.2",

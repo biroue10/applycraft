@@ -429,6 +429,32 @@
       "primaryCta": ""
     },
     {
+      "routeId": "online-courses-certificates-resume",
+      "route": "/blog/how-to-list-online-courses-and-certificates-on-a-resume/",
+      "locale": "en",
+      "primaryKeyword": "how to list online courses and certificates on a resume",
+      "secondaryKeywords": [
+        "online courses on resume",
+        "certificates on resume",
+        "how to add certifications to resume",
+        "resume certificate examples"
+      ],
+      "searchIntent": "Learn how to classify and present courses, certificates, licences, and course projects honestly",
+      "canonical": "https://applycraft.io/blog/how-to-list-online-courses-and-certificates-on-a-resume/",
+      "parentCluster": "professional-development",
+      "preferredInternalAnchors": [
+        "list online courses on a resume",
+        "resume certificate examples"
+      ],
+      "relatedPages": [
+        "/resume-builder/",
+        "/blog/student-resume-no-experience/"
+      ],
+      "competingPages": [],
+      "differentiation": "Classification and placement of online learning and credentials; student, career-change, and role-specific guides keep their own life-stage or role intents",
+      "primaryCta": "/resume-builder/"
+    },
+    {
       "routeId": "blog-how-to-write-an-ats-friendly-resume",
       "route": "/blog/how-to-write-an-ats-friendly-resume/",
       "locale": "en",
