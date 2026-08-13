@@ -42,6 +42,16 @@ try {
     page.on("pageerror", (error) => errors.push(String(error)));
     await page.route(`${ORIGIN}/**`, async (route) => {
       const url = new URL(route.request().url());
+      // The static harness has no Worker API, so model the production
+      // anonymous account response instead of turning a normal auth probe
+      // into a browser console 404.
+      if (url.pathname === "/api/account") {
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({ account: null }),
+        });
+      }
       const file = distFile(url.pathname);
       if (!file) return route.fulfill({ status: 404, body: "Not found" });
       return route.fulfill({
