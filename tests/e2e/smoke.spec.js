@@ -7,14 +7,13 @@ import { test, expect } from "@playwright/test";
 test.describe("Homepage & navigation", () => {
   test("homepage loads with hero + primary CTA, no console errors", async ({ page }) => {
     const errors = [];
-    const ignoreKnownHydration = (message) => /Minified React error #(418|423)\b/.test(message);
     page.on("console", (m) => {
       const text = m.text();
-      if (m.type() === "error" && !ignoreKnownHydration(text)) errors.push(text);
+      if (m.type() === "error") errors.push(text);
     });
     page.on("pageerror", (e) => {
       const text = String(e);
-      if (!ignoreKnownHydration(text)) errors.push(text);
+      errors.push(text);
     });
     await page.goto("/");
     await expect(page).toHaveTitle(/ApplyCraft/i);
@@ -35,15 +34,14 @@ test.describe("Homepage & navigation", () => {
   });
 
   test("hero resume scanner is synchronized and respects reduced motion", async ({ page }) => {
-    const ignoreKnownHydration = (message) => /Minified React error #(418|423|425)\b/.test(message);
     const errors = [];
     page.on("console", (message) => {
       const text = message.text();
-      if (message.type() === "error" && !ignoreKnownHydration(text)) errors.push(text);
+      if (message.type() === "error") errors.push(text);
     });
     page.on("pageerror", (error) => {
       const text = String(error);
-      if (!ignoreKnownHydration(text)) errors.push(text);
+      errors.push(text);
     });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
@@ -82,11 +80,10 @@ test.describe("Resume flow", () => {
   });
 
   test("empty resume opens export menu and toolbar panels are mutually exclusive", async ({ page }) => {
-    const ignoreKnownHydration = (message) => /Minified React error #(418|423|425)\b/.test(message);
     const errors = [];
     page.on("pageerror", (e) => {
       const text = String(e);
-      if (!ignoreKnownHydration(text)) errors.push(text);
+      errors.push(text);
     });
     await page.route("**/api/account", (route) => route.fulfill({
       status: 200,
