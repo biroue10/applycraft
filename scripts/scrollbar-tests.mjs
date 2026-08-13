@@ -17,7 +17,10 @@ requireRule(/\*\s*\{[^}]*-ms-overflow-style\s*:\s*none[^}]*scrollbar-width\s*:\s
 requireRule(/\*::\-webkit-scrollbar\s*\{[^}]*display\s*:\s*none[^}]*width\s*:\s*0[^}]*height\s*:\s*0/i, "Chromium, Safari, and Edge scrollbars must be hidden globally");
 
 if (!staticCss.includes("@import url('/scrollbars.css')")) failures.push("static pages do not import the global scrollbar stylesheet");
-if (!shell.includes('href="/scrollbars.css"')) failures.push("the React shell does not load the global scrollbar stylesheet");
+if (!/html\s*\{\s*scrollbar-gutter\s*:\s*auto\s*;\s*\}/i.test(shell)
+  || !/\*::\-webkit-scrollbar\s*\{[^}]*display\s*:\s*none/i.test(shell)) {
+  failures.push("the React shell must inline the critical global scrollbar rules");
+}
 
 if (failures.length) {
   console.error("Scrollbar tests failed:");

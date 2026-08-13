@@ -14,7 +14,6 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2"/>
 <link rel="manifest" href="/site.webmanifest?v=2"/>
 <link rel="preload" href="/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin/>
-<link rel="stylesheet" href="/scrollbars.css" />
 <link rel="stylesheet" href="/app-navbar.css" />
 <script src="/interface-locale-bootstrap.js"></script>
 <!-- Primary SEO -->
@@ -175,6 +174,12 @@
     <style>
       /* Design tokens — mirror of src/theme/colors.js (see public/_seo.css for
          the static-page copy). Contrast is enforced by scripts/contrast-tests.mjs. */
+      /* Critical scrollbar rules are inlined so first paint does not wait on a
+         separate render-blocking request. The source stylesheet remains the
+         canonical copy for static HTML pages. */
+      html { scrollbar-gutter: auto; }
+      *, *::before, *::after { -ms-overflow-style: none; scrollbar-width: none; }
+      *::-webkit-scrollbar { display: none; width: 0; height: 0; background: transparent; }
       :root {
         --color-bg-page: #06080F;
         --color-bg-surface: #0D1424;
