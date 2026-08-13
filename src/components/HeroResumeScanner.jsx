@@ -33,7 +33,7 @@ function ResumeContent({ structured = false }) {
 
 export default function HeroResumeScanner({ copy, rtl = false }) {
   const notes = copy?.notes || [];
-  return <section className="ac-hero-preview ac-resume-scanner" role="img" aria-label={copy?.aria} dir={rtl ? "rtl" : "ltr"}>
+  return <section className="ac-hero-preview ac-resume-scanner" dir={rtl ? "rtl" : "ltr"}>
     <style>{`
       .ac-resume-scanner{position:relative;width:min(100%,500px);height:540px;margin:auto;isolation:isolate}
       .ac-scan-glow{position:absolute;inset:12% 8% 5%;background:radial-gradient(circle,#7048e844,transparent 68%);filter:blur(20px)}
@@ -59,8 +59,10 @@ export default function HeroResumeScanner({ copy, rtl = false }) {
       @media(max-width:340px){.ac-resume-scanner{height:410px}.ac-scan-back,.ac-scan-paper{width:244px;height:350px}.ac-scan-content{padding:19px}.ac-scan-note{max-width:112px}.ac-scan-orbit{inset:55px 5px 24px}}
       @media(prefers-reduced-motion:reduce){.ac-scan-content.is-structured{clip-path:inset(0);animation:none}.ac-scan-beam{top:calc(100% - 2px);opacity:.45;animation:none}.ac-scan-note{opacity:1;transform:none;animation:none}.ac-scan-orbit{animation:none}}
     `}</style>
-    <div className="ac-scan-glow" aria-hidden="true" /><div className="ac-scan-orbit" aria-hidden="true" /><div className="ac-scan-back" aria-hidden="true" />
-    <div className="ac-scan-paper" aria-hidden="true"><ResumeContent /><ResumeContent structured /><div className="ac-scan-beam" /></div>
-    <div className="ac-scan-notes" aria-hidden="true">{notes.slice(0, 3).map((note) => <div className="ac-scan-note" key={note}>{note}</div>)}</div>
+    <div role="img" aria-label={copy?.aria}>
+      <div className="ac-scan-glow" aria-hidden="true" /><div className="ac-scan-orbit" aria-hidden="true" /><div className="ac-scan-back" aria-hidden="true" />
+      <div className="ac-scan-paper" aria-hidden="true"><ResumeContent /><ResumeContent structured /><div className="ac-scan-beam" /></div>
+      <div className="ac-scan-notes" aria-hidden="true">{notes.slice(0, 3).map((note) => <div className="ac-scan-note" key={note}>{note}</div>)}</div>
+    </div>
   </section>;
 }
