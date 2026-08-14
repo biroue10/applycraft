@@ -1,0 +1,110 @@
+/*
+ * ApplyCraft design system foundations.
+ *
+ * This is the browser-facing counterpart to src/theme/colors.js. Keep visual
+ * values semantic at call sites: primitives should consume these variables,
+ * while JavaScript surfaces use the matching COLORS names.
+ */
+:root {
+  /* Color: canvas and layered surfaces */
+  --color-bg-canvas: #06080f;
+  --color-bg-sidebar: #080d18;
+  --color-bg-surface: #0d1424;
+  --color-bg-surface-raised: #132036;
+  --color-bg-surface-hover: #172842;
+  --color-bg-overlay: rgba(6, 8, 15, .82);
+  --color-bg-header: rgba(6, 8, 15, .98);
+
+  /* Color: ink and hierarchy */
+  --color-text-primary: #eef2ff;
+  --color-text-secondary: #b6c2d6;
+  --color-text-muted: #8b9eb8;
+  --color-text-on-action: #fff;
+
+  /* Color: brand, actions, borders, and semantic feedback */
+  --color-brand: #7c3aed;
+  --color-brand-strong: #a855f7;
+  --color-brand-subtle: rgba(124, 58, 237, .13);
+  --color-action-primary: #7c3aed;
+  --color-action-primary-hover: #6d28d9;
+  --color-action-secondary: #a78bfa;
+  --color-info: #60a5fa;
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+  --color-border-subtle: #20324e;
+  --color-border-strong: #344967;
+  --color-focus-ring: #c4b5fd;
+  --color-focus-halo: rgba(167, 139, 250, .28);
+
+  /* Typography */
+  --font-sans: "IBM Plex Sans", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-size-caption: .75rem;
+  --font-size-label: .8125rem;
+  --font-size-body: .9375rem;
+  --font-size-body-lg: 1.0625rem;
+  --font-size-h4: 1.125rem;
+  --font-size-h3: 1.375rem;
+  --font-size-h2: clamp(1.75rem, 3vw, 2.5rem);
+  --font-size-h1: clamp(2.25rem, 4.8vw, 3.75rem);
+  --line-height-tight: 1.12;
+  --line-height-body: 1.6;
+
+  /* Space, shape, elevation, and motion */
+  --space-1: .25rem;
+  --space-2: .5rem;
+  --space-3: .75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --radius-sm: .375rem;
+  --radius-md: .625rem;
+  --radius-lg: .875rem;
+  --radius-xl: 1.125rem;
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, .16);
+  --shadow-md: 0 14px 34px rgba(0, 0, 0, .22);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, .34);
+  --transition-fast: 140ms ease;
+  --transition-base: 200ms cubic-bezier(.22, 1, .36, 1);
+}
+
+html { background: var(--color-bg-canvas); }
+body { color: var(--color-text-primary); font-family: var(--font-sans); }
+
+/* Shared interaction contract. It deliberately uses selectors with broad
+   native coverage without changing the semantics or layout of product UI. */
+:where(a, button, input, textarea, select):focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px var(--color-focus-halo);
+}
+
+:where(button, input, textarea, select) { font: inherit; }
+:where(input, textarea, select) {
+  border-color: var(--color-border-subtle);
+  color: var(--color-text-primary);
+}
+
+.ac-surface-card {
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.ac-action-primary {
+  border: 0;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-brand-strong), var(--color-action-primary) 50%, #2563eb);
+  color: var(--color-text-on-action);
+  box-shadow: 0 10px 26px rgba(124, 58, 237, .24);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), filter var(--transition-fast);
+}
+.ac-action-primary:hover { filter: brightness(1.06); transform: translateY(-1px); box-shadow: 0 14px 32px rgba(124, 58, 237, .3); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ac-action-primary:hover { transform: none; }
+}

@@ -46,3 +46,18 @@ html[lang^=ar] .ac-global-header__nav>[data-nav-id=resume]{width:132px}html[lang
 @font-face{font-family:'IBM Plex Sans Arabic';font-style:normal;font-weight:400;font-display:swap;src:url('/fonts/ibm-plex-sans-arabic-400.woff2') format('woff2')}
 @font-face{font-family:'IBM Plex Sans Arabic';font-style:normal;font-weight:600;font-display:swap;src:url('/fonts/ibm-plex-sans-arabic-600.woff2') format('woff2')}
 @font-face{font-family:'IBM Plex Sans Arabic';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/ibm-plex-sans-arabic-700.woff2') format('woff2')}
+
+/* Design-system bridge: this asset is shared by the application and static
+   routes, so its variables deliberately mirror src/styles/designTokens.css. */
+:root{--ac-header-background:var(--color-bg-header,rgba(6,8,15,.98));--ac-header-border:var(--color-border-subtle,#20324e);--ac-nav-text:var(--color-text-secondary,#b6c2d6);--ac-nav-hover:var(--color-text-primary,#eef2ff);--ac-nav-hover-bg:rgba(255,255,255,.055);--ac-nav-active-text:var(--color-action-secondary,#a78bfa);--ac-nav-active-bg:var(--color-brand-subtle,rgba(124,58,237,.13));--ac-nav-active-accent:var(--color-action-secondary,#a78bfa);--ac-action-primary:var(--color-action-primary,#7c3aed);--ac-action-primary-hover:var(--color-action-primary-hover,#6d28d9)}
+.ac-global-header{border-bottom:0;box-shadow:0 1px 0 rgba(255,255,255,.018);font-family:var(--font-sans,'IBM Plex Sans','IBM Plex Sans Arabic',system-ui,sans-serif)}
+.ac-global-header a:focus-visible,.ac-global-header button:focus-visible,.ac-site-footer a:focus-visible{outline-color:var(--color-focus-ring,#c4b5fd);box-shadow:0 0 0 4px var(--color-focus-halo,rgba(167,139,250,.28))}
+.ac-nav-account,.ac-mobile-menu-account{border-color:var(--color-border-strong,#344967);background:var(--color-bg-surface,#0d1424);color:var(--color-text-primary,#eef2ff);border-radius:var(--radius-sm,6px);transition:border-color var(--transition-fast,140ms ease),background var(--transition-fast,140ms ease)}
+.ac-nav-account:hover,.ac-nav-account:focus-visible{border-color:var(--color-action-secondary,#a78bfa);background:var(--color-bg-surface-raised,#132036)}
+.ac-language-trigger,.ac-global-header__menu-button{border-color:var(--color-border-subtle,#20324e);background:var(--color-bg-surface,#0d1424);color:var(--color-text-primary,#eef2ff);border-radius:var(--radius-md,10px)}
+.ac-language-menu,.ac-site-more-menu{border-color:var(--color-border-strong,#344967);background:var(--color-bg-surface-raised,#132036);box-shadow:var(--shadow-lg,0 24px 64px rgba(0,0,0,.34))}
+.ac-language-menu a[aria-current=page]{background:var(--color-brand-subtle,rgba(124,58,237,.13));color:var(--color-action-secondary,#a78bfa)}
+.ac-nav-cta,.ac-mobile-menu-cta{border-radius:var(--radius-md,10px);background:linear-gradient(135deg,var(--color-brand-strong,#a855f7),var(--color-action-primary,#7c3aed) 50%,var(--color-info,#2563eb));box-shadow:0 10px 26px rgba(124,58,237,.24);transition:transform var(--transition-base,200ms ease),filter var(--transition-fast,140ms ease),box-shadow var(--transition-base,200ms ease)}
+.ac-nav-cta:hover,.ac-mobile-menu-cta:hover{filter:brightness(1.06);transform:translateY(-1px);box-shadow:0 14px 32px rgba(124,58,237,.3)}
+.ac-workspace-status-bar{background:var(--color-bg-sidebar,#080d18);border-bottom-color:var(--color-border-subtle,#20324e)}
+@media(prefers-reduced-motion:reduce){.ac-nav-cta:hover,.ac-mobile-menu-cta:hover{transform:none}}
