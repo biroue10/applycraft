@@ -23,7 +23,7 @@ const builder = {
   "searchTemplates": "Search templates",
   "filters": "Filters",
   "preview": "Preview",
-  "useTemplate": "Start with this template",
+  "useTemplate": "Use template",
   "backToTemplates": "Back to templates",
   "suggestedNextStep": "Suggested next step",
   "reviewAtsTips": "Review ATS tips",
