@@ -10,6 +10,16 @@
     var moreButton = moreRoot && moreRoot.querySelector(":scope > button");
     var moreMenu = moreRoot && moreRoot.querySelector(".ac-site-more-menu");
     if (!button || !menu) return;
+    var frame = 0;
+    var updateCompactState = function () {
+      frame = 0;
+      header.classList.toggle("ac-global-header--compact", window.scrollY > 24);
+    };
+    var scheduleCompactState = function () {
+      if (!frame) frame = window.requestAnimationFrame(updateCompactState);
+    };
+    updateCompactState();
+    window.addEventListener("scroll", scheduleCompactState, { passive: true });
     var cta = header.querySelector(".ac-nav-cta");
     if (cta) {
       var mobileCta = cta.cloneNode(true);

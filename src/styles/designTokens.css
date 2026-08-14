@@ -67,8 +67,15 @@
   --shadow-sm: 0 4px 14px rgba(0, 0, 0, .16);
   --shadow-md: 0 14px 34px rgba(0, 0, 0, .22);
   --shadow-lg: 0 24px 64px rgba(0, 0, 0, .34);
-  --transition-fast: 140ms ease;
-  --transition-base: 200ms cubic-bezier(.22, 1, .36, 1);
+  --duration-instant: 120ms;
+  --duration-fast: 160ms;
+  --duration-base: 200ms;
+  --duration-reveal: 280ms;
+  --easing-standard: cubic-bezier(.2, 0, 0, 1);
+  --easing-emphasized: cubic-bezier(.22, 1, .36, 1);
+  --transition-fast: var(--duration-fast) var(--easing-standard);
+  --transition-base: var(--duration-base) var(--easing-emphasized);
+  --transition-reveal: var(--duration-reveal) var(--easing-emphasized);
 }
 
 html { background: var(--color-bg-canvas); }
@@ -104,7 +111,38 @@ body { color: var(--color-text-primary); font-family: var(--font-sans); }
   transition: transform var(--transition-base), box-shadow var(--transition-base), filter var(--transition-fast);
 }
 .ac-action-primary:hover { filter: brightness(1.06); transform: translateY(-1px); box-shadow: 0 14px 32px rgba(124, 58, 237, .3); }
+.ac-action-primary:active { transform: translateY(0) scale(.985); }
+
+/* Marketing content opts into this class explicitly. It keeps the observer
+   surface small and never applies entrance motion to product workflows. */
+.ac-motion-reveal {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition: opacity var(--transition-reveal), transform var(--transition-reveal);
+  transition-delay: var(--motion-reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.ac-motion-reveal[data-revealed="true"] {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+.ac-motion-action {
+  transition: transform var(--transition-fast), box-shadow var(--transition-base),
+    border-color var(--transition-fast), background-color var(--transition-fast),
+    color var(--transition-fast), opacity var(--transition-fast);
+}
+.ac-motion-action:hover { transform: translateY(-1px); }
+.ac-motion-action:active { transform: translateY(0) scale(.985); }
 
 @media (prefers-reduced-motion: reduce) {
-  .ac-action-primary:hover { transform: none; }
+  .ac-action-primary:hover, .ac-action-primary:active,
+  .ac-motion-action:hover, .ac-motion-action:active { transform: none; }
+  .ac-motion-reveal, .ac-motion-reveal[data-revealed="true"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
 }
