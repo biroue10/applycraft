@@ -8903,6 +8903,13 @@ Awards: ${form.awards}`;
           .ac-landing-shell main::before { content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none; background: radial-gradient(ellipse 58% 14% at 50% 31%, rgba(59,130,246,.06), transparent 74%), radial-gradient(ellipse 42% 10% at 50% 67%, rgba(124,58,237,.07), transparent 76%); }
           .ac-hero-grid :where(*) { min-width: 0; }
           .ac-hero-visual { max-width: 100%; }
+          @media (min-width: 901px) {
+            .ac-hero-visual .ac-resume-scanner { width: min(100%, 540px); height: 570px; }
+            .ac-hero-visual .ac-scan-back, .ac-hero-visual .ac-scan-paper { width: 354px; height: 480px; }
+            .ac-hero-visual .ac-scan-back { top: 52px; }
+            .ac-hero-visual .ac-scan-paper { top: 28px; }
+            .ac-hero-visual .ac-scan-content { padding: 30px; }
+          }
           .ac-landing-shell a:focus-visible, .ac-landing-shell button:focus-visible { outline: 2px solid ${C.accent2}; outline-offset: 4px; }
           .ac-hero { position: relative; overflow: clip; }
           .ac-hero::after { content: ""; position: absolute; inset-inline: 8%; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, ${C.borderHi}, transparent); }
@@ -8917,9 +8924,12 @@ Awards: ${form.awards}`;
           .ac-hero-text > div:nth-of-type(4) button { border-radius: 14px !important; box-shadow: 0 12px 32px rgba(0,0,0,.18); }
           .ac-landing-stats { border-block: 1px solid ${C.border}; background: linear-gradient(90deg, rgba(13,20,36,.84), rgba(19,32,54,.92), rgba(13,20,36,.84)) !important; }
           .ac-landing-section { position: relative; }
-          .ac-benefit-section { padding-top: 88px !important; padding-bottom: 52px !important; }
-          .ac-benefit-section > div > div:last-child > div > div { border-radius: 16px !important; padding: 22px !important; min-height: 154px !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.025), 0 12px 30px rgba(0,0,0,.12); }
-          .ac-benefit-section > div > div:last-child > div > div > div:first-child { width: 40px !important; height: 40px !important; border-radius: 12px !important; }
+          .ac-benefit-section { padding-top: 88px !important; padding-bottom: 64px !important; }
+          .ac-benefit-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 18px !important; }
+          .ac-benefit-card { border-radius: 16px !important; padding: 24px !important; min-height: 164px !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.025), 0 12px 30px rgba(0,0,0,.12); }
+          .ac-benefit-card > div:first-child { width: 42px !important; height: 42px !important; border-radius: 12px !important; margin-bottom: 14px !important; }
+          .ac-benefit-card h3 { font-size: 16px !important; margin-bottom: 8px !important; }
+          .ac-benefit-card p { font-size: 13.5px !important; line-height: 1.6 !important; }
           .ac-workflow-section { padding-top: 92px !important; padding-bottom: 94px !important; background: linear-gradient(180deg, transparent, rgba(19,32,54,.4) 44%, transparent); }
           .ac-workflow-section > div > div:nth-child(2) > div { position: relative; }
           .ac-workflow-section > div > div:nth-child(2) > div:not(:last-child)::after { content: ""; position: absolute; top: 24px; inset-inline-end: -12%; width: 24%; height: 1px; background: linear-gradient(90deg, ${C.accent}55, ${C.blue}55); }
@@ -8948,6 +8958,7 @@ Awards: ${form.awards}`;
             .ac-hero-text p { margin-inline: auto !important; }
             .ac-hero-text div { justify-content: center !important; }
             .ac-hero-visual { width: min(100%, 560px); margin-inline: auto; }
+            .ac-benefit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
             .ac-benefit-section, .ac-workflow-section, .ac-comparison-section, .ac-privacy-section, .ac-faq-section { padding-block: 64px !important; }
             .ac-workflow-section > div > div:nth-child(2) > div:not(:last-child)::after { display: none; }
             .ac-template-section { padding-bottom: 76px !important; }
@@ -8957,6 +8968,8 @@ Awards: ${form.awards}`;
             .ac-hero-text > div:nth-of-type(2) a { width: 100%; justify-content: center; }
             .ac-hero-text > div:nth-of-type(3) span { font-size: 11.5px !important; }
             .ac-benefit-section > div > div:last-child > div > div { min-height: 0 !important; }
+            .ac-benefit-grid { grid-template-columns: 1fr !important; gap: 14px !important; }
+            .ac-benefit-card { padding: 20px !important; }
           }
           @media (prefers-reduced-motion: reduce) { .ac-landing-shell *, .ac-landing-shell *::before, .ac-landing-shell *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
         `}</style>
@@ -9038,9 +9051,9 @@ Awards: ${form.awards}`;
         <main id="main-content" tabIndex={-1}>
         {/* Hero */}
         <div className="ac-hero" style={{ background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${C.glow} 0%, transparent 70%)` }}>
-          <div className="ac-hero-grid" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "108px 20px 48px" : "144px 24px 72px",
-            display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.02fr 0.98fr",
-            gap: isMobile ? 34 : 52, alignItems: "center" }}>
+          <div className="ac-hero-grid" style={{ maxWidth: 1280, margin: "0 auto", padding: isMobile ? "108px 20px 48px" : "132px 32px 76px",
+            display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.04fr 0.96fr",
+            gap: isMobile ? 34 : 64, alignItems: "center" }}>
             <div className="ac-hero-text" style={{ textAlign: isMobile ? "center" : "left" }}>
               <div style={{ animation: isMobile ? "none" : "acFadeUp 0.6s ease 0.05s both", display: "inline-block",
                 fontSize: 12, fontWeight: 600, letterSpacing: "2px",
@@ -9049,14 +9062,14 @@ Awards: ${form.awards}`;
                 {lx.heroEyebrow}
               </div>
               <h1 style={{ animation: isMobile ? "none" : "acFadeUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.18s both",
-                fontSize: "clamp(34px, 5vw, 58px)", fontWeight: 800, lineHeight: 1.08,
+                fontSize: "clamp(34px, 4.8vw, 64px)", fontWeight: 800, lineHeight: 1.06,
                 letterSpacing: "-0.8px", margin: "0 0 22px",
                 background: "linear-gradient(135deg, #EEF2FF 0%, #94A3B8 100%)",
                 WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                 {positioning.headline}
               </h1>
               <p style={{ animation: isMobile ? "none" : "acFadeUp 0.65s ease 0.34s both",
-                fontSize: "clamp(16px, 2vw, 19px)", color: C.text2, maxWidth: 590,
+                fontSize: "clamp(16px, 1.55vw, 20px)", color: C.text2, maxWidth: 620,
                 margin: isMobile ? "0 auto 34px" : "0 0 34px", lineHeight: 1.65 }}>
                 {positioning.supportingText}
               </p>
@@ -9172,7 +9185,7 @@ Awards: ${form.awards}`;
         {/* Why job seekers choose ApplyCraft */}
         <FadeIn>
           <section className="ac-landing-section ac-benefit-section" aria-labelledby="why-applycraft-title" style={{ padding: isMobile ? "56px 16px" : "72px 24px 32px" }}>
-            <div style={{ maxWidth: 1120, margin: "0 auto" }}>
+            <div style={{ maxWidth: 1240, margin: "0 auto" }}>
               <div style={{ textAlign: "center", marginBottom: 30 }}>
                 <p style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase",
                   letterSpacing: "2px", color: C.accent2, marginBottom: 12 }}>{why.eyebrow}</p>
@@ -9181,9 +9194,9 @@ Awards: ${form.awards}`;
                   {why.title}
                 </h2>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14 }}>
+              <div className="ac-benefit-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 18 }}>
                 {why.items.map((item) => (
-                  <div key={item.t} style={{ background: C.surface, border: `1px solid ${C.border}`,
+                  <div className="ac-benefit-card" key={item.t} style={{ background: C.surface, border: `1px solid ${C.border}`,
                     borderRadius: 8, padding: 18, minHeight: 128 }}>
                     <div style={{ width: 34, height: 34, borderRadius: 8, background: `${C.accent}16`,
                       border: `1px solid ${C.accent}30`, color: C.accent2, display: "flex",
@@ -9252,7 +9265,7 @@ Awards: ${form.awards}`;
 
         {/* How it works */}
         <div className="ac-landing-section ac-workflow-section" style={{ padding: "72px 24px 80px" }}>
-          <div style={{ maxWidth: 900, margin: "0 auto" }}>
+          <div style={{ maxWidth: 1040, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center" }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
                 letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>{l2.hiw.eyebrow}</p>
@@ -9293,7 +9306,7 @@ Awards: ${form.awards}`;
 
         {/* Template strip */}
         <div className="ac-landing-section ac-template-section" style={{ padding: "0 24px 100px" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ maxWidth: 1260, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center" }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
                 letterSpacing: "2px", color: C.text3, marginBottom: 40 }}>{RESUME_TEMPLATE_COUNT} {l2.strip.suffix}</p>
@@ -9316,7 +9329,7 @@ Awards: ${form.awards}`;
                 </div>
               );
               return (<>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(260px, 100%), 1fr))", gap: 32 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(275px, 100%), 1fr))", gap: 32 }}>
               {visible.map((tp, i) => (
                 <FadeIn key={tp.id} delay={i * 60}>
                   <div
@@ -9331,12 +9344,12 @@ Awards: ${form.awards}`;
                         resumeLang={lang} />
                     </div>
                     <div style={{ padding: "10px 4px 0" }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: C.text1 }}>{tp.name}</div>
-                      <div style={{ fontSize: 11.5, color: C.text2, marginTop: 2 }}>{templateTagText(tp)}</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: C.text1 }}>{tp.name}</div>
+                      <div style={{ fontSize: 12.5, color: C.text2, marginTop: 3 }}>{templateTagText(tp)}</div>
                       <a href={routeWithParam("/resume-builder/", lang, "template", tp.id)}
                         onClick={(event) => handleRouteLink(event, () => startWithTemplate(tp, "landing_template"))}
                         style={{ marginTop: 8, minHeight: 36, borderRadius: 6, border: `1px solid ${C.borderHi}`,
-                          background: `${C.accent}12`, color: C.accent2, fontSize: 12.5, fontWeight: 700,
+                          background: `${C.accent}12`, color: C.accent2, fontSize: 13, fontWeight: 700,
                           cursor: "pointer", fontFamily: "inherit", padding: "7px 11px", display: "inline-flex", alignItems: "center", textDecoration: "none" }}>
                         {bu.useTemplate}
                       </a>
@@ -9397,7 +9410,7 @@ Awards: ${form.awards}`;
         {/* Comparison — why we stand out */}
         <FadeIn>
           <div className="ac-landing-section ac-comparison-section" style={{ padding: isMobile ? "56px 16px" : "80px 24px" }}>
-            <div style={{ maxWidth: 820, margin: "0 auto" }}>
+            <div style={{ maxWidth: 920, margin: "0 auto" }}>
               <div style={{ textAlign: "center", marginBottom: 36 }}>
                 <div style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase",
                   letterSpacing: "2.5px", color: C.accent2, marginBottom: 14 }}>{l2.cmp.eyebrow}</div>
@@ -9413,13 +9426,13 @@ Awards: ${form.awards}`;
                 <table style={{ width: "100%", maxWidth: "100%", borderCollapse: "collapse", tableLayout: "fixed", minWidth: 0 }}>
                   <thead>
                     <tr>
-                      <th scope="col" style={{ width: isMobile ? "46%" : "52%", padding: isMobile ? "12px" : "16px 22px", textAlign: "left", borderBottom: `1px solid ${C.border}` }}>
-                        <span style={{ color: C.text3, fontSize: 12 }}>{l2.cmp.feature || "Feature"}</span>
+                      <th scope="col" style={{ width: isMobile ? "46%" : "52%", padding: isMobile ? "12px" : "17px 24px", textAlign: "left", borderBottom: `1px solid ${C.border}` }}>
+                        <span style={{ color: C.text3, fontSize: isMobile ? 12 : 13 }}>{l2.cmp.feature || "Feature"}</span>
                       </th>
-                      <th scope="col" style={{ width: isMobile ? "24%" : "22%", padding: isMobile ? "12px 8px" : "16px 14px", textAlign: "center", borderBottom: `1px solid ${C.border}`, color: C.accent2, fontSize: isMobile ? 12 : 13.5 }}>
+                      <th scope="col" style={{ width: isMobile ? "24%" : "22%", padding: isMobile ? "12px 8px" : "17px 14px", textAlign: "center", borderBottom: `1px solid ${C.border}`, color: C.accent2, fontSize: isMobile ? 12 : 14 }}>
                         ApplyCraft
                       </th>
-                      <th scope="col" style={{ width: isMobile ? "30%" : "26%", padding: isMobile ? "12px 8px" : "16px 14px", textAlign: "center", borderBottom: `1px solid ${C.border}`, color: C.text3, fontSize: isMobile ? 11 : 12.5 }}>
+                      <th scope="col" style={{ width: isMobile ? "30%" : "26%", padding: isMobile ? "12px 8px" : "17px 14px", textAlign: "center", borderBottom: `1px solid ${C.border}`, color: C.text3, fontSize: isMobile ? 11 : 13 }}>
                         {l2.cmp.col2}
                       </th>
                     </tr>
@@ -9427,13 +9440,13 @@ Awards: ${form.awards}`;
                   <tbody>
                     {l2.cmp.rows.map(([label, other], i, arr) => (
                       <tr key={label}>
-                        <th scope="row" style={{ padding: isMobile ? "11px 12px" : "13px 22px", borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : "none", textAlign: "left", color: C.text1, fontSize: isMobile ? 13 : 14.5, fontWeight: 600, lineHeight: 1.35 }}>
+                        <th scope="row" style={{ padding: isMobile ? "11px 12px" : "14px 24px", borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : "none", textAlign: "left", color: C.text1, fontSize: isMobile ? 13 : 15, fontWeight: 600, lineHeight: 1.4 }}>
                           {label}
                         </th>
                         <td style={{ padding: isMobile ? "11px 8px" : "13px 14px", borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : "none", textAlign: "center", color: SECTION_TOKENS.statusComplete, fontSize: 17, fontWeight: 800 }} aria-label={l2.cmp.included}>
                           ✓
                         </td>
-                        <td style={{ padding: isMobile ? "11px 8px" : "13px 14px", borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : "none", textAlign: "center", color: C.text3, fontSize: isMobile ? 11 : 12.5, lineHeight: 1.35 }}>
+                        <td style={{ padding: isMobile ? "11px 8px" : "14px 14px", borderBottom: i < arr.length - 1 ? `1px solid ${C.border}` : "none", textAlign: "center", color: C.text3, fontSize: isMobile ? 11 : 13, lineHeight: 1.4 }}>
                           {other}
                         </td>
                       </tr>
@@ -9441,7 +9454,7 @@ Awards: ${form.awards}`;
                   </tbody>
                 </table>
               </div>
-              <p style={{ textAlign: "center", fontSize: 12.5, color: C.text3, margin: "16px auto 0", maxWidth: 560 }}>
+              <p style={{ textAlign: "center", fontSize: 13, color: C.text3, margin: "18px auto 0", maxWidth: 620, lineHeight: 1.55 }}>
                 {l2.cmp.footnote}
               </p>
             </div>
@@ -9587,9 +9600,9 @@ Awards: ${form.awards}`;
 
         {/* Final CTA */}
         <div className="ac-landing-section ac-final-section" style={{ padding: "80px 24px", textAlign: "center" }}>
-          <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <div style={{ maxWidth: 660, margin: "0 auto" }}>
             <FadeIn>
-              <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: "-1px",
+              <h2 style={{ fontSize: "clamp(28px, 4vw, 52px)", fontWeight: 800, letterSpacing: "-1px",
                 margin: "0 0 16px", color: C.text1 }}>{l2.final.title}</h2>
               <p style={{ fontSize: 16, color: C.text2, margin: "0 0 36px" }}>
                 {l2.final.sub}

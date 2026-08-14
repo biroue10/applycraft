@@ -317,8 +317,8 @@ function InteractiveResumeDemo({ isMobile, onContinue, copy, closeLabel }) {
   return (
     <section className="ac-landing-demo" ref={sectionRef} aria-labelledby="interactive-demo-title"
       onPointerDownCapture={touchDemo} onKeyDownCapture={touchDemo}
-      style={{ padding: "78px 24px 84px", background: `linear-gradient(180deg, ${C.accent}08, transparent 78%)`, overflowX: "clip" }}>
-      <div style={{ maxWidth: 1120, margin: "0 auto" }}>
+      style={{ padding: "84px 24px 92px", background: `linear-gradient(180deg, ${C.accent}08, transparent 78%)`, overflowX: "clip" }}>
+      <div style={{ maxWidth: 1240, margin: "0 auto" }}>
         <FadeIn style={{ textAlign: "center", marginBottom: 42 }}>
           <p style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase",
             letterSpacing: "2px", color: C.accent2, marginBottom: 14 }}>{text.eyebrow}</p>
@@ -344,8 +344,8 @@ function InteractiveResumeDemo({ isMobile, onContinue, copy, closeLabel }) {
           </div>
         )}
 
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "0.92fr 1.08fr",
-          gap: isMobile ? 18 : 28, alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "0.88fr 1.12fr",
+          gap: isMobile ? 18 : 36, alignItems: "start" }}>
           {(!isMobile || view === "edit") && <FadeIn delay={80}>{editor}</FadeIn>}
           {(!isMobile || view === "preview") && <FadeIn delay={150}>{preview}</FadeIn>}
         </div>
