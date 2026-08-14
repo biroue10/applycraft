@@ -1,6 +1,7 @@
 import { ViteReactSSG } from "vite-react-ssg";
 import { routes } from "./routes.jsx";
 import { normalizeInternalUrl } from "./seo/localizedRoutes.js";
+import "./styles/designTokens.css";
 
 if (typeof window !== "undefined") {
   const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;

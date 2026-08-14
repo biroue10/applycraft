@@ -181,6 +181,12 @@
       *, *::before, *::after { -ms-overflow-style: none; scrollbar-width: none; }
       *::-webkit-scrollbar { display: none; width: 0; height: 0; background: transparent; }
       :root {
+        --color-bg-canvas: #06080F;
+        --color-bg-sidebar: #080D18;
+        --color-bg-surface-raised: #132036;
+        --color-bg-surface-hover: #172842;
+        --color-bg-overlay: rgba(6,8,15,.82);
+        --color-bg-header: rgba(6,8,15,.98);
         --color-bg-page: #06080F;
         --color-bg-surface: #0D1424;
         --color-bg-elevated: #132036;
@@ -189,7 +195,23 @@
         --color-text-muted: #8B9EB8;
         --color-accent-primary: #6366F1;
         --color-accent-secondary: #818CF8;
+        --color-brand: #7C3AED;
+        --color-brand-strong: #A855F7;
+        --color-action-primary: #7C3AED;
+        --color-action-primary-hover: #6D28D9;
+        --color-action-secondary: #A78BFA;
+        --color-border-subtle: #20324E;
         --color-border-strong: #344967;
+        --color-focus-ring: #C4B5FD;
+        --color-focus-halo: rgba(167,139,250,.28);
+        --font-sans: 'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --shadow-sm: 0 4px 14px rgba(0,0,0,.16);
+        --shadow-md: 0 14px 34px rgba(0,0,0,.22);
+        --transition-fast: 140ms ease;
+        --transition-base: 200ms cubic-bezier(.22,1,.36,1);
       }
       *, *::before, *::after { box-sizing: border-box; }
       body { margin: 0; background: var(--color-bg-page); }

@@ -9,6 +9,23 @@
 // it can sit on, including the translucent `#ffffff0d` input fill that lightens
 // `elevated` to roughly #1F2B40. scripts/contrast-tests.mjs enforces this.
 export const COLORS = {
+  // Semantic aliases consumed by shared product surfaces. Legacy short names
+  // below remain for stable inline-style call sites while the CSS system uses
+  // the corresponding --color-* variables in designTokens.css.
+  canvas: "#06080F",
+  surfaceBase: "#0D1424",
+  surfaceRaised: "#132036",
+  textPrimary: "#EEF2FF",
+  textSecondary: "#B6C2D6",
+  textMuted: "#8B9EB8",
+  brand: "#7C3AED",
+  actionPrimary: "#7C3AED",
+  actionSecondary: "#A78BFA",
+  borderSubtle: "#20324E",
+  borderStrong: "#344967",
+  focusRing: "#C4B5FD",
+  info: "#60A5FA",
+
   // Backgrounds, darkest first.
   bg: "#06080F",
   sidebar: "#080D18",
