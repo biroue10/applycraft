@@ -11,6 +11,7 @@
   --color-bg-sidebar: #080d18;
   --color-bg-surface: #0d1424;
   --color-bg-surface-raised: #132036;
+  --color-bg-elevated: var(--color-bg-surface-raised);
   --color-bg-surface-hover: #172842;
   --color-bg-overlay: rgba(6, 8, 15, .82);
   --color-bg-header: rgba(6, 8, 15, .98);
@@ -64,6 +65,8 @@
   --radius-md: .625rem;
   --radius-lg: .875rem;
   --radius-xl: 1.125rem;
+  --control-height-compact: 2.5rem;
+  --control-height: 2.75rem;
   --shadow-sm: 0 4px 14px rgba(0, 0, 0, .16);
   --shadow-md: 0 14px 34px rgba(0, 0, 0, .22);
   --shadow-lg: 0 24px 64px rgba(0, 0, 0, .34);
