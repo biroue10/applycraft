@@ -8896,10 +8896,49 @@ Awards: ${form.awards}`;
       else { setNavPage(page); setAppView("app"); }
     };
     return (
-      <div style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", overflowX: "hidden" }}>
+      <div className="ac-landing-shell" style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", overflowX: "hidden" }}>
         <style>{`
+          .ac-landing-shell { background-image: linear-gradient(180deg, #090d1a 0, #06080f 620px); }
+          .ac-landing-shell main { position: relative; isolation: isolate; }
+          .ac-landing-shell main::before { content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none; background: radial-gradient(ellipse 58% 14% at 50% 31%, rgba(59,130,246,.06), transparent 74%), radial-gradient(ellipse 42% 10% at 50% 67%, rgba(124,58,237,.07), transparent 76%); }
           .ac-hero-grid :where(*) { min-width: 0; }
           .ac-hero-visual { max-width: 100%; }
+          .ac-landing-shell a:focus-visible, .ac-landing-shell button:focus-visible { outline: 2px solid ${C.accent2}; outline-offset: 4px; }
+          .ac-hero { position: relative; overflow: clip; }
+          .ac-hero::after { content: ""; position: absolute; inset-inline: 8%; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, ${C.borderHi}, transparent); }
+          .ac-hero-grid { position: relative; }
+          .ac-hero-text > div:first-child { box-shadow: 0 8px 28px rgba(124,58,237,.12); }
+          .ac-hero-text h1 { text-wrap: balance; }
+          .ac-hero-text > p { text-wrap: pretty; }
+          .ac-hero-text > div:nth-of-type(2) a:first-child { border-radius: 10px !important; box-shadow: 0 14px 36px rgba(88,76,235,.34); }
+          .ac-hero-text > div:nth-of-type(2) a:nth-child(2) { border-radius: 10px !important; background: rgba(13,20,36,.62) !important; }
+          .ac-hero-text > div:nth-of-type(3) { gap: 9px !important; }
+          .ac-hero-text > div:nth-of-type(3) span { border: 1px solid ${C.border}; border-radius: 999px; padding: 5px 9px; background: rgba(13,20,36,.58); }
+          .ac-hero-text > div:nth-of-type(4) button { border-radius: 14px !important; box-shadow: 0 12px 32px rgba(0,0,0,.18); }
+          .ac-landing-stats { border-block: 1px solid ${C.border}; background: linear-gradient(90deg, rgba(13,20,36,.84), rgba(19,32,54,.92), rgba(13,20,36,.84)) !important; }
+          .ac-landing-section { position: relative; }
+          .ac-benefit-section { padding-top: 88px !important; padding-bottom: 52px !important; }
+          .ac-benefit-section > div > div:last-child > div > div { border-radius: 16px !important; padding: 22px !important; min-height: 154px !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.025), 0 12px 30px rgba(0,0,0,.12); transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+          .ac-benefit-section > div > div:last-child > div > div:hover { transform: translateY(-3px); border-color: ${C.borderHi} !important; background: ${C.elevated} !important; }
+          .ac-benefit-section > div > div:last-child > div > div > div:first-child { width: 40px !important; height: 40px !important; border-radius: 12px !important; }
+          .ac-workflow-section { padding-top: 92px !important; padding-bottom: 94px !important; background: linear-gradient(180deg, transparent, rgba(19,32,54,.4) 44%, transparent); }
+          .ac-workflow-section > div > div:nth-child(2) > div { position: relative; }
+          .ac-workflow-section > div > div:nth-child(2) > div:not(:last-child)::after { content: ""; position: absolute; top: 24px; inset-inline-end: -12%; width: 24%; height: 1px; background: linear-gradient(90deg, ${C.accent}55, ${C.blue}55); }
+          .ac-template-section { padding-bottom: 112px !important; }
+          .ac-template-section > div > div:nth-child(2) > div > div > div:first-child { border-radius: 12px !important; border: 1px solid ${C.border} !important; box-shadow: 0 18px 42px rgba(0,0,0,.32) !important; }
+          .ac-template-section > div > div:nth-child(2) a { border-radius: 9px !important; }
+          .ac-comparison-section { padding-top: 94px !important; padding-bottom: 94px !important; background: radial-gradient(ellipse 50% 45% at 50% 50%, rgba(124,58,237,.09), transparent 72%); }
+          .ac-comparison-section table { background: rgba(13,20,36,.84); }
+          .ac-comparison-section table tr:hover { background: rgba(167,139,250,.045); }
+          .ac-multilingual-section { background: linear-gradient(135deg, rgba(13,20,36,.98), rgba(19,32,54,.78)) !important; border-block: 1px solid ${C.border}; }
+          .ac-multilingual-section > div > div:last-child > div > div { border: 1px solid ${C.border}; border-radius: 14px !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.025); }
+          .ac-privacy-section { padding-top: 96px !important; padding-bottom: 96px !important; }
+          .ac-privacy-section > div > div:nth-child(2) > div > div { border: 1px solid ${C.border}; border-radius: 14px !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.025); }
+          .ac-faq-section { padding-top: 96px !important; padding-bottom: 92px !important; }
+          .ac-final-section { padding-top: 104px !important; padding-bottom: 108px !important; background: radial-gradient(ellipse 46% 62% at 50% 54%, rgba(124,58,237,.18), transparent 74%); }
+          .ac-final-section a { border-radius: 10px !important; box-shadow: 0 16px 38px rgba(88,76,235,.36) !important; }
+          .ac-landing-footer { border-top: 1px solid ${C.border}; background: rgba(8,13,24,.75); }
+          .ac-landing-footer a:hover { color: ${C.accent2} !important; }
           @media (max-width: 900px) {
             .ac-hero-grid {
               grid-template-columns: minmax(0, 1fr) !important;
@@ -8910,7 +8949,17 @@ Awards: ${form.awards}`;
             .ac-hero-text p { margin-inline: auto !important; }
             .ac-hero-text div { justify-content: center !important; }
             .ac-hero-visual { width: min(100%, 560px); margin-inline: auto; }
+            .ac-benefit-section, .ac-workflow-section, .ac-comparison-section, .ac-privacy-section, .ac-faq-section { padding-block: 64px !important; }
+            .ac-workflow-section > div > div:nth-child(2) > div:not(:last-child)::after { display: none; }
+            .ac-template-section { padding-bottom: 76px !important; }
+            .ac-final-section { padding-block: 76px !important; }
           }
+          @media (max-width: 600px) {
+            .ac-hero-text > div:nth-of-type(2) a { width: 100%; justify-content: center; }
+            .ac-hero-text > div:nth-of-type(3) span { font-size: 11.5px !important; }
+            .ac-benefit-section > div > div:last-child > div > div { min-height: 0 !important; }
+          }
+          @media (prefers-reduced-motion: reduce) { .ac-landing-shell *, .ac-landing-shell *::before, .ac-landing-shell *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
         `}</style>
         <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
         {/* Nav */}
@@ -8989,7 +9038,7 @@ Awards: ${form.awards}`;
             actually receive focus when the link is activated. */}
         <main id="main-content" tabIndex={-1}>
         {/* Hero */}
-        <div style={{ background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${C.glow} 0%, transparent 70%)` }}>
+        <div className="ac-hero" style={{ background: `radial-gradient(ellipse 80% 50% at 50% -10%, ${C.glow} 0%, transparent 70%)` }}>
           <div className="ac-hero-grid" style={{ maxWidth: 1180, margin: "0 auto", padding: isMobile ? "108px 20px 48px" : "144px 24px 72px",
             display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.02fr 0.98fr",
             gap: isMobile ? 34 : 52, alignItems: "center" }}>
@@ -9084,7 +9133,7 @@ Awards: ${form.awards}`;
         {/* A small, independently testable landing component; counts come
             directly from the template registry rather than duplicated copy. */}
         <React.Suspense fallback={null}>
-          <LandingStats colors={C} ariaLabel={lx.productOverview} items={[
+          <LandingStats className="ac-landing-stats" colors={C} ariaLabel={lx.productOverview} items={[
             { value: `${RESUME_TEMPLATE_COUNT}`, label: lx.statTemplates },
             { value: `${COVER_TEMPLATE_COUNT}`, label: lx.statCover },
             { value: `${LOCALIZED_DOCUMENT_LANGUAGE_COUNT}`, label: lx.statDocLangs },
@@ -9124,7 +9173,7 @@ Awards: ${form.awards}`;
 
         {/* Why job seekers choose ApplyCraft */}
         <FadeIn>
-          <section aria-labelledby="why-applycraft-title" style={{ padding: isMobile ? "56px 16px" : "72px 24px 32px" }}>
+          <section className="ac-landing-section ac-benefit-section" aria-labelledby="why-applycraft-title" style={{ padding: isMobile ? "56px 16px" : "72px 24px 32px" }}>
             <div style={{ maxWidth: 1120, margin: "0 auto" }}>
               <div style={{ textAlign: "center", marginBottom: 30 }}>
                 <p style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase",
@@ -9204,7 +9253,7 @@ Awards: ${form.awards}`;
         )}
 
         {/* How it works */}
-        <div style={{ padding: "72px 24px 80px" }}>
+        <div className="ac-landing-section ac-workflow-section" style={{ padding: "72px 24px 80px" }}>
           <div style={{ maxWidth: 900, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center" }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
@@ -9245,7 +9294,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* Template strip */}
-        <div style={{ padding: "0 24px 100px" }}>
+        <div className="ac-landing-section ac-template-section" style={{ padding: "0 24px 100px" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center" }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
@@ -9352,7 +9401,7 @@ Awards: ${form.awards}`;
 
         {/* Comparison — why we stand out */}
         <FadeIn>
-          <div style={{ padding: isMobile ? "56px 16px" : "80px 24px" }}>
+          <div className="ac-landing-section ac-comparison-section" style={{ padding: isMobile ? "56px 16px" : "80px 24px" }}>
             <div style={{ maxWidth: 820, margin: "0 auto" }}>
               <div style={{ textAlign: "center", marginBottom: 36 }}>
                 <div style={{ fontSize: 11.5, fontWeight: 700, textTransform: "uppercase",
@@ -9405,7 +9454,7 @@ Awards: ${form.awards}`;
         </FadeIn>
 
         {/* Multilingual superpowers */}
-        <div style={{ background: C.surface, padding: "72px 24px 80px" }}>
+        <div className="ac-landing-section ac-multilingual-section" style={{ background: C.surface, padding: "72px 24px 80px" }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: 56 }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
@@ -9449,7 +9498,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* Privacy Trust section */}
-        <div style={{ padding: "80px 24px" }}>
+        <div className="ac-landing-section ac-privacy-section" style={{ padding: "80px 24px" }}>
           <div style={{ maxWidth: 1000, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center", marginBottom: 52 }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
@@ -9529,7 +9578,7 @@ Awards: ${form.awards}`;
         */}
 
         {/* FAQ */}
-        <div style={{ padding: "80px 24px 80px" }}>
+        <div className="ac-landing-section ac-faq-section" style={{ padding: "80px 24px 80px" }}>
           <div style={{ maxWidth: 760, margin: "0 auto" }}>
             <FadeIn style={{ textAlign: "center", marginBottom: 52 }}>
               <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase",
@@ -9545,7 +9594,7 @@ Awards: ${form.awards}`;
         </div>
 
         {/* Final CTA */}
-        <div style={{ padding: "80px 24px", textAlign: "center" }}>
+        <div className="ac-landing-section ac-final-section" style={{ padding: "80px 24px", textAlign: "center" }}>
           <div style={{ maxWidth: 600, margin: "0 auto" }}>
             <FadeIn>
               <h2 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, letterSpacing: "-1px",
@@ -9572,7 +9621,7 @@ Awards: ${form.awards}`;
         </main>
 
         {/* Footer */}
-        <SharedSiteFooter lang={lang} />
+        <SharedSiteFooter lang={lang} className="ac-site-footer ac-landing-footer" />
       </div>
     );
   }

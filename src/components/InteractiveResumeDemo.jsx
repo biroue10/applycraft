@@ -315,7 +315,7 @@ function InteractiveResumeDemo({ isMobile, onContinue, copy, closeLabel }) {
   );
 
   return (
-    <section ref={sectionRef} aria-labelledby="interactive-demo-title"
+    <section className="ac-landing-demo" ref={sectionRef} aria-labelledby="interactive-demo-title"
       onPointerDownCapture={touchDemo} onKeyDownCapture={touchDemo}
       style={{ padding: "78px 24px 84px", background: `linear-gradient(180deg, ${C.accent}08, transparent 78%)`, overflowX: "clip" }}>
       <div style={{ maxWidth: 1120, margin: "0 auto" }}>
