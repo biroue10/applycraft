@@ -12,14 +12,14 @@ const landing2 = {
   },
   "hiw": {
     "eyebrow": "How it works",
-    "title": "A polished CV in three steps",
+    "title": "Build a clear resume in three steps",
     "s1t": "Pick a template",
-    "s1d": "Choose from {n} professional designs — from minimal to bold. Templates use ATS-conscious structure.",
+    "s1d": "Choose a clear structure that helps your experience stay easy to scan.",
     "s2t": "Fill in your details",
-    "s2d": "Type directly into the live form. The preview updates in real time as you write.",
+    "s2d": "Write your details and see how each choice reads in the finished document.",
     "s3t": "Download & apply",
-    "s3d": "Export as PDF or DOCX in your chosen language. Ready to download quickly.",
-    "browse": "Browse templates"
+    "s3d": "Review your document, then export PDF or DOCX in the language you chose.",
+    "browse": "Start with a template"
   },
   "strip": {
     "suffix": "professional templates",
@@ -222,8 +222,8 @@ const landing2 = {
     ]
   },
   "final": {
-    "title": "Start building for free",
-    "sub": "No account needed. Download your resume in seconds."
+    "title": "Ready to shape your resume?",
+    "sub": "Start without an account, then export a PDF or DOCX when it is ready."
   },
   "demo": {
     "eyebrow": "Interactive demo",

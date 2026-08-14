@@ -1,8 +1,8 @@
 const cover = {
   "toolName": "Créateur de lettre de motivation",
   "eyebrow": "Modèles de lettre de motivation",
-  "galleryTitle": "Choisissez un style de lettre assorti à votre CV",
-  "gallerySub": "Commencez avec une mise en page de lettre professionnelle, puis modifiez le contenu à côté d'un aperçu en direct. Vous pourrez télécharger en PDF ou DOCX lorsque vous serez prêt.",
+  "galleryTitle": "Trouvez un style de lettre adapté",
+  "gallerySub": "Commencez avec une mise en page professionnelle, rédigez avec un aperçu en direct et téléchargez une lettre assortie lorsqu'elle est prête.",
   "stylesAvailable": "styles de lettre disponibles.",
   "resumeMatching": "Assorti au CV",
   "heading": "Lettre de motivation",

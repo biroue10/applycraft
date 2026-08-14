@@ -12,14 +12,14 @@ const landing2 = {
   },
   "hiw": {
     "eyebrow": "Comment ça marche",
-    "title": "Un CV soigné en trois étapes",
+    "title": "Un CV clair en trois étapes",
     "s1t": "Choisissez un modèle",
-    "s1d": "Choisissez parmi {n} designs professionnels — du minimaliste à l'audacieux. Les modèles utilisent une structure compatible ATS.",
+    "s1d": "Choisissez une structure claire qui met votre parcours en valeur et reste facile à parcourir.",
     "s2t": "Saisissez vos informations",
-    "s2d": "Saisissez directement dans le formulaire en direct. L'aperçu se met à jour en temps réel.",
+    "s2d": "Renseignez vos informations et voyez comment chaque choix s'intègre au document final.",
     "s3t": "Téléchargez et postulez",
-    "s3d": "Exportez en PDF ou DOCX dans la langue choisie. Prêt à télécharger rapidement.",
-    "browse": "Parcourir les modèles"
+    "s3d": "Relisez votre document, puis exportez-le en PDF ou DOCX dans la langue choisie.",
+    "browse": "Partir d'un modèle"
   },
   "strip": {
     "suffix": "modèles professionnels",
@@ -222,8 +222,8 @@ const landing2 = {
     ]
   },
   "final": {
-    "title": "Commencez gratuitement",
-    "sub": "Aucun compte nécessaire. Téléchargez votre CV en quelques secondes."
+    "title": "Prêt à façonner votre CV ?",
+    "sub": "Commencez sans compte, puis exportez en PDF ou DOCX lorsque votre CV est prêt."
   },
   "demo": {
     "eyebrow": "Démo interactive",

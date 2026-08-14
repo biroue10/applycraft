@@ -1,8 +1,8 @@
 const cover = {
   "toolName": "Cover Letter Builder",
   "eyebrow": "Cover letter templates",
-  "galleryTitle": "Choose a cover letter style that matches your resume",
-  "gallerySub": "Start with a professional letter layout, then edit the content beside a live preview. You can download as PDF or DOCX when ready.",
+  "galleryTitle": "Find a cover letter style that fits",
+  "gallerySub": "Start with a professional layout, write alongside a live preview, and download a matching letter when it is ready.",
   "stylesAvailable": "letter styles available.",
   "resumeMatching": "Resume matching",
   "heading": "Cover Letter",
