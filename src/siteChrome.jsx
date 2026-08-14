@@ -170,6 +170,7 @@ export function SiteHeader({
 }) {
   const [internalMenuOpen, setInternalMenuOpen] = useState(false);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [compact, setCompact] = useState(false);
   const headerRef = useRef(null);
   const menuButtonRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -220,13 +221,30 @@ export function SiteHeader({
     };
   }, [menuOpen]);
 
+  useEffect(() => {
+    let frame = 0;
+    const updateCompactState = () => {
+      frame = 0;
+      setCompact(window.scrollY > 24);
+    };
+    const scheduleUpdate = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateCompactState);
+    };
+    updateCompactState();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", scheduleUpdate);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
   const closeMobileMenu = () => {
     if (!menuOpen) return;
     setMobileMenuOpen(false);
   };
   return (
     <>
-    <header ref={headerRef} data-site-header="applycraft" className="ac-global-header"
+    <header ref={headerRef} data-site-header="applycraft" className={`ac-global-header${compact ? " ac-global-header--compact" : ""}`}
       dir={interfaceLanguageByCode(lang).dir} onKeyDown={(event) => {
       if (event.key !== "Escape") return;
       if (moreMenuOpen) {

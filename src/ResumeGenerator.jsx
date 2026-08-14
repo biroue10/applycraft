@@ -8896,7 +8896,7 @@ Awards: ${form.awards}`;
       else { setNavPage(page); setAppView("app"); }
     };
     return (
-      <div className="ac-landing-shell" style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", overflowX: "hidden" }}>
+      <div className="ac-landing-shell" style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", overflowX: "clip" }}>
         <style>{`
           .ac-landing-shell { background-image: linear-gradient(180deg, #090d1a 0, #06080f 620px); }
           .ac-landing-shell main { position: relative; isolation: isolate; }
@@ -8918,8 +8918,7 @@ Awards: ${form.awards}`;
           .ac-landing-stats { border-block: 1px solid ${C.border}; background: linear-gradient(90deg, rgba(13,20,36,.84), rgba(19,32,54,.92), rgba(13,20,36,.84)) !important; }
           .ac-landing-section { position: relative; }
           .ac-benefit-section { padding-top: 88px !important; padding-bottom: 52px !important; }
-          .ac-benefit-section > div > div:last-child > div > div { border-radius: 16px !important; padding: 22px !important; min-height: 154px !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.025), 0 12px 30px rgba(0,0,0,.12); transition: transform .2s ease, border-color .2s ease, background .2s ease; }
-          .ac-benefit-section > div > div:last-child > div > div:hover { transform: translateY(-3px); border-color: ${C.borderHi} !important; background: ${C.elevated} !important; }
+          .ac-benefit-section > div > div:last-child > div > div { border-radius: 16px !important; padding: 22px !important; min-height: 154px !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.025), 0 12px 30px rgba(0,0,0,.12); }
           .ac-benefit-section > div > div:last-child > div > div > div:first-child { width: 40px !important; height: 40px !important; border-radius: 12px !important; }
           .ac-workflow-section { padding-top: 92px !important; padding-bottom: 94px !important; background: linear-gradient(180deg, transparent, rgba(19,32,54,.4) 44%, transparent); }
           .ac-workflow-section > div > div:nth-child(2) > div { position: relative; }
@@ -9063,19 +9062,18 @@ Awards: ${form.awards}`;
               </p>
               <div style={{ animation: isMobile ? "none" : "acFadeUp 0.65s ease 0.5s both",
                 display: "flex", gap: 12, justifyContent: isMobile ? "center" : "flex-start", flexWrap: "wrap" }}>
-              <a href={localizeRoute("/resume-builder/", lang)}
+              <a className="ac-motion-action" href={localizeRoute("/resume-builder/", lang)}
                 onClick={(event) => handleRouteLink(event, () => { track(EVENTS.HERO_CTA_CLICKED, { location: "hero" }); startResume("hero_primary"); })}
                 style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
                   padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer",
-                  animation: isMobile ? "none" : "acPulse 2.8s ease-in-out 1.4s infinite",
-                  transition: "opacity 0.2s", fontFamily: "inherit", textDecoration: "none" }}>
+                  transition: "transform var(--transition-fast), opacity var(--transition-fast), box-shadow var(--transition-base)", fontFamily: "inherit", textDecoration: "none" }}>
                 {positioning.primaryCta}
               </a>
-              <a href={localizeRoute("/ats-checker/", lang)}
+              <a className="ac-motion-action" href={localizeRoute("/ats-checker/", lang)}
                 onClick={(event) => handleRouteLink(event, () => enter("ats"))}
                 style={{ background: "transparent", color: C.text2, border: `1.5px solid ${C.border}`,
                   borderRadius: 3, padding: "14px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer",
-                  transition: "border-color 0.2s, color 0.2s", fontFamily: "inherit", textDecoration: "none" }}
+                  transition: "transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast)", fontFamily: "inherit", textDecoration: "none" }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent2; e.currentTarget.style.color = C.accent2; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.text2; }}>
                 {positioning.secondaryCta}
@@ -9279,12 +9277,12 @@ Awards: ${form.awards}`;
               ))}
             </div>
             <FadeIn delay={400} style={{ textAlign: "center", marginTop: 44 }}>
-              <a href={localizeRoute("/resume/templates/", lang)}
+              <a className="ac-motion-action" href={localizeRoute("/resume/templates/", lang)}
                 onClick={(event) => handleRouteLink(event, () => { setStep("templates"); setNavPage("resume"); setAppView("app"); })}
                 style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
                   padding: "13px 30px", fontSize: 14.5, fontWeight: 700, cursor: "pointer",
                   boxShadow: "0 4px 20px rgba(99,102,241,0.35)",
-                  transition: "opacity 0.2s, transform 0.2s", display: "inline-block", textDecoration: "none" }}
+                  transition: "transform var(--transition-fast), opacity var(--transition-fast), box-shadow var(--transition-base)", display: "inline-block", textDecoration: "none" }}
                 onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; e.currentTarget.style.transform = "translateY(-1px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "none"; }}>
                 {l2.hiw.browse}
@@ -9324,10 +9322,7 @@ Awards: ${form.awards}`;
                   <div
                     style={{ background: "transparent", border: "none", borderRadius: 0,
                       overflow: "visible", padding: 0, width: "100%",
-                      transition: "transform 0.22s cubic-bezier(0.22,1,0.36,1)",
-                      fontFamily: "inherit", textAlign: "left" }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-7px) scale(1.015)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
+                      fontFamily: "inherit", textAlign: "left" }}>
                     <div style={{ borderRadius: 0, overflow: "hidden",
                       boxShadow: "0 4px 22px rgba(0,0,0,0.38)",
                       transition: "box-shadow 0.22s ease" }}>
@@ -9351,13 +9346,13 @@ Awards: ${form.awards}`;
               ))}
             </div>
             <FadeIn delay={420} style={{ textAlign: "center", marginTop: 48 }}>
-              <a href={localizeRoute("/resume/templates/", lang)}
+              <a className="ac-motion-action" href={localizeRoute("/resume/templates/", lang)}
                 onClick={e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return; e.preventDefault(); browseTemplates("how_it_works"); }}
                 style={{ display: "inline-block", textDecoration: "none", background: "transparent",
                   border: `1.5px solid ${C.borderHi}`,
                   borderRadius: 3, padding: "13px 36px", fontSize: 14.5, fontWeight: 600,
                   color: C.text1, cursor: "pointer", fontFamily: "inherit",
-                  transition: "background 0.2s, border-color 0.2s" }}
+                  transition: "transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast)" }}
                 onMouseEnter={e => { e.currentTarget.style.background = `${C.borderHi}18`; e.currentTarget.style.borderColor = C.accent2; }}
                 onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = C.borderHi; }}>
                 {l2.strip.browseAllPre} {RESUME_TEMPLATE_COUNT} {l2.strip.browseAllSuf}
@@ -9482,10 +9477,7 @@ Awards: ${form.awards}`;
                 return (
                 <FadeIn key={f.title} delay={i * 55}>
                   <div style={{ background: C.elevated,
-                    borderRadius: 3, padding: "22px 20px",
-                    transition: "transform 0.2s" }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = "none"; }}>
+                    borderRadius: 3, padding: "22px 20px" }}>
                     <LineIcon name={f.icon} size={24} color={C.accent2} style={{ marginBottom: 12 }} />
                     <div style={{ fontSize: 14, fontWeight: 700, color: C.text1, marginBottom: 6 }}>{f.title}</div>
                     <div style={{ fontSize: 13, color: C.text2, lineHeight: 1.65 }}>{f.desc}</div>
@@ -9604,12 +9596,12 @@ Awards: ${form.awards}`;
               </p>
             </FadeIn>
             <FadeIn delay={120}>
-              <a href={localizeRoute("/resume-builder/", lang)}
+              <a className="ac-motion-action" href={localizeRoute("/resume-builder/", lang)}
                 onClick={(event) => handleRouteLink(event, () => startResume("final_cta"))}
                 style={{ background: C.grad, color: "#fff", border: "none", borderRadius: 3,
                   padding: "16px 40px", fontSize: 16, fontWeight: 700, cursor: "pointer",
                   boxShadow: "0 4px 24px rgba(99,102,241,0.35)",
-                  transition: "opacity 0.2s, transform 0.2s", display: "inline-block", textDecoration: "none" }}
+                  transition: "transform var(--transition-fast), opacity var(--transition-fast), box-shadow var(--transition-base)", display: "inline-block", textDecoration: "none" }}
                 onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; e.currentTarget.style.transform = "translateY(-2px)"; }}
                 onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "none"; }}>
                 {lx.createResume}
@@ -10887,24 +10879,52 @@ function LanguageDropdown({
   );
 }
 
+const revealSubscribers = new Map();
+let revealObserver;
+
+function observeRevealOnce(element, reveal) {
+  if (!("IntersectionObserver" in window)) {
+    reveal();
+    return () => {};
+  }
+  if (!revealObserver) {
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const callback = revealSubscribers.get(entry.target);
+        revealObserver.unobserve(entry.target);
+        revealSubscribers.delete(entry.target);
+        callback?.();
+      });
+      if (revealSubscribers.size === 0) {
+        revealObserver.disconnect();
+        revealObserver = undefined;
+      }
+    }, { threshold: 0.1, rootMargin: "0px 0px -5%" });
+  }
+  revealSubscribers.set(element, reveal);
+  revealObserver.observe(element);
+  return () => {
+    revealObserver?.unobserve(element);
+    revealSubscribers.delete(element);
+    if (revealObserver && revealSubscribers.size === 0) {
+      revealObserver.disconnect();
+      revealObserver = undefined;
+    }
+  };
+}
+
 function FadeIn({ children, delay = 0, style = {}, as: Tag = "div" }) {
   const ref = useRef(null);
   const [vis, setVis] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { setVis(true); io.disconnect(); }
-    }, { threshold: 0.1 });
-    io.observe(el);
-    return () => io.disconnect();
+    return observeRevealOnce(el, () => setVis(true));
   }, []);
   return (
-    <Tag ref={ref} style={{
-      opacity: vis ? 1 : 0,
-      transform: vis ? "none" : "translateY(22px)",
-      transition: `opacity 0.6s ease ${delay}ms, transform 0.6s cubic-bezier(0.22,1,0.36,1) ${delay}ms`,
-      willChange: "opacity, transform",
+    <Tag ref={ref} className="ac-motion-reveal" data-revealed={vis ? "true" : "false"} style={{
+      "--motion-reveal-delay": `${delay}ms`,
       ...style
     }}>{children}</Tag>
   );
