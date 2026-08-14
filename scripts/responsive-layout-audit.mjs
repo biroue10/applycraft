@@ -120,6 +120,8 @@ try {
       if (mobileMode) {
         assert.equal(result.nav?.display, "none", `${path} ${width}: desktop navigation should be hidden`);
         assert.ok(result.menu?.width >= 36, `${path} ${width}: hamburger must be visible`);
+        assert.equal(await page.locator(".ac-global-header__mobile-menu:visible").count(), 0,
+          `${path} ${width}: mobile navigation must remain closed until the menu button is invoked`);
         await page.locator(".ac-global-header__menu-button").click();
         const visibleLinks = await page.locator(".ac-global-header__mobile-menu > a:visible:not(.ac-mobile-menu-cta)").evaluateAll(
           (links) => links.map((link) => new URL(link.href).pathname),
