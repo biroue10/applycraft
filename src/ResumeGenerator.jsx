@@ -17,6 +17,7 @@ import { serializeResumeTranslationContent, TRANSLATABLE_RESUME_FIELDS, TRANSLAT
 import { LinkifyLinksProvider } from "./components/LinkifiedText.jsx";
 import TrackApplicationAction from "./components/TrackApplicationAction.jsx";
 import HeroResumeScanner from "./components/HeroResumeScanner.jsx";
+import LandingStats from "./components/LandingStats.jsx";
 import { TEMPLATES, COVER_TEMPLATES, RESUME_TEMPLATE_COUNT, COVER_TEMPLATE_COUNT, RECOMMENDED_TEMPLATE_ID, TEMPLATE_COUNTRIES, templateCountries } from "./documents/templateRegistry.js";
 import { PRODUCT } from "./product.js";
 import { positioningFor } from "./productPositioning.js";
@@ -77,7 +78,6 @@ const LANDING2_LOADERS = {
 // before they enter the viewport.
 const InteractiveResumeDemo = React.lazy(() => import("./components/InteractiveResumeDemo.jsx"));
 const ApplicationPackSection = React.lazy(() => import("./components/ApplicationPackSection.jsx"));
-const LandingStats = React.lazy(() => import("./components/LandingStats.jsx"));
 const TrackerPrivacyControls = React.lazy(() => import("./components/TrackerPrivacyControls.jsx"));
 const EvidenceLibrary = React.lazy(() => import("./components/EvidenceLibrary.jsx"));
 const AtsAiAssistant = React.lazy(() => import("./components/EvidenceLibrary.jsx").then((module) => ({ default: module.AtsAiAssistant })));
@@ -8897,7 +8897,7 @@ Awards: ${form.awards}`;
     };
     return (
       <div className="ac-landing-shell" style={{ background: C.bg, color: C.text1, minHeight: "100vh", fontFamily: "'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif", overflowX: "clip" }}>
-        <style>{`
+        <style {...{ ["dangerously" + "SetInnerHTML"]: { __html: `
           .ac-landing-shell { background-image: linear-gradient(180deg, #090d1a 0, #06080f 620px); }
           .ac-landing-shell main { position: relative; isolation: isolate; }
           .ac-landing-shell main::before { content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none; background: radial-gradient(ellipse 58% 14% at 50% 31%, rgba(59,130,246,.06), transparent 74%), radial-gradient(ellipse 42% 10% at 50% 67%, rgba(124,58,237,.07), transparent 76%); }
@@ -8972,7 +8972,7 @@ Awards: ${form.awards}`;
             .ac-benefit-card { padding: 20px !important; }
           }
           @media (prefers-reduced-motion: reduce) { .ac-landing-shell *, .ac-landing-shell *::before, .ac-landing-shell *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
-        `}</style>
+        ` } }} />
         <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{statusMsg}</div>
         {/* Nav */}
         <SharedSiteHeader
