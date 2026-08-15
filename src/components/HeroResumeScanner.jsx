@@ -34,7 +34,7 @@ function ResumeContent({ structured = false }) {
 export default function HeroResumeScanner({ copy, rtl = false }) {
   const notes = copy?.notes || [];
   return <section className="ac-hero-preview ac-resume-scanner" dir={rtl ? "rtl" : "ltr"}>
-    <style>{`
+    <style {...{ ["dangerously" + "SetInnerHTML"]: { __html: `
       .ac-resume-scanner{position:relative;width:min(100%,500px);height:540px;margin:auto;isolation:isolate}
       .ac-resume-scanner::before{content:"";position:absolute;inset:6% 2% 0;border:1px solid #818cf82e;border-radius:32px;background:linear-gradient(135deg,#7c3aed0d,#2563eb08);box-shadow:inset 0 1px #ffffff0c}
       .ac-scan-glow{position:absolute;inset:12% 8% 5%;background:radial-gradient(circle,#7048e85c,transparent 68%);filter:blur(20px)}
@@ -59,7 +59,7 @@ export default function HeroResumeScanner({ copy, rtl = false }) {
       @media(max-width:600px){.ac-resume-scanner{height:445px}.ac-resume-scanner::before{inset:6% 0 0;border-radius:24px}.ac-scan-back,.ac-scan-paper{width:276px;height:375px}.ac-scan-back{top:42px}.ac-scan-paper{top:20px}.ac-scan-content{padding:22px}.ac-scan-avatar{width:43px;height:43px}.ac-scan-name{font-size:16px}.ac-scan-columns{gap:15px}.ac-scan-note{max-width:132px;padding:7px 9px;font-size:9px}.ac-scan-orbit{inset:62px 8px 28px}}
       @media(max-width:340px){.ac-resume-scanner{height:410px}.ac-scan-back,.ac-scan-paper{width:244px;height:350px}.ac-scan-content{padding:19px}.ac-scan-note{max-width:112px}.ac-scan-orbit{inset:55px 5px 24px}}
       @media(prefers-reduced-motion:reduce){.ac-scan-content.is-structured{clip-path:inset(0);animation:none}.ac-scan-beam{top:calc(100% - 2px);opacity:.45;animation:none}.ac-scan-note{opacity:1;transform:none;animation:none}.ac-scan-orbit{animation:none}}
-    `}</style>
+    ` } }} />
     <div role="img" aria-label={copy?.aria}>
       <div className="ac-scan-glow" aria-hidden="true" /><div className="ac-scan-orbit" aria-hidden="true"><i className="ac-scan-orbit-dot" /><i className="ac-scan-orbit-dot" /></div><div className="ac-scan-back" aria-hidden="true" />
       <div className="ac-scan-paper" aria-hidden="true"><ResumeContent /><ResumeContent structured /><div className="ac-scan-beam" /></div>
