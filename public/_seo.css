@@ -245,7 +245,7 @@ details p{padding:0 20px 16px;font-size:13.5px;color:var(--color-text-secondary)
 .cta-strip p{font-size:15px;color:var(--color-text-secondary);margin-bottom:28px}
 
 /* â”€â”€ Footer â”€â”€ */
-.site-footer{border-top:1px solid var(--color-border-subtle);padding:56px 24px 32px;color:var(--color-text-muted)}
+.site-footer{padding:56px 24px 32px;color:var(--color-text-muted)}
 .footer-shell{max-width:var(--content-wide);margin:0 auto}
 .footer-top{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;margin-bottom:44px}
 .footer-brand{max-width:280px}
