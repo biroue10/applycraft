@@ -8946,7 +8946,7 @@ Awards: ${form.awards}`;
           .ac-faq-section { padding-top: 96px !important; padding-bottom: 92px !important; }
           .ac-final-section { padding-top: 104px !important; padding-bottom: 108px !important; background: radial-gradient(ellipse 46% 62% at 50% 54%, rgba(124,58,237,.18), transparent 74%); }
           .ac-final-section a { border-radius: 10px !important; box-shadow: 0 16px 38px rgba(88,76,235,.36) !important; }
-          .ac-landing-footer { border-top: 1px solid ${C.border}; background: rgba(8,13,24,.75); }
+          .ac-landing-footer { background: rgba(8,13,24,.75); }
           .ac-landing-footer a:hover { color: ${C.accent2} !important; }
           @media (max-width: 900px) {
             .ac-hero-grid {
